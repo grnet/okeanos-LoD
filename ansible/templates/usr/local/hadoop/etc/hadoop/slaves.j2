@@ -1,0 +1,1 @@
+{{ groups.vms | replace("'","") | replace("[","") | replace(", ","\n") | replace("]","") | replace(".vm.okeanos.grnet.gr","") }}
