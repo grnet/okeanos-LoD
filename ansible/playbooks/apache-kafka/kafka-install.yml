@@ -1,0 +1,59 @@
+---
+
+- hosts: master
+  user: root
+  tasks:
+    - name: Download Apache Kafka.
+      get_url: url=http://mirrors.myaegean.gr/apache/kafka/0.8.2.1/kafka_2.10-0.8.2.1.tgz dest=/root/kafka_2.10-0.8.2.1.tgz
+      tags:
+        - download
+
+    - name: Uncompress Apache Kafka.
+      unarchive: src=/root/kafka_2.10-0.8.2.1.tgz dest=/usr/local copy=no
+      tags:
+        - uncompress
+
+    - name: Create softlink for Apache Kafka.
+      file: src=/usr/local/kafka_2.10-0.8.2.1 dest=/usr/local/kafka state=link
+      tags:
+        - uncompress
+
+    - name: Configure Apache kafka.
+      copy: src=../files/usr/local/kafka/config/server.properties dest=/usr/local/kafka/config/server.properties owner=root group=root mode=0644
+      tags:
+        - configure-kafka
+
+    - name: Start Apache Zookeeper server.
+      shell: /usr/local/kafka/bin/zookeeper-server-start.sh /usr/local/kafka/config/zookeeper.properties
+      async: 31536000 # Stay alive for a year(1 year = 31536000 seconds).
+      poll: 0
+      tags:
+        - start-zookeeper
+
+    - name: Wait for Apache Zookeeper to become available.
+      wait_for: port=2181
+      tags:
+        - start-zookeeper
+
+    - name: Start Apache Kafka server.
+      shell: /usr/local/kafka/bin/kafka-server-start.sh /usr/local/kafka/config/server.properties
+      async: 31536000 # Stay alive for a year(1 year = 31536000 seconds).
+      poll: 0
+      tags:
+        - start-kafka
+
+    - name: Wait for Apache Kafka server to become available.
+      wait_for: port=9092
+      tags:
+        - start-kafka
+
+    - name : Create Apache Kafka input topic.
+      shell: /usr/local/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic input
+      tags :
+        - create-topics
+
+    - name : Create Apache Kafka output topic.
+      shell: /usr/local/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic output
+      tags :
+        - create-topics
+
