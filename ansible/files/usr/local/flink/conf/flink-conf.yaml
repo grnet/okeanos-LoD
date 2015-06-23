@@ -25,13 +25,13 @@ jobmanager.rpc.address: master
 
 jobmanager.rpc.port: 6123
 
-jobmanager.heap.mb: 4096
+jobmanager.heap.mb: 512
 
 taskmanager.heap.mb: 512
 
-taskmanager.numberOfTaskSlots: 8
+taskmanager.numberOfTaskSlots: 2
 
-parallelization.degree.default: 24
+parallelization.degree.default: 2
 
 #==============================================================================
 # Web Frontend

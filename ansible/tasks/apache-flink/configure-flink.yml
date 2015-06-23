@@ -1,3 +1,0 @@
----
-- name: Configure Apache Flink.
-  copy: src=../files/usr/local/flink/conf/flink-conf.yaml dest=/usr/local/flink/conf/flink-conf.yaml owner=root group=root mode=0644

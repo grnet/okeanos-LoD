@@ -1,5 +1,0 @@
----
-- name: Start Apache Flink.
-  shell: /usr/local/flink-yarn-0.8.1/bin/yarn-session.sh -n 2 -tm 4096
-  async: 31536000 # Stay alive for a year(1 year = 31536000 seconds).
-  poll: 0

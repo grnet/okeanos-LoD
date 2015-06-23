@@ -1,3 +1,0 @@
----
-- name: Uncompress Apache Flink.
-  unarchive: src=/root/flink-0.8.1-bin-hadoop2-yarn.tgz dest=/usr/local copy=no

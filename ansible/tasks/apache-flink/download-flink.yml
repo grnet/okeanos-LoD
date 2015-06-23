@@ -1,3 +1,0 @@
----
-- name: Download Apache Flink, Yarn version.
-  get_url: url=http://apache.tsl.gr/flink/flink-0.8.1/flink-0.8.1-bin-hadoop2-yarn.tgz dest=/root/flink-0.8.1-bin-hadoop2-yarn.tgz
