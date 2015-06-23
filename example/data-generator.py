@@ -13,16 +13,19 @@ import argparse
 
 def create_random_message():
     # Parse arguments
+    default_file = '/usr/share/dict/american-english'
     parser = argparse.ArgumentParser(description="Random data generator")
-    parser.add_argument('--filename', type=str, default='/usr/share/dict/american-english')
+    parser.add_argument('--filename', type=str, default=default_file)
     parser.add_argument('--messages', type=int, default=20)
     parser.add_argument('--tags', type=int, default=5)
     args = parser.parse_args()
 
     with open(args.filename) as f:
         words = f.readlines()
-        message = ' '.join([random.choice(words).strip() for _ in range(args.messages)])
-        tags = '#' + ' #'.join([random.choice(words).strip() for _ in range(args.tags)])
+        message = ' '.join(
+            [random.choice(words).strip() for _ in range(args.messages)])
+        tags = '#' + ' #'.join(
+            [random.choice(words).strip() for _ in range(args.tags)])
 
     return message, tags
 
