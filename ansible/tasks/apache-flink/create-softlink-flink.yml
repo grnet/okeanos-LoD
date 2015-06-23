@@ -1,0 +1,3 @@
+---
+- name: Create softlink for Apache Flink.
+  file: src=/usr/local/flink-yarn-0.8.1 dest=/usr/local/flink state=link
