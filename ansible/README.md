@@ -14,7 +14,7 @@ Currently, the playbooks are run from an external node, and deploy both master a
 
 - Edit inventory (hosts file) and define the appropriate master node and slave nodes. Currently, the master also acts as a slave.
 - Use ssh-keygen on all nodes. Populate the master public key onto the slaves authorized_keys file. Populate all keys onto all nodes known_hosts file.
-- Edit the /etc/hosts file of all nodes, to map the according hostnames to the internal ip addresses (for example 192.168.1.2     snf-661243)
+- Edit the /etc/hosts file of all nodes, to map the according hostnames to the internal ip addresses.
 
 Note: All the above tasks will be included in the prerequisites playbooks.
 
