@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import random
+import argparse
 
 """ Create a random message with 20 words and 5 tags.
 
@@ -10,31 +11,22 @@ import random
 """
 
 
-def main():
-    filename = '/usr/share/dict/american-english'
-    lines = list()
-    hashtags = list()
-    message = ''
-    tags = ''
-    f = open(filename)
+def create_random_message():
+    # Parse arguments
+    parser = argparse.ArgumentParser(description="Random data generator")
+    parser.add_argument('--filename', type=str, default='/usr/share/dict/american-english')
+    parser.add_argument('--messages', type=int, default=20)
+    parser.add_argument('--tags', type=int, default=5)
+    args = parser.parse_args()
 
-    for i in range(20):
-        j = random.randrange(1, 99171)
-        lines.append(j)
+    with open(args.filename) as f:
+        words = f.readlines()
+        message = ' '.join([random.choice(words).strip() for _ in range(args.messages)])
+        tags = '#' + ' #'.join([random.choice(words).strip() for _ in range(args.tags)])
 
-    for i in range(5):
-        j = random.randrange(1, 99171)
-        hashtags.append(j)
+    return message, tags
 
-    i = 0
-    for line in f:
-        if i in lines:
-            message = message + line.strip() + ' '
-        if i in hashtags:
-            tags = tags + '#' + line.strip() + ' '
-        i += 1
-    f.close()
-    print message, tags
 
 if __name__ == '__main__':
-    main()
+    random_message = create_random_message()
+    print random_message
