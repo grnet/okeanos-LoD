@@ -27,7 +27,7 @@ def create_random_message():
         tags = '#' + ' #'.join(
             [random.choice(words).strip() for _ in range(args.tags)])
 
-    return message, tags
+    return ' '.join((message,tags))
 
 
 if __name__ == '__main__':
