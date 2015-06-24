@@ -16,7 +16,7 @@ Contains a java class (flink job) responsible for counting the hashtags of rando
 
 ### How to run
 
-flink run hwc-1.0.jar -v -p <number of processes>
+flink run hwc-1.0.jar -v -p &lt;number of processes&gt;
 
 ### How to get the output
 
