@@ -31,8 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Implements the "Hashtag_WordCount" program that computes a simple word occurrence histogram
- * over some sample data
+ * Implements the "Hashtag_WordCount" program that computes a simple hashtag occurrence histogram
+ * over some randomly generated tweets
  *
  * <p>
  * This example shows how to:
@@ -55,13 +55,6 @@ public class Hashtag_WordCount {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // get input data
-        /*DataSet<String> text = env.fromElements(
-                "To be, or not to be,--that is the question:--",
-                "Whether 'tis nobler in the mind to suffer",
-                "The slings and arrows of outrageous fortune",
-                "Or to take arms against a sea of troubles,"
-        );*/
-
         DataSet<String> text = env.readTextFile("hdfs:///user/root/input");
 
         DataSet<Tuple2<String, Integer>> counts =
@@ -71,10 +64,7 @@ public class Hashtag_WordCount {
                         .groupBy(0)
                         .sum(1);
 
-        // emit result
-        //counts.print();
-        //counts.writeAsText("file:///root/output", FileSystem.WriteMode.OVERWRITE);
-        //counts.writeAsText("hdfs:///user/root/output", FileSystem.WriteMode.OVERWRITE);
+        // emit result to hdfs
         counts.writeAsText("hdfs:///user/root/output", FileSystem.WriteMode.OVERWRITE);
 
         // execute program
@@ -88,15 +78,14 @@ public class Hashtag_WordCount {
     /**
      * Implements the string tokenizer that splits sentences into words as a user-defined
      * FlatMapFunction. The function takes a line (String) and splits it into
-     * multiple pairs in the form of "(word,1)" (Tuple2<String, Integer>).
+     * multiple pairs in the form of "(hashtag,1)" (Tuple2<String, Integer>).
      */
     public static final class LineSplitter implements FlatMapFunction<String, Tuple2<String, Integer>> {
 
         @Override
         public void flatMap(String value, Collector<Tuple2<String, Integer>> out) {
-            // normalize and split the line
-            //String[] tokens = value..split("\\W+");
 
+            // Acquire hashtags
             List<String> hashtags = new ArrayList<String>();
             Matcher m = Pattern.compile("#(\\w+)")
                     .matcher(value.toLowerCase());
