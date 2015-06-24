@@ -1,4 +1,0 @@
----
-
-- name: fetch id_rsa.pub file from master
-  fetch: src=/root/.ssh/id_rsa.pub dest=/tmp/fetched/ flat=yes
