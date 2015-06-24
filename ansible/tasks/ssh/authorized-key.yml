@@ -1,0 +1,3 @@
+---
+  - name: ssh key
+    authorized_key: user=root key="{{ lookup('file', '/tmp/fetched/id_rsa.pub') }}"
