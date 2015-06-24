@@ -1,0 +1,6 @@
+---
+
+ # Update all packages to the latest version
+ - name: Upgrade packages
+   tags: install_scripts
+   apt: upgrade=dist update_cache=yes
