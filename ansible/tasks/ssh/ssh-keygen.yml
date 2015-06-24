@@ -1,5 +1,0 @@
----
-
-- name: Run ssh-keygen
-  tags: install_scripts
-  shell: cat /dev/zero | ssh-keygen -q -N ""
