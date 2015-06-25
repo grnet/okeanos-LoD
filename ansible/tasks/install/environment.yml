@@ -6,4 +6,6 @@
   copy: src=files/etc/environment
         dest=/etc/ backup=no
         owner=root group=root mode=0750
-        
+- name: source environment file
+  tags: install_scripts
+  shell: source /etc/environment
