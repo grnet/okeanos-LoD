@@ -29,3 +29,4 @@
   tasks:
   # distribute ssh key to all nodes
     - include: ../tasks/ssh/authorized-key.yml
+    
