@@ -4,4 +4,3 @@
  - name: Upgrade packages
    tags: install_scripts
    apt: upgrade=dist update_cache=yes
-   

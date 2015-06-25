@@ -3,4 +3,3 @@
 - name: install latest Java 7
   tags: install_scripts
   apt: name=openjdk-7-jdk state=latest install_recommends=no update_cache=yes
-  
