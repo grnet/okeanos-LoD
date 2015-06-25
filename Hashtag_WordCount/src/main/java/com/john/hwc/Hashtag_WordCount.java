@@ -90,7 +90,7 @@ public class Hashtag_WordCount {
             Matcher m = Pattern.compile("#(\\w+)")
                     .matcher(value.toLowerCase());
             while (m.find()) {
-                hashtags.add(m.group(1));
+                hashtags.add(m.group(0));
             }
             String[] tokens = hashtags.toArray(new String[hashtags.size()]);
 
