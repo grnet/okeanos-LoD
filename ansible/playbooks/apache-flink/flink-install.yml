@@ -1,0 +1,32 @@
+---
+
+- hosts: master
+  user: root
+  tasks:
+    - name: Download Apache Flink, Yarn version.
+      get_url: url=http://apache.tsl.gr/flink/flink-0.8.1/flink-0.8.1-bin-hadoop2-yarn.tgz dest=/root/flink-0.8.1-bin-hadoop2-yarn.tgz
+      tags:
+        - download
+
+    - name: Uncompress Apache Flink.
+      unarchive: src=/root/flink-0.8.1-bin-hadoop2-yarn.tgz dest=/usr/local copy=no
+      tags:
+        - uncompress
+
+    - name: Create softlink for Apache Flink.
+      file: src=/usr/local/flink-yarn-0.8.1 dest=/usr/local/flink state=link
+      tags:
+        - uncompress
+
+    - name: Configure Apache Flink.
+      copy: src=../files/usr/local/flink/conf/flink-conf.yaml dest=/usr/local/flink/conf/flink-conf.yaml owner=root group=root mode=0644
+      tags:
+        - configure
+
+    - name: Start Apache Flink.
+      shell: /usr/local/flink/bin/yarn-session.sh -n 2 -tm 512
+      async: 31536000 # Stay alive for a year(1 year = 31536000 seconds).
+      poll: 0
+      tags:
+        - start
+
