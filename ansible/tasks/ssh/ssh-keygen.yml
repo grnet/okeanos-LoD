@@ -2,4 +2,4 @@
 
 - name: Run ssh-keygen
   tags: install_scripts
-  shell: cat /dev/zero | ssh-keygen -q -N ""
+  command: cat /dev/zero | ssh-keygen -q -N "" creates=/root/.ssh/id_rsa.pub

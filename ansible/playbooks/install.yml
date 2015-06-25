@@ -5,14 +5,14 @@
 
   tasks:
   # aptitude packages
-    - include: ../tasks/aptitude/upgrade.yml   tags=install_scripts
-    - include: ../tasks/aptitude/java.yml   tags=install_scripts
-    - include: ../tasks/aptitude/vim.yml   tags=install_scripts
-    - include: ../tasks/aptitude/python.yml   tags=install_scripts
+    #- include: ../tasks/aptitude/upgrade.yml   tags=install_scripts
+    #- include: ../tasks/aptitude/java.yml   tags=install_scripts
+    #- include: ../tasks/aptitude/vim.yml   tags=install_scripts
+    #- include: ../tasks/aptitude/python.yml   tags=install_scripts
   # copy /etc/hosts file
-    - include: ../tasks/install/hosts.yml  tags=install_scripts
+    #- include: ../tasks/install/hosts.yml  tags=install_scripts
   # copy /etc/environment file
-    - include ../tasks/include/environment.yml tags=install_scripts
+    - include: ../tasks/install/environment.yml tags=install_scripts
   # run ssh-keygen
     - include: ../tasks/ssh/ssh-keygen.yml  tags=install_scripts
 
@@ -29,4 +29,3 @@
   tasks:
   # distribute ssh key to all nodes
     - include: ../tasks/ssh/authorized-key.yml
-    
