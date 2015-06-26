@@ -6,4 +6,4 @@
 # The stream job will then read the data from the port 9999.
 # The Application Master is responsible for distributing the data to the machines that run the Apache Flink job.
 
-/usr/local/kafka/bin/kafka-console-consumer.sh --consumer.config /usr/local/kafka/config/consumer.properties --zookeeper zookeeper-host:2181  --topic input | nc -lk application-master-host -p 9999;
+/usr/local/kafka/bin/kafka-console-consumer.sh --consumer.config /usr/local/kafka/config/consumer-stream.properties --zookeeper zookeeper-host:2181  --topic input | nc -lk application-master-host -p 9999;
