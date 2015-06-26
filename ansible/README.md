@@ -14,7 +14,7 @@
 - Ansible version used is `1.9.1`
 
 
-## VM package and variable setup
+## VM packages and variable setup
 
 Contains Ansible playbook for the installation of required packages and variables. The play is split into three (3) tasks:
 - install packages and run basic commands on newly created vms.
