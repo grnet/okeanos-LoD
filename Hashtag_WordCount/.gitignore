@@ -1,0 +1,4 @@
+*.iml
+.idea
+target/*
+!target/hwc-1.0.jar
