@@ -1,0 +1,17 @@
+---
+
+- hosts: all
+  user: root
+
+  tasks:
+    - include: ../tasks/hadoop/install.yml       tags=install
+    - include: ../tasks/hadoop/config.yml        tags=config
+
+
+- hosts: master
+  user: root
+
+  tasks:
+    - include: ../tasks/hadoop/hdfs_format.yml   tags=format
+    - include: ../tasks/hadoop/start.yml         tags=start
+    - include: ../tasks/hadoop/hdfs_dirs.yml     tags=mkdir
