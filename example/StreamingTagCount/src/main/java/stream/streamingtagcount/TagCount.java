@@ -16,17 +16,21 @@ public class TagCount {
         
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         
+        //read input message from port 9999 of host and send it to the splitter class
         DataStream<Tuple2<String, Integer>> dataStream = env
                 .socketTextStream("0.0.0.0", 9999)
                 .flatMap(new Splitter())
                 .groupBy(0)
                 .sum(1);
         
-        //dataStream.writeAsText("/tmp/streaming_output");
-        dataStream.print();
+        //write results to this file
+        dataStream.writeAsText("/root/streaming_output");
+        
+        //run the process
         env.execute("Socket Stream WordCount");
     }
     
+    //receives the messages, splits it between the words and the hashtags and then emits each hashtag and number of appearence
     public static class Splitter implements FlatMapFunction<String, Tuple2<String, Integer>> {
         public void flatMap(String sentence, Collector<Tuple2<String, Integer>> out) throws Exception {
             String words[] = sentence.split(",");
