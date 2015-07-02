@@ -1,29 +1,15 @@
-from os.path import join, expanduser
-from ConfigParser import ConfigParser
+from __future__ import __all__
 
 from kamaki.clients import ClientError
 from kamaki.clients.utils import https
 from kamaki.cli.config import Config as KamakiConfig
 
+# TODO: remove this and actually use ssl cert files
 https.patch_ignore_ssl()
 
 import argparse
 
 from kamaki.clients import astakos, cyclades
-
-
-def parse_kamakirc(filepath=None):
-    """
-    Parse the kamaki configuration
-    """
-    parser = ConfigParser()
-
-    # Default to ~/.kamakirc if filepath is not given
-    if filepath == None:
-        filepath = join(expanduser('~'), ".kamakirc")
-    parser.read(filepath)
-
-    return parser
 
 
 class Provisioner:
@@ -58,36 +44,53 @@ class Provisioner:
         :param ram: Amount of ram megabytes
         :param disk:  Amount of disk gigabytes
         :param kwargs:
-        :return: first flavor objects that matches the criteria
+        :return: first flavor objects that matches the specs criteria
         """
         for flavor in self.cyclades.list_flavors(detail=True):
             if flavor['ram'] == ram and flavor['vcpus'] == vcpus and flavor['disk'] == disk:
                 return flavor
         return None
 
-    def find_image(self, image_name="debian", version="", **kwargs):
+    def find_image(self, image_name="debian", **kwargs):
+        """
+        :param image_name: Name of the image to filter by
+        :param kwargs:
+        :return: first image object that matches the name criteria
+        """
         for image in self.cyclades.list_images(detail=True):
-            if image_name in image['name'] and version in image['name']:
+            if image_name in image['name']:
                 return image
         return None
 
     def find_project_id(self, **kwargs):
+        """
+        :param kwargs: name, state, owner and mode to filter project by
+        :return: first project_id that matches the project name
+        """
         filter = {
-            'name': kwargs.get("project_name")
+            'name': kwargs.get("project_name"),
+            'state': kwargs.get("project_state"),
+            'owner': kwargs.get("project_owner"),
+            'mode': kwargs.get("project_mode"),
         }
         return self.astakos.get_projects(**filter)[0]
 
     def create_vm(self, vm_name=None, **kwargs):
+        """
+        :param vm_name: Name of the virtual machine to create
+        :param kwargs: passed to the functions called for detail options
+        :return:
+        """
         flavor_id = self.find_flavor(**kwargs)['id']
         image_id = self.find_image(**kwargs)['id']
         project_id = self.find_project_id(**kwargs)['id']
         try:
-            print self.cyclades.create_server(name=vm_name, flavor_id=flavor_id,
-                                              image_id=image_id, project_id=project_id,
-                                              networks=[])
+            okeanos_response = self.cyclades.create_server(name=vm_name, flavor_id=flavor_id,
+                                                           image_id=image_id, project_id=project_id,
+                                                           networks=[])
         except ClientError as ex:
-            print ex
-
+            raise ex
+        return okeanos_response
 
 
 if __name__ == "__main__":
