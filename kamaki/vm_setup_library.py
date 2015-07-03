@@ -1,18 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#from __future__ import __all__
+# from __future__ import __all__
 
 from kamaki.clients import ClientError
 from kamaki.clients.utils import https
 from kamaki.cli.config import Config as KamakiConfig
+from kamaki.clients import astakos, cyclades
+import argparse
 
 # TODO: remove this and actually use ssl cert files
 https.patch_ignore_ssl()
-
-import argparse
-
-from kamaki.clients import astakos, cyclades
 
 
 class Provisioner:
@@ -110,7 +108,7 @@ class Provisioner:
         :return: the id of the network if successfull
         """
         try:
-            #create vpn with custom type and the name given as argument
+            # Create vpn with custom type and the name given as argument
             vpn = self.network_client.create_network(
                         type=self.network_client.network_types[1],
                         name=network_name)
@@ -144,6 +142,37 @@ class Provisioner:
             raise ex
         return okeanos_response
 
+    def create_private_subnet(self, net_id):
+        """
+        Creates a private subnets and connects it with this network
+        :param net_id: id of the network
+        :return: the id of the subnet if successfull
+        """
+        cidr = "192.168.0.0/24"
+        gateway_ip = "192.168.0.1"
+        try:
+            subnet = self.network_client.create_subnet(net_id, cidr,
+                                                       gateway_ip=gateway_ip,
+                                                       enable_dhcp=True)
+            return subnet['id']
+        except ClientError as ex:
+            raise ex
+        return okeanos_response
+
+    def connect_vm(self, vm_id, net_id):
+        """
+        Connects the vm with this id to the network with the net_id
+        :param vm_id: id of the vm
+        :param net_id: id of the network
+        :return: returns True if successfull
+        """
+        try:
+            port = self.network_client.create_port(network_id=net_id,
+                                                   device_id=vm_id,)
+            return True
+        except ClientError as ex:
+            raise ex
+        return okeanos_response
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Okeanos VM provisioning")
@@ -153,8 +182,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     provisioner = Provisioner(cloud_name="~okeanos", project_name=args.project_name)
 
-    #run provisioner methods
-    #provisioner.create_vm(vm_name="to mikro ubuntu sto livadi", project_name=args.project_name)
-    #net_id = provisioner.create_vpn("test")
-    #provisioner.reserve_ip()
-    #provisioner.destroy_vpn(1000000)
+    # run provisioner methods
+    # provisioner.create_vm(vm_name="to mikro ubuntu sto livadi", project_name=args.project_name)
+    # net_id = provisioner.create_vpn("test")
+    # print provisioner.create_private_subnet(net_id)
+    # provisioner.connect_vm(663972,net_id)
+    # provisioner.reserve_ip()
+    # provisioner.attach_vm_to_network(663972,net_id)
