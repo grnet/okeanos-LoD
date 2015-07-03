@@ -1,5 +1,11 @@
-from __future__ import __all__
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
+import logging
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+from kamaki.clients import astakos, cyclades
 from kamaki.clients import ClientError
 from kamaki.clients.utils import https
 from kamaki.cli.config import Config as KamakiConfig
@@ -9,22 +15,23 @@ https.patch_ignore_ssl()
 
 import argparse
 
-from kamaki.clients import astakos, cyclades
+storage_templates = ['drdb', 'ext_vlmc']
 
 
 class Provisioner:
     """
-        Provisioner is responsible to provision virtual machines for a specified
-        okeanos team
+        provisions virtual machines on ~okeanos
     """
 
-    def __init__(self, cloud_name, project_name):
-
-        self.project_name = project_name
+    def __init__(self, cloud_name):
 
         # Load .kamakirc configuration
         self.config = KamakiConfig()
-        cloud_section = self.config._sections['cloud'][cloud_name]
+        cloud_section = self.config._sections['cloud'].get(cloud_name)
+        if not cloud_section:
+            message = "Cloud '%s' was not found in you .kamakirc configuration file. " \
+                      "Currently you have availablie in your configuration these clouds: %s"
+            raise KeyError(message % (cloud_name, self.config._sections['cloud'].keys()))
 
         # Get the authentication url and token
         auth_url, auth_token = cloud_section['url'], cloud_section['token']
@@ -37,26 +44,31 @@ class Provisioner:
             cyclades.CycladesComputeClient.service_type)
         self.cyclades = cyclades.CycladesComputeClient(computeURL, auth_token)
 
-    def find_flavor(self, vcpus=1, ram=1024, disk=40, **kwargs):
+    def find_flavor(self, **kwargs):
         """
 
-        :param vcpus: Number of cpus
-        :param ram: Amount of ram megabytes
-        :param disk:  Amount of disk gigabytes
-        :param kwargs:
+        :param kwargs: should contains the keys that specify the specs
         :return: first flavor objects that matches the specs criteria
         """
+
+        # Set all the default parameters
+        kwargs.setdefault("vcpus", 1)
+        kwargs.setdefault("ram", 1024)
+        kwargs.setdefault("disk", 40)
+
         for flavor in self.cyclades.list_flavors(detail=True):
-            if flavor['ram'] == ram and flavor['vcpus'] == vcpus and flavor['disk'] == disk:
+            if all([kwargs[key] == flavor[key] \
+                    for key in set(flavor.keys()).intersection(kwargs.keys())]):
                 return flavor
         return None
 
-    def find_image(self, image_name="debian", **kwargs):
+    def find_image(self, **kwargs):
         """
         :param image_name: Name of the image to filter by
         :param kwargs:
         :return: first image object that matches the name criteria
         """
+        image_name = kwargs['image_name']
         for image in self.cyclades.list_images(detail=True):
             if image_name in image['name']:
                 return image
@@ -86,8 +98,9 @@ class Provisioner:
         project_id = self.find_project_id(**kwargs)['id']
         try:
             okeanos_response = self.cyclades.create_server(name=vm_name, flavor_id=flavor_id,
-                                                           image_id=image_id, project_id=project_id,
-                                                           networks=[])
+                                                           image_id=image_id,
+                                                           project_id=project_id,
+                                                           networks=[], personality=[])
         except ClientError as ex:
             raise ex
         return okeanos_response
@@ -96,8 +109,11 @@ class Provisioner:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Okeanos VM provisioning")
     parser.add_argument('--cloud', type=str, dest="cloud", default="lambda")
-    parser.add_argument('--project-name', type=str, dest="project_name", default="lambda.grnet.gr")
+    parser.add_argument('--project-name', type=str, dest="project_name",
+                        default="lambda.grnet.gr")
+    parser.add_argument('--name', type=str, dest='name', default="to mikro debian sto livadi")
 
     args = parser.parse_args()
-    provisioner = Provisioner(cloud_name=args.cloud, project_name=args.project_name)
-    provisioner.create_vm(vm_name="to mikro ubuntu sto livadi", project_name=args.project_name)
+
+    provisioner = Provisioner(cloud_name=args.cloud)
+    provisioner.create_vm(vm_name=args.name, project_name=args.project_name, image_name="debian")
