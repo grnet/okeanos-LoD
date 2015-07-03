@@ -107,25 +107,42 @@ class Provisioner:
         """
         Creates a virtual private network
         :param network_name: name of the network
-        :return: the id of the network if it was successfully created,
-        else returns False
+        :return: the id of the network if successfull
         """
-
-        #create vpn with custom type and the name given as argument
-        vpn = self.network_client.create_network(
-            type=self.network_client.network_types[1],
-            name=network_name)
-        if vpn != None:
+        try:
+            #create vpn with custom type and the name given as argument
+            vpn = self.network_client.create_network(
+                        type=self.network_client.network_types[1],
+                        name=network_name)
             return vpn['id']
-        return False
+        except ClientError as ex:
+            raise ex
+        return okeanos_response
 
     def destroy_vpn(self, id):
         """
         Destroy a virtual private network
         :param id: id of the network we want to destroy
+        :return: True if successfull
         """
-        self.network_client.delete_network(id)
+        try:
+            self.network_client.delete_network(id)
+            return True
+        except ClientError as ex:
+            raise ex
+        return okeanos_response
 
+    def reserve_ip(self):
+        """
+        Reserve ip
+        :return: the id of the ip if successfull
+        """
+        try:
+            ip = self.network_client.create_floatingip()
+            return ip['id']
+        except ClientError as ex:
+            raise ex
+        return okeanos_response
 
 
 if __name__ == "__main__":
@@ -138,5 +155,6 @@ if __name__ == "__main__":
 
     #run provisioner methods
     #provisioner.create_vm(vm_name="to mikro ubuntu sto livadi", project_name=args.project_name)
-    net_id = provisioner.create_vpn("test")
-    provisioner.destroy_vpn(net_id)
+    #net_id = provisioner.create_vpn("test")
+    #provisioner.reserve_ip()
+    #provisioner.destroy_vpn(1000000)
