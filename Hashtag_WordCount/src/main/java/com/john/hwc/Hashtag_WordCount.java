@@ -18,21 +18,20 @@ package com.john.hwc;
  * limitations under the License.
  */
 
+import kafka.javaapi.producer.Producer;
+import kafka.producer.KeyedMessage;
+import kafka.producer.ProducerConfig;
+import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.util.Collector;
-
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,6 +69,16 @@ public class Hashtag_WordCount {
                         .groupBy(0)
                         .sum(1);
 
+        // Write result to Kafka
+        KafkaBatch kb = new KafkaBatch("batch-output", "localhost:9092");
+        kb.initialize();
+        List<Tuple4<String, Integer, String, String>> elements = counts.collect();
+        for (Tuple4<String, Integer, String, String> e: elements) {
+            kb.write((e.toString()));
+        }
+
+
+
 
         // emit result to hdfs
         counts.writeAsText("hdfs:///user/root/output", FileSystem.WriteMode.OVERWRITE);
@@ -77,6 +86,45 @@ public class Hashtag_WordCount {
 
         // execute program
         env.execute("Hashtag WordCount");
+    }
+
+
+
+
+    public static class KafkaBatch {
+
+        private Producer<String, String> producer;
+        private Properties props;
+        private String topicId;
+        private String brokerAddr;
+        private boolean initDone = false;
+        //private SerializationSchema<IN, OUT> scheme;
+
+        public KafkaBatch(String topicId, String brokerAddr) {
+            //SerializationSchema<IN, OUT> serializationSchema) {
+            this.topicId = topicId;
+            this.brokerAddr = brokerAddr;
+            //this.scheme = serializationSchema;
+
+        }
+
+        /**
+         * Initializes the connection to Kafka.
+         */
+        public void initialize() {
+            props = new Properties();
+            props.put("metadata.broker.list", brokerAddr);
+            props.put("serializer.class", "kafka.serializer.StringEncoder");
+            props.put("request.required.acks", "1");
+            ProducerConfig config = new ProducerConfig(props);
+            producer = new Producer<String, String>(config);
+            initDone = true;
+        }
+
+        public void write(String s) {
+            producer.send(new KeyedMessage<String, String>(topicId, s));
+        }
+
     }
 
     //
