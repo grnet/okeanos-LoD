@@ -133,11 +133,11 @@ class Provisioner:
     def reserve_ip(self):
         """
         Reserve ip
-        :return: the id of the ip if successfull
+        :return: the ip object if successfull
         """
         try:
             ip = self.network_client.create_floatingip()
-            return ip['id']
+            return ip
         except ClientError as ex:
             raise ex
         return okeanos_response
@@ -168,11 +168,28 @@ class Provisioner:
         """
         try:
             port = self.network_client.create_port(network_id=net_id,
-                                                   device_id=vm_id,)
+                                                   device_id=vm_id)
             return True
         except ClientError as ex:
             raise ex
         return okeanos_response
+
+    def attach_public_ip(self, ip, vm_id):
+        """
+        Attach the public ip with this id to the vm
+        :param fnet_id: id of the floating network of the ip
+        :param vm_id: id of the vm
+        :return: returns True if successfull
+        """
+        try:
+            port = self.network_client.create_port(network_id=ip['floating_network_id'],
+                                              device_id=vm_id,
+                                              fixed_ips=[dict(ip_address=ip['floating_ip_address']), ])
+            return True
+        except ClientError as ex:
+            raise ex
+        return okeanos_response
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Okeanos VM provisioning")
@@ -187,5 +204,7 @@ if __name__ == "__main__":
     # net_id = provisioner.create_vpn("test")
     # print provisioner.create_private_subnet(net_id)
     # provisioner.connect_vm(663972,net_id)
-    # provisioner.reserve_ip()
+    # ip =  provisioner.reserve_ip()
+    # print ip['id']
+    # provisioner.attach_public_ip(ip,663972)
     # provisioner.attach_vm_to_network(663972,net_id)
