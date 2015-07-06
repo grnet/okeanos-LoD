@@ -3,14 +3,11 @@
 
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
-    
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+import os
 
 """
 This module contains the definitions of returned errors.
 """
-import os
 
 # Definitions of return value errors
 error_syntax_clustersize = -1
