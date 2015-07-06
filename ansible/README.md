@@ -66,7 +66,8 @@ $ansible-playbook -v playbooks/apache-flink/flink-install.yml
 
 ## Apache Kafka deployment
 
-Contains Ansible playbook for the deployment of Apache kafka. The playbook is split into eleven (11) tasks:
+Contains Ansible playbook for the deployment of Apache kafka. The playbook uses the apache-kafka role to install Apache Kafka on a cluster of machines. The following
+actions are performed on a single node, acting as the master of the cluster:
 - Download Apache Kafka(downloads Apache Kafka into /root).
 - Uncompress Apache Kafka(uncompresses Apache Kafka into /usr/local).
 - Create softlink for Apache Kafka(creates /usr/local/kafka softlink).
@@ -75,11 +76,28 @@ Contains Ansible playbook for the deployment of Apache kafka. The playbook is sp
 - Wait for Apache Zookeeper to become available.
 - Start Apache Kafka server(starts an Apache Kafka server).
 - Wait for Apache Kafka server to become available.
+
+The following actions are performed on a configurable number of nodes, acting as the slaves of the cluster:
+- Download Apache Kafka(downloads Apache Kafka into /root).
+- Uncompress Apache Kafka(uncompresses Apache Kafka into /usr/local).
+- Create softlink for Apache Kafka(creates /usr/local/kafka softlink).
+- Configure Apache kafka(copies pre-created Apache Kafka configuration files to /usr/local/kafka/config).
+- Start Apache Kafka server(starts an Apache Kafka server).
+- Wait for Apache Kafka server to become available.
+
+After the installation is completed, both on the master and the slaves, the following actions are performed:
 - Create Apache Kafka input topic(creates an Apache Kafka topic, named "input", to store input data).
 - Create Apache Kafka batch output topic(creates an Apache Kafka topic, named "batch-output", to store the output data of the batch job).
 - Create Apache Kafka stream output topic(creates an Apache Kafka topic, named "stream-output", to store the output data of the stream job).
 
-Currently, the playbooks are run from an external node, and deploy both master and slave nodes. In future version, they will run from the master node to deploy the slave nodes.
+The replication of each of the above topics, is equal to the number of slaves, plus 1 for the master.
+
+The inventory file should contain the following information:
+- The name of the master node(if different from "master-node", then the role's commands should be changed accordingly).
+- A variable named "kafka-ip" under the "master-node" to define the IP address that will be used for Apache Kafka traffic.
+- A variable named "id" under each slave node, defining a unique integer number for each slave.
+
+Currently, the playbook is run from an external node, and deploy both master and slave nodes. In future version, they will run from the master node to deploy the slave nodes.
 
 ### How to deploy
 
