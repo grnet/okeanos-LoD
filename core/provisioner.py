@@ -5,6 +5,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 from kamaki.clients import astakos, cyclades
 from kamaki.clients import ClientError
 from kamaki.clients.utils import https
@@ -26,6 +27,7 @@ class Provisioner:
     def __init__(self, cloud_name):
 
         # Load .kamakirc configuration
+        logger.info("Retrieving .kamakirc configuration")
         self.config = KamakiConfig()
         cloud_section = self.config._sections['cloud'].get(cloud_name)
         if not cloud_section:
@@ -36,13 +38,15 @@ class Provisioner:
         # Get the authentication url and token
         auth_url, auth_token = cloud_section['url'], cloud_section['token']
 
-        # Create the astakos client
+
+        logger.info("Initiating Astakos Client")
         self.astakos = astakos.AstakosClient(auth_url, auth_token)
 
-        # Create the cyclades client
-        computeURL = self.astakos.get_endpoint_url(
+        logger.info("Retrieving cyclades endpoint url")
+        compute_url = self.astakos.get_endpoint_url(
             cyclades.CycladesComputeClient.service_type)
-        self.cyclades = cyclades.CycladesComputeClient(computeURL, auth_token)
+        logger.info("Initiating Cyclades client")
+        self.cyclades = cyclades.CycladesComputeClient(compute_url, auth_token)
 
     def find_flavor(self, **kwargs):
         """
@@ -55,7 +59,7 @@ class Provisioner:
         kwargs.setdefault("vcpus", 1)
         kwargs.setdefault("ram", 1024)
         kwargs.setdefault("disk", 40)
-
+        logger.info("Retrieving flavor")
         for flavor in self.cyclades.list_flavors(detail=True):
             if all([kwargs[key] == flavor[key] \
                     for key in set(flavor.keys()).intersection(kwargs.keys())]):
@@ -69,6 +73,8 @@ class Provisioner:
         :return: first image object that matches the name criteria
         """
         image_name = kwargs['image_name']
+
+        logger.info("Retrieving image")
         for image in self.cyclades.list_images(detail=True):
             if image_name in image['name']:
                 return image
@@ -85,6 +91,7 @@ class Provisioner:
             'owner': kwargs.get("project_owner"),
             'mode': kwargs.get("project_mode"),
         }
+        logger.info("Retrieving project")
         return self.astakos.get_projects(**filter)[0]
 
     def create_vm(self, vm_name=None, **kwargs):
