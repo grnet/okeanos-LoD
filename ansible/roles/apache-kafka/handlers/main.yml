@@ -1,14 +1,14 @@
 ---
 - name: create topics
-  shell: /usr/local/kafka/bin/kafka-topics.sh --create --zookeeper {{ hostvars['master']['kafka-ip'] }}:2181 --replication-factor {{ groups['slaves']|count + 1 }} --partitions 1 --topic input
+  shell: /usr/local/kafka/bin/kafka-topics.sh --create --zookeeper {{ hostvars['master-node']['kafka-ip'] }}:2181 --replication-factor {{ groups['slaves']|count + 1 }} --partitions 1 --topic input
   notify:
     - create batch output topic
 
 - name: create batch output topic
-  shell: /usr/local/kafka/bin/kafka-topics.sh --create --zookeeper {{ hostvars['master']['kafka-ip'] }}:2181 --replication-factor {{ groups['slaves']|count + 1 }} --partitions 1 --topic batch-output
+  shell: /usr/local/kafka/bin/kafka-topics.sh --create --zookeeper {{ hostvars['master-node']['kafka-ip'] }}:2181 --replication-factor {{ groups['slaves']|count + 1 }} --partitions 1 --topic batch-output
   notify:
     - create stream output topic
 
 - name: create stream output topic
-  shell: /usr/local/kafka/bin/kafka-topics.sh --create --zookeeper {{ hostvars['master']['kafka-ip'] }}:2181 --replication-factor {{ groups['slaves']|count + 1 }} --partitions 1 --topic stream-output
+  shell: /usr/local/kafka/bin/kafka-topics.sh --create --zookeeper {{ hostvars['master-node']['kafka-ip'] }}:2181 --replication-factor {{ groups['slaves']|count + 1 }} --partitions 1 --topic stream-output
 

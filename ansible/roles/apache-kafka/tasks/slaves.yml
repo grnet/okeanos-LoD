@@ -10,7 +10,7 @@
       - configure-kafka
 
   - name: Configure the Apache Zookeeper host.
-    lineinfile: dest=/usr/local/kafka/config/server.properties regexp="^zookeeper.connect=localhost:2181" line="zookeeper.connect={{ hostvars['master']['kafka-ip'] }}:2181"
+    lineinfile: dest=/usr/local/kafka/config/server.properties regexp="^zookeeper.connect=localhost:2181" line="zookeeper.connect={{ hostvars['master-node']['kafka-ip'] }}:2181"
     tags:
       - configure-kafka
 
