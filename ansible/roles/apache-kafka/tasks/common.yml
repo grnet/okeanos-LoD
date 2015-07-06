@@ -1,0 +1,16 @@
+---
+  - name: Download Apache Kafka.
+    get_url: url=http://mirrors.myaegean.gr/apache/kafka/0.8.2.1/kafka_2.10-0.8.2.1.tgz dest=/root/kafka_2.10-0.8.2.1.tgz
+    tags:
+      - download
+
+  - name: Uncompress Apache Kafka.
+    unarchive: src=/root/kafka_2.10-0.8.2.1.tgz dest=/usr/local copy=no
+    tags:
+      - uncompress
+
+  - name: Create softlink for Apache Kafka.
+    file: src=/usr/local/kafka_2.10-0.8.2.1 dest=/usr/local/kafka state=link
+    tags:
+      - uncompress
+

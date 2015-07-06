@@ -1,0 +1,16 @@
+---
+  - name: Include common tasks.
+    include: common.yml
+  
+  - name: Include tasks for master.
+    include: master.yml
+    when: "'master' in group_names"
+    tags:
+      - master-install
+  
+  - name: Include tasks for slaves.
+    include: slaves.yml
+    when: "'slaves' in group_names"
+    tags:
+      - slaves-install
+  
