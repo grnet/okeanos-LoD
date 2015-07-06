@@ -384,7 +384,7 @@ if __name__ == "__main__":
                         default="lambda.grnet.gr")
     parser.add_argument('--name', type=str, dest='name', default="to mikro debian sto livadi")
 
-    parser.add_argument('--cluster_size', type=int, dest='cluster_size', default=100)
+    parser.add_argument('--cluster_size', type=int, dest='cluster_size', default=3)
     parser.add_argument('--cpu_request', type=int, dest='cpu_request', default=3)
     parser.add_argument('--ram_request', type=int, dest='ram_request', default=4000)  # in MB
     parser.add_argument('--disk_request', type=int, dest='disk_request', default=400)  # in GB
