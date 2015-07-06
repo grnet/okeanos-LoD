@@ -339,21 +339,43 @@ class Provisioner:
         """
         project_id = self.find_project_id(**kwargs)['id']
         quotas = self.get_quotas()
-        cluster_size = kwargs.get("cluster_size")
         # Check for VMs
-        if self.check_cluster_size_quotas(quotas, project_id, cluster_size):
-            # Check for CPUs
-            if self.check_cpu_quotas(quotas, project_id, kwargs.get("cpu_request")):
-                # Check for RAM
-                if self.check_ram_quotas(quotas, project_id, kwargs.get("ram_request")):
-                    # Check for Disk space
-                    if self.check_disk_quotas(quotas, project_id, kwargs.get("disk_request")):
-                        # Check for public IPs
-                        if self.check_ip_quotas(quotas, project_id, kwargs.get("ip_request")):
-                            # Check for networks
-                            if self.check_network_quotas(quotas, project_id, kwargs.get("network_request")):
-                                return True
-        return False
+        try:
+            self.check_cluster_size_quotas(quotas, project_id, kwargs.get("cluster_size"))
+        except ClientError as ex:
+            raise ex
+            return False
+        # Check for CPUs
+        try:
+            self.check_cpu_quotas(quotas, project_id, kwargs.get("cpu_request"))
+        except ClientError as ex:
+            raise ex
+            return False
+        # Check for RAM
+        try:
+            self.check_ram_quotas(quotas, project_id, kwargs.get("ram_request"))
+        except ClientError as ex:
+            raise ex
+            return False
+        # Check for Disk space
+        try:
+            self.check_disk_quotas(quotas, project_id, kwargs.get("disk_request"))
+        except ClientError as ex:
+            raise ex
+            return False
+        # Check for public IPs
+        try:
+            self.check_ip_quotas(quotas, project_id, kwargs.get("ip_request"))
+        except ClientError as ex:
+            raise ex
+            return False
+        # Check for networks
+        try:
+            self.check_network_quotas(quotas, project_id, kwargs.get("network_request"))
+        except ClientError as ex:
+            raise ex
+            return False
+        return True
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Okeanos VM provisioning")
