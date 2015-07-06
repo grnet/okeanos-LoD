@@ -5,6 +5,7 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 import logging
 import argparse
+from cluster_error_constants import *
 from kamaki.clients import astakos, cyclades
 from kamaki.clients import ClientError
 from kamaki.clients.utils import https
@@ -361,7 +362,7 @@ if __name__ == "__main__":
                         default="lambda.grnet.gr")
     parser.add_argument('--name', type=str, dest='name', default="to mikro debian sto livadi")
 
-    parser.add_argument('--cluster_size', type=int, dest='cluster_size', default=3)
+    parser.add_argument('--cluster_size', type=int, dest='cluster_size', default=100)
     parser.add_argument('--cpu_request', type=int, dest='cpu_request', default=3)
     parser.add_argument('--ram_request', type=int, dest='ram_request', default=4000)  # in MB
     parser.add_argument('--disk_request', type=int, dest='disk_request', default=400)  # in GB
@@ -370,7 +371,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # run provisioner methods
+    # Run Provisioner methods
     provisioner = Provisioner(cloud_name=args.cloud)
     print(provisioner.check_all_resources(cluster_size=args.cluster_size,
                                           cpu_request=args.cpu_request,
