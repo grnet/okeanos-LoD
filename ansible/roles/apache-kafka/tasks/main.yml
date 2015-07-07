@@ -1,6 +1,8 @@
 ---
   - name: Include common tasks.
-    include: common.yml
+    include: download.yml
+    tags:
+      - download
   
   - name: Include tasks for master.
     include: master.yml
