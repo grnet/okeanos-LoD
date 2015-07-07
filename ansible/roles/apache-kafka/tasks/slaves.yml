@@ -1,16 +1,6 @@
 ---
   - name: Configure Apache kafka.
-    copy: src=usr/local/kafka/config/server.properties dest=/usr/local/kafka/config/server.properties owner=root group=root mode=0644
-    tags:
-      - configure-kafka
-
-  - name: Assign a unique id to this Apache Kafka server.
-    lineinfile: dest=/usr/local/kafka/config/server.properties regexp="^broker.id=0" line="broker.id={{ id }}"
-    tags:
-      - configure-kafka
-
-  - name: Configure the Apache Zookeeper host.
-    lineinfile: dest=/usr/local/kafka/config/server.properties regexp="^zookeeper.connect=localhost:2181" line="zookeeper.connect={{ hostvars['master-node']['master_node_ip'] }}:2181"
+    template: src=usr/local/kafka/config/server.properties.j2 dest=/usr/local/kafka/config/server.properties owner=root group=root mode=0644
     tags:
       - configure-kafka
 
