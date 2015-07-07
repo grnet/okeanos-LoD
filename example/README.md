@@ -45,7 +45,7 @@ Contains a java class (flink batch job) responsible for counting the hashtags of
 
 Contains a java class (flink stream job) responsible for counting the hashtags of random tweets. The input tweets are read from Kafka. The wordcount result is stored into the local filesystem.
 
-### Things to do before running
+### Things to do before running the stream process demo
 
 - Replace the String zookeeper with your zookeeper hostname.
 - Build the project using "mvn clean package" on the project root (maven is required).
