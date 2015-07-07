@@ -5,7 +5,6 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 from kamaki.clients import astakos, cyclades
 from kamaki.clients import ClientError
 from kamaki.clients.utils import https
@@ -37,7 +36,6 @@ class Provisioner:
 
         # Get the authentication url and token
         auth_url, auth_token = cloud_section['url'], cloud_section['token']
-
 
         logger.info("Initiating Astakos Client")
         self.astakos = astakos.AstakosClient(auth_url, auth_token)
