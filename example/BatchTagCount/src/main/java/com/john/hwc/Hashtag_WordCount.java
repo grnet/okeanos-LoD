@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
  * <li>write and use user-defined functio±ns.
  * </ul>
  *
+ * @author Ioannis Tsafaras
  */
 public class Hashtag_WordCount {
 
@@ -56,11 +57,14 @@ public class Hashtag_WordCount {
 
     public static void main(String[] args) throws Exception {
 
+        String inputDir = "hdfs:///user/root/input", outputDir = "hdfs:///user/root/output",
+                outputTopic = "batch-output", kafkaBroker = "localhost:9092";
+
         // set up the execution environment
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // get input data
-        DataSet<String> text = env.readTextFile("hdfs:///user/root/input");
+        DataSet<String> text = env.readTextFile(inputDir);
 
         DataSet<Tuple4<String, Integer, String, String>> counts =
                 // split up the lines in pairs (2-tuples) containing: (word,1)
@@ -70,7 +74,7 @@ public class Hashtag_WordCount {
                         .sum(1);
 
         // Write result to Kafka
-        KafkaBatch kb = new KafkaBatch("batch-output", "localhost:9092");
+        KafkaBatch kb = new KafkaBatch(outputTopic, kafkaBroker);
         kb.initialize();
         List<Tuple4<String, Integer, String, String>> elements = counts.collect();
         for (Tuple4<String, Integer, String, String> e: elements) {
@@ -81,7 +85,7 @@ public class Hashtag_WordCount {
 
 
         // emit result to hdfs
-        counts.writeAsText("hdfs:///user/root/output", FileSystem.WriteMode.OVERWRITE);
+        counts.writeAsText(outputDir, FileSystem.WriteMode.OVERWRITE);
         //timestamp.writeAsText("hdfs:///user/root/output", FileSystem.WriteMode.OVERWRITE);
 
         // execute program

@@ -41,5 +41,10 @@
             <version>0.8.1</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-connectors</artifactId>
+            <version>0.8.1</version>
+        </dependency>
     </dependencies>
 </project>
