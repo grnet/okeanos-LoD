@@ -1,0 +1,12 @@
+---
+# Uncomment the following line and fill the IP address of the master node.
+# master_node_ip:
+
+## Apache Flink variables.
+jobmanager_heap_mb: 256
+taskmanager_heap_mb: 512
+taskmanager_numberOfTaskSlots: 2
+parallelization_degree_default: 2
+number_of_taskmanagers: 2
+ram_per_task_manager: 768
+
