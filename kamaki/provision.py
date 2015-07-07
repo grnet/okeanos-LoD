@@ -33,27 +33,27 @@ class Provisioner:
         cloud_section = self.config._sections['cloud'].get(cloud_name)
         if not cloud_section:
             message = "Cloud '%s' was not found in you .kamakirc configuration file. " \
-                      "Currently you have availablie in your configuration these clouds: %s"
+                      "Currently you have available in your configuration these clouds: %s"
             raise KeyError(message % (cloud_name, self.config._sections['cloud'].keys()))
 
         # Get the authentication url and token
-        auth_url, auth_token = cloud_section['url'], cloud_section['token']
+        self.auth_url, self.auth_token = cloud_section['url'], cloud_section['token']
 
         # Create the astakos client
-        self.astakos = astakos.AstakosClient(auth_url, auth_token)
+        self.astakos = astakos.AstakosClient(self.auth_url, self.auth_token)
 
         # Create the cyclades client
         computeURL = self.astakos.get_endpoint_url(
             cyclades.CycladesComputeClient.service_type)
-        self.cyclades = cyclades.CycladesComputeClient(computeURL, auth_token)
+        self.cyclades = cyclades.CycladesComputeClient(computeURL, self.auth_token)
 
         # Create the identity_client
-        self.identity_client = astakos.AstakosClient(auth_url, auth_token)
+        self.identity_client = astakos.AstakosClient(self.auth_url, self.auth_token)
 
         # Create the network client
         networkURL = self.identity_client.get_endpoint_url(
             cyclades.CycladesNetworkClient.service_type)
-        self.network_client = cyclades.CycladesNetworkClient(networkURL, auth_token)
+        self.network_client = cyclades.CycladesNetworkClient(networkURL, self.auth_token)
 
         # Constants
         self.Bytes_to_GB = 1024*1024*1024
@@ -229,8 +229,7 @@ class Provisioner:
         usage_vm = quotas[project_id]['cyclades.vm']['usage']
         available_vm = limit_vm - usage_vm - pending_vm
         if available_vm < cluster_size:
-            msg = 'Cyclades VMs out of limit'
-            raise ClientError(msg, error_quotas_cluster_size)
+            return False
         else:
             return True
 
@@ -248,8 +247,7 @@ class Provisioner:
         usage_cpu = quotas[project_id]['cyclades.cpu']['usage']
         available_cpu = limit_cpu - usage_cpu - pending_cpu
         if available_cpu < cpu_request:
-            msg = 'Cyclades cpu out of limit'
-            raise ClientError(msg, error_quotas_cpu)
+            return False
         else:
             return True
 
@@ -268,8 +266,7 @@ class Provisioner:
         usage_ram = quotas[project_id]['cyclades.ram']['usage']
         available_ram = (limit_ram - usage_ram - pending_ram) / self.Bytes_to_MB
         if available_ram < ram_request:
-            msg = 'Cyclades ram out of limit'
-            raise ClientError(msg, error_quotas_ram)
+            return False
         else:
             return True
 
@@ -288,8 +285,7 @@ class Provisioner:
         usage_cd = quotas[project_id]['cyclades.disk']['usage']
         available_cyclades_disk_GB = (limit_cd - usage_cd - pending_cd) / self.Bytes_to_GB
         if available_cyclades_disk_GB < disk_request:
-            msg = 'Cyclades disk out of limit'
-            raise ClientError(msg, error_quotas_cyclades_disk)
+            return False
         else:
             return True
 
@@ -310,8 +306,7 @@ class Provisioner:
             if d['instance_id'] is None and d['port_id'] is None:
                 available_ips += 1
         if available_ips < ip_request:
-            msg = 'Public IPs out of limit'
-            raise ClientError(msg, error_quotas_cyclades_disk)
+            return False
         else:
             return True
 
@@ -321,13 +316,12 @@ class Provisioner:
         Subtracts the number of networks used and pending from the max allowed
         number of networks
         """
-        pending_net = quotas[project_id]['cyclades.network.private']['pending']
-        limit_net = quotas[project_id]['cyclades.network.private']['limit']
-        usage_net = quotas[project_id]['cyclades.network.private']['usage']
+        pending_net = quotas[project_id]['cyclades.network.private']['project_pending']
+        limit_net = quotas[project_id]['cyclades.network.private']['project_limit']
+        usage_net = quotas[project_id]['cyclades.network.private']['project_usage']
         available_networks = limit_net - usage_net - pending_net
-        if available_networks < 1:
-            msg = 'Private Network out of limit'
-            raise ClientError(msg, error_quotas_cyclades_disk)
+        if available_networks < network_request:
+            return False
         else:
             return True
 
@@ -340,42 +334,36 @@ class Provisioner:
         project_id = self.find_project_id(**kwargs)['id']
         quotas = self.get_quotas()
         # Check for VMs
-        try:
-            self.check_cluster_size_quotas(quotas, project_id, kwargs.get("cluster_size"))
-        except ClientError as ex:
-            raise ex
-            return False
-        # Check for CPUs
-        try:
-            self.check_cpu_quotas(quotas, project_id, kwargs.get("cpu_request"))
-        except ClientError as ex:
-            raise ex
-            return False
-        # Check for RAM
-        try:
-            self.check_ram_quotas(quotas, project_id, kwargs.get("ram_request"))
-        except ClientError as ex:
-            raise ex
-            return False
-        # Check for Disk space
-        try:
-            self.check_disk_quotas(quotas, project_id, kwargs.get("disk_request"))
-        except ClientError as ex:
-            raise ex
-            return False
-        # Check for public IPs
-        try:
-            self.check_ip_quotas(quotas, project_id, kwargs.get("ip_request"))
-        except ClientError as ex:
-            raise ex
-            return False
-        # Check for networks
-        try:
-            self.check_network_quotas(quotas, project_id, kwargs.get("network_request"))
-        except ClientError as ex:
-            raise ex
-            return False
-        return True
+        if self.check_cluster_size_quotas(quotas, project_id, kwargs.get("cluster_size")):
+            # Check for CPUs
+            if self.check_cpu_quotas(quotas, project_id, kwargs.get("cpu_request")):
+                # Check for RAM
+                if self.check_ram_quotas(quotas, project_id, kwargs.get("ram_request")):
+                    # Check for Disk space
+                    if self.check_disk_quotas(quotas, project_id, kwargs.get("disk_request")):
+                        # Check for public IPs
+                        if self.check_ip_quotas(quotas, project_id, kwargs.get("ip_request")):
+                            # Check for networks
+                            if self.check_network_quotas(quotas, project_id, kwargs.get("network_request")):
+                                return True
+                            else:
+                                msg = 'Private Network out of limit'
+                                raise ClientError(msg, error_quotas_cyclades_disk)
+                        else:
+                            msg = 'Public IPs out of limit'
+                            raise ClientError(msg, error_quotas_cyclades_disk)
+                    else:
+                        msg = 'Cyclades disk out of limit'
+                        raise ClientError(msg, error_quotas_cyclades_disk)
+                else:
+                    msg = 'Cyclades ram out of limit'
+                    raise ClientError(msg, error_quotas_ram)
+            else:
+                msg = 'Cyclades cpu out of limit'
+                raise ClientError(msg, error_quotas_cpu)
+        else:
+            msg = 'Cyclades VMs out of limit'
+            raise ClientError(msg, error_quotas_cluster_size)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Okeanos VM provisioning")
