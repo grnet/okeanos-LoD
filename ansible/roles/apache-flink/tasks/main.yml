@@ -1,26 +1,26 @@
 ---
   - name: Download Apache Flink, Yarn version.
-    get_url: url=http://mirrors.myaegean.gr/apache/flink/flink-0.9.0/flink-0.9.0-bin-hadoop27.tgz dest=/root/flink-0.9.0-bin-hadoop27.tgz
+    get_url: url="{{ mirror_url }}/flink-{{ version }}/flink-{{ version }}-{{ version_for }}.tgz" dest="{{ download_path }}/flink-{{ version }}-{{ version_for }}.tgz"
     tags:
       - download
 
   - name: Uncompress Apache Flink.
-    unarchive: src=/root/flink-0.9.0-bin-hadoop27.tgz dest=/usr/local copy=no
+    unarchive: src="{{ download_path }}/flink-{{ version }}-{{ version_for }}.tgz" dest="{{ installation_path }}" copy=no
     tags:
       - uncompress
 
   - name: Create softlink for Apache Flink.
-    file: src=/usr/local/flink-0.9.0 dest=/usr/local/flink state=link
+    file: src="{{ installation_path }}/flink-{{ version }}" dest="{{ installation_path }}/flink" state=link
     tags:
       - uncompress
 
   - name: Configure Apache Flink.
-    template: src=usr/local/flink/conf/flink-conf.j2 dest=/usr/local/flink/conf/flink-conf.yaml owner=root group=root mode=0644
+    template: src=flink-conf.j2 dest="{{ installation_path }}/flink/conf/flink-conf.yaml" owner=root group=root mode=0644
     tags:
       - configure
 
   - name: Start Apache Flink.
-    shell: /usr/local/flink/bin/yarn-session.sh -n {{ number_of_taskmanagers }} -tm {{ ram_per_task_manager }}
+    shell: "{{ installation_path }}/flink/bin/yarn-session.sh -n {{ number_of_taskmanagers }} -tm {{ ram_per_task_manager }}"
     async: 31536000 # Stay alive for a year(1 year = 31536000 seconds).
     poll: 0
     tags:
