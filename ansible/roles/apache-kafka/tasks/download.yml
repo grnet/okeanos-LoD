@@ -1,16 +1,10 @@
 ---
   - name: Download Apache Kafka.
     get_url: url="{{ mirror_url }}/{{ version }}/kafka_{{ scala_version }}-{{ version }}.tgz" dest="{{ download_path }}/kafka_{{ scala_version }}-{{ version }}.tgz"
-    tags:
-      - download
 
   - name: Uncompress Apache Kafka.
     unarchive: src="{{ download_path }}/kafka_{{ scala_version }}-{{ version }}.tgz" dest="{{ installation_path }}" copy=no
-    tags:
-      - download
 
   - name: Create softlink for Apache Kafka.
     file: src="{{ installation_path }}/kafka_{{ scala_version }}-{{ version }}" dest="{{ installation_path }}/kafka" state=link
-    tags:
-      - download
 
