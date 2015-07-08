@@ -1,0 +1,7 @@
+---
+mirror_url: "http://mirrors.myaegean.gr/apache/kafka"
+scala_version: "2.10"
+version: "0.8.2.1"
+download_path: "/root"
+installation_path: "/usr/local"
+

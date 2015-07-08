@@ -1,11 +1,11 @@
 ---
   - name: Configure Apache kafka.
-    copy: src=usr/local/kafka/config/server.properties dest=/usr/local/kafka/config/server.properties owner=root group=root mode=0644
+    copy: src=server.properties dest="{{ installation_path }}/kafka/config/server.properties" owner=root group=root mode=0644
     tags:
       - configure-kafka
 
   - name: Start Apache Zookeeper server.
-    shell: /usr/local/kafka/bin/zookeeper-server-start.sh /usr/local/kafka/config/zookeeper.properties
+    shell: "{{ installation_path }}/kafka/bin/zookeeper-server-start.sh {{ installation_path }}/kafka/config/zookeeper.properties"
     async: 31536000 # Stay alive for a year(1 year = 31536000 seconds).
     poll: 0
     tags:
@@ -17,7 +17,7 @@
       - start-zookeeper
 
   - name: Start Apache Kafka server.
-    shell: /usr/local/kafka/bin/kafka-server-start.sh /usr/local/kafka/config/server.properties
+    shell: "{{ installation_path }}/kafka/bin/kafka-server-start.sh {{ installation_path }}/kafka/config/server.properties"
     async: 31536000 # Stay alive for a year(1 year = 31536000 seconds).
     poll: 0
     tags:
