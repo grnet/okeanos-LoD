@@ -1,4 +1,9 @@
 ---
+  - name: Download and install Apache kafka.
+    include: download.yml
+    tags:
+      - download
+
   - name: Configure Apache kafka.
     template: src=server.properties.j2 dest="{{ installation_path }}/kafka/config/server.properties" owner=root group=root mode=0644
     tags:

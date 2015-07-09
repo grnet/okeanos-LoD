@@ -1,9 +1,4 @@
 ---
-  - name: Include common tasks.
-    include: download.yml
-    tags:
-      - download
-  
   - name: Include tasks for master.
     include: master.yml
     when: "'master' in group_names"
