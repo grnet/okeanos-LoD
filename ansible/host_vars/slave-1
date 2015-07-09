@@ -1,3 +1,5 @@
+internal_ip: "192.168.0.2"
+
 ## Apache Kafka variables.
 id: 1
 
