@@ -1,0 +1,22 @@
+---
+
+
+- hosts: masters
+  user: root
+  tasks:
+  - name: Touch master file
+    file: path=/root/master state=touch mode="u=rw,g=r,o=r"
+    tags: touch
+  - name: Remove master file
+    file: path=/root/master state=absent
+    tags: rm
+
+- hosts: slaves
+  user: root
+  tasks:
+  - name: Touch slave file
+    file: path=/root/slave state=touch mode="u=rw,g=r,o=r"
+    tags: touch
+  - name: Remove slave file
+    file: path=/root/slave state=absent
+    tags: rm
