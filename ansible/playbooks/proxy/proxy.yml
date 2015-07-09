@@ -1,0 +1,7 @@
+---
+
+  - hosts: master
+    user: root
+    roles:
+      - ../roles/proxy
+

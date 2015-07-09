@@ -1,0 +1,7 @@
+---
+
+  - name: Include tasks for master.
+    include: master.yml
+    tags:
+     - master-install
+
