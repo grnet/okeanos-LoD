@@ -5,6 +5,14 @@
 
 - Install python on every node.
 - Add the public key of the machine running the playbooks to all the nodes.
+- Create a private network among the machines.
+- Modify ansible/hosts file to include the master-node and all the slave nodes.
+- Modify ansible/host_vars/master-node file. Concretely, change the internal_ip variable.
+- For each slave in ansible/hosts, create a file in ansible/host_vars (the name of the slave in ansible/hosts should be the name of the file in ansible/host_vars). Inside
+the file, define the internal_ip variable and the id variable. Each slave should have a unique id.
+- Make sure that the firewall of the master-node is off.
+- Make sure that the values in vars/main.yml in each role, are correctly defined. For example,
+if you have 2 slaves, you should create, at most, 2 TaskManagers in flink and not 3.
 
 
 ## Prerequisites
