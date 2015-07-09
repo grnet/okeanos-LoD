@@ -40,8 +40,15 @@ class MockAstakos():
                       'astakos.pending_app':
                           {'project_limit': 0, 'project_pending': 0, 'project_usage': 0, 'usage': 0, 'limit': 0, 'pending': 0}} }
 
+class MockCycladesNetClient():
+    """ support class for faking CycladesNetworkClient.list_floatingips """
+
+    def list_floatingips(self):
+        return [{'instance_id': '604863', 'port_id': '1743733'}, {'instance_id': None, 'port_id': None},
+                {'instance_id': '615302', 'port_id': '1773954'}]
+
 # replace unmanaged calls with fakes
-#@patch('provision.Cluster.create_vpn', mock_create_vpn)
+@patch('provision.Cluster.create_vpn', mock_create_vpn)
 class TestCreateCluster(TestCase):
     """ Test cases with separate un-managed resources mocked. """
     # initialize objects common to all tests in this test case#

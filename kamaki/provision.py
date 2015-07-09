@@ -59,6 +59,39 @@ class Provisioner:
         self.Bytes_to_GB = 1024*1024*1024
         self.Bytes_to_MB = 1024*1024
 
+    def create_lambda_cluster(self, vm_name, **kwargs):
+        vcpus = kwargs['slaves'] * kwargs['vcpus_slave'] + kwargs['vcpus_master']
+        ram = kwargs['slaves'] * kwargs['ram_slave'] + kwargs['ram_master']
+        disk = kwargs['slaves'] * kwargs['disk_slave'] + kwargs['disk_master']
+        response = self.check_all_resources(cluster_size=kwargs['cluster_size'],
+                                              vcpus=vcpus,
+                                              ram=ram,
+                                              disk=disk,
+                                              ip_request=kwargs['ip_request'],
+                                              network_request=kwargs['network_request'],
+                                              project_name=kwargs['project_name'])
+        if response:
+            # Create master
+            master = self.create_vm(vm_name=vm_name, vcpus=kwargs['vcpus_master'], ram=kwargs['ram_master'], disk=kwargs['disk_master'], **kwargs)
+            ip = self.reserve_ip()
+            self.attach_public_ip(ip, master['id'])
+
+            # Create private network for cluster
+            vpn = self.create_vpn('lambda-vpn')
+            self.create_private_subnet(vpn['id'])
+
+            # Connect master to vpn
+            self.connect_vm(master['id'], vpn['id'])
+
+            # Create slaves
+            slaves = list()
+            for i in range(kwargs['slaves']):
+                slave_name = 'lambda-node' + str(i+1)
+                slave = self.create_vm(vm_name=slave_name, vcpus=kwargs['vcpus_slave'], ram=kwargs['ram_slave'], disk=kwargs['disk_slave'], **kwargs)
+                self.connect_vm(slave['id'], vpn['id'])
+                slaves.append(slave)
+
+
     def find_flavor(self, **kwargs):
         """
         :param kwargs: should contains the keys that specify the specs
@@ -233,58 +266,58 @@ class Provisioner:
         else:
             return True
 
-    def check_cpu_quotas(self, quotas, project_id, cpu_request):
+    def check_cpu_quotas(self, quotas, project_id, vcpus):
         """
         Checks if the user quota is enough to create the requested number
         of VMs.
         :param quotas: quotas object retrieved by the AstakosClient.
         :param project_id: id of the project.
-        :param cpu_request: number of CPUs we request.
+        :param vcpus: number of CPUs we request.
         :return:True if there are enough CPUs for that request.
         """
         pending_cpu = quotas[project_id]['cyclades.cpu']['pending']
         limit_cpu = quotas[project_id]['cyclades.cpu']['limit']
         usage_cpu = quotas[project_id]['cyclades.cpu']['usage']
         available_cpu = limit_cpu - usage_cpu - pending_cpu
-        if available_cpu < cpu_request:
+        if available_cpu < vcpus:
             return False
         else:
             return True
 
-    def check_ram_quotas(self, quotas, project_id, ram_request):
+    def check_ram_quotas(self, quotas, project_id, ram):
         """
         Checks if the user quota is enough to bind the requested ram resources.
         Subtracts the number of ram used and pending from the max allowed
         number of ram.
         :param quotas: quotas object retrieved by the AstakosClient.
         :param project_id: id of the project.
-        :param ram_request: amount of RAM we request in MBs.
+        :param ram: amount of RAM we request in MBs.
         :return:True if there is enough available RAM for that request.
         """
         pending_ram = quotas[project_id]['cyclades.ram']['pending']
         limit_ram = quotas[project_id]['cyclades.ram']['limit']
         usage_ram = quotas[project_id]['cyclades.ram']['usage']
         available_ram = (limit_ram - usage_ram - pending_ram) / self.Bytes_to_MB
-        if available_ram < ram_request:
+        if available_ram < ram:
             return False
         else:
             return True
 
-    def check_disk_quotas(self, quotas, project_id, disk_request):
+    def check_disk_quotas(self, quotas, project_id, disk):
         """
         Checks if the requested disk resources are available for the user.
         Subtracts the number of disk used and pending from the max allowed
         disk size.
         :param quotas: quotas object retrieved by the AstakosClient.
         :param project_id: id of the project.
-        :param disk_request: amount of Disk space we request in GBs.
+        :param disk: amount of Disk space we request in GBs.
         :return:True if there is enough available Disk space for that request.
         """
         pending_cd = quotas[project_id]['cyclades.ram']['pending']
         limit_cd = quotas[project_id]['cyclades.disk']['limit']
         usage_cd = quotas[project_id]['cyclades.disk']['usage']
         available_cyclades_disk_GB = (limit_cd - usage_cd - pending_cd) / self.Bytes_to_GB
-        if available_cyclades_disk_GB < disk_request:
+        if available_cyclades_disk_GB < disk:
             return False
         else:
             return True
@@ -336,11 +369,11 @@ class Provisioner:
         # Check for VMs
         if self.check_cluster_size_quotas(quotas, project_id, kwargs.get("cluster_size")):
             # Check for CPUs
-            if self.check_cpu_quotas(quotas, project_id, kwargs.get("cpu_request")):
+            if self.check_cpu_quotas(quotas, project_id, kwargs.get("vcpus")):
                 # Check for RAM
-                if self.check_ram_quotas(quotas, project_id, kwargs.get("ram_request")):
+                if self.check_ram_quotas(quotas, project_id, kwargs.get("ram")):
                     # Check for Disk space
-                    if self.check_disk_quotas(quotas, project_id, kwargs.get("disk_request")):
+                    if self.check_disk_quotas(quotas, project_id, kwargs.get("disk")):
                         # Check for public IPs
                         if self.check_ip_quotas(quotas, project_id, kwargs.get("ip_request")):
                             # Check for networks
@@ -372,24 +405,49 @@ if __name__ == "__main__":
                         default="lambda.grnet.gr")
     parser.add_argument('--name', type=str, dest='name', default="to mikro debian sto livadi")
 
-    parser.add_argument('--cluster_size', type=int, dest='cluster_size', default=3)
-    parser.add_argument('--cpu_request', type=int, dest='cpu_request', default=3)
-    parser.add_argument('--ram_request', type=int, dest='ram_request', default=4000)  # in MB
-    parser.add_argument('--disk_request', type=int, dest='disk_request', default=400)  # in GB
+    parser.add_argument('--slaves', type=int, dest='slaves', default=1)
+    parser.add_argument('--vcpus_master', type=int, dest='vcpus_master', default=4)
+    parser.add_argument('--vcpus_slave', type=int, dest='vcpus_slave', default=4)
+    parser.add_argument('--ram_master', type=int, dest='ram_master', default=4096)  # in MB
+    parser.add_argument('--ram_slave', type=int, dest='ram_slave', default=4096)  # in MB
+    parser.add_argument('--disk_master', type=int, dest='disk_master', default=40)  # in GB
+    parser.add_argument('--disk_slave', type=int, dest='disk_slave', default=40)  # in GB
     parser.add_argument('--ip_request', type=int, dest='ip_request', default=1)
     parser.add_argument('--network_request', type=int, dest='network_request', default=1)
+    parser.add_argument('--image_name', type=str, dest='image_name', default="debian")
+    parser.add_argument('--cluster_size', type=int, dest='cluster_size', default=2)
 
     args = parser.parse_args()
 
     # Run Provisioner methods
     provisioner = Provisioner(cloud_name=args.cloud)
-    print(provisioner.check_all_resources(cluster_size=args.cluster_size,
-                                          cpu_request=args.cpu_request,
-                                          ram_request=args.ram_request,
-                                          disk_request=args.disk_request,
+    print(provisioner.check_all_resources(slaves=args.slaves,
+                                          image_name=args.image_name,
+                                          cluster_size=args.cluster_size,
+                                          vcpus_master=args.vcpus_master,
+                                          vcpus_slave=args.vcpus_slave,
+                                          ram_master=args.ram_master,
+                                          ram_slave=args.ram_slave,
+                                          disk_master=args.disk_master,
+                                          disk_slave=args.disk_slave,
                                           ip_request=args.ip_request,
                                           network_request=args.network_request,
                                           project_name=args.project_name))
+    provisioner.create_lambda_cluster(vm_name="test" , slaves=args.slaves,
+                                          image_name=args.image_name,
+                                          cluster_size=args.cluster_size,
+                                          vcpus_master=args.vcpus_master,
+                                          vcpus_slave=args.vcpus_slave,
+                                          ram_master=args.ram_master,
+                                          ram_slave=args.ram_slave,
+                                          disk_master=args.disk_master,
+                                          disk_slave=args.disk_slave,
+                                          ip_request=args.ip_request,
+                                          network_request=args.network_request,
+                                          project_name=args.project_name)
+
+    # for flavor in provisioner.cyclades.list_flavors(detail=True):
+        # print(flavor)
     # provisioner.get_quotas(project_name=args.project_name)
     # provisioner.create_vm(vm_name=args.name, project_name=args.project_name, image_name="debian")
     # provisioner.create_vm(vm_name="to mikro ubuntu sto livadi", project_name=args.project_name)
