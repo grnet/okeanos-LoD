@@ -121,4 +121,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     provisioner = Provisioner(cloud_name=args.cloud)
-    provisioner.create_vm(vm_name=args.name, project_name=args.project_name, image_name="debian")
+    print(provisioner.create_vm(vm_name=args.name, project_name=args.project_name,
+                            image_name="debian"))
