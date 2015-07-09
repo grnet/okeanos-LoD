@@ -1,0 +1,7 @@
+---
+  - name: Fetch id_rsa.pub file from master.
+    fetch: src=/root/.ssh/id_rsa.pub dest=/tmp/fetched/ flat=yes
+
+  - name: Set up ssh config.
+    copy: src="ssh-config" dest="/root/.ssh/config" owner=root group=root mode=664
+

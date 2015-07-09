@@ -1,0 +1,17 @@
+---
+  - name: Include common tasks.
+    include: common-1.yml
+    tags:
+      - common-1
+
+  - name: Include tasks for master.
+    include: master.yml
+    when: "'master' in group_names"
+    tags:
+      - master
+
+  - name: Include more common tasks.
+    include: common-2.yml
+    tags:
+      - common-2
+

@@ -1,5 +1,0 @@
----
-# Install python
-- name: install python
-  tags: install_scripts
-  apt: name=python state=latest install_recommends=no update_cache=yes

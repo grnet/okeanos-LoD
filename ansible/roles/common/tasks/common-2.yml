@@ -1,0 +1,4 @@
+---
+  - name: Distribute ssh key to all nodes.
+    authorized_key: user=root key="{{ lookup('file', '/tmp/fetched/id_rsa.pub') }}" 
+

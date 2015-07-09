@@ -1,7 +1,7 @@
 127.0.0.1       localhost
-192.168.0.3     snf-661306
-192.168.0.2     snf-661303
-192.168.0.4     snf-661304
+{{ hostvars["master-node"]["internal_ip"] }} master-node
+{{ hostvars["slave-1"]["internal_ip"] }}     slave-1
+{{ hostvars["slave-2"]["internal_ip"] }}     slave-2
 
 # The following lines are desirable for IPv6 capable hosts
 ::1     localhost ip6-localhost ip6-loopback

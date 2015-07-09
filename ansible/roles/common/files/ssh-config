@@ -1,0 +1,12 @@
+Host master-node
+  StrictHostKeyChecking no
+
+Host slave-1
+  StrictHostKeyChecking no
+
+Host slave-2
+  StrictHostKeyChecking no
+
+Host 0.0.0.0
+  StrictHostKeyChecking no
+
