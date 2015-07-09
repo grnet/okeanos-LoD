@@ -124,6 +124,23 @@ test_projects = [{u'creation_date': u'2015-06-09T09:46:44.327826+00:00',
                   u'state': u'active',
                   u'system_project': False}]
 
+test_quotas = { '6ff62e8e-0ce9-41f7-ad99-13a18ecada5f':
+             {'cyclades.disk':
+                  {'project_limit': 1288490188800, 'project_pending': 0, 'project_usage': 64424509440, 'usage': 0, 'limit': 322122547200, 'pending': 0},
+              'cyclades.vm':
+                  {'project_limit': 60, 'project_pending': 0, 'project_usage': 2, 'usage': 0, 'limit': 15, 'pending': 0},
+              'pithos.diskspace':
+                  {'project_limit': 429496729600, 'project_pending': 0, 'project_usage': 0, 'usage': 0, 'limit': 107374182400, 'pending': 0},
+              'cyclades.ram':
+                  {'project_limit': 128849018880, 'project_pending': 0, 'project_usage': 12884901888, 'usage': 0, 'limit': 32212254720, 'pending': 0},
+              'cyclades.cpu':
+                  {'project_limit': 120, 'project_pending': 0, 'project_usage': 12, 'usage': 0, 'limit': 30, 'pending': 0},
+              'cyclades.floating_ip':
+                  {'project_limit': 10, 'project_pending': 0, 'project_usage': 6, 'usage': 3, 'limit': 4, 'pending': 0},
+              'cyclades.network.private':
+                  {'project_limit': 10, 'project_pending': 0, 'project_usage': 7, 'usage': 0, 'limit': 4, 'pending': 0},
+              'astakos.pending_app':
+                  {'project_limit': 0, 'project_pending': 0, 'project_usage': 0, 'usage': 0, 'limit': 0, 'pending': 0}} }
 
 def test_find_flavor():
     with mock.patch('fokia.provisioner.astakos'), \
@@ -140,6 +157,21 @@ def test_find_flavor():
             name='tost', image_id=u'0035ac89-a86e-4108-93e8-93e294b74a3d', flavor_id=3,
             project_id=u'6ff62e8e-0ce9-41f7-ad99-13a18ecada5f', networks=[], personality=[])
 
+def test_check_all_resources():
+    with mock.patch('fokia.provisioner.astakos'), \
+         mock.patch('fokia.provisioner.KamakiConfig'), \
+         mock.patch('fokia.provisioner.cyclades'):
+        provisioner = Provisioner("lambda")
+        provisioner.astakos.get_projects.return_value = test_projects
+        provisioner.astakos.get_quotas.return_value = test_quotas
+        provisioner.check_all_resources(test_quotas,  project_id=u'6ff62e8e-0ce9-41f7-ad99-13a18ecada5f',
+                                                      slaves=2,
+                                                      cluster_size=3,
+                                                      vcpus=12,
+                                                      ram=4096*3,
+                                                      disk=180,
+                                                      ip_request=1,
+                                                      network_request=1)
 
 if __name__ == "__main__":
     test_find_flavor()
