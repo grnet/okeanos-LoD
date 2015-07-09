@@ -1,5 +1,0 @@
----
-# Install vim
-- name: install vim
-  tags: install_scripts
-  apt: name=vim state=latest install_recommends=no update_cache=yes

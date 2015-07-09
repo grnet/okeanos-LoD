@@ -1,7 +1,0 @@
----
-
-- name: Make hdfs user dir
-  command: /usr/local/hadoop/bin/hadoop fs -mkdir /user
-
-- name: Make hdfs user/root dir
-  command: /usr/local/hadoop/bin/hadoop fs -mkdir /user/root

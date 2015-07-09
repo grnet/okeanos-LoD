@@ -1,4 +1,0 @@
----
-
-- name: Format hdfs
-  command: /usr/local/hadoop/bin/hadoop namenode -format -nonInteractive

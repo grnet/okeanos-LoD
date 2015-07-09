@@ -1,0 +1,13 @@
+---
+mirror_url: "http://mirrors.myaegean.gr/apache/flink"
+version: "0.9.0"
+version_for: "bin-hadoop27"
+download_path: "/root"
+installation_path: "/usr/local"
+jobmanager_heap_mb: 256 
+taskmanager_heap_mb: 512 
+taskmanager_numberOfTaskSlots: 2
+parallelization_degree_default: 2
+number_of_taskmanagers: 2
+ram_per_task_manager: 768
+
