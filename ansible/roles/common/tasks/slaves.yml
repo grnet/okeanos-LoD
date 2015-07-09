@@ -1,11 +1,7 @@
 ---
   - name: Include common tasks.
     include: common-1.yml
-    tags:
-      - slave
 
   - name: Include more common tasks.
     include: common-2.yml
-    tags:
-      - slave
 
