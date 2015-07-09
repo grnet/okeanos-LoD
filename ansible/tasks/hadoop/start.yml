@@ -1,7 +1,0 @@
----
-
-- name: Start hdfs
-  command: /usr/local/hadoop/sbin/start-dfs.sh
-
-- name: Start yarn
-  command: /usr/local/hadoop/sbin/start-yarn.sh
