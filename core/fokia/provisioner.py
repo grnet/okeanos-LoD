@@ -193,6 +193,7 @@ class Provisioner:
         """
         try:
             ip = self.network_client.create_floatingip()
+            print(ip)
             return ip
         except ClientError as ex:
             raise ex
@@ -346,8 +347,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     provisioner = Provisioner(cloud_name=args.cloud)
-    # print(provisioner.create_vm(vm_name=args.name, project_name=args.project_name,
-    #                         image_name="debian"))
+    print(provisioner.create_vm(vm_name=args.name, project_name=args.project_name,
+                             image_name="debian"))
+    """
     provisioner.create_lambda_cluster(vm_name="test" , slaves=args.slaves,
                                           image_name=args.image_name,
                                           cluster_size=args.cluster_size,
@@ -360,3 +362,4 @@ if __name__ == "__main__":
                                           ip_request=args.ip_request,
                                           network_request=args.network_request,
                                           project_name=args.project_name)
+    """

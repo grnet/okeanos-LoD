@@ -142,6 +142,27 @@ test_quotas = { '6ff62e8e-0ce9-41f7-ad99-13a18ecada5f':
               'astakos.pending_app':
                   {'project_limit': 0, 'project_pending': 0, 'project_usage': 0, 'usage': 0, 'limit': 0, 'pending': 0}} }
 
+test_ip = {u'floating_network_id':
+           u'2186', u'user_id':
+           u'9819231a-e9e2-40f7-93f1-e2e4cb50cc33',
+           u'deleted': False, u'tenant_id':
+           u'9819231a-e9e2-40f7-93f1-e2e4cb50cc33',
+           u'instance_id': None, u'fixed_ip_address': None,
+           u'floating_ip_address':
+           u'83.212.116.58',
+           u'port_id': None,
+           u'id': u'684011'}
+
+test_vm = {u'addresses': {}, u'links': [{u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/servers/665007', u'rel': u'self'},
+          {u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/servers/665007', u'rel': u'bookmark'}], u'image':
+          {u'id': u'0e399015-8723-4c78-8198-75bdf693cdde', u'links': [
+                            {u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/images/0e399015-8723-4c78-8198-75bdf693cdde', u'rel': u'self'},
+                            {u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/images/0e399015-8723-4c78-8198-75bdf693cdde', u'rel': u'bookmark'},
+                            {u'href': u'https://cyclades.okeanos.grnet.gr/image/v1.0/images/0e399015-8723-4c78-8198-75bdf693cdde', u'rel': u'alternate'}]},
+           u'suspended': False, u'flavor': {u'id': 3, u'links': [{u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/3', u'rel': u'self'},
+          {u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/3', u'rel': u'bookmark'}]}, u'id': 665007, u'security_groups': [
+          {u'name': u'default'}], u'attachments': [], u'user_id': u'9819231a-e9e2-40f7-93f1-e2e4cb50cc33', u'accessIPv4': u'', u'accessIPv6': u'', u'progress': 0, u'config_drive': u'', u'status': u'BUILD', u'updated': u'2015-07-10T07:13:25.973280+00:00', u'hostId': u'', u'SNF:fqdn': u'snf-665007.vm.okeanos.grnet.gr', u'deleted': False, u'key_name': None, u'name': u'to mikro debian sto livadi', u'adminPass': u'q0WVXWIjc4', u'tenant_id': u'6ff62e8e-0ce9-41f7-ad99-13a18ecada5f', u'created': u'2015-07-10T07:13:24.862714+00:00', u'SNF:task_state': u'BUILDING', u'volumes': [50722], u'diagnostics': [], u'metadata': {u'os': u'debian', u'users': u'root ckaner'}, u'SNF:port_forwarding': {}}
+
 def test_find_flavor():
     with mock.patch('fokia.provisioner.astakos'), \
          mock.patch('fokia.provisioner.KamakiConfig'), \
@@ -172,6 +193,28 @@ def test_check_all_resources():
                                                       disk=180,
                                                       ip_request=1,
                                                       network_request=1)
+
+def test_create_vpn():
+    with mock.patch('fokia.provisioner.astakos'), \
+         mock.patch('fokia.provisioner.KamakiConfig'), \
+         mock.patch('fokia.provisioner.cyclades'):
+        provisioner = Provisioner("lambda")
+        provisioner.network_client.create_network = test_ip
+        provisioner.reserve_ip()
+
+def test_create_vm():
+    with mock.patch('fokia.provisioner.astakos'), \
+         mock.patch('fokia.provisioner.KamakiConfig'), \
+         mock.patch('fokia.provisioner.cyclades'):
+        provisioner = Provisioner("lambda")
+        provisioner.cyclades.create_server = test_vm
+
+def test_connect_vm():
+    with mock.patch('fokia.provisioner.astakos'), \
+         mock.patch('fokia.provisioner.KamakiConfig'), \
+         mock.patch('fokia.provisioner.cyclades'):
+        provisioner = Provisioner("lambda")
+        provisioner.network_client.create_port = True
 
 if __name__ == "__main__":
     test_find_flavor()
