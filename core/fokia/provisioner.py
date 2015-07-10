@@ -157,6 +157,15 @@ class Provisioner:
                 self.connect_vm(slave['id'], vpn['id'])
                 slaves.append(slave)
 
+            # Create cluster dictionary object
+            inventory = dict()
+            masters = list()
+            masters.append(master)
+            inventory["masters"] = masters
+            inventory["slaves"] = slaves
+            return inventory
+
+
     def create_vpn(self, network_name):
         """
         Creates a virtual private network
