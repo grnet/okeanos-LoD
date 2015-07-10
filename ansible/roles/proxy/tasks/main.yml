@@ -1,7 +1,11 @@
 ---
 
-  - name: Include tasks for master.
-    include: master.yml
-    tags:
-     - master-install
+  - name: Install squid http proxy
+    apt: name=squid3 state=latest
+    tags: install
 
+  - name: Configure squid http proxy
+    lineinfile: destfile="/etc/squid3/squid.conf" regexp="^acl localnet" insertafter="^#acl localnet"
+                line="acl localnet src {{ hostvars[master-node]["local_net"] }}"
+                state=present
+    tags: config
