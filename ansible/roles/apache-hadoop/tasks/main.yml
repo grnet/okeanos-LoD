@@ -1,0 +1,12 @@
+---
+  - name: Include common tasks.
+    include: setup.yml
+    tags:
+      - setup
+
+  - name: Include tasks for master.
+    include: master.yml
+    when: "'master' in group_names"
+    tags:
+     - master-install
+

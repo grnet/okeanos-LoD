@@ -1,89 +1,78 @@
-# Ansible Cluster Setup
+# Lambda Cluster Ansible Setup
 
 
 ## Things to do before deployment
 
-- Install python
-- Add the public key of the machine running the playbook to all the nodes.
+- Install python on every node.
+- Add the public key of the machine running the playbooks to all the nodes.
+- Create a private network among the machines.
+- Modify ansible/hosts file to include the master-node and all the slave nodes.
+- Modify ansible/host_vars/master-node file. Concretely, change the internal_ip variable.
+- For each slave in ansible/hosts, create a file in ansible/host_vars (the name of the slave in ansible/hosts should be the name of the file in ansible/host_vars). Inside
+the file, define the internal_ip variable and the id variable. Each slave should have a unique id.
+- Make sure that the firewall of the master-node is off.
+- Make sure that the values in vars/main.yml in each role, are correctly defined. For example,
+if you have 2 slaves, you should create, at most, 2 TaskManagers in flink and not 3.
 
 
 ## Prerequisites
 
-- Deploy against Debian 8.0 node
-- Make sure `python` is installed on the target nodes
-- Ansible version used is `1.9.1`
+- Deployed against Debian 8.0 node.
+- Ansible version used is 1.9.1.
+- Currently, the playbooks should be run from an external machine to setup both the master and the slave nodes. In future version, they will be run from the master node to setup
+both the master and the slaves.
 
 
-## VM packages and variable setup
+## Playbooks and Roles
 
-Contains Ansible playbook for the installation of required packages and variables. The play is split into three (3) tasks:
-- install packages and run basic commands on newly created vms.
-- fetch public ssh key from master.
-- distribute public key to all slave nodes.
-Currently, the playbooks are run from an external node, and deploy both master and slave nodes. In future version, they will run from the master node to deploy master and slave nodes.
-	
-### How to deploy
-
-```bash
-$ ansible-playbook -v playbooks/install.yml
-```
+There are four (4) roles and five (5) playbooks. These are:
+- common role, run from common playbook.
+- apache-hadoop role, run from apache-hadoop playbook.
+- apache-kafka role, run from apache-kafka playbook.
+- apache-flink role, run from apache-flink playbook.
+- cluster-install playbook which runs all the roles with the above sequence.
 
 
-## Hadoop services (HDFS & YARN) deployment
-
-Contains Ansible playbook for the deployment of the Hadoop services required for Flink (HDFS and YARN services). The play is split into five (5) tasks:
-- install (downloads and untars hadoop into /usr/local, makes softlink to /usr/local/hadoop)
-- config (creates and copies appropriate hadoop configuration, using the master and slaves defined in the inventory)
-- hdfs_format (initial format of hdfs)
-- hdfs_dirs (create of appropriate hdfs directories, currently for user root)
-- start (start hdfs & yarn demons on the cluster nodes)
-Currently, the playbooks are run from an external node, and deploy both master and slave nodes. In future version, they will run from the master node to deploy the slave nodes.
-
-### How to deploy
-
-```bash
-$ ansible-playbook -v playbooks/hadoop.yml
-```
+## Role Explanation
 
 
-## Apache Flink deployment
+### common
 
-Contains Ansible playbook for the deployment of Apache Flink. The playbook is split into five (5) tasks:
-- Download Apache Flink, Yarn version(downloads Apache Flink into /root).
-- Uncompress Apache Flink(uncompresses Apache Flink into /usr/local).
-- Create softlink for Apache Flink(creates /usr/local/flink softlink).
-- Configure Apache Flink(copies pre-created Apache Flink configuration files into /usr/local/flink/conf).
-- Start Apache Flink(starts an Apache Yarn session with 2 TaskManagers and 512 MB of RAM each).
-
-Apache Flink needs to be installed only on master node. Information about the architecture of the cluster(number of slaves, etc...) are found through Apache Yarn.
-
-### How to deploy
-
-```bash
-$ansible-playbook -v playbooks/apache-flink/flink-install.yml
-```
+- Installs all the packages that are needed in order for the cluster to run.
+- Creates the needed environment variables.
+- Configures the /etc/hosts file.
 
 
-## Apache Kafka deployment
+### apache-hadoop
+- Downloads and installs Apache Hadoop.
+- Formats HDFS.
+- Starts HDFS.
+- Creates the required directories on HDFS.
+- Starts Yarn.
 
-Contains Ansible playbook for the deployment of Apache kafka. The playbook is split into eleven (11) tasks:
-- Download Apache Kafka(downloads Apache Kafka into /root).
-- Uncompress Apache Kafka(uncompresses Apache Kafka into /usr/local).
-- Create softlink for Apache Kafka(creates /usr/local/kafka softlink).
-- Configure Apache kafka(copies pre-created Apache Kafka configuration files to /usr/local/kafka/config).
-- Start Apache Zookeeper server(starts an Apache Zookeeper server which is a prerequisite for Apache Kafka server).
-- Wait for Apache Zookeeper to become available.
-- Start Apache Kafka server(starts an Apache Kafka server).
-- Wait for Apache Kafka server to become available.
-- Create Apache Kafka input topic(creates an Apache Kafka topic, named "input", to store input data).
-- Create Apache Kafka batch output topic(creates an Apache Kafka topic, named "batch-output", to store the output data of the batch job).
-- Create Apache Kafka stream output topic(creates an Apache Kafka topic, named "stream-output", to store the output data of the stream job).
 
-Currently, the playbooks are run from an external node, and deploy both master and slave nodes. In future version, they will run from the master node to deploy the slave nodes.
+### apache-kafka
+- Downloads and installs Apache Kafka.
+- Starts Apache Zookeeper on master node.
+- Starts an Apache Kafka server on every node.
+- Creates the needed input and output topics.
 
-### How to deploy
+
+### apache-flink
+- Downloads and installs Apache Flink on master node.
+- Starts and Apache Flink, Yarn session.
+
+
+## How to deploy
+
+You can deploy the whole cluster by running the cluster-install playbook:
 
 ```bash
-$ansible-playbook -v playbooks/apache-kafka/kafka-install.yml
+$ ansible-playbook playbooks/cluster/cluster-install.yml -i hosts
 ```
 
+or, you can run a single playbook, e.g.:
+
+```bash
+$ ansible-playbook playbooks/apache-hadoop/hadoop-install.yml -i hosts
+```

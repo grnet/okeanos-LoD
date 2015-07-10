@@ -1,8 +1,0 @@
----
-
-#copy environment file
-- name: Copy environment file
-  tags: install_scripts
-  copy: src=../files/etc/environment
-        dest=/etc/ backup=no
-        owner=root group=root mode=0750

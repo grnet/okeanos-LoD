@@ -1,0 +1,13 @@
+{% for master in groups["master"] %}
+  Host {{ master }}
+    StrictHostKeyChecking no
+{% endfor %}
+
+{% for slave in groups["slaves"] %}
+  Host {{ slave }}
+    StrictHostKeyChecking no
+{% endfor %}
+
+Host 0.0.0.0
+  StrictHostKeyChecking no
+

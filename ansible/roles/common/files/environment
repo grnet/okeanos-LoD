@@ -1,0 +1,2 @@
+export JAVA_HOME=/usr/
+export HADOOP_HOME=/usr/local/hadoop

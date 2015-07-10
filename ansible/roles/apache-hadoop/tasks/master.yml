@@ -1,0 +1,26 @@
+---
+  - name: Format Apache HDFS.
+    shell: "yes | {{ installation_path }}/hadoop/bin/hadoop namenode -format"
+    tags:
+      - format-hdfs
+
+  - name: Start Apache HDFS.
+    shell: "{{ installation_path }}/hadoop/sbin/start-dfs.sh"
+    tags:
+      - start-hdfs
+
+  - name: Start Apache Yarn.
+    shell: "{{ installation_path }}/hadoop/sbin/start-yarn.sh"
+    tags:
+      - start-yarn
+
+  - name: Create Apache HDFS user directory.
+    command: "{{ installation_path }}/hadoop/bin/hadoop fs -mkdir /user"
+    tags:
+      - create-dirs
+
+  - name: Create Apache HDFS user/root directory. 
+    command: "{{ installation_path }}/hadoop/bin/hadoop fs -mkdir /user/root"
+    tags:
+      - create-dirs
+
