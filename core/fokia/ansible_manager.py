@@ -9,7 +9,10 @@ class Manager:
     def __init__(self, provisioner_response):
 
         self.inventory = {}
+        self.host_vars = {}
         for group in provisioner_response.keys():
+            if group == "masters":
+                self.master_fqdn = response[u'SNF:fqdn']
             self.inventory[group] = {"hosts": []}
             for response in provisioner_response[group]:
                 self.inventory[group]["hosts"].append(response[u'SNF:fqdn'])
@@ -22,8 +25,13 @@ class Manager:
         inventory_groups = []
         for group in self.inventory.keys():
             inventory_groups.append(ansible.inventory.group.Group(name=group))
+            if group != "masters":
+                self.host_vars["http_proxy"] = "http://"+self.master_fqdn+":3128"
             for host in self.inventory[group]["hosts"]:
                 ansible_host = ansible.inventory.host.Host(name=host)
+                host_vars = self.host_vars.iteritems()
+                for var_key, var_value in host_vars:
+                    ansible_host.set_variable(var_key, var_value)
                 inventory_groups[-1].add_host(ansible_host)
 
         self.inventory = ansible.inventory.Inventory(host_list=None)
