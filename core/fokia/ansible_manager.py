@@ -30,7 +30,7 @@ class Manager:
             for host in self.inventory[group]["hosts"]:
                 ansible_host = ansible.inventory.host.Host(name=host)
                 host_vars = self.host_vars.iteritems()
-                for var_key, var_value in host_vars:
+                for var_key, var_value in self.host_vars.iteritems():
                     ansible_host.set_variable(var_key, var_value)
                 inventory_groups[-1].add_host(ansible_host)
 
