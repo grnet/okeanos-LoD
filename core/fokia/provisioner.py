@@ -135,6 +135,7 @@ class Provisioner:
         vcpus = kwargs['slaves'] * kwargs['vcpus_slave'] + kwargs['vcpus_master']
         ram = kwargs['slaves'] * kwargs['ram_slave'] + kwargs['ram_master']
         disk = kwargs['slaves'] * kwargs['disk_slave'] + kwargs['disk_master']
+        project_id = self.find_project_id(**kwargs)['id']
         response = self.check_all_resources(quotas, cluster_size=kwargs['cluster_size'],
                                               vcpus=vcpus,
                                               ram=ram,
@@ -143,16 +144,15 @@ class Provisioner:
                                               network_request=kwargs['network_request'],
                                               project_name=kwargs['project_name'])
         if response:
-
             # Create private network for cluster
-            vpn_id = self.create_vpn('lambda-vpn')
+            vpn_id = self.create_vpn('lambda-vpn', project_id=project_id)
             self.create_private_subnet(vpn_id)
 
             #reserve ip
             ip_request=kwargs['ip_request']
             ips = list()
             for i in range(ip_request-1):
-                ip = self.reserve_ip()
+                ip = self.reserve_ip(project_id=project_id)
                 ips.append(ip)
 
             ip = None
@@ -180,7 +180,7 @@ class Provisioner:
             return inventory
 
 
-    def create_vpn(self, network_name):
+    def create_vpn(self, network_name, project_id):
         """
         Creates a virtual private network
         :param network_name: name of the network
@@ -190,7 +190,8 @@ class Provisioner:
             # Create vpn with custom type and the name given as argument
             vpn = self.network_client.create_network(
                         type=self.network_client.network_types[1],
-                        name=network_name)
+                        name=network_name,
+                        project_id=project_id)
             return vpn['id']
         except ClientError as ex:
             raise ex
@@ -209,13 +210,13 @@ class Provisioner:
             raise ex
         return okeanos_response
 
-    def reserve_ip(self):
+    def reserve_ip(self,project_id):
         """
         Reserve ip
         :return: the ip object if successfull
         """
         try:
-            ip = self.network_client.create_floatingip()
+            ip = self.network_client.create_floatingip(project_id=project_id)
             return ip
         except ClientError as ex:
             raise ex
@@ -375,7 +376,7 @@ if __name__ == "__main__":
     """
 
 
-    provisioner.create_lambda_cluster(vm_name="lambda-master" , slaves=args.slaves,
+    response = provisioner.create_lambda_cluster(vm_name="lambda-master" , slaves=args.slaves,
                                           image_name=args.image_name,
                                           cluster_size=args.cluster_size,
                                           vcpus_master=args.vcpus_master,
@@ -387,3 +388,4 @@ if __name__ == "__main__":
                                           ip_request=args.ip_request,
                                           network_request=args.network_request,
                                           project_name=args.project_name)
+    print(response)
