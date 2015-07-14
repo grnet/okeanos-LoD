@@ -102,7 +102,7 @@ class Provisioner:
         logger.info("Retrieving project")
         return self.astakos.get_projects(**filter)[0]
 
-    def create_vm(self, vm_name=None, **kwargs):
+    def create_vm(self, vm_name=None, ip=None, **kwargs):
         """
         :param vm_name: Name of the virtual machine to create
         :param kwargs: passed to the functions called for detail options
@@ -111,11 +111,17 @@ class Provisioner:
         flavor_id = self.find_flavor(**kwargs)['id']
         image_id = self.find_image(**kwargs)['id']
         project_id = self.find_project_id(**kwargs)['id']
+        networks = [{'uuid': kwargs['net_id']}]
+        if ip != None:
+            ip_obj = dict()
+            ip_obj['uuid'] = ip['floating_network_id']
+            ip_obj['fixed_ip'] = ip['floating_ip_address']
+            networks.append(ip_obj)
         try:
             okeanos_response = self.cyclades.create_server(name=vm_name, flavor_id=flavor_id,
                                                            image_id=image_id,
                                                            project_id=project_id,
-                                                           networks=[], personality=[])
+                                                           networks=networks, personality=[])
         except ClientError as ex:
             raise ex
         return okeanos_response
@@ -137,24 +143,32 @@ class Provisioner:
                                               network_request=kwargs['network_request'],
                                               project_name=kwargs['project_name'])
         if response:
-            # Create master
-            master = self.create_vm(vm_name=vm_name, vcpus=kwargs['vcpus_master'], ram=kwargs['ram_master'], disk=kwargs['disk_master'], **kwargs)
-            ip = self.reserve_ip()
-            self.attach_public_ip(ip, master['id'])
 
             # Create private network for cluster
-            vpn = self.create_vpn('lambda-vpn')
-            self.create_private_subnet(vpn['id'])
+            vpn_id = self.create_vpn('lambda-vpn')
+            self.create_private_subnet(vpn_id)
 
-            # Connect master to vpn
-            self.connect_vm(master['id'], vpn['id'])
+            #reserve ip
+            ip_request=kwargs['ip_request']
+            ips = list()
+            for i in range(ip_request-1):
+                ip = self.reserve_ip()
+                ips.append(ip)
+
+            ip = None
+            # Create master
+            if len(ips) > 0:
+                ip = ips[0]
+            master = self.create_vm(vm_name=vm_name, ip=ip, net_id=vpn_id, vcpus=kwargs['vcpus_master'], ram=kwargs['ram_master'], disk=kwargs['disk_master'], **kwargs)
 
             # Create slaves
             slaves = list()
             for i in range(kwargs['slaves']):
+                ip = None
+                if len(ips) > i+2:
+                    ip = ips[i+2]
                 slave_name = 'lambda-node' + str(i+1)
-                slave = self.create_vm(vm_name=slave_name, vcpus=kwargs['vcpus_slave'], ram=kwargs['ram_slave'], disk=kwargs['disk_slave'], **kwargs)
-                self.connect_vm(slave['id'], vpn['id'])
+                slave = self.create_vm(vm_name=slave_name, ip=ip, net_id=vpn_id, vcpus=kwargs['vcpus_slave'], ram=kwargs['ram_slave'], disk=kwargs['disk_slave'], **kwargs)
                 slaves.append(slave)
 
             # Create cluster dictionary object
@@ -202,7 +216,6 @@ class Provisioner:
         """
         try:
             ip = self.network_client.create_floatingip()
-            print(ip)
             return ip
         except ClientError as ex:
             raise ex
@@ -356,10 +369,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     provisioner = Provisioner(cloud_name=args.cloud)
+    """
     print(provisioner.create_vm(vm_name=args.name, project_name=args.project_name,
                              image_name="debian"))
     """
-    provisioner.create_lambda_cluster(vm_name="test" , slaves=args.slaves,
+
+
+    provisioner.create_lambda_cluster(vm_name="lambda-master" , slaves=args.slaves,
                                           image_name=args.image_name,
                                           cluster_size=args.cluster_size,
                                           vcpus_master=args.vcpus_master,
@@ -371,4 +387,3 @@ if __name__ == "__main__":
                                           ip_request=args.ip_request,
                                           network_request=args.network_request,
                                           project_name=args.project_name)
-    """
