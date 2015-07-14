@@ -1,0 +1,17 @@
+---
+
+
+- hosts: masters
+  user: root
+  tasks:
+  - name: install screen to master without proxy
+    apt: name=screen state=installed
+    tags: install
+
+- hosts: slaves
+  user: root
+  tasks:
+  - name: install screen to slaves using proxy
+    apt: name=screen state=installed
+    environment: proxy_env
+    tags: install
