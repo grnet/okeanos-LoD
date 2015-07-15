@@ -1,6 +1,7 @@
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 import logging
+import re
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -277,6 +278,35 @@ class Provisioner:
         """
         return self.astakos.get_quotas()
 
+    def get_server_info(self, server_id):
+        """
+        """
+        return self.cyclades.get_server_details(server_id=server_id)
+
+    def get_server_public_ip(self, server_id):
+        """
+        :param server_id: id of the server
+        :returns: the public ip of the server if it has one,else None
+        """
+        addresses =  self.get_server_info(server_id=server_id)['addresses']
+        for key in list(addresses.keys()):
+            ip = addresses[key][0]['addr']
+            if '192.168.0' not in ip and not re.search('[a-zA-Z]', ip):
+                return ip
+        return None
+
+    def get_server_private_ip(self, server_id):
+        """
+        :param server_id: id of the server
+        :returns: the private ip of the server if it has one,else None
+        """
+        addresses =  self.get_server_info(server_id=server_id)['addresses']
+        for key in list(addresses.keys()):
+            ip = addresses[key][0]['addr']
+            if '192.168.0' in ip:
+                return ip
+        return None
+
     def check_all_resources(self, quotas, **kwargs):
         """
         Checks user's quota for every requested resource.
@@ -375,7 +405,7 @@ if __name__ == "__main__":
                              image_name="debian"))
     """
 
-
+    """
     response = provisioner.create_lambda_cluster(vm_name="lambda-master" , slaves=args.slaves,
                                           image_name=args.image_name,
                                           cluster_size=args.cluster_size,
@@ -389,3 +419,4 @@ if __name__ == "__main__":
                                           network_request=args.network_request,
                                           project_name=args.project_name)
     print(response)
+    """
