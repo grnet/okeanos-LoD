@@ -5,12 +5,12 @@
       - format-hdfs
 
   - name: Start Apache HDFS.
-    shell: "{{ installation_path }}/hadoop/sbin/start-dfs.sh"
+    shell: /etc/init.d/hdfs-init start # Should use Ansible module "service: name=hdfs-init state=started" when the bug in version 1.9.1 is fixed.
     tags:
       - start-hdfs
 
   - name: Start Apache Yarn.
-    shell: "{{ installation_path }}/hadoop/sbin/start-yarn.sh"
+    shell: /etc/init.d/yarn-init start # Should use Ansible module "service: name=yarn-init state=started" when the bug in version 1.9.1 is fixed.
     tags:
       - start-yarn
 
