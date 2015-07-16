@@ -9,32 +9,43 @@ class Manager:
     def __init__(self, provisioner_response):
 
         self.inventory = {}
-        self.host_vars = {}
         for group in provisioner_response.keys():
             self.inventory[group] = {"hosts": []}
             for response in provisioner_response[group]:
                 self.inventory[group]["hosts"].append(response[u'SNF:fqdn'])
-                if group == "masters":
+                if group == "master":
                     self.master_fqdn = response[u'SNF:fqdn'].split('.')[0]
 
-    def create_inventory(self):
+    def create_inventory(self, private_ips):
         """
         Create the inventory using the ansible library objects
         :return:
         """
+
+
         inventory_groups = []
-        host_id = 1
-        for group in self.inventory.keys():
-            inventory_groups.append(ansible.inventory.group.Group(name=group))
-            if group != "masters":
-                self.host_vars["proxy_env"] = {"http_proxy": "http://"+self.master_fqdn+":3128"}
-                self.host_vars["id"] = host_id
-                host_id += 1
-            for host in self.inventory[group]["hosts"]:
-                ansible_host = ansible.inventory.host.Host(name=host)
-                for var_key, var_value in self.host_vars.iteritems():
-                    ansible_host.set_variable(var_key, var_value)
-                inventory_groups[-1].add_host(ansible_host)
+        host_vars = {}
+
+        master_group = ansible.inventory.group.Group(name="master")
+        host = self.inventory["master"]["hosts"][0]
+        ansible_host = ansible.inventory.host.Host(name=host)
+        host_vars["internal_ip"] = ipdict[host.split('.')[0]]
+        for var_key, var_value in host_vars.iteritems():
+            ansible_host.set_variable(var_key, var_value)
+        ansible_host.set_variable("id", 0)
+        master_group.add_host(ansible_host)
+        inventory_groups.append(master_group)
+
+        slave_group = ansible.inventory.group.Group(name="slaves")
+        host_vars["proxy_env"] = {"http_proxy": "http://"+self.master_fqdn+":3128"}
+        for host_id, host in enumerate(self.inventory["slaves"]["hosts"], start=1):
+            ansible_host = ansible.inventory.host.Host(name=host)
+            host_vars["internal_ip"] = ipdict[host.split('.')[0]]
+            for var_key, var_value in host_vars.iteritems():
+                ansible_host.set_variable(var_key, var_value)
+            ansible_host.set_variable("id", host_id)
+            slave_group.add_host(ansible_host)
+        inventory_groups.append(slave_group)
 
         self.inventory = ansible.inventory.Inventory(host_list=None)
         for group in inventory_groups:
@@ -42,7 +53,7 @@ class Manager:
 
         return self.inventory
 
-    def run_playbook(self, playbook_file, tags):
+    def run_playbook(self, playbook_file, tags=None):
         """
         Run the playbook_file using created inventory and tags specified
         :return:
@@ -58,8 +69,11 @@ class Manager:
 
 if __name__ == "__main__":
 
+    from provisioner import Provisioner
+    provisioner = Provisioner("lambda")
+    inv = provisioner.create_lambda_cluster("test_vm")
 
-    manager = Manager(test_provisioner_response)
-    manager.create_inventory()
+    manager = Manager(inv, provisioner)
+    manager.create_inventory(provisioner.get_server_private_ip())
    # manager.run_playbook(playbook_file="../../ansible/playbooks/testinventory.yml", tags=["touch"])
     manager.run_playbook(playbook_file="../../ansible/playbooks/testproxy.yml", tags=["install"])

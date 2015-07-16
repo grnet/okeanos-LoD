@@ -61,3 +61,4 @@ target/
 
 MANIFEST
 old_kamaki
+*.idea
