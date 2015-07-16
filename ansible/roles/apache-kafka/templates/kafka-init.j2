@@ -4,10 +4,10 @@
 INSTALLATION_PATH="{{ installation_path }}"
 
 # The full path of the pid file to use.
-PIDFILE="{{ installation_path }}/kafka/kafka.pid"
+PIDFILE="$INSTALLATION_PATH/kafka/kafka.pid"
 
 # The full path of the lock file to use.
-LOCKFILE="{{ installation_path }}/kafka/kafka-lock"
+LOCKFILE="$INSTALLATION_PATH/kafka/kafka-lock"
 
 # The command that will start Apache Kafka.
 START_COMMAND="$INSTALLATION_PATH/kafka/bin/kafka-server-start.sh $INSTALLATION_PATH/kafka/config/server.properties"
