@@ -19,10 +19,11 @@
     tags:
       - configure
 
+  - name: Copy Apache Flink init script.
+    template: src=flink-init.j2 dest=/etc/init.d/flink-init owner=root group=root mode=0755
+
   - name: Start Apache Flink.
-    shell: "{{ installation_path }}/flink/bin/yarn-session.sh -n {{ number_of_taskmanagers }} -tm {{ ram_per_task_manager }}"
-    async: 31536000 # Stay alive for a year(1 year = 31536000 seconds).
-    poll: 0
+    shell: /etc/init.d/flink-init start # Should use Ansible module "service: name=flink-init state=started" when the bug in version 1.9.1 is fixed.
     tags:
       - start
 
