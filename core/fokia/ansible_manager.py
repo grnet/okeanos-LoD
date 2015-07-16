@@ -30,6 +30,7 @@ class Manager:
         host = self.inventory["master"]["hosts"][0]
         ansible_host = ansible.inventory.host.Host(name=host)
         host_vars["internal_ip"] = ipdict[host.split('.')[0]]
+        host_vars["local_net"] = "192.168.0.0/24"
         for var_key, var_value in host_vars.iteritems():
             ansible_host.set_variable(var_key, var_value)
         ansible_host.set_variable("id", 0)
@@ -207,5 +208,7 @@ if __name__ == "__main__":
 
     manager = Manager(inv)
     manager.create_inventory()
+
+    ansible.constants.HOST_KEY_CHECKING = False
     manager.run_playbook(playbook_file="../../ansible/playbooks/testinventory.yml")
     # manager.run_playbook(playbook_file="../../ansible/playbooks/testproxy.yml", tags=["install"])
