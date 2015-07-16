@@ -1,7 +1,7 @@
 ---
 
 
-- hosts: masters
+- hosts: master
   user: root
   tasks:
   - name: Touch master file
@@ -20,3 +20,6 @@
   - name: Remove slave file
     file: path=/root/slave state=absent
     tags: rm
+  - name: Copy hosts file.
+    template: src=../roles/common/templates/hosts.j2 dest=/etc/hosts backup=no owner=root group=root mode=0750
+
