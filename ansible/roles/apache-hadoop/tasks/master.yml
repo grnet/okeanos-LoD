@@ -9,8 +9,18 @@
     tags:
       - start-hdfs
 
+  - name: Wait for Apache HDFS to become available.
+    wait_for: host="{{ hostvars[inventory_hostname]["internal_ip"] }}" port=9000
+    tags:
+      - start-hdfs
+
   - name: Start Apache Yarn.
     shell: /etc/init.d/yarn-init start # Should use Ansible module "service: name=yarn-init state=started" when the bug in version 1.9.1 is fixed.
+    tags:
+      - start-yarn
+
+  - name: Wait for Apache Yarn to become available.
+    wait_for: host="{{ hostvars[inventory_hostname]["internal_ip"] }}" port=8050 # 8050 is the port of the resource manager.
     tags:
       - start-yarn
 
