@@ -30,6 +30,7 @@ There are four (4) roles and five (5) playbooks. These are:
 - apache-hadoop role, run from apache-hadoop playbook.
 - apache-kafka role, run from apache-kafka playbook.
 - apache-flink role, run from apache-flink playbook.
+- proxy role, run from proxy playbook.
 - cluster-install playbook which runs all the roles with the above sequence.
 
 
@@ -61,6 +62,11 @@ There are four (4) roles and five (5) playbooks. These are:
 ### apache-flink
 - Downloads and installs Apache Flink on master node.
 - Starts and Apache Flink, Yarn session.
+
+
+### proxy
+- Installs squid http proxy on master node, using apt package manager.
+- Configures the acls of the proxy, assuming the local network is 192.168.0.0/24.
 
 
 ## How to deploy
