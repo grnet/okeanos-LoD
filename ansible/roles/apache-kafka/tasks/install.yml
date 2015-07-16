@@ -8,3 +8,6 @@
   - name: Create softlink for Apache Kafka.
     file: src="{{ installation_path }}/kafka_{{ scala_version }}-{{ version }}" dest="{{ installation_path }}/kafka" state=link
 
+  - name: Copy Apache Kafka init script.
+    template: src=kafka-init.j2 dest=/etc/init.d/kafka-init owner=root group=root mode=0755
+
