@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# The path where Apache Hadoop is installed.
+INSTALLATION_PATH="{{ installation_path }}"
+
+# The full path of the pid file to use.
+PIDFILE="$INSTALLATION_PATH/hadoop/hdfs.pid"
+
+# The full path of the lock file to use.
+LOCKFILE="$INSTALLATION_PATH/hadoop/hdfs-lock"
+
+# The command that will start Apache HDFS.
+START_COMMAND="$INSTALLATION_PATH/hadoop/sbin/start-dfs.sh"
+
+start(){
+  touch $PIDFILE
+  nohup $START_COMMAND & echo $! > $PIDFILE
+  RETVAL=$?
+  [ $RETVAL -eq 0 ] && touch $LOCKFILE
+  return $RETVAL
+}
+
+stop(){
+  kill -s 9 $(cat $PIDFILE)
+  RETVAL=$?
+  [ $RETVAL -eq 0 ] && $(rm -f $LOCKFILE)
+  return $RETVAL
+}
+
+restart(){
+  stop
+  start
+}
+
+RETVAL=0
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart|reload|force-reload)
+    restart
+    ;;
+  condrestart)
+    [ -f $LOCKFILE ] && restart || :
+    ;;
+  status)
+    ps -p $(cat $PIDFILE)
+    RETVAL=$?
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|status|restart|reload|force-reload|condrestart}"
+    RETVAL=1
+esac
+
+exit $RETVAL
+
