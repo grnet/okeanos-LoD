@@ -61,6 +61,7 @@ class Provisioner:
         self.ips = None
         self.slaves = None
         self.vpn = None
+        self.subnet = None
 
     def find_flavor(self, **kwargs):
         """
@@ -159,7 +160,6 @@ class Provisioner:
             ip_request=kwargs['ip_request']
             self.ips = list()
             for i in range(ip_request):
-                print("reserved ip")
                 ip = self.reserve_ip(project_id=project_id)
                 self.ips.append(ip)
 
@@ -214,8 +214,14 @@ class Provisioner:
             ip_obj['floating_network_id'] = ip['floating_network_id']
             ip_obj['floating_ip_address'] = ip['floating_ip_address']
             ip_obj['id'] = ip['id']
-            ips_list.append(ip_object)
+            ips_list.append(ip_obj)
         details['ips'] = ips_list
+
+        subnet = dict()
+        subnet['id'] = self.subnet['id']
+        subnet['cidr'] = self.subnet['cidr']
+        subnet['gateway_ip'] = self.subnet['gateway_ip']
+        details['subnet'] = subnet
         return details
 
 
@@ -271,6 +277,7 @@ class Provisioner:
             subnet = self.network_client.create_subnet(net_id, cidr,
                                                        gateway_ip=gateway_ip,
                                                        enable_dhcp=True)
+            self.subnet = subnet
             return subnet['id']
         except ClientError as ex:
             raise ex
