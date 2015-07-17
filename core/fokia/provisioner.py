@@ -158,7 +158,8 @@ class Provisioner:
             #reserve ip
             ip_request=kwargs['ip_request']
             self.ips = list()
-            for i in range(ip_request-1):
+            for i in range(ip_request):
+                print("reserved ip")
                 ip = self.reserve_ip(project_id=project_id)
                 self.ips.append(ip)
 
@@ -172,8 +173,8 @@ class Provisioner:
             self.slaves = list()
             for i in range(kwargs['slaves']):
                 ip = None
-                if len(self.ips) > i+2:
-                    ip = self.ips[i+2]
+                if len(self.ips) > i+1:
+                    ip = self.ips[i+1]
                 slave_name = 'lambda-node' + str(i+1)
                 slave = self.create_vm(vm_name=slave_name, ip=ip, net_id=vpn_id, vcpus=kwargs['vcpus_slave'], ram=kwargs['ram_slave'], disk=kwargs['disk_slave'], **kwargs)
                 self.slaves.append(slave)
@@ -207,6 +208,14 @@ class Provisioner:
         details['vpn'] = vpn
 
         details['ips'] = self.ips
+        ips_list = list()
+        for ip in self.ips:
+            ip_obj = dict()
+            ip_obj['floating_network_id'] = ip['floating_network_id']
+            ip_obj['floating_ip_address'] = ip['floating_ip_address']
+            ip_obj['id'] = ip['id']
+            ips_list.append(ip_object)
+        details['ips'] = ips_list
         return details
 
 
@@ -419,7 +428,7 @@ if __name__ == "__main__":
     parser.add_argument('--ram_slave', type=int, dest='ram_slave', default=4096)  # in MB
     parser.add_argument('--disk_master', type=int, dest='disk_master', default=40)  # in GB
     parser.add_argument('--disk_slave', type=int, dest='disk_slave', default=40)  # in GB
-    parser.add_argument('--ip_request', type=int, dest='ip_request', default=0)
+    parser.add_argument('--ip_request', type=int, dest='ip_request', default=1)
     parser.add_argument('--network_request', type=int, dest='network_request', default=1)
     parser.add_argument('--image_name', type=str, dest='image_name', default="debian")
     parser.add_argument('--cluster_size', type=int, dest='cluster_size', default=2)
