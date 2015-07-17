@@ -23,9 +23,3 @@
   - name: Configure Apache Yarn.
     template: src=yarn-site.xml.j2 dest="{{ installation_path }}/hadoop/etc/hadoop/yarn-site.xml" owner=root group=root mode=0644
 
-  - name: Copy Apache HDFS init script.
-    template: src=hdfs-init.j2 dest=/etc/init.d/hdfs-init owner=root group=root mode=0755
-
-  - name: Copy Apache Yarn init script.
-    template: src=yarn-init.j2 dest=/etc/init.d/yarn-init owner=root group=root mode=0755
-
