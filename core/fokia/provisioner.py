@@ -57,6 +57,11 @@ class Provisioner:
         self.Bytes_to_GB = 1024*1024*1024
         self.Bytes_to_MB = 1024*1024
 
+        self.master = None
+        self.ips = None
+        self.slaves = None
+        self.vpn = None
+
     def find_flavor(self, **kwargs):
         """
 
@@ -146,46 +151,70 @@ class Provisioner:
                                               project_name=kwargs['project_name'])
         if response:
             # Create private network for cluster
-            vpn_id = self.create_vpn('lambda-vpn', project_id=project_id)
+            self.vpn = self.create_vpn('lambda-vpn', project_id=project_id)
+            vpn_id = self.vpn['id']
             self.create_private_subnet(vpn_id)
 
             #reserve ip
             ip_request=kwargs['ip_request']
-            ips = list()
+            self.ips = list()
             for i in range(ip_request-1):
                 ip = self.reserve_ip(project_id=project_id)
-                ips.append(ip)
+                self.ips.append(ip)
 
             ip = None
             # Create master
-            if len(ips) > 0:
-                ip = ips[0]
-            master = self.create_vm(vm_name=vm_name, ip=ip, net_id=vpn_id, vcpus=kwargs['vcpus_master'], ram=kwargs['ram_master'], disk=kwargs['disk_master'], **kwargs)
+            if len(self.ips) > 0:
+                ip = self.ips[0]
+            self.master = self.create_vm(vm_name=vm_name, ip=ip, net_id=vpn_id, vcpus=kwargs['vcpus_master'], ram=kwargs['ram_master'], disk=kwargs['disk_master'], **kwargs)
 
             # Create slaves
-            slaves = list()
+            self.slaves = list()
             for i in range(kwargs['slaves']):
                 ip = None
-                if len(ips) > i+2:
-                    ip = ips[i+2]
+                if len(self.ips) > i+2:
+                    ip = self.ips[i+2]
                 slave_name = 'lambda-node' + str(i+1)
                 slave = self.create_vm(vm_name=slave_name, ip=ip, net_id=vpn_id, vcpus=kwargs['vcpus_slave'], ram=kwargs['ram_slave'], disk=kwargs['disk_slave'], **kwargs)
-                slaves.append(slave)
+                self.slaves.append(slave)
 
             # Create cluster dictionary object
             inventory = dict()
-            masters = list()
-            masters.append(master)
-            inventory["masters"] = masters
-            inventory["slaves"] = slaves
+            inventory["master"] = self.master
+            inventory["slaves"] = self.slaves
             return inventory
+
+    def get_cluster_details(self):
+        details = dict()
+
+        master = dict()
+        master['id'] = self.master['id']
+        master['name'] = self.master['name']
+        master['adminPass'] = self.master['adminPass']
+        details['master'] = master
+
+        for slave in self.slaves:
+            slave_obj = dict()
+            slave_obj['id'] = slave['id']
+            slave_obj['name'] = slave['name']
+            slave_obj['adminPass'] = slave['adminPass']
+            name = slave_obj['name']
+            details[name] = slave_obj
+
+        vpn = dict()
+        vpn['id'] = self.vpn['id']
+        vpn['type'] = self.vpn['type']
+        details['vpn'] = vpn
+
+        details['ips'] = self.ips
+        return details
 
 
     def create_vpn(self, network_name, project_id):
         """
         Creates a virtual private network
         :param network_name: name of the network
-        :return: the id of the network if successfull
+        :return: the virtual network object
         """
         try:
             # Create vpn with custom type and the name given as argument
@@ -193,7 +222,7 @@ class Provisioner:
                         type=self.network_client.network_types[1],
                         name=network_name,
                         project_id=project_id)
-            return vpn['id']
+            return vpn
         except ClientError as ex:
             raise ex
         return okeanos_response
@@ -223,14 +252,12 @@ class Provisioner:
             raise ex
         return okeanos_response
 
-    def create_private_subnet(self, net_id):
+    def create_private_subnet(self, net_id, cidr='192.168.0.0/24', gateway_ip='192.168.0.1'):
         """
         Creates a private subnets and connects it with this network
         :param net_id: id of the network
         :return: the id of the subnet if successfull
         """
-        cidr = "192.168.0.0/24"
-        gateway_ip = "192.168.0.1"
         try:
             subnet = self.network_client.create_subnet(net_id, cidr,
                                                        gateway_ip=gateway_ip,
@@ -392,7 +419,7 @@ if __name__ == "__main__":
     parser.add_argument('--ram_slave', type=int, dest='ram_slave', default=4096)  # in MB
     parser.add_argument('--disk_master', type=int, dest='disk_master', default=40)  # in GB
     parser.add_argument('--disk_slave', type=int, dest='disk_slave', default=40)  # in GB
-    parser.add_argument('--ip_request', type=int, dest='ip_request', default=1)
+    parser.add_argument('--ip_request', type=int, dest='ip_request', default=0)
     parser.add_argument('--network_request', type=int, dest='network_request', default=1)
     parser.add_argument('--image_name', type=str, dest='image_name', default="debian")
     parser.add_argument('--cluster_size', type=int, dest='cluster_size', default=2)
@@ -405,7 +432,7 @@ if __name__ == "__main__":
                              image_name="debian"))
     """
 
-    """
+
     response = provisioner.create_lambda_cluster(vm_name="lambda-master" , slaves=args.slaves,
                                           image_name=args.image_name,
                                           cluster_size=args.cluster_size,
@@ -418,5 +445,5 @@ if __name__ == "__main__":
                                           ip_request=args.ip_request,
                                           network_request=args.network_request,
                                           project_name=args.project_name)
-    print(response)
-    """
+    # print(response)
+    print(provisioner.get_cluster_details())
