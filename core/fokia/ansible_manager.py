@@ -14,7 +14,7 @@ class Manager:
             for response in provisioner_response[group]:
                 self.inventory[group]["hosts"].append(response[u'SNF:fqdn'])
                 if group == "master":
-                    self.master_fqdn = response[u'SNF:fqdn'].split('.')[0]
+                    self.master_fqdn = response[u'SNF:fqdn']
 
     def create_inventory(self):
         """
@@ -22,7 +22,7 @@ class Manager:
         :return:
         """
 
-        ipdict = {"snf-661243": "192.168.0.2", "snf-661526" : "192.168.0.3", "snf-661527" : "192.168.0.4"}
+        ipdict = {"snf-661243": "192.168.0.3", "snf-661526" : "192.168.0.2", "snf-661527" : "192.168.0.4"}
         inventory_groups = []
         host_vars = {}
 
@@ -38,9 +38,9 @@ class Manager:
         inventory_groups.append(master_group)
 
         slave_group = ansible.inventory.group.Group(name="slaves")
-        host_vars["proxy_env"] = {"http_proxy": "http://"+self.master_fqdn+":3128"}
+        host_vars["proxy_env"] = {"http_proxy": "http://"+self.master_fqdn.split('.')[0]+":3128"}
         for host_id, host in enumerate(self.inventory["slaves"]["hosts"], start=1):
-            ansible_host = ansible.inventory.host.Host(name=host)
+            ansible_host = ansible.inventory.host.Host(name=host.split('.')[0]+'.local')
             host_vars["internal_ip"] = ipdict[host.split('.')[0]]
             for var_key, var_value in host_vars.iteritems():
                 ansible_host.set_variable(var_key, var_value)
@@ -202,7 +202,7 @@ if __name__ == "__main__":
                  u'SNF:port_forwarding': {}}]}
 
 
-    from provisioner import Provisioner
+    # from provisioner import Provisioner
     # provisioner = Provisioner("lambda")
     # inv = provisioner.create_lambda_cluster("test_vm")
 
@@ -210,5 +210,7 @@ if __name__ == "__main__":
     manager.create_inventory()
 
     ansible.constants.HOST_KEY_CHECKING = False
-    manager.run_playbook(playbook_file="../../ansible/playbooks/testinventory.yml")
+    ansible.constants.ANSIBLE_SSH_ARGS = '-o "ProxyCommand ssh -A -W %%h:%%p root@%s"' % manager.master_fqdn
+    # ansible.constants.ANSIBLE_SSH_ARGS = '-o "ProxyCommand ssh root@%s nc %%h %%p"' % manager.master_fqdn
+    manager.run_playbook(playbook_file="../../ansible/playbooks/testinventory.yml", tags=["rm"])
     # manager.run_playbook(playbook_file="../../ansible/playbooks/testproxy.yml", tags=["install"])
