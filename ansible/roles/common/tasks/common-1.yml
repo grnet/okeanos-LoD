@@ -9,7 +9,7 @@
     template: src=hosts.j2 dest=/etc/hosts backup=no owner=root group=root mode=0750
 
   - name: Copy environment file.
-    copy: src=environment dest=/etc/environment backup=no owner=root group=root mode=0750
+    template: src=environment.j2 dest=/etc/environment backup=no owner=root group=root mode=0750
 
   - name: Generate ssh key.
     shell: cat /dev/zero | ssh-keygen -q -N ""
