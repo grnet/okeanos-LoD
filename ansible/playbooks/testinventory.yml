@@ -22,4 +22,4 @@
     tags: rm
   - name: Copy hosts file.
     template: src=../roles/common/templates/hosts.j2 dest=/etc/hosts backup=no owner=root group=root mode=0750
-
+    tags: hosts
