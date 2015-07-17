@@ -12,6 +12,9 @@ LOCKFILE="$INSTALLATION_PATH/flink/flink-lock"
 # The command that will start Apache Flink.
 START_COMMAND="$INSTALLATION_PATH/flink/bin/yarn-session.sh -n {{ number_of_taskmanagers }} -tm {{ ram_per_task_manager }}"
 
+# The stop function, will not stop Apache Flink. The best way to stop Apache Flink running on an Apache Yarn session, is to
+# stop the Apache Yarn session itself.
+
 start(){
   touch $PIDFILE
   nohup $START_COMMAND & echo $! > $PIDFILE

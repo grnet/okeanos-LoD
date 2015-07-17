@@ -3,25 +3,22 @@
 # The path where Apache Hadoop is installed.
 INSTALLATION_PATH="{{ installation_path }}"
 
-# The full path of the pid file to use.
-PIDFILE="$INSTALLATION_PATH/hadoop/yarn.pid"
-
 # The full path of the lock file to use.
 LOCKFILE="$INSTALLATION_PATH/hadoop/yarn-lock"
 
 # The command that will start Apache Yarn.
 START_COMMAND="$INSTALLATION_PATH/hadoop/sbin/start-yarn.sh"
+STOP_COMMAND="$INSTALLATION_PATH/hadoop/sbin/stop-yarn.sh"
 
 start(){
-  touch $PIDFILE
-  nohup $START_COMMAND & echo $! > $PIDFILE
+  nohup $START_COMMAND &
   RETVAL=$?
   [ $RETVAL -eq 0 ] && touch $LOCKFILE
   return $RETVAL
 }
 
 stop(){
-  kill -s 9 $(cat $PIDFILE)
+  nohup $STOP_COMMAND &
   RETVAL=$?
   [ $RETVAL -eq 0 ] && $(rm -f $LOCKFILE)
   return $RETVAL
