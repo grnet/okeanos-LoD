@@ -3,5 +3,5 @@ mirror_url: "http://mirrors.myaegean.gr/apache/hadoop/common"
 version: "2.7.0"
 download_path: "/root"
 installation_path: "/usr/local"
-dfs_replication: 2
+dfs_replication: {{ groups['slaves']|count }}
 
