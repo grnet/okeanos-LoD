@@ -3,8 +3,7 @@
     get_url: url="{{ mirror_url }}/{{ version }}/kafka_{{ scala_version }}-{{ version }}.tgz" dest="{{ download_path }}/kafka_{{ scala_version }}-{{ version }}.tgz"
 
   - name: Uncompress Apache Kafka.
-    unarchive: src="{{ download_path }}/kafka_{{ scala_version }}-{{ version }}.tgz" dest="{{ installation_path }}" copy=no
+    unarchive: src="{{ download_path }}/kafka_{{ scala_version }}-{{ version }}.tgz" dest="{{ installation_path }}" copy=no owner=kafka group=lambda
 
   - name: Create softlink for Apache Kafka.
     file: src="{{ installation_path }}/kafka_{{ scala_version }}-{{ version }}" dest="{{ installation_path }}/kafka" state=link
-

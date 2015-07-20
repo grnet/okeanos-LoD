@@ -5,7 +5,7 @@
       - download
 
   - name: Configure Apache kafka.
-    template: src=server.properties.j2 dest="{{ installation_path }}/kafka/config/server.properties" owner=root group=root mode=0644
+    template: src=server.properties.j2 dest="{{ installation_path }}/kafka/config/server.properties" owner=kafka group=lambda mode=0644
     tags:
       - configure-kafka
 
@@ -20,4 +20,3 @@
     wait_for: port=9092
     tags:
       - start-kafka
-
