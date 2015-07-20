@@ -8,6 +8,8 @@ LOCKFILE="$INSTALLATION_PATH/hadoop/yarn-lock"
 
 # The command that will start Apache Yarn.
 START_COMMAND="$INSTALLATION_PATH/hadoop/sbin/start-yarn.sh"
+
+# The command that will stop Apache Yarn.
 STOP_COMMAND="$INSTALLATION_PATH/hadoop/sbin/stop-yarn.sh"
 
 start(){
@@ -44,12 +46,8 @@ case "$1" in
   condrestart)
     [ -f $LOCKFILE ] && restart || :
     ;;
-  status)
-    ps -p $(cat $PIDFILE)
-    RETVAL=$?
-    ;;
   *)
-    echo "Usage: $0 {start|stop|status|restart|reload|force-reload|condrestart}"
+    echo "Usage: $0 {start|stop|restart|reload|force-reload|condrestart}"
     RETVAL=1
 esac
 
