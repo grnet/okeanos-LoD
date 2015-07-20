@@ -62,6 +62,7 @@ class Provisioner:
         self.slaves = None
         self.vpn = None
         self.subnet = None
+        self.image_id = 'c6f5adce-21ad-4ce3-8591-acfe7eb73c02'
 
     def find_flavor(self, **kwargs):
         """
@@ -109,14 +110,19 @@ class Provisioner:
         logger.info("Retrieving project")
         return self.astakos.get_projects(**filter)[0]
 
-    def create_vm(self, vm_name=None, ip=None, **kwargs):
+    def create_vm(self, vm_name=None, ip=None, image_id=None, **kwargs):
         """
         :param vm_name: Name of the virtual machine to create
         :param kwargs: passed to the functions called for detail options
         :return:
         """
         flavor_id = self.find_flavor(**kwargs)['id']
-        image_id = self.find_image(**kwargs)['id']
+        # Get image
+        if image_id == None:
+            image_id = self.image_id
+        else:
+            image_is = self.find_image(**kwargs)['id']
+
         project_id = self.find_project_id(**kwargs)['id']
         networks = [{'uuid': kwargs['net_id']}]
         if ip != None:
@@ -133,7 +139,7 @@ class Provisioner:
             raise ex
         return okeanos_response
 
-    def create_lambda_cluster(self, vm_name, **kwargs):
+    def create_lambda_cluster(self, vm_name, image_id=None, **kwargs):
         """
         :param vm_name: hostname of the master
         :param kwargs: contains specifications of the vms.
@@ -162,12 +168,11 @@ class Provisioner:
             for i in range(ip_request):
                 ip = self.reserve_ip(project_id=project_id)
                 self.ips.append(ip)
-
             ip = None
             # Create master
             if len(self.ips) > 0:
                 ip = self.ips[0]
-            self.master = self.create_vm(vm_name=vm_name, ip=ip, net_id=vpn_id, vcpus=kwargs['vcpus_master'], ram=kwargs['ram_master'], disk=kwargs['disk_master'], **kwargs)
+            self.master = self.create_vm(vm_name=vm_name, ip=ip, net_id=vpn_id, vcpus=kwargs['vcpus_master'], image_id=image_id, ram=kwargs['ram_master'], disk=kwargs['disk_master'], **kwargs)
 
             # Create slaves
             self.slaves = list()
@@ -176,8 +181,13 @@ class Provisioner:
                 if len(self.ips) > i+1:
                     ip = self.ips[i+1]
                 slave_name = 'lambda-node' + str(i+1)
-                slave = self.create_vm(vm_name=slave_name, ip=ip, net_id=vpn_id, vcpus=kwargs['vcpus_slave'], ram=kwargs['ram_slave'], disk=kwargs['disk_slave'], **kwargs)
+                slave = self.create_vm(vm_name=slave_name, ip=ip, net_id=vpn_id, vcpus=kwargs['vcpus_slave'], image_id=image_id, ram=kwargs['ram_slave'], disk=kwargs['disk_slave'], **kwargs)
                 self.slaves.append(slave)
+
+            # Wait for VMs to complete being built
+            self.cyclades.wait_server(server_id=self.master['id'])
+            for slave in self.slaves:
+                self.cyclades.wait_server(slave['id'])
 
             # Create cluster dictionary object
             inventory = dict()
@@ -437,7 +447,7 @@ if __name__ == "__main__":
     parser.add_argument('--ram_slave', type=int, dest='ram_slave', default=4096)  # in MB
     parser.add_argument('--disk_master', type=int, dest='disk_master', default=40)  # in GB
     parser.add_argument('--disk_slave', type=int, dest='disk_slave', default=40)  # in GB
-    parser.add_argument('--ip_request', type=int, dest='ip_request', default=1)
+    parser.add_argument('--ip_request', type=int, dest='ip_request', default=0)
     parser.add_argument('--network_request', type=int, dest='network_request', default=1)
     parser.add_argument('--image_name', type=str, dest='image_name', default="debian")
     parser.add_argument('--cluster_size', type=int, dest='cluster_size', default=2)
@@ -452,7 +462,6 @@ if __name__ == "__main__":
 
 
     response = provisioner.create_lambda_cluster(vm_name="lambda-master" , slaves=args.slaves,
-                                          image_name=args.image_name,
                                           cluster_size=args.cluster_size,
                                           vcpus_master=args.vcpus_master,
                                           vcpus_slave=args.vcpus_slave,
