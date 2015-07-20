@@ -8,7 +8,12 @@ LOCKFILE="$INSTALLATION_PATH/hadoop/hdfs-lock"
 
 # The command that will start Apache HDFS.
 START_COMMAND="$INSTALLATION_PATH/hadoop/sbin/start-dfs.sh"
+
+# The command that will stop Apache HDFS.
 STOP_COMMAND="$INSTALLATION_PATH/hadoop/sbin/stop-dfs.sh"
+
+# The command that will return the status of Apache HDFS.
+STATUS_COMMAND="$INSTALLATION_PATH/hadoop/bin/hdfs dfsadmin -report"
 
 start(){
   nohup $START_COMMAND &
@@ -45,7 +50,7 @@ case "$1" in
     [ -f $LOCKFILE ] && restart || :
     ;;
   status)
-    ps -p $(cat $PIDFILE)
+    $STATUS_COMMAND
     RETVAL=$?
     ;;
   *)

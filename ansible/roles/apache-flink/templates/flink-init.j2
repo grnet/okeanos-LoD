@@ -16,6 +16,9 @@ START_COMMAND="$INSTALLATION_PATH/flink/bin/yarn-session.sh -n {{ number_of_task
 # before Flink's deployment.
 STOP_COMMAND="$HADOOP_HOME/bin/yarn application --kill"
 
+# The command that will return the status of Apache Flink.
+STATUS_COMMAND="$HADOOP_HOME/bin/yarn application -status"
+
 start(){
   nohup $START_COMMAND &
   RETVAL=$?
@@ -52,7 +55,8 @@ case "$1" in
     [ -f $LOCKFILE ] && restart || :
     ;;
   status)
-    ps -p $(cat $PIDFILE)
+    id=$($HADOOP_HOME/bin/yarn application --list | grep "Flink session" | cut -f1)
+    $STATUS_COMMAND $id
     RETVAL=$?
     ;;
   *)
