@@ -188,20 +188,22 @@ class Provisioner:
     def get_cluster_details(self):
         details = dict()
 
+        nodes = dict()
         master = dict()
         master['id'] = self.master['id']
         master['name'] = self.master['name']
-        master['adminPass'] = self.master['adminPass']
-        details['master'] = master
+        nodes['master'] = master
 
+        slaves = list()
         for slave in self.slaves:
             slave_obj = dict()
             slave_obj['id'] = slave['id']
             slave_obj['name'] = slave['name']
-            slave_obj['adminPass'] = slave['adminPass']
             name = slave_obj['name']
-            details[name] = slave_obj
+            slaves.append(slave_obj)
+        nodes['slaves'] = slaves
 
+        details['nodes'] = nodes
         vpn = dict()
         vpn['id'] = self.vpn['id']
         vpn['type'] = self.vpn['type']
