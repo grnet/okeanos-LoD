@@ -2,6 +2,7 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 import logging
 import re
+import argparse
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -10,12 +11,11 @@ from kamaki.clients import astakos, cyclades
 from kamaki.clients import ClientError
 from kamaki.clients.utils import https
 from kamaki.cli.config import Config as KamakiConfig
+from kamaki import defaults
 from cluster_error_constants import *
 
-# TODO: remove this and actually use ssl cert files
-https.patch_ignore_ssl()
-
-import argparse
+if not defaults.CACERTS_DEFAULT_PATH:
+    https.patch_with_certs(CA_CERTS_PATH)
 
 storage_templates = ['drdb', 'ext_vlmc']
 
