@@ -14,7 +14,7 @@ START_COMMAND="$INSTALLATION_PATH/kafka/bin/kafka-server-start.sh $INSTALLATION_
 
 start(){
   touch $PIDFILE
-  nohup $START_COMMAND & echo $! > $PIDFILE
+  nohup $START_COMMAND > /dev/null & echo $! > $PIDFILE
   RETVAL=$?
   [ $RETVAL -eq 0 ] && touch $LOCKFILE
   return $RETVAL
@@ -48,7 +48,7 @@ case "$1" in
     [ -f $LOCKFILE ] && restart || :
     ;;
   status)
-    ps -p $(cat $PIDFILE)
+    [ -f $LOCKFILE ] && echo "Apache Kafka is running." || echo "Apache kafka is not running."
     RETVAL=$?
     ;;
   *)

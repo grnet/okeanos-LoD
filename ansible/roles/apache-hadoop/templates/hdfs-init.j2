@@ -15,18 +15,15 @@ START_COMMAND="$INSTALLATION_PATH/hadoop/sbin/start-dfs.sh"
 # The command that will stop Apache HDFS.
 STOP_COMMAND="$INSTALLATION_PATH/hadoop/sbin/stop-dfs.sh"
 
-# The command that will return the status of Apache HDFS.
-STATUS_COMMAND="$INSTALLATION_PATH/hadoop/bin/hdfs dfsadmin -report"
-
 start(){
-  nohup $START_COMMAND &
+  nohup $START_COMMAND > /dev/null &
   RETVAL=$?
   [ $RETVAL -eq 0 ] && touch $LOCKFILE
   return $RETVAL
 }
 
 stop(){
-  nohup $STOP_COMMAND &
+  nohup $STOP_COMMAND > /dev/null &
   RETVAL=$?
   [ $RETVAL -eq 0 ] && $(rm -f $LOCKFILE)
   return $RETVAL
@@ -53,7 +50,7 @@ case "$1" in
     [ -f $LOCKFILE ] && restart || :
     ;;
   status)
-    $STATUS_COMMAND
+    [ -f $LOCKFILE ] && echo "Apache HDFS is running." || echo "Apache HDFS is not running."
     RETVAL=$?
     ;;
   *)

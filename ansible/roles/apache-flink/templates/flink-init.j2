@@ -6,9 +6,6 @@ source /etc/environment
 # The path where Apache Flink is installed.
 INSTALLATION_PATH="{{ installation_path }}"
 
-# The full path of the pid file to use.
-PIDFILE="$INSTALLATION_PATH/flink/flink.pid"
-
 # The full path of the lock file to use.
 LOCKFILE="$INSTALLATION_PATH/flink/flink-lock"
 
@@ -19,11 +16,8 @@ START_COMMAND="$INSTALLATION_PATH/flink/bin/yarn-session.sh -n {{ number_of_task
 # before Flink's deployment.
 STOP_COMMAND="$HADOOP_HOME/bin/yarn application --kill"
 
-# The command that will return the status of Apache Flink.
-STATUS_COMMAND="$HADOOP_HOME/bin/yarn application -status"
-
 start(){
-  nohup $START_COMMAND &
+  nohup $START_COMMAND > /dev/null &
   RETVAL=$?
   [ $RETVAL -eq 0 ] && touch $LOCKFILE
   return $RETVAL
@@ -31,7 +25,7 @@ start(){
 
 stop(){
   id=$($HADOOP_HOME/bin/yarn application --list | grep "Flink session" | cut -f1)
-  nohup $STOP_COMMAND $id &
+  nohup $STOP_COMMAND $id > /dev/null &
   RETVAL=$?
   [ $RETVAL -eq 0 ] && $(rm -f $LOCKFILE)
   return $RETVAL
@@ -58,8 +52,7 @@ case "$1" in
     [ -f $LOCKFILE ] && restart || :
     ;;
   status)
-    id=$($HADOOP_HOME/bin/yarn application --list | grep "Flink session" | cut -f1)
-    $STATUS_COMMAND $id
+    [ -f $LOCKFILE ] && echo "Apache Flink is running." || echo "Apache Flink is not running."
     RETVAL=$?
     ;;
   *)
