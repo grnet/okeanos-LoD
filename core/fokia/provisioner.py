@@ -13,6 +13,8 @@ from kamaki.clients.utils import https
 from kamaki.cli.config import Config as KamakiConfig
 from kamaki import defaults
 from cluster_error_constants import *
+from Crypto.PublicKey import RSA
+from base64 import b64encode
 
 if not defaults.CACERTS_DEFAULT_PATH:
     https.patch_with_certs(CA_CERTS_PATH)
@@ -62,6 +64,7 @@ class Provisioner:
         self.slaves = None
         self.vpn = None
         self.subnet = None
+        self.private_key = None
         self.image_id = 'c6f5adce-21ad-4ce3-8591-acfe7eb73c02'
 
     def find_flavor(self, **kwargs):
@@ -110,9 +113,10 @@ class Provisioner:
         logger.info("Retrieving project")
         return self.astakos.get_projects(**filter)[0]
 
-    def create_vm(self, vm_name=None, ip=None, image_id=None, **kwargs):
+    def create_vm(self, vm_name=None, image_id=None, ip=None, personality=None, **kwargs):
         """
         :param vm_name: Name of the virtual machine to create
+        :param image_id: image id if you want another image than the default
         :param kwargs: passed to the functions called for detail options
         :return:
         """
@@ -121,28 +125,30 @@ class Provisioner:
         if image_id == None:
             image_id = self.image_id
         else:
-            image_is = self.find_image(**kwargs)['id']
-
+            image_id = self.find_image(**kwargs)['id']
         project_id = self.find_project_id(**kwargs)['id']
-        networks = [{'uuid': kwargs['net_id']}]
         if ip != None:
             ip_obj = dict()
             ip_obj['uuid'] = ip['floating_network_id']
             ip_obj['fixed_ip'] = ip['floating_ip_address']
             networks.append(ip_obj)
+        networks = [{'uuid': kwargs['net_id']}]
+        if personality == None:
+            personality = []
         try:
             okeanos_response = self.cyclades.create_server(name=vm_name, flavor_id=flavor_id,
                                                            image_id=image_id,
                                                            project_id=project_id,
-                                                           networks=networks, personality=[])
+                                                           networks=networks, personality=personality)
         except ClientError as ex:
             raise ex
         return okeanos_response
 
-    def create_lambda_cluster(self, vm_name, image_id=None, **kwargs):
+    def create_lambda_cluster(self, vm_name, **kwargs):
         """
         :param vm_name: hostname of the master
         :param kwargs: contains specifications of the vms.
+        :return: dictionary object with the nodes of the cluster if it was successfully created
         """
         quotas = self.get_quotas()
         vcpus = kwargs['slaves'] * kwargs['vcpus_slave'] + kwargs['vcpus_master']
@@ -157,6 +163,29 @@ class Provisioner:
                                               network_request=kwargs['network_request'],
                                               project_name=kwargs['project_name'])
         if response:
+            # Get ssh keys
+            key = RSA.generate(2048)
+            self.private_key = key.exportKey('PEM')
+            pub_key = key.publickey().exportKey('OpenSSH') + ' root'
+            public = dict(contents=b64encode(pub_key),
+                          path='/root/.ssh/id_rsa.pub',
+                          owner='root', group='root', mode=0600)
+            authorized = dict(contents=b64encode(pub_key),
+                          path='/root/.ssh/authorized_keys',
+                          owner='root', group='root', mode=0600)
+            private = dict(contents=b64encode(self.private_key),
+                          path='/root/.ssh/id_rsa',
+                          owner='root', group='root', mode=0600)
+
+            master_personality = []
+            master_personality.append(authorized)
+            master_personality.append(public)
+            master_personality.append(private)
+            slave_personality = []
+            slave_personality.append(authorized)
+            print(master_personality)
+            print(slave_personality)
+
             # Create private network for cluster
             self.vpn = self.create_vpn('lambda-vpn', project_id=project_id)
             vpn_id = self.vpn['id']
@@ -168,11 +197,18 @@ class Provisioner:
             for i in range(ip_request):
                 ip = self.reserve_ip(project_id=project_id)
                 self.ips.append(ip)
+
             ip = None
             # Create master
             if len(self.ips) > 0:
                 ip = self.ips[0]
-            self.master = self.create_vm(vm_name=vm_name, ip=ip, net_id=vpn_id, vcpus=kwargs['vcpus_master'], image_id=image_id, ram=kwargs['ram_master'], disk=kwargs['disk_master'], **kwargs)
+            self.master = self.create_vm(vm_name=vm_name, ip=ip,
+                                         net_id=vpn_id,
+                                         vcpus=kwargs['vcpus_master'],
+                                         ram=kwargs['ram_master'],
+                                         disk=kwargs['disk_master'],
+                                         personality=master_personality,
+                                         **kwargs)
 
             # Create slaves
             self.slaves = list()
@@ -181,7 +217,14 @@ class Provisioner:
                 if len(self.ips) > i+1:
                     ip = self.ips[i+1]
                 slave_name = 'lambda-node' + str(i+1)
-                slave = self.create_vm(vm_name=slave_name, ip=ip, net_id=vpn_id, vcpus=kwargs['vcpus_slave'], image_id=image_id, ram=kwargs['ram_slave'], disk=kwargs['disk_slave'], **kwargs)
+                slave = self.create_vm(vm_name=slave_name,
+                                       ip=ip,
+                                       net_id=vpn_id,
+                                       vcpus=kwargs['vcpus_slave'],
+                                       ram=kwargs['ram_slave'],
+                                       disk=kwargs['disk_slave'],
+                                       personality=slave_personality,
+                                       **kwargs)
                 self.slaves.append(slave)
 
             # Wait for VMs to complete being built
@@ -196,12 +239,16 @@ class Provisioner:
             return inventory
 
     def get_cluster_details(self):
+        """
+        :returns: dictionary of basic details for the cluster
+        """
         details = dict()
 
         nodes = dict()
         master = dict()
         master['id'] = self.master['id']
         master['name'] = self.master['name']
+        master['adminPass'] = self.master['adminPass']
         nodes['master'] = master
 
         slaves = list()
@@ -236,6 +283,11 @@ class Provisioner:
         details['subnet'] = subnet
         return details
 
+    def get_private_key(self):
+        """
+        :returns: Private key of master
+        """
+        return self.private_key
 
     def create_vpn(self, network_name, project_id):
         """
@@ -310,9 +362,9 @@ class Provisioner:
             raise ex
         return okeanos_response
 
-    def attach_public_ip(self, ip, vm_id):
+    def attach_authorized_ip(self, ip, vm_id):
         """
-        Attach the public ip with this id to the vm
+        Attach the authorized ip with this id to the vm
         :param fnet_id: id of the floating network of the ip
         :param vm_id: id of the vm
         :return: returns True if successfull
@@ -338,10 +390,10 @@ class Provisioner:
         """
         return self.cyclades.get_server_details(server_id=server_id)
 
-    def get_server_public_ip(self, server_id):
+    def get_server_authorized_ip(self, server_id):
         """
         :param server_id: id of the server
-        :returns: the public ip of the server if it has one,else None
+        :returns: the authorized ip of the server if it has one,else None
         """
         addresses =  self.get_server_info(server_id=server_id)['addresses']
         for key in list(addresses.keys()):
@@ -407,7 +459,7 @@ class Provisioner:
             msg = 'Cyclades disk out of limit'
             raise ClientError(msg, error_quotas_cyclades_disk)
             return False
-        # Check for public IPs
+        # Check for authorized IPs
         list_float_ips = self.network_client.list_floatingips()
         pending_ips = quotas[project_id]['cyclades.floating_ip']['project_pending']
         limit_ips = quotas[project_id]['cyclades.floating_ip']['project_limit']
@@ -417,7 +469,7 @@ class Provisioner:
             if d['instance_id'] is None and d['port_id'] is None:
                 available_ips += 1
         if available_ips < kwargs['ip_request']:
-            msg = 'Public IPs out of limit'
+            msg = 'authorized IPs out of limit'
             raise ClientError(msg, error_get_ip)
             return False
         # Check for networks
@@ -447,7 +499,7 @@ if __name__ == "__main__":
     parser.add_argument('--ram_slave', type=int, dest='ram_slave', default=4096)  # in MB
     parser.add_argument('--disk_master', type=int, dest='disk_master', default=40)  # in GB
     parser.add_argument('--disk_slave', type=int, dest='disk_slave', default=40)  # in GB
-    parser.add_argument('--ip_request', type=int, dest='ip_request', default=0)
+    parser.add_argument('--ip_request', type=int, dest='ip_request', default=1)
     parser.add_argument('--network_request', type=int, dest='network_request', default=1)
     parser.add_argument('--image_name', type=str, dest='image_name', default="debian")
     parser.add_argument('--cluster_size', type=int, dest='cluster_size', default=2)
@@ -474,3 +526,4 @@ if __name__ == "__main__":
                                           project_name=args.project_name)
     # print(response)
     print(provisioner.get_cluster_details())
+    print(provisioner.get_private_key())
