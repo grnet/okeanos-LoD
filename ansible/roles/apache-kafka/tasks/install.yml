@@ -9,4 +9,4 @@
     file: src="{{ installation_path }}/kafka_{{ scala_version }}-{{ version }}" dest="{{ installation_path }}/kafka" state=link
 
   - name: Copy Apache Kafka init script.
-    template: src=kafka-init.j2 dest=/etc/init.d/kafka-init owner=kafka group=lambda mode=0754
+    template: src=kafka-init.j2 dest=/etc/init.d/kafka-init owner=kafka group=lambda mode=0740

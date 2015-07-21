@@ -3,7 +3,7 @@
     include: install.yml
 
   - name: Copy Apache Zookeeper init script.
-    template: src=zookeeper-init.j2 dest=/etc/init.d/zookeeper-init owner=root group=root mode=0755
+    template: src=zookeeper-init.j2 dest=/etc/init.d/zookeeper-init owner=kafka group=lambda mode=0740
 
   - name: Configure Apache kafka.
     copy: src=server.properties dest="{{ installation_path }}/kafka/config/server.properties" owner=kafka group=lambda mode=0644

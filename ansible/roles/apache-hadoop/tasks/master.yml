@@ -1,9 +1,9 @@
 ---
   - name: Copy Apache HDFS init script.
-    template: src=hdfs-init.j2 dest=/etc/init.d/hdfs-init owner=root group=root mode=0755
+    template: src=hdfs-init.j2 dest=/etc/init.d/hdfs-init owner=hduser group=lambda mode=0740
 
   - name: Copy Apache Yarn init script.
-    template: src=yarn-init.j2 dest=/etc/init.d/yarn-init owner=root group=root mode=0755
+    template: src=yarn-init.j2 dest=/etc/init.d/yarn-init owner=hduser group=lambda mode=0740
 
   - name: Format Apache HDFS.
     shell: "yes | {{ installation_path }}/hadoop/bin/hadoop namenode -format"
