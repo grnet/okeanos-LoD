@@ -49,6 +49,10 @@ case "$1" in
   condrestart)
     [ -f $LOCKFILE ] && restart || :
     ;;
+  status)
+    [ -f $LOCKFILE ] && echo "Hadoop Yarn is running." || echo "Hadoop Yarn is not running."
+    RETVAL=$?
+    ;;
   *)
     echo "Usage: $0 {start|stop|restart|reload|force-reload|condrestart}"
     RETVAL=1
