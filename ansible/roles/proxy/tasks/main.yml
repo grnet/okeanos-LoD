@@ -6,6 +6,6 @@
 
   - name: Configure squid http proxy
     lineinfile: destfile="/etc/squid3/squid.conf" regexp="^acl localnet" insertafter="^#acl localnet"
-                line="acl localnet src {{ hostvars[master-node]["local_net"] }}"
+                line="acl localnet src {{ hostvars[groups['all'][0]]['local_net'] }}"
                 state=present
     tags: config

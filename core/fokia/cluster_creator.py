@@ -1,4 +1,5 @@
 import argparse
+import time
 from provisioner import Provisioner
 from ansible_manager import Manager
 
@@ -44,9 +45,20 @@ if __name__ == "__main__":
     for i, slave in enumerate(provisioner_response['nodes']['slaves']):
         slave_ip = provisioner.get_server_private_ip(slave['id'])
         provisioner_response['nodes']['slaves'][i]['internal_ip'] = slave_ip
-    provisioner_response['pk'] = provisioner.get_private_key();
+    provisioner_response['pk'] = provisioner.get_private_key()
 
+    print provisioner_response
+
+    time.sleep(15)
     manager = Manager(provisioner_response)
     manager.create_inventory()
-    manager.run_playbook(playbook_file="../../ansible/playbooks/testinventory.yml", tags=["touch"])
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/testproxy.yml", tags=["install"])
+    manager.run_playbook(playbook_file="../../ansible/playbooks/testinventory.yml", tags=['hosts'])
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/testproxy.yml", tags=['install'])
+
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['master'])
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/proxy/proxy.yml")
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['slaves'])
+
+    # INSERT PLAYBOOKS HERE
+
+    manager.cleanup()
