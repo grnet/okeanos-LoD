@@ -127,12 +127,13 @@ class Provisioner:
         else:
             image_id = self.find_image(**kwargs)['id']
         project_id = self.find_project_id(**kwargs)['id']
+        networks = list()
         if ip != None:
             ip_obj = dict()
             ip_obj['uuid'] = ip['floating_network_id']
             ip_obj['fixed_ip'] = ip['floating_ip_address']
             networks.append(ip_obj)
-        networks = [{'uuid': kwargs['net_id']}]
+        networks.append({'uuid': kwargs['net_id']})
         if personality == None:
             personality = []
         try:
