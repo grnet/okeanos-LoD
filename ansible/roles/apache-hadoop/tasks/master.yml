@@ -1,16 +1,32 @@
 ---
+  - name: Copy Apache HDFS init script.
+    template: src=hdfs-init.j2 dest=/etc/init.d/hdfs-init owner=root group=root mode=0755
+
+  - name: Copy Apache Yarn init script.
+    template: src=yarn-init.j2 dest=/etc/init.d/yarn-init owner=root group=root mode=0755
+
   - name: Format Apache HDFS.
     shell: "yes | {{ installation_path }}/hadoop/bin/hadoop namenode -format"
     tags:
       - format-hdfs
 
   - name: Start Apache HDFS.
-    shell: "{{ installation_path }}/hadoop/sbin/start-dfs.sh"
+    shell: /etc/init.d/hdfs-init start # Should use Ansible module "service: name=hdfs-init state=started" when the bug in version 1.9.1 is fixed.
+    tags:
+      - start-hdfs
+
+  - name: Wait for Apache HDFS to become available.
+    wait_for: host="{{ hostvars[inventory_hostname]["internal_ip"] }}" port=9000
     tags:
       - start-hdfs
 
   - name: Start Apache Yarn.
-    shell: "{{ installation_path }}/hadoop/sbin/start-yarn.sh"
+    shell: /etc/init.d/yarn-init start # Should use Ansible module "service: name=yarn-init state=started" when the bug in version 1.9.1 is fixed.
+    tags:
+      - start-yarn
+
+  - name: Wait for Apache Yarn to become available.
+    wait_for: host="{{ hostvars[inventory_hostname]["internal_ip"] }}" port=8050 # 8050 is the port of the resource manager.
     tags:
       - start-yarn
 

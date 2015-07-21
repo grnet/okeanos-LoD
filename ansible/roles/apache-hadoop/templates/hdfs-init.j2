@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# Source environment file to make sure JAVA_HOME variable is available.
+source /etc/environment
+
+# The path where Apache Hadoop is installed.
+INSTALLATION_PATH="{{ installation_path }}"
+
+# The full path of the lock file to use.
+LOCKFILE="$INSTALLATION_PATH/hadoop/hdfs-lock"
+
+# The command that will start Apache HDFS.
+START_COMMAND="$INSTALLATION_PATH/hadoop/sbin/start-dfs.sh"
+
+# The command that will stop Apache HDFS.
+STOP_COMMAND="$INSTALLATION_PATH/hadoop/sbin/stop-dfs.sh"
+
+start(){
+  nohup $START_COMMAND > /dev/null &
+  RETVAL=$?
+  [ $RETVAL -eq 0 ] && touch $LOCKFILE
+  return $RETVAL
+}
+
+stop(){
+  nohup $STOP_COMMAND > /dev/null &
+  RETVAL=$?
+  [ $RETVAL -eq 0 ] && $(rm -f $LOCKFILE)
+  return $RETVAL
+}
+
+restart(){
+  stop
+  start
+}
+
+RETVAL=0
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart|reload|force-reload)
+    restart
+    ;;
+  condrestart)
+    [ -f $LOCKFILE ] && restart || :
+    ;;
+  status)
+    [ -f $LOCKFILE ] && echo "Apache HDFS is running." || echo "Apache HDFS is not running."
+    RETVAL=$?
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|status|restart|reload|force-reload|condrestart}"
+    RETVAL=1
+esac
+
+exit $RETVAL
+

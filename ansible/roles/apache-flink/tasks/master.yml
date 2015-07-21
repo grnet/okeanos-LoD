@@ -1,0 +1,29 @@
+---
+  - name: Download Apache Flink, Yarn version.
+    get_url: url="{{ mirror_url }}/flink-{{ version }}/flink-{{ version }}-{{ version_for }}.tgz" dest="{{ download_path }}/flink-{{ version }}-{{ version_for }}.tgz"
+    tags:
+      - download
+
+  - name: Uncompress Apache Flink.
+    unarchive: src="{{ download_path }}/flink-{{ version }}-{{ version_for }}.tgz" dest="{{ installation_path }}" copy=no
+    tags:
+      - uncompress
+
+  - name: Create softlink for Apache Flink.
+    file: src="{{ installation_path }}/flink-{{ version }}" dest="{{ installation_path }}/flink" state=link
+    tags:
+      - uncompress
+
+  - name: Configure Apache Flink.
+    template: src=flink-conf.j2 dest="{{ installation_path }}/flink/conf/flink-conf.yaml" owner=root group=root mode=0644
+    tags:
+      - configure
+
+  - name: Copy Apache Flink init script.
+    template: src=flink-init.j2 dest=/etc/init.d/flink-init owner=root group=root mode=0755
+
+  - name: Start Apache Flink.
+    shell: /etc/init.d/flink-init start # Should use Ansible module "service: name=flink-init state=started" when the bug in version 1.9.1 is fixed.
+    tags:
+      - start
+
