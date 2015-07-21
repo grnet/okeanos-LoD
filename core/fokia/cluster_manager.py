@@ -19,12 +19,12 @@ if __name__ == "__main__":
     parser.add_argument('--disk_slave', type=int, dest='disk_slave', default=40)  # in GB
     parser.add_argument('--ip_request', type=int, dest='ip_request', default=1)
     parser.add_argument('--network_request', type=int, dest='network_request', default=1)
-    parser.add_argument('--image_name', type=str, dest='image_name', default="debian")
+    parser.add_argument('--image_name', type=str, dest='image_name', default='debian')
     parser.add_argument('--cluster_size', type=int, dest='cluster_size', default=2)
 
     args = parser.parse_args()
     provisioner = Provisioner(cloud_name=args.cloud)
-    provisioner.create_lambda_cluster("test_vm", slaves=args.slaves,
+    provisioner.create_lambda_cluster('test_vm', slaves=args.slaves,
                                               cluster_size=args.cluster_size,
                                               vcpus_master=args.vcpus_master,
                                               vcpus_slave=args.vcpus_slave,
@@ -37,13 +37,14 @@ if __name__ == "__main__":
                                               project_name=args.project_name)
 
     provisioner_response = provisioner.get_cluster_details()
-    master_id = provisioner_response["nodes"]["master"]["id"]
+    master_id = provisioner_response['nodes']['master']['id']
     master_ip = provisioner.get_server_private_ip(master_id)
-    provisioner_response["nodes"]["master"]["internal_ip"] = master_ip
-    slave_ids = [slave["id"] for slave in provisioner_response["nodes"]["slaves"]]
-    for i, slave in enumerate(provisioner_response["nodes"]["slaves"]):
-        slave_ip = provisioner.get_server_private_ip(slave["id"])
-        provisioner_response["nodes"]["slaves"][i]["internal_ip"] = slave_ip
+    provisioner_response['nodes']['master']['internal_ip'] = master_ip
+    slave_ids = [slave['id'] for slave in provisioner_response['nodes']['slaves']]
+    for i, slave in enumerate(provisioner_response['nodes']['slaves']):
+        slave_ip = provisioner.get_server_private_ip(slave['id'])
+        provisioner_response['nodes']['slaves'][i]['internal_ip'] = slave_ip
+    provisioner_response['pk'] = provisioner.get_private_key();
 
     manager = Manager(provisioner_response)
     manager.create_inventory()

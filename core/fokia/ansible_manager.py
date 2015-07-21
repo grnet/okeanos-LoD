@@ -1,3 +1,4 @@
+import tempfile
 import ansible
 from ansible.playbook import PlayBook
 from ansible import callbacks
@@ -7,21 +8,25 @@ class Manager:
     def __init__(self, provisioner_response):
 
         self.inventory = {}
-        self.inventory["master"] = {
-            "name": "snf-" + str(provisioner_response["nodes"]["master"]["id"]),
-            "ip": provisioner_response["nodes"]["master"]["internal_ip"]}
-        self.inventory["slaves"] = []
-        for response in provisioner_response["nodes"]["slaves"]:
-            self.inventory["slaves"].append(
-                {"name": "snf-" + str(response["id"]),
-                 "ip": response["internal_ip"]})
-        self.cidr = provisioner_response["subnet"]["cidr"]
+        self.inventory['master'] = {
+            'name': 'snf-' + str(provisioner_response['nodes']['master']['id']),
+            'ip': provisioner_response['nodes']['master']['internal_ip']}
+        self.inventory['slaves'] = []
+        for response in provisioner_response['nodes']['slaves']:
+            self.inventory['slaves'].append(
+                {'name': 'snf-' + str(response['id']),
+                 'ip': response['internal_ip']})
+        self.cidr = provisioner_response['subnet']['cidr']
 
-        ansible.constants.ANSIBLE_SSH_ARGS = '-o "ProxyCommand ssh -A -W %%h:%%p root@%s"' \
-                                             % self.inventory["master"]["name"] + "vm.okeanos.grnet.gr"
+        self.kf = tempfile.NamedTemporaryFile()
+        self.kf.write(provisioner_response['pk'])
+
+        ansible.constants.ANSIBLE_SSH_ARGS = '-o "ProxyCommand ssh -A -W %%h:%%p root@%s" -i %s' \
+                                             % self.inventory['master']['name'] + 'vm.okeanos.grnet.gr' %self.kf.name
         # ansible.constants.ANSIBLE_SSH_ARGS = '-o "ProxyCommand ssh root@%s nc %%h %%p"' \
         #                                      % self.inventory["master"]["name"] + "vm.okeanos.grnet.gr"
         ansible.constants.HOST_KEY_CHECKING = False
+        ansible.constants.DEFAULT_GATHERING = 'explicit'
 
     def create_inventory(self):
         """
@@ -32,25 +37,25 @@ class Manager:
         inventory_groups = []
         host_vars = {}
 
-        master_group = ansible.inventory.group.Group(name="master")
-        host = self.inventory["master"]
-        ansible_host = ansible.inventory.host.Host(name=host["name"] + ".vm.okeanos.grnet.gr")
-        host_vars["internal_ip"] = self.inventory["master"]["ip"]
-        host_vars["local_net"] = self.cidr
+        master_group = ansible.inventory.group.Group(name='master')
+        host = self.inventory['master']
+        ansible_host = ansible.inventory.host.Host(name=host['name'] + '.vm.okeanos.grnet.gr')
+        host_vars['internal_ip'] = self.inventory['master']['ip']
+        host_vars['local_net'] = self.cidr
         for var_key, var_value in host_vars.iteritems():
             ansible_host.set_variable(var_key, var_value)
-        ansible_host.set_variable("id", 0)
+        ansible_host.set_variable('id', 0)
         master_group.add_host(ansible_host)
         inventory_groups.append(master_group)
 
-        slave_group = ansible.inventory.group.Group(name="slaves")
-        host_vars["proxy_env"] = {"http_proxy": "http://" + self.inventory["master"]["name"]+".local:3128"}
+        slave_group = ansible.inventory.group.Group(name='slaves')
+        host_vars['proxy_env'] = {'http_proxy': 'http://' + self.inventory['master']['name']+'.local:3128'}
         for host_id, host in enumerate(self.inventory["slaves"], start=1):
-            ansible_host = ansible.inventory.host.Host(name=host["name"] + ".local")
-            host_vars["internal_ip"] = host["ip"]
+            ansible_host = ansible.inventory.host.Host(name=host['name'] + '.local')
+            host_vars['internal_ip'] = host['ip']
             for var_key, var_value in host_vars.iteritems():
                 ansible_host.set_variable(var_key, var_value)
-            ansible_host.set_variable("id", host_id)
+            ansible_host.set_variable('id', host_id)
             slave_group.add_host(ansible_host)
         inventory_groups.append(slave_group)
 
