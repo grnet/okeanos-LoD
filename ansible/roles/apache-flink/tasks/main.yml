@@ -5,7 +5,7 @@
       - download
 
   - name: Uncompress Apache Flink.
-    unarchive: src="{{ download_path }}/flink-{{ version }}-{{ version_for }}.tgz" dest="{{ installation_path }}" copy=no
+    unarchive: src="{{ download_path }}/flink-{{ version }}-{{ version_for }}.tgz" dest="{{ installation_path }}" copy=no owner=flink group=lambda
     tags:
       - uncompress
 
@@ -15,7 +15,7 @@
       - uncompress
 
   - name: Configure Apache Flink.
-    template: src=flink-conf.j2 dest="{{ installation_path }}/flink/conf/flink-conf.yaml" owner=root group=root mode=0644
+    template: src=flink-conf.j2 dest="{{ installation_path }}/flink/conf/flink-conf.yaml" owner=flink group=lambda mode=0644
     tags:
       - configure
 
@@ -25,4 +25,3 @@
     poll: 0
     tags:
       - start
-

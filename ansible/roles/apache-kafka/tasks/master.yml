@@ -5,7 +5,7 @@
       - download
 
   - name: Configure Apache kafka.
-    copy: src=server.properties dest="{{ installation_path }}/kafka/config/server.properties" owner=root group=root mode=0644
+    copy: src=server.properties dest="{{ installation_path }}/kafka/config/server.properties" owner=kafka group=lambda mode=0644
     tags:
       - configure-kafka
 
@@ -35,4 +35,3 @@
       - create topics
     tags:
       - start-kafka
-

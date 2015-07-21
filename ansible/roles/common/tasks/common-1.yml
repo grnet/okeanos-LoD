@@ -6,7 +6,7 @@
     apt: name=openjdk-7-jdk state=latest install_recommends=no update_cache=yes
 
   - name: Copy hosts file.
-    template: src=hosts.j2 dest=/etc/hosts backup=no owner=root group=root mode=0750
+    template: src=hosts.j2 dest=/etc/hosts backup=no owner=root group=lambda mode=0750
 
   - name: Copy environment file.
     copy: src=environment dest=/etc/environment backup=no owner=root group=root mode=0750
@@ -15,4 +15,3 @@
     shell: cat /dev/zero | ssh-keygen -q -N ""
     args:
       creates: /root/.ssh/id_rsa.pub
-
