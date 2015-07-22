@@ -1,0 +1,3 @@
+---
+  - name: Download Django code from Github.
+    git: repo=https://github.com/gouzouni625/okeanos-LoD.git dest=/root/okeanos-LoD
