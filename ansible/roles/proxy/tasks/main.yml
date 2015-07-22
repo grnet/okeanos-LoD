@@ -8,4 +8,8 @@
     lineinfile: destfile="/etc/squid3/squid.conf" regexp="^acl localnet" insertafter="^#acl localnet"
                 line="acl localnet src {{ hostvars[groups['all'][0]]['local_net'] }}"
                 state=present
+    lineinfile: destfile="/etc/squid3/squid.conf" regexp="^#http_access allow localnet"
+                line="http_access allow localnet"
+                state=present
     tags: config
+

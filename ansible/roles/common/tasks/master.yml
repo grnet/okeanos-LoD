@@ -2,12 +2,12 @@
   - name: Include common tasks.
     include: common-1.yml
 
-  - name: Fetch id_rsa.pub file from master.
-    fetch: src=/root/.ssh/id_rsa.pub dest=/tmp/fetched/ flat=yes
+#  - name: Fetch id_rsa.pub file from master.
+#    fetch: src=/root/.ssh/id_rsa.pub dest=/tmp/fetched/ flat=yes
 
   - name: Set up ssh config.
     template: src=ssh-config.j2 dest=/root/.ssh/config owner=root group=root mode=664
 
-  - name: Include more common tasks.
-    include: common-2.yml
+#  - name: Include more common tasks.
+#    include: common-2.yml
 

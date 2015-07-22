@@ -38,39 +38,44 @@ class Manager:
         :return:
         """
 
-        inventory_groups = []
+        all_hosts = []
 
-        all_group = ansible.inventory.group.Group(name="all")
-        all_group.set_variable('local_net', self.cidr)
-        inventory_groups.append(all_group)
-
-        master_group = ansible.inventory.group.Group(name='master')
-        all_group.add_child_group(master_group)
         host = self.inventory['master']
-        ansible_host = ansible.inventory.host.Host(name=host['name'] + '.vm.okeanos.grnet.gr')
-        # master_group.set_variable('local_net', self.cidr)
-        ansible_host.set_variable('ansible_ssh_private_key_file', self.temp_file)
+        all_hosts.append(host['name'] + '.vm.okeanos.grnet.gr')
+        ansible_host = ansible.inventory.host.Host(name=all_hosts[-1])
+        for host in self.inventory['slaves']:
+            all_hosts.append(host['name'] + '.local')
+            ansible_host = ansible.inventory.host.Host(name=all_hosts[-1])
+        self.ansible_inventory = ansible.inventory.Inventory(host_list=all_hosts)
+
+        all_group = self.ansible_inventory.get_group('all')
+        all_group.set_variable('ansible_ssh_private_key_file', self.temp_file)
+        all_group.set_variable('local_net', self.cidr)
+
+        all_ansible_hosts = all_group.get_hosts()
+        master_group = ansible.inventory.group.Group(name='master')
+        ansible_host = all_ansible_hosts[0]
         ansible_host.set_variable('internal_ip', self.inventory['master']['ip'])
         ansible_host.set_variable('id', 0)
         master_group.add_host(ansible_host)
-        inventory_groups.append(master_group)
+        self.ansible_inventory.add_group(master_group)
+        all_group.add_child_group(master_group)
 
-        slave_group = ansible.inventory.group.Group(name='slaves')
-        all_group.add_child_group(slave_group)
-        slave_group.set_variable('proxy_env', {'http_proxy': 'http://' + self.inventory['master']['name'] + '.local:3128'})
-        for host_id, host in enumerate(self.inventory["slaves"], start=1):
-            ansible_host = ansible.inventory.host.Host(name=host['name'] + '.local')
-            # host_vars['internal_ip'] = host['ip']
-            # for var_key, var_value in host_vars.iteritems():
-            #     ansible_host.set_variable(var_key, var_value)
+        slaves_group = ansible.inventory.group.Group(name='slaves')
+        slaves_group.set_variable('proxy_env', {'http_proxy': 'http://' + self.inventory['master']['name'] + '.local:3128'})
+        # slaves_group.set_variable('http_proxy', 'http://' + self.inventory['master']['name'] + '.local:3128')
+        for host_id, host in enumerate(self.inventory['slaves'], start=1):
+            ansible_host = all_ansible_hosts[host_id]
             ansible_host.set_variable('internal_ip', host['ip'])
             ansible_host.set_variable('id', host_id)
-            slave_group.add_host(ansible_host)
-        inventory_groups.append(slave_group)
+            # ansible_host.set_variable('http_proxy', 'http://' + self.inventory['master']['name'] + '.local:3128')
 
-        self.ansible_inventory = ansible.inventory.Inventory(host_list=None)
-        for group in inventory_groups:
-            self.ansible_inventory.add_group(group)
+            # print ansible_host.get_variables()
+
+            slaves_group.add_host(ansible_host)
+        self.ansible_inventory.add_group(slaves_group)
+        all_group.add_child_group(slaves_group)
+
         print self.ansible_inventory.groups_list()
 
         return self.ansible_inventory
@@ -102,12 +107,17 @@ if __name__ == "__main__":
                 u'vpn': {u'type': u'MAC_FILTERED', u'id': u'143499'},
                 u'subnet': {u'cidr': u'192.168.0.0/24', u'gateway_ip': u'192.168.0.1', u'id': u'142564'}}
 
+    
     manager = Manager(response)
     manager.create_inventory()
-    manager.run_playbook(playbook_file="../../ansible/playbooks/testinventory.yml", tags=['hosts'])
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/testinventory.yml", tags=['hosts'])
+    manager.run_playbook(playbook_file="../../ansible/playbooks/testproxy.yml", tags=['install'])
 
     # manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['master'])
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/proxy/proxy.yml", tags=['config'])
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/proxy/proxy.yml")
     # manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['slaves'])
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-hadoop/hadoop-install.yml")
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-flink/flink-install.yml")
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-kafka/kafka-install.yml")
 
     manager.cleanup()

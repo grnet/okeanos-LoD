@@ -52,12 +52,15 @@ if __name__ == "__main__":
     time.sleep(15)
     manager = Manager(provisioner_response)
     manager.create_inventory()
-    manager.run_playbook(playbook_file="../../ansible/playbooks/testinventory.yml", tags=['hosts'])
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/testinventory.yml", tags=['hosts'])
     # manager.run_playbook(playbook_file="../../ansible/playbooks/testproxy.yml", tags=['install'])
 
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['master'])
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/proxy/proxy.yml")
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['slaves'])
+    manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['master'])
+    manager.run_playbook(playbook_file="../../ansible/playbooks/proxy/proxy.yml")
+    manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['slaves'])
+    manager.run_playbook(playbook_file="../../ansible/playbooks/apache-hadoop/hadoop-install.yml")
+    manager.run_playbook(playbook_file="../../ansible/playbooks/apache-flink/flink-install.yml")
+    manager.run_playbook(playbook_file="../../ansible/playbooks/apache-kafka/kafka-install.yml")
 
     # INSERT PLAYBOOKS HERE
 

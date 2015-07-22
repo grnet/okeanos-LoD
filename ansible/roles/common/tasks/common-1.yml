@@ -11,8 +11,8 @@
   - name: Copy environment file.
     copy: src=environment dest=/etc/environment backup=no owner=root group=root mode=0750
 
-  - name: Generate ssh key.
-    shell: cat /dev/zero | ssh-keygen -q -N ""
-    args:
-      creates: /root/.ssh/id_rsa.pub
+#  - name: Generate ssh key.
+#    shell: cat /dev/zero | ssh-keygen -q -N ""
+#    args:
+#      creates: /root/.ssh/id_rsa.pub
 
