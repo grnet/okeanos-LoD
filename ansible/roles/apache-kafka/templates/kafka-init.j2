@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Define the user that should run the service.
-SERVICE_USER=kafka
-
-# Define the group in which SERVICE_USER belongs.
-SERVICE_GROUP=lambda
-
 # The path where Apache Kafka is installed.
 INSTALLATION_PATH="{{ installation_path }}"
 
@@ -19,16 +13,10 @@ LOCKFILE="$INSTALLATION_PATH/kafka/kafka-lock"
 START_COMMAND="$INSTALLATION_PATH/kafka/bin/kafka-server-start.sh $INSTALLATION_PATH/kafka/config/server.properties"
 
 start(){
-  /sbin/start-stop-daemon --start --background --chuid $SERVICE_USER:$SERVICE_GROUP --make-pidfile --pidfile $PIDFILE --exec $START_COMMAND
-
-  chown $SERVICE_USER $PIDFILE
-  chgrp $SERVICE_GROUP $PIDFILE
+  /sbin/start-stop-daemon --start --background --make-pidfile --pidfile $PIDFILE --exec $START_COMMAND
 
   RETVAL=$?
   [ $RETVAL -eq 0 ] && touch $LOCKFILE
-
-  chown $SERVICE_USER $LOCKFILE
-  chgrp $SERVICE_GROUP $LOCKFILE
 
   return $RETVAL
 }
