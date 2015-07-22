@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Define the user that should run the service.
+SERVICE_USER=kafka
+
+# Define the group in which SERVICE_USER belongs.
+SERVICE_GROUP=lambda
+
 # The path where Apache Zookeeper is installed.
 INSTALLATION_PATH="{{ installation_path }}"
 
@@ -13,10 +19,17 @@ LOCKFILE="$INSTALLATION_PATH/kafka/zookeeper-lock"
 START_COMMAND="$INSTALLATION_PATH/kafka/bin/zookeeper-server-start.sh $INSTALLATION_PATH/kafka/config/zookeeper.properties"
 
 start(){
-  touch $PIDFILE
-  nohup $START_COMMAND > /dev/null & echo $! > $PIDFILE
+  /sbin/start-stop-daemon --start --background --chuid $SERVICE_USER:$SERVICE_GROUP --make-pidfile --pidfile $PIDFILE --exec $START_COMMAND
+
+  chown $SERVICE_USER $PIDFILE
+  chgrp $SERVICE_GROUP $PIDFILE
+
   RETVAL=$?
   [ $RETVAL -eq 0 ] && touch $LOCKFILE
+
+  chown $SERVICE_USER $LOCKFILE
+  chgrp $SERVICE_GROUP $LOCKFILE
+
   return $RETVAL
 }
 
