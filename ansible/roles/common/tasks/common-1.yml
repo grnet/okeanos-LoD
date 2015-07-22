@@ -10,8 +10,3 @@
 
   - name: Copy environment file.
     template: src=environment.j2 dest=/etc/environment backup=no owner=root group=lambda mode=0750
-
-  - name: Generate ssh key.
-    shell: cat /dev/zero | ssh-keygen -q -N ""
-    args:
-      creates: /root/.ssh/id_rsa.pub
