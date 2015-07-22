@@ -6,12 +6,12 @@
     template: src=yarn-init.j2 dest=/etc/init.d/yarn-init owner=hduser group=lambda mode=0740
 
   - name: Format Apache HDFS.
-    shell: "yes | {{ installation_path }}/hadoop/bin/hadoop namenode -format"
+    shell: su - hduser -c "yes | {{ installation_path }}/hadoop/bin/hadoop namenode -format"
     tags:
       - format-hdfs
 
   - name: Start Apache HDFS.
-    shell: /etc/init.d/hdfs-init start # Should use Ansible module "service: name=hdfs-init state=started" when the bug in version 1.9.1 is fixed.
+    shell: su - hduser -c "/etc/init.d/hdfs-init start > /dev/null &"
     tags:
       - start-hdfs
 
@@ -21,7 +21,7 @@
       - start-hdfs
 
   - name: Start Apache Yarn.
-    shell: /etc/init.d/yarn-init start # Should use Ansible module "service: name=yarn-init state=started" when the bug in version 1.9.1 is fixed.
+    shell: su - hduser -c "/etc/init.d/yarn-init start > /dev/null &"
     tags:
       - start-yarn
 

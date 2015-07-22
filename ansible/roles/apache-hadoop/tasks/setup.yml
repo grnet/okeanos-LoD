@@ -9,7 +9,7 @@
     file: src="{{ installation_path }}/hadoop-{{ version }}" dest="{{ installation_path }}/hadoop" state=link
 
   - name: Set JAVA_HOME in Apache Hadoop environment.
-    lineinfile: dest="{{ installation_path }}/hadoop/etc/hadoop/hadoop-env.sh" regexp="^export JAVA_HOME=" line="export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64"
+    lineinfile: dest="{{ installation_path }}/hadoop/etc/hadoop/hadoop-env.sh" regexp="^export JAVA_HOME=" line="export JAVA_HOME=/usr"
 
   - name: Configure slaves.
     template: src=slaves.j2 dest="{{ installation_path }}/hadoop/etc/hadoop/slaves" owner=hduser group=lambda mode=0644
