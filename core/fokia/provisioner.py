@@ -17,7 +17,12 @@ from Crypto.PublicKey import RSA
 from base64 import b64encode
 
 if not defaults.CACERTS_DEFAULT_PATH:
+    from ssl import get_default_verify_paths
+    CA_CERTS_PATH = get_default_verify_paths().cafile
+    if not CA_CERTS_PATH:
+        raise
     https.patch_with_certs(CA_CERTS_PATH)
+
 
 storage_templates = ['drdb', 'ext_vlmc']
 
