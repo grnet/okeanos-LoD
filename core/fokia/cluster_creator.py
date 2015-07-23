@@ -47,14 +47,14 @@ if __name__ == "__main__":
         provisioner_response['nodes']['slaves'][i]['internal_ip'] = slave_ip
     provisioner_response['pk'] = provisioner.get_private_key()
 
-    print provisioner_response
+    print 'response = ', provisioner_response
 
-    time.sleep(15)
     manager = Manager(provisioner_response)
     manager.create_inventory()
     # manager.run_playbook(playbook_file="../../ansible/playbooks/testinventory.yml", tags=['hosts'])
     # manager.run_playbook(playbook_file="../../ansible/playbooks/testproxy.yml", tags=['install'])
 
+    manager.run_playbook(playbook_file="../../ansible/playbooks/wait_for_ssh.yml")
     manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['master'])
     manager.run_playbook(playbook_file="../../ansible/playbooks/proxy/proxy.yml")
     manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['slaves'])

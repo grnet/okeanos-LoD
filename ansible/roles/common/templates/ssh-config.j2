@@ -1,10 +1,10 @@
 {% for master in groups["master"] %}
-  Host {{ master }}
+Host {{ master }}
     StrictHostKeyChecking no
 {% endfor %}
 
 {% for slave in groups["slaves"] %}
-  Host {{ slave }}
+Host {{ slave }}
     StrictHostKeyChecking no
 {% endfor %}
 

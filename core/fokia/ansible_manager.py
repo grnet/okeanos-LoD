@@ -23,11 +23,9 @@ class Manager:
         with tempfile.NamedTemporaryFile(mode='w', delete=False) as kf:
             kf.write(provisioner_response['pk'])
             self.temp_file = kf.name
-            print self.temp_file
+            # print self.temp_file
         ansible.constants.ANSIBLE_SSH_ARGS = '-o "ProxyCommand ssh -i %s -o StrictHostKeyChecking=no -W %%h:%%p root@%s.vm.okeanos.grnet.gr"' \
                                              % (self.temp_file, self.inventory['master']['name'])
-        # ansible.constants.ANSIBLE_SSH_ARGS = '-o "ProxyCommand ssh root@%s.vm.okeanos.grnet.gr nc %%h %%p"' \
-        #                                      % self.inventory['master']['name']
         # ansible.constants.DEFAULT_PRIVATE_KEY_FILE = self.temp_file
         ansible.constants.HOST_KEY_CHECKING = False
         ansible.constants.DEFAULT_GATHERING = 'explicit'
@@ -63,19 +61,18 @@ class Manager:
         all_group.add_child_group(master_group)
 
         slaves_group = ansible.inventory.group.Group(name='slaves')
-        slaves_group.set_variable('proxy_env', {'http_proxy': 'http://' + self.inventory['master']['name'] + '.local:3128'})
+        slaves_group.set_variable('proxy_env',
+                                  {'http_proxy': 'http://' + self.inventory['master']['name'] + '.local:3128'})
         # slaves_group.set_variable('http_proxy', 'http://' + self.inventory['master']['name'] + '.local:3128')
         for host_id, host in enumerate(self.inventory['slaves'], start=1):
             ansible_host = all_ansible_hosts[host_id]
             ansible_host.set_variable('internal_ip', host['ip'])
             ansible_host.set_variable('id', host_id)
-            print ansible_host.get_variables()
-
             slaves_group.add_host(ansible_host)
         self.ansible_inventory.add_group(slaves_group)
         all_group.add_child_group(slaves_group)
 
-        print self.ansible_inventory.groups_list()
+        # print self.ansible_inventory.groups_list()
 
         return self.ansible_inventory
 
@@ -87,7 +84,6 @@ class Manager:
         stats = callbacks.AggregateStats()
         playbook_cb = callbacks.PlaybookCallbacks(verbose=utils.VERBOSITY)
         runner_cb = callbacks.PlaybookRunnerCallbacks(stats, verbose=utils.VERBOSITY)
-        # print self.ansible_inventory.get_group('all').get_hosts()
         pb = PlayBook(playbook=playbook_file, inventory=self.ansible_inventory, stats=stats,
                       callbacks=playbook_cb,
                       runner_callbacks=runner_cb, only_tags=tags)
@@ -95,6 +91,7 @@ class Manager:
 
     def cleanup(self):
         os.remove(self.temp_file)
+
 
 if __name__ == "__main__":
     response = {u'ips': [{u'floating_network_id': u'2216',
@@ -111,6 +108,7 @@ if __name__ == "__main__":
     # manager.run_playbook(playbook_file="../../ansible/playbooks/testinventory.yml", tags=['hosts'])
     # manager.run_playbook(playbook_file="../../ansible/playbooks/testproxy.yml", tags=['install'])
 
+    manager.run_playbook(playbook_file="../../ansible/playbooks/wait_for_ssh.yml")
     manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['master'])
     manager.run_playbook(playbook_file="../../ansible/playbooks/proxy/proxy.yml")
     manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['slaves'])
