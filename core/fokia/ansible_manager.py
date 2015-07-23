@@ -54,6 +54,7 @@ class Manager:
 
         all_ansible_hosts = all_group.get_hosts()
         master_group = ansible.inventory.group.Group(name='master')
+        master_group.set_variable('proxy_env', {})
         ansible_host = all_ansible_hosts[0]
         ansible_host.set_variable('internal_ip', self.inventory['master']['ip'])
         ansible_host.set_variable('id', 0)
@@ -68,9 +69,7 @@ class Manager:
             ansible_host = all_ansible_hosts[host_id]
             ansible_host.set_variable('internal_ip', host['ip'])
             ansible_host.set_variable('id', host_id)
-            # ansible_host.set_variable('http_proxy', 'http://' + self.inventory['master']['name'] + '.local:3128')
-
-            # print ansible_host.get_variables()
+            print ansible_host.get_variables()
 
             slaves_group.add_host(ansible_host)
         self.ansible_inventory.add_group(slaves_group)
@@ -107,17 +106,16 @@ if __name__ == "__main__":
                 u'vpn': {u'type': u'MAC_FILTERED', u'id': u'143499'},
                 u'subnet': {u'cidr': u'192.168.0.0/24', u'gateway_ip': u'192.168.0.1', u'id': u'142564'}}
 
-    
     manager = Manager(response)
     manager.create_inventory()
     # manager.run_playbook(playbook_file="../../ansible/playbooks/testinventory.yml", tags=['hosts'])
-    manager.run_playbook(playbook_file="../../ansible/playbooks/testproxy.yml", tags=['install'])
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/testproxy.yml", tags=['install'])
 
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['master'])
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/proxy/proxy.yml")
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['slaves'])
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-hadoop/hadoop-install.yml")
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-flink/flink-install.yml")
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-kafka/kafka-install.yml")
+    manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['master'])
+    manager.run_playbook(playbook_file="../../ansible/playbooks/proxy/proxy.yml")
+    manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['slaves'])
+    manager.run_playbook(playbook_file="../../ansible/playbooks/apache-hadoop/hadoop-install.yml")
+    manager.run_playbook(playbook_file="../../ansible/playbooks/apache-flink/flink-install.yml")
+    manager.run_playbook(playbook_file="../../ansible/playbooks/apache-kafka/kafka-install.yml")
 
     manager.cleanup()

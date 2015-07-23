@@ -1,6 +1,7 @@
 ---
   - name: Download Apache Flink, Yarn version.
     get_url: url="{{ mirror_url }}/flink-{{ version }}/flink-{{ version }}-{{ version_for }}.tgz" dest="{{ download_path }}/flink-{{ version }}-{{ version_for }}.tgz"
+    environment: proxy_env 
     tags:
       - download
 
