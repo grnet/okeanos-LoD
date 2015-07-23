@@ -22,7 +22,7 @@ start(){
 }
 
 stop(){
-  kill -s 9 $(cat $PIDFILE)
+  /sbin/start-stop-daemon --stop --remove-pidfile --pidfile $PIDFILE
   RETVAL=$?
   [ $RETVAL -eq 0 ] && $(rm -f $LOCKFILE)
   return $RETVAL
