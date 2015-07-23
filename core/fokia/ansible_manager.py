@@ -94,14 +94,14 @@ class Manager:
 
 
 if __name__ == "__main__":
-    response = {u'ips': [{u'floating_network_id': u'2216',
-                          u'floating_ip_address': u'83.212.118.6',
-                          u'id': u'686825'}],
-                u'nodes': {u'master': {u'id': 666355,
-                                       u'name': u'lambda-master'},
-                           u'slaves': [{u'id': 666356, u'name': u'lambda-node1'}]},
-                u'vpn': {u'type': u'MAC_FILTERED', u'id': u'143499'},
-                u'subnet': {u'cidr': u'192.168.0.0/24', u'gateway_ip': u'192.168.0.1', u'id': u'142564'}}
+    response = {
+        u'ips': [{u'floating_network_id': u'2186', u'floating_ip_address': u'83.212.116.49', u'id': u'688160'}],
+        u'nodes': {
+            u'master': {'internal_ip': u'192.168.0.2', u'adminPass': u'0igc3vbnSx', u'id': 666976, u'name': u'test_vm'},
+            u'slaves': [{'internal_ip': u'192.168.0.3', u'id': 666977, u'name': u'lambda-node1'}]},
+        u'vpn': {u'type': u'MAC_FILTERED', u'id': u'143713'},
+        'pk': 'Dummy pk',
+        u'subnet': {u'cidr': u'192.168.0.0/24', u'gateway_ip': u'192.168.0.1', u'id': u'142761'}}
 
     manager = Manager(response)
     manager.create_inventory()
