@@ -3,6 +3,9 @@
 # Source environment file to make sure HADOOP_HOME variable is available.
 source /etc/environment
 
+# Define the user that should run this script.
+SCRIPT_USER=flink
+
 # The path where Apache Flink is installed.
 INSTALLATION_PATH="{{ installation_path }}"
 
@@ -17,17 +20,17 @@ START_COMMAND="$INSTALLATION_PATH/flink/bin/yarn-session.sh -n {{ number_of_task
 STOP_COMMAND="$HADOOP_HOME/bin/yarn application --kill"
 
 start(){
-  nohup $START_COMMAND > /dev/null &
+  sudo -E -u $SCRIPT_USER nohup $START_COMMAND > /dev/null &
   RETVAL=$?
-  [ $RETVAL -eq 0 ] && touch $LOCKFILE
+  [ $RETVAL -eq 0 ] && $(sudo -u $SCRIPT_USER touch $LOCKFILE)
   return $RETVAL
 }
 
 stop(){
-  id=$($HADOOP_HOME/bin/yarn application --list | grep "Flink session" | cut -f1)
-  nohup $STOP_COMMAND $id > /dev/null &
+  id=$(sudo -u $SCRIPT_USER $HADOOP_HOME/bin/yarn application --list | grep "Flink session" | cut -f1)
+  sudo -E -u $SCRIPT_USER nohup $STOP_COMMAND $id > /dev/null &
   RETVAL=$?
-  [ $RETVAL -eq 0 ] && $(rm -f $LOCKFILE)
+  [ $RETVAL -eq 0 ] && $(sudo -u $SCRIPT_USER rm -f $LOCKFILE)
   return $RETVAL
 }
 
