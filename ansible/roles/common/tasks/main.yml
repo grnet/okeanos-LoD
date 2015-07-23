@@ -10,4 +10,3 @@
     when: "'slaves' in group_names"
     tags:
       - slaves
-

@@ -1,13 +1,42 @@
 ---
+  - name: Create users for each application.
+    include: users.yml
+
   - name: Include common tasks.
     include: common-1.yml
 
-#  - name: Fetch id_rsa.pub file from master.
-#    fetch: src=/root/.ssh/id_rsa.pub dest=/tmp/fetched/ flat=yes
+#  - name: Generate ssh key for root.
+#    shell: cat /dev/zero | ssh-keygen -q -N ""
+#    args:
+#      creates: /root/.ssh/id_rsa.pub
 
-  - name: Set up ssh config.
+#  - name: Fetch id_rsa.pub file from root.
+#    fetch: src=/root/.ssh/id_rsa.pub dest=/tmp/fetched/root_id_rsa.pub flat=yes
+
+  - name: Generate ssh key for hduser.
+    shell: cat /dev/zero | ssh-keygen -q -N ""
+    args:
+      creates: /home/hduser/.ssh/id_rsa.pub
+
+  - name: Fetch id_rsa.pub file from hduser user.
+    fetch: src=/home/hduser/.ssh/id_rsa.pub dest=/tmp/fetched/hduser_id_rsa.pub flat=yes
+
+  - name: Generate ssh key for flink user.
+    shell: cat /dev/zero | ssh-keygen -q -N ""
+    args:
+      creates: /home/flink/.ssh/id_rsa.pub
+
+  - name: Fetch id_rsa.pub file from hduser.
+    fetch: src=/home/flink/.ssh/id_rsa.pub dest=/tmp/fetched/flink_id_rsa.pub flat=yes
+
+  - name: Set up ssh config for root user.
     template: src=ssh-config.j2 dest=/root/.ssh/config owner=root group=root mode=664
 
-#  - name: Include more common tasks.
-#    include: common-2.yml
+  - name: Set up ssh config for hduser user.
+    template: src=ssh-config.j2 dest=/home/hduser/.ssh/config owner=hduser group=lambda mode=600
 
+  - name: Set up ssh config for flink user.
+    template: src=ssh-config.j2 dest=/home/flink/.ssh/config owner=flink group=lambda mode=600
+
+  - name: Include more common tasks.
+    include: common-2.yml
