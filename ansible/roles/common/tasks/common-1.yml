@@ -1,12 +1,13 @@
 ---
+
+  - name: Copy hosts file.
+    template: src=hosts.j2 dest=/etc/hosts backup=no owner=root group=lambda mode=0750
+
   - name: Upgrade packages.
     apt: upgrade=dist update_cache=yes
 
   - name: Install the latest Java 7.
     apt: name=openjdk-7-jdk state=latest install_recommends=no update_cache=yes
-
-  - name: Copy hosts file.
-    template: src=hosts.j2 dest=/etc/hosts backup=no owner=root group=lambda mode=0750
 
   - name: Copy environment file.
     template: src=environment.j2 dest=/etc/environment backup=no owner=root group=lambda mode=0750

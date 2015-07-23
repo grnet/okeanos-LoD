@@ -5,13 +5,13 @@
   - name: Include common tasks.
     include: common-1.yml
 
-  - name: Generate ssh key for root.
-    shell: cat /dev/zero | ssh-keygen -q -N ""
-    args:
-      creates: /root/.ssh/id_rsa.pub
+#  - name: Generate ssh key for root.
+#    shell: cat /dev/zero | ssh-keygen -q -N ""
+#    args:
+#      creates: /root/.ssh/id_rsa.pub
 
-  - name: Fetch id_rsa.pub file from root.
-    fetch: src=/root/.ssh/id_rsa.pub dest=/tmp/fetched/root_id_rsa.pub flat=yes
+#  - name: Fetch id_rsa.pub file from root.
+#    fetch: src=/root/.ssh/id_rsa.pub dest=/tmp/fetched/root_id_rsa.pub flat=yes
 
   - name: Generate ssh key for hduser.
     shell: cat /dev/zero | ssh-keygen -q -N ""

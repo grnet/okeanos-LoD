@@ -1,6 +1,7 @@
 ---
   - name: Download Apache Hadoop.
     get_url: url="{{ mirror_url }}/hadoop-{{ version }}/hadoop-{{ version }}.tar.gz" dest="{{ download_path }}/hadoop-{{ version }}.tar.gz"
+    environment: proxy_env
 
   - name: Uncompress Apache Hadoop.
     unarchive: src="{{ download_path }}/hadoop-{{ version }}.tar.gz" dest="{{ installation_path }}" copy=no owner=hduser group=lambda
