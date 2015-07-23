@@ -11,7 +11,7 @@
       - format-hdfs
 
   - name: Start Apache HDFS.
-    shell: su - hduser -c "/etc/init.d/hdfs-init start > /dev/null &"
+    shell: /etc/init.d/hdfs-init start > /dev/null &
     tags:
       - start-hdfs
 
@@ -21,7 +21,7 @@
       - start-hdfs
 
   - name: Start Apache Yarn.
-    shell: su - hduser -c "/etc/init.d/yarn-init start > /dev/null &"
+    shell: /etc/init.d/yarn-init start > /dev/null &
     tags:
       - start-yarn
 

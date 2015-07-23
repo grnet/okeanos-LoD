@@ -3,6 +3,9 @@
 # Source environment file to make sure JAVA_HOME variable is available.
 source /etc/environment
 
+# Define the user that should run this script.
+SCRIPT_USER=hduser
+
 # The path where Apache Hadoop is installed.
 INSTALLATION_PATH="{{ installation_path }}"
 
@@ -16,16 +19,16 @@ START_COMMAND="$INSTALLATION_PATH/hadoop/sbin/start-yarn.sh"
 STOP_COMMAND="$INSTALLATION_PATH/hadoop/sbin/stop-yarn.sh"
 
 start(){
-  nohup $START_COMMAND > /dev/null &
+  sudo -u $SCRIPT_USER nohup $START_COMMAND > /dev/null &
   RETVAL=$?
-  [ $RETVAL -eq 0 ] && touch $LOCKFILE
+  [ $RETVAL -eq 0 ] && $(sudo -u $SCRIPT_USER touch $LOCKFILE)
   return $RETVAL
 }
 
 stop(){
-  nohup $STOP_COMMAND > /dev/null &
+  sudo -u $SCRIPT_USER nohup $STOP_COMMAND > /dev/null &
   RETVAL=$?
-  [ $RETVAL -eq 0 ] && $(rm -f $LOCKFILE)
+  [ $RETVAL -eq 0 ] && $(sudo -u $SCRIPT_USER rm -f $LOCKFILE)
   return $RETVAL
 }
 
