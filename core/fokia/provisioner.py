@@ -12,7 +12,7 @@ from kamaki.clients import ClientError
 from kamaki.clients.utils import https
 from kamaki.cli.config import Config as KamakiConfig
 from kamaki import defaults
-from cluster_error_constants import *
+from fokia.cluster_error_constants import *
 from Crypto.PublicKey import RSA
 from base64 import b64encode
 
@@ -526,5 +526,5 @@ if __name__ == "__main__":
                                           network_request=args.network_request,
                                           project_name=args.project_name)
     # print(response)
-    print(provisioner.get_cluster_details())
-    print(provisioner.get_private_key())
+    # print(provisioner.get_cluster_details())
+    # print(provisioner.get_private_key())
