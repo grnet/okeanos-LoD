@@ -10,3 +10,15 @@
 
   - name: Copy environment file.
     template: src=environment.j2 dest=/etc/environment backup=no owner=root group=lambda mode=0750
+
+  - name: Install sudo.
+    apt: name=sudo state=latest
+
+  - name: Add hduser to sudo group.
+    user: name=hduser group=sudo
+
+  - name: Add flink user to sudo group.
+    user: name=flink group=sudo
+
+  - name: Add kafka user to sudo group.
+    user: name=kafka group=sudo
