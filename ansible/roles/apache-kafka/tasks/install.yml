@@ -1,6 +1,7 @@
 ---
   - name: Download Apache Kafka.
     get_url: url="{{ mirror_url }}/{{ version }}/kafka_{{ scala_version }}-{{ version }}.tgz" dest="{{ download_path }}/kafka_{{ scala_version }}-{{ version }}.tgz"
+    environment: proxy_env
 
   - name: Uncompress Apache Kafka.
     unarchive: src="{{ download_path }}/kafka_{{ scala_version }}-{{ version }}.tgz" dest="{{ installation_path }}" copy=no owner=kafka group=lambda
