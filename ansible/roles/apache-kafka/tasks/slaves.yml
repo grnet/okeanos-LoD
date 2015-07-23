@@ -8,7 +8,7 @@
       - configure-kafka
 
   - name: Start Apache Kafka server.
-    shell: su - kafka -c "/etc/init.d/kafka-init start > /dev/null &"
+    shell: /etc/init.d/kafka-init start > /dev/null &
     tags:
       - start-kafka
 

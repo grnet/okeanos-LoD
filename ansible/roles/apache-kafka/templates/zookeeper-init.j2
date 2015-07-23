@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Define the user that should run this script.
+SCRIPT_USER=kafka
+
 # The path where Apache Zookeeper is installed.
 INSTALLATION_PATH="{{ installation_path }}"
 
@@ -13,18 +16,16 @@ LOCKFILE="$INSTALLATION_PATH/kafka/zookeeper-lock"
 START_COMMAND="$INSTALLATION_PATH/kafka/bin/zookeeper-server-start.sh $INSTALLATION_PATH/kafka/config/zookeeper.properties"
 
 start(){
-  /sbin/start-stop-daemon --start --background --make-pidfile --pidfile $PIDFILE --exec $START_COMMAND
-
+  sudo -u $SCRIPT_USER /sbin/start-stop-daemon --start --background --make-pidfile --pidfile $PIDFILE --exec $START_COMMAND
   RETVAL=$?
-  [ $RETVAL -eq 0 ] && touch $LOCKFILE
-
+  [ $RETVAL -eq 0 ] && $(sudo -u $SCRIPT_USER touch $LOCKFILE)
   return $RETVAL
 }
 
 stop(){
-  /sbin/start-stop-daemon --stop --remove-pidfile --pidfile $PIDFILE
+  sudo -u $SCRIPT_USER /sbin/start-stop-daemon --stop --remove-pidfile --pidfile $PIDFILE
   RETVAL=$?
-  [ $RETVAL -eq 0 ] && $(rm -f $LOCKFILE)
+  [ $RETVAL -eq 0 ] && $(sudo -u $SCRIPT_USER rm -f $LOCKFILE)
   return $RETVAL
 }
 
