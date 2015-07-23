@@ -7,19 +7,24 @@ class User(models.Model):
                              help_text="Token provided by ~okeanos.")
 
 class Projects(models.Model):
-    id = models.AutoField("Project ID", primary_key=True, null=False, help_text="Auto-increment project id.")
+    id = models.AutoField("Project ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Project id provided by kamaki.")
     description = models.TextField("Project Description", null=True, blank=True, unique=False, default="",
                                    help_text="The description of a project.")
 
 class Clusters(models.Model):
     id = models.AutoField("Cluster ID", primary_key=True, null=False, help_text="Auto-increment cluster id.")
+    master_server = models.ForeignKey('Server', null=True, blank=True, unique=True, on_delete=models.CASCADE)
 
-class Cluster(models.Model):
-    id = models.ForeignKey('Clusters', primary_key=True, null=False, blank=False, unique=True, on_delete=models.CASCADE)
-    master_id = models.CharField(max_length=100)
-    slaves_id = models.CharField(max_length=100)
-    vpn = models.CharField(max_length=100)
-    ips_id = models.CharField(max_length=100)
+class Server(models.Model):
+    id = models.AutoField("Server ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Server id provided by kamaki.")
+    hostname = models.CharField(max_length=100)
+    public_ip = models.CharField(max_length=100)
+    private_ip = models.CharField(max_length=100)
+
+class PrivateNetwork(models.Model):
+    id = models.AutoField("Network ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Private network id provided by kamaki.")
+    subnet = models.CharField(max_length=100)
+    gateway = models.CharField(max_length=100)
 
 class UserProjectConnection(models.Model):
     user_id = models.ForeignKey('User', null=False, blank=False, unique=False, on_delete=models.CASCADE)
@@ -27,4 +32,12 @@ class UserProjectConnection(models.Model):
 
 class UserClusterConnection(models.Model):
     user_id = models.ForeignKey('User', null=False, blank=False, unique=False, on_delete=models.CASCADE)
+    cluster_id = models.ForeignKey('Clusters', null=False, blank=False, unique=False, on_delete=models.CASCADE)
+
+class ClusterServerConnection(models.Model):
+    server_id = models.ForeignKey('Server', null=False, blank=False, unique=False, on_delete=models.CASCADE)
+    cluster_id = models.ForeignKey('Clusters', null=False, blank=False, unique=False, on_delete=models.CASCADE)
+
+class ClusterNetworkConnection(models.Model):
+    network_id = models.ForeignKey('PrivateNetwork', null=False, blank=False, unique=False, on_delete=models.CASCADE)
     cluster_id = models.ForeignKey('Clusters', null=False, blank=False, unique=False, on_delete=models.CASCADE)
