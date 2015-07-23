@@ -3,4 +3,4 @@
     apt: name=postgresql state=latest
 
   - name: Install PostgreSQL header files.
-    apt: name=libpd-dev state=latest 
+    apt: name=libpq-dev state=latest

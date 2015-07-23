@@ -5,11 +5,11 @@
   - name: Install Python Pip.
     apt: name=python-pip state=latest
 
+  - name: Include postgresql-install tasks.
+    include: postgresql-install.yml
+
   - name: Include django-install tasks.
     include: django-install.yml
 
   - name: Include github tasks.
     include: github.yml
-
-  - name: Include postgresql-install tasks.
-    include: postgresql-install.yml
