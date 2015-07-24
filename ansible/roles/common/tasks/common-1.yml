@@ -1,17 +1,25 @@
 ---
+
+  - name: Copy hosts file.
+    template: src=hosts.j2 dest=/etc/hosts backup=no owner=root group=lambda mode=0750
+
   - name: Upgrade packages.
     apt: upgrade=dist update_cache=yes
 
   - name: Install the latest Java 7.
     apt: name=openjdk-7-jdk state=latest install_recommends=no update_cache=yes
 
-  - name: Copy hosts file.
-    template: src=hosts.j2 dest=/etc/hosts backup=no owner=root group=lambda mode=0750
-
   - name: Copy environment file.
-    copy: src=environment dest=/etc/environment backup=no owner=root group=root mode=0750
+    template: src=environment.j2 dest=/etc/environment backup=no owner=root group=lambda mode=0750
 
-  - name: Generate ssh key.
-    shell: cat /dev/zero | ssh-keygen -q -N ""
-    args:
-      creates: /root/.ssh/id_rsa.pub
+  - name: Install sudo.
+    apt: name=sudo state=latest
+
+  - name: Add hduser to sudo group.
+    user: name=hduser group=sudo
+
+  - name: Add flink user to sudo group.
+    user: name=flink group=sudo
+
+  - name: Add kafka user to sudo group.
+    user: name=kafka group=sudo

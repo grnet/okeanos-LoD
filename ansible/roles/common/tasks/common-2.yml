@@ -1,4 +1,10 @@
 ---
-  - name: Distribute ssh key to all nodes.
-    authorized_key: user=root key="{{ lookup('file', '/tmp/fetched/id_rsa.pub') }}" 
+#  - name: Distribute root ssh key to all nodes.
+#    authorized_key: user=root key="{{ lookup('file', '/tmp/fetched/root_id_rsa.pub') }}" 
+
+  - name: Distribute hduser ssh key to all nodes.
+    authorized_key: user=hduser key="{{ lookup('file', '/tmp/fetched/hduser_id_rsa.pub') }}" 
+
+  - name: Distribute flink ssh key to all nodes.
+    authorized_key: user=flink key="{{ lookup('file', '/tmp/fetched/flink_id_rsa.pub') }}" 
 

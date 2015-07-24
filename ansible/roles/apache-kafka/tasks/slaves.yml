@@ -1,8 +1,6 @@
 ---
-  - name: Download and install Apache kafka.
-    include: download.yml
-    tags:
-      - download
+  - name: Install Apache kafka.
+    include: install.yml
 
   - name: Configure Apache kafka.
     template: src=server.properties.j2 dest="{{ installation_path }}/kafka/config/server.properties" owner=kafka group=lambda mode=0644
@@ -10,9 +8,7 @@
       - configure-kafka
 
   - name: Start Apache Kafka server.
-    shell: "{{ installation_path }}/kafka/bin/kafka-server-start.sh {{ installation_path }}/kafka/config/server.properties"
-    async: 31536000 # Stay alive for a year(1 year = 31536000 seconds).
-    poll: 0
+    shell: /etc/init.d/kafka-init start > /dev/null &
     tags:
       - start-kafka
 

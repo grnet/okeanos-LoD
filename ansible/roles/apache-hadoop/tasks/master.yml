@@ -1,16 +1,32 @@
 ---
+  - name: Copy Apache HDFS init script.
+    template: src=hdfs-init.j2 dest=/etc/init.d/hdfs-init owner=hduser group=lambda mode=0740
+
+  - name: Copy Apache Yarn init script.
+    template: src=yarn-init.j2 dest=/etc/init.d/yarn-init owner=hduser group=lambda mode=0740
+
   - name: Format Apache HDFS.
-    shell: "yes | {{ installation_path }}/hadoop/bin/hadoop namenode -format"
+    shell: su - hduser -c "yes | {{ installation_path }}/hadoop/bin/hadoop namenode -format"
     tags:
       - format-hdfs
 
   - name: Start Apache HDFS.
-    shell: "{{ installation_path }}/hadoop/sbin/start-dfs.sh"
+    shell: /etc/init.d/hdfs-init start > /dev/null &
+    tags:
+      - start-hdfs
+
+  - name: Wait for Apache HDFS to become available.
+    wait_for: host="{{ hostvars[inventory_hostname]["internal_ip"] }}" port=9000
     tags:
       - start-hdfs
 
   - name: Start Apache Yarn.
-    shell: "{{ installation_path }}/hadoop/sbin/start-yarn.sh"
+    shell: /etc/init.d/yarn-init start > /dev/null &
+    tags:
+      - start-yarn
+
+  - name: Wait for Apache Yarn to become available.
+    wait_for: host="{{ hostvars[inventory_hostname]["internal_ip"] }}" port=8050 # 8050 is the port of the resource manager.
     tags:
       - start-yarn
 
