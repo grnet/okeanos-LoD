@@ -35,7 +35,7 @@
     tags:
       - create-dirs
 
-  - name: Create Apache HDFS user/root directory. 
+  - name: Create Apache HDFS user/hduser directory. 
     command: "{{ installation_path }}/hadoop/bin/hadoop fs -mkdir /user/hduser"
     tags:
       - create-dirs
