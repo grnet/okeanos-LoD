@@ -5,8 +5,7 @@
     tags:
       - master
 
-  - name: Include tasks for slaves.
-    include: slaves.yml
-    when: "'slaves' in group_names"
+  - name: Include tasks for all nodes.
+    include: all.yml
     tags:
-      - slaves
+      - all

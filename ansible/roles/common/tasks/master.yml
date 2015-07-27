@@ -2,9 +2,6 @@
   - name: Create users for each application.
     include: users.yml
 
-  - name: Include common tasks.
-    include: common-1.yml
-
 #  - name: Generate ssh key for root.
 #    shell: cat /dev/zero | ssh-keygen -q -N ""
 #    args:
@@ -37,6 +34,3 @@
 
   - name: Set up ssh config for flink user.
     template: src=ssh-config.j2 dest=/home/flink/.ssh/config owner=flink group=lambda mode=600
-
-  - name: Include more common tasks.
-    include: common-2.yml

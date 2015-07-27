@@ -13,7 +13,7 @@ if __name__ == "__main__":
     parser.add_argument('--name', type=str, dest='name', default="to mikro debian sto livadi")
 
 
-    parser.add_argument('--slaves', type=int, dest='slaves', default=3)
+    parser.add_argument('--slaves', type=int, dest='slaves', default=2)
     parser.add_argument('--vcpus_master', type=int, dest='vcpus_master', default=4)
     parser.add_argument('--vcpus_slave', type=int, dest='vcpus_slave', default=4)
     parser.add_argument('--ram_master', type=int, dest='ram_master', default=4096)  # in MB

@@ -1,6 +1,7 @@
 ---
   - name: Create users for each application.
     include: users.yml
+    when: "'slaves' in group_names"
 
   - name: Include common tasks.
     include: common-1.yml
