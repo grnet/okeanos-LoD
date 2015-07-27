@@ -28,7 +28,7 @@ class Manager:
                                              % (self.temp_file, self.inventory['master']['name'])
         # ansible.constants.DEFAULT_PRIVATE_KEY_FILE = self.temp_file
         ansible.constants.HOST_KEY_CHECKING = False
-        ansible.constants.DEFAULT_GATHERING = 'explicit'
+        # ansible.constants.DEFAULT_GATHERING = 'explicit'
 
     def create_inventory(self):
         """
@@ -109,11 +109,13 @@ if __name__ == "__main__":
     # manager.run_playbook(playbook_file="../../ansible/playbooks/testproxy.yml", tags=['install'])
 
     manager.run_playbook(playbook_file="../../ansible/playbooks/wait_for_ssh.yml")
-    manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['master'])
-    manager.run_playbook(playbook_file="../../ansible/playbooks/proxy/proxy.yml")
-    manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['slaves'])
-    manager.run_playbook(playbook_file="../../ansible/playbooks/apache-hadoop/hadoop-install.yml")
-    manager.run_playbook(playbook_file="../../ansible/playbooks/apache-flink/flink-install.yml")
-    manager.run_playbook(playbook_file="../../ansible/playbooks/apache-kafka/kafka-install.yml")
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['master'])
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/proxy/proxy.yml")
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['slaves'])
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-hadoop/hadoop-install.yml")
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-flink/flink-install.yml")
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-kafka/kafka-install.yml")
+    
+    manager.run_playbook(playbook_file="../../ansible/playbooks/cluster/cluster-install.yml")
 
     manager.cleanup()

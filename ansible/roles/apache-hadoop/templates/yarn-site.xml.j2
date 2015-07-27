@@ -15,14 +15,14 @@
 <configuration>
   <property>
     <name>yarn.resourcemanager.resource-tracker.address</name>
-    <value>{{ groups.master | replace("[","") | replace("'","") | replace("]","") | replace(".vm.okeanos.grnet.gr","") }}:8025</value>
+    <value>{{ groups.master | replace("[","") | replace("'","") | replace("]","") | replace(".vm.okeanos.grnet.gr",".local") }}:8025</value>
   </property>
   <property>
     <name>yarn.resourcemanager.scheduler.address</name>
-    <value>{{ groups.master | replace("[","") | replace("'","") | replace("]","") | replace(".vm.okeanos.grnet.gr","") }}:8030</value>
+    <value>{{ groups.master | replace("[","") | replace("'","") | replace("]","") | replace(".vm.okeanos.grnet.gr",".local") }}:8030</value>
   </property>
   <property>
     <name>yarn.resourcemanager.address</name>
-    <value>{{ groups.master | replace("[","") | replace("'","") | replace("]","") | replace(".vm.okeanos.grnet.gr","") }}:8050</value>
+    <value>{{ groups.master | replace("[","") | replace("'","") | replace("]","") | replace(".vm.okeanos.grnet.gr",".local") }}:8050</value>
   </property>
 </configuration>

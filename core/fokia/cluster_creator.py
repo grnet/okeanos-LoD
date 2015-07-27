@@ -4,6 +4,8 @@ from provisioner import Provisioner
 from ansible_manager import Manager
 
 if __name__ == "__main__":
+    start_time = time.time()
+
     parser = argparse.ArgumentParser(description="Okeanos VM provisioning")
     parser.add_argument('--cloud', type=str, dest="cloud", default="lambda")
     parser.add_argument('--project-name', type=str, dest="project_name",
@@ -11,7 +13,7 @@ if __name__ == "__main__":
     parser.add_argument('--name', type=str, dest='name', default="to mikro debian sto livadi")
 
 
-    parser.add_argument('--slaves', type=int, dest='slaves', default=1)
+    parser.add_argument('--slaves', type=int, dest='slaves', default=3)
     parser.add_argument('--vcpus_master', type=int, dest='vcpus_master', default=4)
     parser.add_argument('--vcpus_slave', type=int, dest='vcpus_slave', default=4)
     parser.add_argument('--ram_master', type=int, dest='ram_master', default=4096)  # in MB
@@ -47,7 +49,8 @@ if __name__ == "__main__":
         provisioner_response['nodes']['slaves'][i]['internal_ip'] = slave_ip
     provisioner_response['pk'] = provisioner.get_private_key()
 
-    print 'response = ', provisioner_response
+    print 'response =', provisioner_response
+    provisioner_time = time.time()
 
     manager = Manager(provisioner_response)
     manager.create_inventory()
@@ -55,13 +58,21 @@ if __name__ == "__main__":
     # manager.run_playbook(playbook_file="../../ansible/playbooks/testproxy.yml", tags=['install'])
 
     manager.run_playbook(playbook_file="../../ansible/playbooks/wait_for_ssh.yml")
-    manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['master'])
-    manager.run_playbook(playbook_file="../../ansible/playbooks/proxy/proxy.yml")
-    manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['slaves'])
-    manager.run_playbook(playbook_file="../../ansible/playbooks/apache-hadoop/hadoop-install.yml")
-    manager.run_playbook(playbook_file="../../ansible/playbooks/apache-flink/flink-install.yml")
-    manager.run_playbook(playbook_file="../../ansible/playbooks/apache-kafka/kafka-install.yml")
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['master'])
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/proxy/proxy.yml")
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['slaves'])
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-hadoop/hadoop-install.yml")
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-flink/flink-install.yml")
+    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-kafka/kafka-install.yml")
+    
+    manager.run_playbook(playbook_file="../../ansible/playbooks/cluster/cluster-install.yml")
 
     # INSERT PLAYBOOKS HERE
 
     manager.cleanup()
+
+    provisioner_duration = provisioner_time - start_time
+    ansible_duration = time.time() - provisioner_time
+
+    print 'VM provisioning took', provisioner_duration, 'seconds'
+    print 'Ansible playbooks took', ansible_duration, 'seconds'

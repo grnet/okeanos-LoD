@@ -1,5 +1,5 @@
 {% for master in groups["master"] %}
-Host {{ master }}
+Host {{ master | replace(".vm.okeanos.grnet.gr","*") }}
   StrictHostKeyChecking no
 {% endfor %}
 

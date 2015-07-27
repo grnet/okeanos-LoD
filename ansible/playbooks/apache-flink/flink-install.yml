@@ -1,6 +1,7 @@
 ---
 - hosts: master
   user: root
+  gather_facts: yes
   roles:
     - ../roles/apache-flink
 

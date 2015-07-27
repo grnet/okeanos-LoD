@@ -1,0 +1,12 @@
+127.0.0.1       localhost
+{% for master in groups["master"] %}
+{{ hostvars[master]["internal_ip"] }}	{{ master | replace(".vm.okeanos.grnet.gr",".local") }}
+{% endfor %}
+{% for slave in groups["slaves"] %}
+{{ hostvars[slave]["internal_ip"] }}	{{ slave | replace(".vm.okeanos.grnet.gr",".local") }}
+{% endfor %}
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters

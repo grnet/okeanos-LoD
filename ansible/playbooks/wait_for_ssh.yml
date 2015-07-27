@@ -2,7 +2,8 @@
 
 - name: Wait for port 22 to be ready
   hosts: master
+  gather_facts: no
+  sudo: false
   tasks:
-    - local_action: wait_for port=22 host="{{ inventory_hostname }}"  search_regex=OpenSSH delay=5
+    - local_action: wait_for port=22 host="{{ inventory_hostname }}"  search_regex=OpenSSH delay=15
   tags: master
-

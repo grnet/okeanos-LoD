@@ -1,4 +1,10 @@
 ---
+
+  - hosts: master
+    user: root
+    roles:
+      - ../roles/proxy
+
   - hosts: all
     user: root
     roles:
@@ -6,4 +12,3 @@
       - ../roles/apache-hadoop
       - ../roles/apache-kafka
       - ../roles/apache-flink
-
