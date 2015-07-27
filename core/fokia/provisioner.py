@@ -18,7 +18,7 @@ from base64 import b64encode
 
 if not defaults.CACERTS_DEFAULT_PATH:
     from ssl import get_default_verify_paths
-    CA_CERTS_PATH = get_default_verify_paths().cafile
+    CA_CERTS_PATH = get_default_verify_paths().cafile or get_default_verify_paths().openssl_cafile
     if not CA_CERTS_PATH:
         raise
     https.patch_with_certs(CA_CERTS_PATH)

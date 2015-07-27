@@ -1,10 +1,13 @@
 import argparse
 import time
-from provisioner import Provisioner
-from ansible_manager import Manager
+import os
+import inspect
+from fokia.provisioner import Provisioner
+from fokia.ansible_manager import Manager
 
 if __name__ == "__main__":
     start_time = time.time()
+    script_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
     parser = argparse.ArgumentParser(description="Okeanos VM provisioning")
     parser.add_argument('--cloud', type=str, dest="cloud", default="lambda")
@@ -54,18 +57,11 @@ if __name__ == "__main__":
 
     manager = Manager(provisioner_response)
     manager.create_inventory()
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/testinventory.yml", tags=['hosts'])
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/testproxy.yml", tags=['install'])
+    # manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/testinventory.yml", tags=['hosts'])
+    # manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/testproxy.yml", tags=['install'])
 
-    manager.run_playbook(playbook_file="../../ansible/playbooks/wait_for_ssh.yml")
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['master'])
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/proxy/proxy.yml")
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/common/install.yml", tags=['slaves'])
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-hadoop/hadoop-install.yml")
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-flink/flink-install.yml")
-    # manager.run_playbook(playbook_file="../../ansible/playbooks/apache-kafka/kafka-install.yml")
-    
-    manager.run_playbook(playbook_file="../../ansible/playbooks/cluster/cluster-install.yml")
+    manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/wait_for_ssh.yml")
+    manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/cluster/cluster-install.yml")
 
     # INSERT PLAYBOOKS HERE
 
