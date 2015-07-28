@@ -56,11 +56,11 @@ if __name__ == "__main__":
 
     manager = Manager(provisioner_response)
     manager.create_inventory()
-    # manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/testinventory.yml", tags=['hosts'])
-    # manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/testproxy.yml", tags=['install'])
+    # manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/test/testinventory.yml", tags=['hosts'])
+    # manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/test/testproxy.yml", tags=['install'])
 
     manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/wait_for_ssh.yml")
-    manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/cluster/cluster-install.yml")
+    manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/cluster-install.yml")
 
     # INSERT PLAYBOOKS HERE
 
