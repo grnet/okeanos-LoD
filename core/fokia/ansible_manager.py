@@ -27,6 +27,7 @@ class Manager:
             # print self.temp_file
         ansible.constants.ANSIBLE_SSH_ARGS = '-o "ProxyCommand ssh -i %s -o StrictHostKeyChecking=no -W %%h:%%p root@%s.vm.okeanos.grnet.gr"' \
                                              % (self.temp_file, self.inventory['master']['name'])
+        ansible.constants.DEFAULT_TIMEOUT = 30
         # ansible.constants.DEFAULT_PRIVATE_KEY_FILE = self.temp_file
         ansible.constants.HOST_KEY_CHECKING = False
         # ansible.constants.DEFAULT_GATHERING = 'explicit'
