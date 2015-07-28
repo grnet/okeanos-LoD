@@ -15,7 +15,7 @@ if __name__ == "__main__":
                         default="lambda.grnet.gr")
     parser.add_argument('--name', type=str, dest='name', default="to mikro debian sto livadi")
 
-    parser.add_argument('--slaves', type=int, dest='slaves', default=2)
+    parser.add_argument('--slaves', type=int, dest='slaves', default=1)
     parser.add_argument('--vcpus_master', type=int, dest='vcpus_master', default=4)
     parser.add_argument('--vcpus_slave', type=int, dest='vcpus_slave', default=4)
     parser.add_argument('--ram_master', type=int, dest='ram_master', default=4096)  # in MB
@@ -59,7 +59,6 @@ if __name__ == "__main__":
     # manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/test/testinventory.yml", tags=['hosts'])
     # manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/test/testproxy.yml", tags=['install'])
 
-    manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/wait_for_ssh.yml")
     manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/cluster-install.yml")
 
     # INSERT PLAYBOOKS HERE
