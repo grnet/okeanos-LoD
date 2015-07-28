@@ -2,5 +2,8 @@
   - name: Install PosgreSQL.
     apt: name=postgresql state=latest
 
-  - name: Install PostgreSQL header files.
+  - name: Install libpq-dev.
     apt: name=libpq-dev state=latest
+
+  - name: Install Python connector for PostgreSQL.
+    pip: name=psycopg2

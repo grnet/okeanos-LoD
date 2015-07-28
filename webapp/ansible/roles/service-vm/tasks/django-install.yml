@@ -1,6 +1,3 @@
 ---
   - name: Install Django using Pip.
     pip: name=Django
-
-  - name: Install Django connector for PostgreSQL.
-    pip: name=psycopg2

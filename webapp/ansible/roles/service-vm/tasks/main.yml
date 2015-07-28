@@ -1,9 +1,18 @@
 ---
+  - name: Fix Debian locale error.
+    shell: echo 'LANGUAGE="en_US.UTF-8"' > /etc/default/locale && echo 'LC_ALL="en_US.UTF-8"' >> /etc/default/locale # The first redirection intentionally creates the file.
+
   - name: Upgrade packages.
     apt: upgrade=dist update_cache=yes
 
-  - name: Install Python Pip.
+  - name: Install python-pip package.
     apt: name=python-pip state=latest
+
+  - name: Install python-dev package.
+    apt: name=python-dev state=latest
+
+  - name: Install git.
+    apt: name=git state=latest
 
   - name: Include postgresql-install tasks.
     include: postgresql-install.yml
