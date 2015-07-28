@@ -68,5 +68,5 @@ if __name__ == "__main__":
     provisioner_duration = provisioner_time - start_time
     ansible_duration = time.time() - provisioner_time
 
-    print 'VM provisioning took', provisioner_duration, 'seconds'
-    print 'Ansible playbooks took', ansible_duration, 'seconds'
+    print 'VM provisioning took', round(provisioner_duration), 'seconds'
+    print 'Ansible playbooks took', round(ansible_duration), 'seconds'
