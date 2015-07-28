@@ -3,12 +3,12 @@
   - hosts: master
     user: root
     roles:
-      - ../roles/proxy
+      - proxy
 
   - hosts: all
     user: root
     roles:
-      - ../roles/common
-      - ../roles/apache-hadoop
-      - ../roles/apache-kafka
-      - ../roles/apache-flink
+      - common
+      - apache-hadoop
+      - apache-kafka
+      - apache-flink

@@ -1,6 +1,6 @@
 ---
+
 - hosts: all
   user: root
   roles:
-    - ../roles/apache-kafka
-
+    - apache-kafka
