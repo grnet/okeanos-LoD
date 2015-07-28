@@ -16,14 +16,6 @@ from fokia.cluster_error_constants import *
 from Crypto.PublicKey import RSA
 from base64 import b64encode
 
-if not defaults.CACERTS_DEFAULT_PATH:
-    from ssl import get_default_verify_paths
-    CA_CERTS_PATH = get_default_verify_paths().cafile or get_default_verify_paths().openssl_cafile
-    if not CA_CERTS_PATH:
-        raise
-    https.patch_with_certs(CA_CERTS_PATH)
-
-
 storage_templates = ['drdb', 'ext_vlmc']
 
 
@@ -37,6 +29,24 @@ class Provisioner:
         # Load .kamakirc configuration
         logger.info("Retrieving .kamakirc configuration")
         self.config = KamakiConfig()
+        if not defaults.CACERTS_DEFAULT_PATH:
+            ca_certs = self.config.get('global', 'ca_certs')
+            if ca_certs:
+                https.patch_with_certs(ca_certs)
+            else:
+                try:
+                    from ssl import get_default_verify_paths
+                    ca_certs = get_default_verify_paths().cafile or get_default_verify_paths().openssl_cafile
+                except:
+                    pass
+
+                if ca_certs:
+                    https.patch_with_certs(ca_certs)
+                else:
+                    logger.warn("COULD NOT FIND ANY CERTIFICATES, PLEASE SET THEM IN YOUR "
+                                ".kamakirc global section, option ca_certs")
+                    https.patch_ignore_ssl()
+
         cloud_section = self.config._sections['cloud'].get(cloud_name)
         if not cloud_section:
             message = "Cloud '%s' was not found in you .kamakirc configuration file. " \
