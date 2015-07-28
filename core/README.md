@@ -26,8 +26,14 @@ The script is responsible for creating the entire lambda instance.
 * It calls the ansible_manager, to create the inventory, using the dictionary as input.
 * Finally, it uses the created manager object (containing the inventory and constants), to run the required playbooks in the correct order, to create the lambda instance.
 
+## Prerequisites
 
-## Instalation
+* kamaki 0.13.4 or later
+* ansible 1.9.2 or later
+* crypto 1.4.1 or later
+
+
+## Installation
 
 - Create a .kamakirc configuration in your home folder and add all the required configurations.
  Here is an example configuration
