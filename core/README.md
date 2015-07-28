@@ -29,11 +29,24 @@ The script is responsible for creating the entire lambda instance.
 
 ## Instalation
 
+- Create a .kamakirc configuration in your home folder and add all the required configurations.
+ Here is an example configuration
+```
+[global]
+default_cloud = lambda
+ca_certs = /path/to/certs
+
+[cloud "lambda"]
+url = https://accounts.okeanos.grnet.gr/identity/v2.0
+token = your-okeanos-token
+```
+
+
 - Install required packages `pip install -r requirements.txt`
 - Install package using `python setup.py install`
 
-
 ## Usage
+
 
 To create a lambda instance, one must edit the cluster_creator script, to set the requested cluster specs. Then, one must run `python cluster_creator.py`, and the lambda instance will be created automatically
 
