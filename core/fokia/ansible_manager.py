@@ -1,3 +1,4 @@
+import inspect
 import os
 import tempfile
 import ansible
@@ -73,7 +74,6 @@ class Manager:
         all_group.add_child_group(slaves_group)
 
         # print self.ansible_inventory.groups_list()
-
         return self.ansible_inventory
 
     def run_playbook(self, playbook_file, tags=None):
@@ -103,6 +103,7 @@ if __name__ == "__main__":
         'pk': 'Dummy pk',
         u'subnet': {u'cidr': u'192.168.0.0/24', u'gateway_ip': u'192.168.0.1', u'id': u'142761'}}
 
+    script_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     manager = Manager(response)
     manager.create_inventory()
     # manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/testinventory.yml", tags=['hosts'])

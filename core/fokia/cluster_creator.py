@@ -15,7 +15,6 @@ if __name__ == "__main__":
                         default="lambda.grnet.gr")
     parser.add_argument('--name', type=str, dest='name', default="to mikro debian sto livadi")
 
-
     parser.add_argument('--slaves', type=int, dest='slaves', default=2)
     parser.add_argument('--vcpus_master', type=int, dest='vcpus_master', default=4)
     parser.add_argument('--vcpus_slave', type=int, dest='vcpus_slave', default=4)
@@ -31,16 +30,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
     provisioner = Provisioner(cloud_name=args.cloud)
     provisioner.create_lambda_cluster('test_vm', slaves=args.slaves,
-                                              cluster_size=args.cluster_size,
-                                              vcpus_master=args.vcpus_master,
-                                              vcpus_slave=args.vcpus_slave,
-                                              ram_master=args.ram_master,
-                                              ram_slave=args.ram_slave,
-                                              disk_master=args.disk_master,
-                                              disk_slave=args.disk_slave,
-                                              ip_request=args.ip_request,
-                                              network_request=args.network_request,
-                                              project_name=args.project_name)
+                                      cluster_size=args.cluster_size,
+                                      vcpus_master=args.vcpus_master,
+                                      vcpus_slave=args.vcpus_slave,
+                                      ram_master=args.ram_master,
+                                      ram_slave=args.ram_slave,
+                                      disk_master=args.disk_master,
+                                      disk_slave=args.disk_slave,
+                                      ip_request=args.ip_request,
+                                      network_request=args.network_request,
+                                      project_name=args.project_name)
 
     provisioner_response = provisioner.get_cluster_details()
     master_id = provisioner_response['nodes']['master']['id']
