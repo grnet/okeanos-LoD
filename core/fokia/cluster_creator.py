@@ -13,7 +13,6 @@ if __name__ == "__main__":
     parser.add_argument('--cloud', type=str, dest="cloud", default="lambda")
     parser.add_argument('--project-name', type=str, dest="project_name",
                         default="lambda.grnet.gr")
-    parser.add_argument('--name', type=str, dest='name', default="to mikro debian sto livadi")
 
     parser.add_argument('--slaves', type=int, dest='slaves', default=1)
     parser.add_argument('--vcpus_master', type=int, dest='vcpus_master', default=4)
@@ -60,8 +59,6 @@ if __name__ == "__main__":
     # manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/test/testproxy.yml", tags=['install'])
 
     manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/cluster-install.yml")
-
-    # INSERT PLAYBOOKS HERE
 
     manager.cleanup()
 
