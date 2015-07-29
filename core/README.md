@@ -48,13 +48,13 @@ token = your-okeanos-token
 ```
 
 
-- Install required packages `pip install -r requirements.txt`
-- Install package using `python setup.py install`
+- Install required packages. Within the `core` directory execute `sudo pip install -r requirements.txt`.
+- Install package using `sudo python setup.py install`
 
 ## Usage
 
 
-To create a lambda instance, one must edit the cluster_creator script, to set the requested cluster specs. Then, one must run `python cluster_creator.py`, and the lambda instance will be created automatically
+To create a lambda instance, one must run `python cluster_creator.py` from within the `core/fokia` directory. To change the default settings (one master instance and one slave instance) one has to edit the `cluster_creator.py` script prior to executing it. 
 
 
 
