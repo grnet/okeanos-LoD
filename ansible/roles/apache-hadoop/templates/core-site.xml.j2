@@ -19,7 +19,7 @@
 <configuration>
   <property>
     <name>fs.default.name</name>
-    <value>hdfs://{{ groups.master | replace("[","") | replace("'","") | replace("]","") | replace(".vm.okeanos.grnet.gr","") }}:9000</value>
+    <value>hdfs://{{ groups.master | replace("[","") | replace("'","") | replace("]","") | replace(".vm.okeanos.grnet.gr",".local") }}:9000</value>
   </property>
   <property>
     <name>hadoop.tmp.dir</name>

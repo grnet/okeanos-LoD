@@ -1,0 +1,24 @@
+---
+
+  - name: Copy hosts file.
+    template: src=hosts.j2 dest=/etc/hosts backup=no owner=root mode=0750
+
+  - name: Install squid http proxy
+    apt: name=squid3 state=latest
+    tags: install
+
+  - name: Configure squid http proxy
+    lineinfile: destfile="/etc/squid3/squid.conf" regexp="^acl localnet" insertafter="^#acl localnet"
+                line="acl localnet src {{ hostvars[groups['all'][0]]['local_net'] }}"
+                state=present
+    notify:
+    - restart squid3
+    tags: config
+
+  - name: Configure squid http proxy
+    lineinfile: destfile="/etc/squid3/squid.conf" regexp="^#http_access allow localnet"
+                line="http_access allow localnet"
+                state=present
+    notify:
+    - restart squid3
+    tags: config

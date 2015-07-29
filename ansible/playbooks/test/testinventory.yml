@@ -1,0 +1,29 @@
+---
+
+
+- hosts: master
+  user: root
+  tasks:
+  - name: Touch master file
+    file: path=/root/master state=touch mode="u=rw,g=r,o=r"
+    tags: touch
+  - name: Remove master file
+    file: path=/root/master state=absent
+    tags: rm
+  - name: Copy hosts file
+    template: src=../roles/common/templates/hosts.j2 dest=/etc/hosts backup=no owner=root group=root mode=0750
+    tags: hosts
+
+- hosts: slaves
+  user: root
+  gather_facts: False  
+  tasks:
+  - name: Touch slave file
+    file: path=/root/slave state=touch mode="u=rw,g=r,o=r"
+    tags: touch
+  - name: Remove slave file
+    file: path=/root/slave state=absent
+    tags: rm
+  - name: Copy hosts file
+    template: src=../roles/common/templates/hosts.j2 dest=/etc/hosts backup=no owner=root group=root mode=0750
+    tags: hosts

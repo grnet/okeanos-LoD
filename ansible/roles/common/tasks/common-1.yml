@@ -1,19 +1,26 @@
 ---
 
+  - name: Set hostname
+    hostname: name={{ inventory_hostname | replace(".vm.okeanos.grnet.gr",".local") }}
+    when: "'slaves' in group_names"
+
   - name: Copy hosts file.
     template: src=hosts.j2 dest=/etc/hosts backup=no owner=root group=lambda mode=0750
 
   - name: Upgrade packages.
     apt: upgrade=dist update_cache=yes
+    environment: proxy_env
 
   - name: Install the latest Java 7.
     apt: name=openjdk-7-jdk state=latest install_recommends=no update_cache=yes
+    environment: proxy_env
 
   - name: Copy environment file.
     template: src=environment.j2 dest=/etc/environment backup=no owner=root group=lambda mode=0750
 
   - name: Install sudo.
     apt: name=sudo state=latest
+    environment: proxy_env
 
   - name: Add hduser to sudo group.
     user: name=hduser group=sudo

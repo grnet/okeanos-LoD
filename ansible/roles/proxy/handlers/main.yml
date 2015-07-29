@@ -1,0 +1,5 @@
+---
+
+- name: restart squid3
+  action: service name=squid3 state=restarted 
+          # enabled=yes

@@ -61,3 +61,5 @@ target/
 
 MANIFEST
 old_kamaki
+*.idea
+coverage.xml

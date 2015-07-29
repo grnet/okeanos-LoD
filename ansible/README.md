@@ -26,6 +26,7 @@ both the master and the slaves.
 ## Playbooks and Roles
 
 There are four (4) roles and five (5) playbooks. These are:
+- proxy role, run from proxy playbook.
 - common role, run from common playbook.
 - apache-hadoop role, run from apache-hadoop playbook.
 - apache-kafka role, run from apache-kafka playbook.
@@ -34,6 +35,12 @@ There are four (4) roles and five (5) playbooks. These are:
 
 
 ## Role Explanation
+
+
+### proxy
+- Installs squid http proxy on master node, using apt package manager.
+- Configures the acls of the proxy, and sets the localnet to allowed.
+- Restarts the http proxy service
 
 
 ### common
@@ -61,6 +68,8 @@ There are four (4) roles and five (5) playbooks. These are:
 ### apache-flink
 - Downloads and installs Apache Flink on master node.
 - Starts and Apache Flink, Yarn session.
+
+
 
 
 ## How to deploy

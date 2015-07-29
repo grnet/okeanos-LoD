@@ -1,0 +1,6 @@
+---
+
+  - hosts: master
+    user: root
+    roles:
+      - proxy
