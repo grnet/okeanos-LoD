@@ -1,7 +1,7 @@
 from django.db import models
 
 class User(models.Model):
-    id = models.CharField("UUID", null=False, blank=False, unique=True, default="", max_length=255,
+    id = models.CharField("UUID", primary_key=True, null=False, blank=False, unique=True, default="", max_length=255,
                           help_text="Unique user id asign by Astakos")
     token = models.CharField("Okeanos Token", null=True, blank=True, unique=True, default="", max_length=64,
                              help_text="Token provided by ~okeanos.")
