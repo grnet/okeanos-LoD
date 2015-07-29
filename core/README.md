@@ -40,13 +40,13 @@ The script is responsible for creating the entire lambda instance.
 ```
 [global]
 default_cloud = lambda
-ca_certs = /path/to/certs
+; ca_certs = /path/to/certs
 
 [cloud "lambda"]
 url = https://accounts.okeanos.grnet.gr/identity/v2.0
 token = your-okeanos-token
 ```
-
+Note that you may retrieve your ~okeanos API token, after logging into the service, by visiting [this page][api_link]. 
 
 - Install required packages. Within the `core` directory execute `sudo pip install -r requirements.txt`.
 - Install package using `sudo python setup.py install`
@@ -66,3 +66,5 @@ To test the library we use `tox`. In order to run the tests:
 - Run `tox`
 
 This will automatically create the testing environments required and run the tests
+
+[api_link]: https://accounts.okeanos.grnet.gr/ui/api_access
