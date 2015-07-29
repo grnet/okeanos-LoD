@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     provisioner = Provisioner(cloud_name=args.cloud)
-    provisioner.create_lambda_cluster('test_vm', slaves=args.slaves,
+    provisioner.create_lambda_cluster('lambda-master', slaves=args.slaves,
                                       cluster_size=args.cluster_size,
                                       vcpus_master=args.vcpus_master,
                                       vcpus_slave=args.vcpus_slave,
