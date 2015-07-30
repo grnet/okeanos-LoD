@@ -1,9 +1,9 @@
 ---
   - name: Install PosgreSQL and libpq-dev packages.
-    apt: name={{ item.name }} state=latest
+    apt: name={{ item }} state=latest
     with_items:
-      - { name: 'postgresql' }
-      - { name: 'libpq-dev'  }
+      - postgresql
+      - libpq-dev
 
   - name: Install Python connector for PostgreSQL.
     pip: name=psycopg2

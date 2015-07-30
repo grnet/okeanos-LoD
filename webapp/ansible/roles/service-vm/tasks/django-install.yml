@@ -1,3 +1,0 @@
----
-  - name: Install Django using Pip.
-    pip: name=Django

@@ -1,17 +1,17 @@
 ---
-  - name: Fix Debian locale error.
-    command: update-locale LANGUAGE="en_US.UTF-8" LC_ALL="en_US.UTF-8" #"echo 'LANGUAGE="en_US.UTF-8"' > /etc/default/locale && echo 'LC_ALL="en_US.UTF-8"' >> /etc/default/locale # The first redirection intentionally creates the file.
+  - name: Fix locale problem.
+    command: update-locale LANGUAGE="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 
   - name: Upgrade packages.
     apt: upgrade=dist update_cache=yes
 
   - name: Install python-pip, python-dev, sudo and git packages.
-    apt: name={{ item.name }} state=latest
+    apt: name={{ item }} state=latest
     with_items:
-      - { name: 'python-pip' }
-      - { name: 'python-dev' }
-      - { name: 'sudo'       }
-      - { name: 'git'        }
+      - python-pip
+      - python-dev
+      - sudo
+      - git
 
   - name: Create service user.
     user: name={{ username }} shell=/bin/bash
@@ -19,10 +19,17 @@
   - name: Include postgresql-install tasks.
     include: postgresql-install.yml
 
-  - name: Include django-install tasks.
-    include: django-install.yml
+  - name: Install Django using Pip.
+    pip: name=Django
 
   - name: Download Django code from Github.
     git: repo=https://github.com/gouzouni625/okeanos-LoD.git dest={{ repository_download_path }}/okeanos-LoD version=LAM-53-Django # version can be used to select a branch. See ansible git module documentation.
-    notify:                                                                                                                        # The repository should be changed when the pull request gets merged.
-      - django_db_migrate
+                                                                                                                                   # The repository should be changed when the pull request gets merged.
+
+  - name: Change repository permissions.
+    file: path={{ repository_download_path }} owner={{ username }} recurse=yes
+
+  - name: Setup Django database configuration.
+    template: src=settings.py.j2 dest={{ repository_download_path}}/okeanos-LoD/webapp/webapp/settings.py
+    notify:
+      - django_dbs_migrate
