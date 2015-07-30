@@ -1,0 +1,8 @@
+---
+  - name: django_db_migrate
+    django_manage: command=migrate app_path={{ repository_download_path }}/okeanos-LoD/webapp/
+    notify:
+      - migrate_backend_app
+
+  - name: migrate_backend_app
+    django_manage: command=migrate app_path={{ repository_download_path }}/okeanos-LoD/webapp/backend
