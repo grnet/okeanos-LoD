@@ -1,18 +1,20 @@
 ---
   - name: Fix Debian locale error.
-    shell: echo 'LANGUAGE="en_US.UTF-8"' > /etc/default/locale && echo 'LC_ALL="en_US.UTF-8"' >> /etc/default/locale # The first redirection intentionally creates the file.
+    command: update-locale LANGUAGE="en_US.UTF-8" LC_ALL="en_US.UTF-8" #"echo 'LANGUAGE="en_US.UTF-8"' > /etc/default/locale && echo 'LC_ALL="en_US.UTF-8"' >> /etc/default/locale # The first redirection intentionally creates the file.
 
   - name: Upgrade packages.
     apt: upgrade=dist update_cache=yes
 
-  - name: Install python-pip package.
-    apt: name=python-pip state=latest
+  - name: Install python-pip, python-dev, sudo and git packages.
+    apt: name={{ item.name }} state=latest
+    with_items:
+      - { name: 'python-pip' }
+      - { name: 'python-dev' }
+      - { name: 'sudo'       }
+      - { name: 'git'        }
 
-  - name: Install python-dev package.
-    apt: name=python-dev state=latest
-
-  - name: Install git.
-    apt: name=git state=latest
+  - name: Create service user.
+    user: name={{ username }} shell=/bin/bash
 
   - name: Include postgresql-install tasks.
     include: postgresql-install.yml
@@ -20,5 +22,7 @@
   - name: Include django-install tasks.
     include: django-install.yml
 
-  - name: Include github tasks.
-    include: github.yml
+  - name: Download Django code from Github.
+    git: repo=https://github.com/gouzouni625/okeanos-LoD.git dest={{ repository_download_path }}/okeanos-LoD version=LAM-53-Django # version can be used to select a branch. See ansible git module documentation.
+    notify:                                                                                                                        # The repository should be changed when the pull request gets merged.
+      - django_db_migrate

@@ -1,9 +1,17 @@
 ---
-  - name: Install PosgreSQL.
-    apt: name=postgresql state=latest
-
-  - name: Install libpq-dev.
-    apt: name=libpq-dev state=latest
+  - name: Install PosgreSQL and libpq-dev packages.
+    apt: name={{ item.name }} state=latest
+    with_items:
+      - { name: 'postgresql' }
+      - { name: 'libpq-dev'  }
 
   - name: Install Python connector for PostgreSQL.
     pip: name=psycopg2
+
+  - name: Create PostgreSQL database for service user.
+    sudo_user: postgres
+    postgresql_db: name={{ database_name }}
+
+  - name: Create PostgreSQL role for lambdaservice user.
+    sudo_user: postgres
+    postgresql_user: db={{ database_name }} name={{ username }} password={{ database_user_password }}
