@@ -13,18 +13,20 @@ class Project(models.Model):
 
 class Cluster(models.Model):
     id = models.AutoField("Cluster ID", primary_key=True, null=False, help_text="Auto-increment cluster id.")
-    master_server = models.ForeignKey('Server', null=True, blank=True, unique=True, on_delete=models.CASCADE)
+    # OneToOneField is a ForeignKey with unique=True. Django recommends using OneToOne Field instead of a ForeignKey
+    # with unique=True.
+    master_server = models.OneToOneField('Server', null=True, blank=True, on_delete=models.CASCADE)
 
 class Server(models.Model):
     id = models.AutoField("Server ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Server id provided by kamaki.")
-    hostname = models.CharField(max_length=100)
-    public_ip = models.CharField(max_length=100)
-    private_ip = models.CharField(max_length=100)
+    hostname = models.CharField("Hostname", null=False, blank=False, unique=True, max_length=100)
+    public_ip = models.GenericIPAddressField("Public IP", null=False, blank=False, unique=True)
+    private_ip = models.GenericIPAddressField("Private IP", null=False, blank=False, unique=False)
 
 class PrivateNetwork(models.Model):
     id = models.AutoField("Network ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Private network id provided by kamaki.")
     subnet = models.CharField(max_length=100)
-    gateway = models.CharField(max_length=100)
+    gateway = models.GenericIPAddressField("Gateway", null=False, blank=False, unique=False)
 
 class UserProjectConnection(models.Model):
     user_id = models.ForeignKey('User', null=False, blank=False, unique=False, on_delete=models.CASCADE)
