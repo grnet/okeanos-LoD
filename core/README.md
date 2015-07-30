@@ -12,7 +12,7 @@ The library is responsible for creating a VM cluster, using the Kamaki python AP
 ### ansible_manager
 
 The library is responsible for managing the ansible, that will run on the cluster. Its tasks are:
-* It reads a dictionary, containing the necessary info about the cluster and its nodes
+* It reads a python dictionary object, containing the necessary info about the cluster and its nodes
 * It creates an ansible inventory object, using the dictionary
 * It creates the necessary group and host vars, required for ansible to run on all the nodes and configure them properly
 * It sets some ansible constants, required eg for SSH tunnelling through the master node
