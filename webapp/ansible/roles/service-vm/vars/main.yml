@@ -1,5 +1,5 @@
 ---
-username: lambda
-database_name: lambda_service_db
+database_username: lambda
+database_name: lambda_db
 database_user_password: change_me
-repository_download_path: /home/{{ username }}
+repository_download_path: /var/www

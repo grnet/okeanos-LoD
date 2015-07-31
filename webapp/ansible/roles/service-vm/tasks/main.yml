@@ -13,8 +13,8 @@
       - sudo
       - git
 
-  - name: Create service user.
-    user: name={{ username }} shell=/bin/bash
+  - name: Include apache2 tasks.
+    include: apache-install.yml
 
   - name: Include postgresql-install tasks.
     include: postgresql-install.yml
@@ -27,7 +27,7 @@
                                                                                                                                    # The repository should be changed when the pull request gets merged.
 
   - name: Change repository permissions.
-    file: path={{ repository_download_path }} owner={{ username }} recurse=yes
+    file: path={{ repository_download_path }} owner=root group=root recurse=yes
 
   - name: Setup Django database configuration.
     template: src=settings.py.j2 dest={{ repository_download_path}}/okeanos-LoD/webapp/webapp/settings.py
