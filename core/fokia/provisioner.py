@@ -499,9 +499,8 @@ class Provisioner:
         """
         project_id = self.find_project_id(**kwargs)['id']
         flavor = self.find_flavor(**kwargs)
-
         #check flavor
-        if flavor['SNF'] != 'allow_create':
+        if not flavor['SNF:allow_create']:
             msg = 'This flavor does not allow create.'
             raise ClientError(msg, error_flavor_list)
             return False
@@ -603,7 +602,7 @@ if __name__ == "__main__":
                                           ip_request=args.ip_request,
                                           network_request=args.network_request,
                                           project_name=args.project_name)
-    #print(provisioner.get_cluster_details())
+    print(provisioner.get_cluster_details())
 
 
     #details = {'nodes':[668403,668404],'vpn':144076}
