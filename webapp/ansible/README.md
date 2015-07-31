@@ -1,4 +1,4 @@
-# ~okeanos Lambda on Demand backend service Ansible
+# ~okeanos LoD backend service Ansible
 
 ## Description
 In this directory you can find the Ansible code that deployes the backend service vm
@@ -25,11 +25,11 @@ repository from Github and set Apache server to serve ~okeanos-LoD webapp.
 To check that everything is installed correctly after running the Ansible code, open a web browser and
 enter your vm's public ip on the address bar. You should see the following text:
 
-`
+```
 It worked!
 Congratulations on your first Django-powered page.
 
 Of course, you haven't actually done any work yet. Next, start your first app by running python manage.py startapp [app_label].
 
 You're seeing this message because you have DEBUG = True in your Django settings file and you haven't configured any URLs. Get to work!
-`
+```
