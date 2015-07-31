@@ -174,8 +174,6 @@ class Provisioner:
             master_personality.append(private)
             slave_personality = []
             slave_personality.append(authorized)
-            print(master_personality)
-            print(slave_personality)
 
             # Create private network for cluster
             self.vpn = self.create_vpn('lambda-vpn', project_id=project_id)
@@ -352,6 +350,25 @@ class Provisioner:
         :param details: details of the cluster we want to delete
         :return: True if successfull
         """
+        self.cyclades.get_server_details
+        # Delete every node
+        nodes = details['nodes']
+        for node in nodes:
+            if(not self.delete_vm(node)):
+                msg = 'Error deleting node with id ', node
+                raise ClientError(msg, error_fatal)
+
+        # Wait to complete deleting VMs
+        for node in nodes:
+            self.cyclades.wait_server(server_id=node, current_status='ACTIVE')
+
+        # Delete vpn
+        vpn = details['vpn']
+        if (not self.delete_vpn(vpn)):
+            msg = 'Error deleting node with id ', node
+            raise ClientError(msg, error_fatal)
+
+
 
     def delete_vm(self, vm_id):
         """
@@ -366,19 +383,6 @@ class Provisioner:
             raise ex
         return False
 
-    def delete_private_subnet(self, subnet_id):
-        """
-        Delete a subnet
-        :param subnet_id: id of the subnet we want to delete
-        :return: True if successfull
-        """
-        try:
-            self.network_client.delete_subnet(subnet_id)
-            return True
-        except ClientError as ex:
-            raise ex
-        return False
-
     def delete_vpn(self, net_id):
         """
         Delete a virtual private network
@@ -386,7 +390,7 @@ class Provisioner:
         :return: True if successfull
         """
         try:
-            self.network_client.delete_network(id)
+            self.network_client.delete_network(net_id)
             return True
         except ClientError as ex:
             raise ex
@@ -493,7 +497,8 @@ class Provisioner:
         :param **kwargs: arguments
         """
         project_id = self.find_project_id(**kwargs)['id']
-        # quotas = self.get_quotas()
+        flavor = self.find_flavor(**kwargs)
+        print(flavor)
 
         # Check for VMs
         pending_vm = quotas[project_id]['cyclades.vm']['project_pending']
@@ -580,9 +585,6 @@ if __name__ == "__main__":
 
     provisioner = Provisioner(cloud_name=args.cloud)
     """
-    print(provisioner.create_vm(vm_name=args.name, project_name=args.project_name,
-                             image_name="debian"))
-    """
 
 
     response = provisioner.create_lambda_cluster(vm_name="lambda-master" , slaves=args.slaves,
@@ -596,6 +598,8 @@ if __name__ == "__main__":
                                           ip_request=args.ip_request,
                                           network_request=args.network_request,
                                           project_name=args.project_name)
-    # print(response)
     print(provisioner.get_cluster_details())
-    # print(provisioner.get_private_key())
+
+    """
+    #details = {'nodes':[668403,668404],'vpn':144076}
+    #provisioner.delete_lambda_cluster(details)
