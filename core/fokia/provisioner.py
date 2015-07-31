@@ -153,6 +153,7 @@ class Provisioner:
                                               ip_request=kwargs['ip_request'],
                                               network_request=kwargs['network_request'],
                                               project_name=kwargs['project_name'])
+
         if response:
             # Get ssh keys
             key = RSA.generate(2048)
@@ -498,8 +499,12 @@ class Provisioner:
         """
         project_id = self.find_project_id(**kwargs)['id']
         flavor = self.find_flavor(**kwargs)
-        print(flavor)
 
+        #check flavor
+        if flavor['SNF'] != 'allow_create':
+            msg = 'This flavor does not allow create.'
+            raise ClientError(msg, error_flavor_list)
+            return False
         # Check for VMs
         pending_vm = quotas[project_id]['cyclades.vm']['project_pending']
         limit_vm = quotas[project_id]['cyclades.vm']['project_limit']
@@ -584,7 +589,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     provisioner = Provisioner(cloud_name=args.cloud)
-    """
+
 
 
     response = provisioner.create_lambda_cluster(vm_name="lambda-master" , slaves=args.slaves,
@@ -598,8 +603,8 @@ if __name__ == "__main__":
                                           ip_request=args.ip_request,
                                           network_request=args.network_request,
                                           project_name=args.project_name)
-    print(provisioner.get_cluster_details())
+    #print(provisioner.get_cluster_details())
 
-    """
+
     #details = {'nodes':[668403,668404],'vpn':144076}
     #provisioner.delete_lambda_cluster(details)
