@@ -1,0 +1,5 @@
+---
+- hosts: service-vms
+  user: root
+  roles:
+    - roles/service-vm
