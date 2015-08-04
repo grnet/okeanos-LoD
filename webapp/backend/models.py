@@ -13,9 +13,16 @@ class Cluster(models.Model):
     # OneToOneField is a ForeignKey with unique=True. Django recommends using OneToOneField instead of a ForeignKey
     # with unique=True.
     master_server = models.OneToOneField('Server', null=True, blank=True, on_delete=models.CASCADE)
+    cluster_info_id = models.OneToOneField('Cluster_info', null=True, blank=True, on_delete=models.CASCADE)
 
 class Server(models.Model):
     id = models.AutoField("Server ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Server id provided by kamaki.")
+    hostname = models.CharField("Hostname", null=False, blank=False, unique=True, max_length=100)
+    public_ip = models.GenericIPAddressField("Public IP", null=False, blank=False, unique=True)
+    private_ip = models.GenericIPAddressField("Private IP", null=False, blank=False, unique=False)
+
+class Cluster_info(models.Model):
+    id = models.AutoField("Cluster_info ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Cluster _info id autoincremented.")
     hostname = models.CharField("Hostname", null=False, blank=False, unique=True, max_length=100)
     public_ip = models.GenericIPAddressField("Public IP", null=False, blank=False, unique=True)
     private_ip = models.GenericIPAddressField("Private IP", null=False, blank=False, unique=False)
