@@ -22,7 +22,7 @@ class Server(models.Model):
     private_ip = models.GenericIPAddressField("Private IP", null=False, blank=False, unique=False)
 
 class Cluster_info(models.Model):
-    id = models.AutoField("Cluster_info ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Cluster _info id autoincremented.")
+    id = models.AutoField("Cluster_info ID", primary_key=True, null=False, blank=False, unique=True, help_text="Cluster _info id autoincremented.")
     hostname = models.CharField("Hostname", null=False, blank=False, unique=True, max_length=100)
     public_ip = models.GenericIPAddressField("Public IP", null=False, blank=False, unique=True)
     private_ip = models.GenericIPAddressField("Private IP", null=False, blank=False, unique=False)
