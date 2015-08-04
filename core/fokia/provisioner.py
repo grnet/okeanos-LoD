@@ -146,7 +146,8 @@ class Provisioner:
         ram = kwargs['slaves'] * kwargs['ram_slave'] + kwargs['ram_master']
         disk = kwargs['slaves'] * kwargs['disk_slave'] + kwargs['disk_master']
         project_id = self.find_project_id(**kwargs)['id']
-        response = self.check_all_resources(quotas, cluster_size=kwargs['cluster_size'],
+        cluster_size = kwargs['slaves'] + 1
+        response = self.check_all_resources(quotas, cluster_size=cluster_size,
                                               vcpus=vcpus,
                                               ram=ram,
                                               disk=disk,

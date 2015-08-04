@@ -7,7 +7,7 @@ The libraries contained in the core package are responsible for creating a clust
 
 ### provisioner
 
-The library is responsible for creating a VM cluster, using the Kamaki python API. It reads the authentication info from the .kamakirc, and accepts the cluster specs as arguments.
+The library is responsible for creating/deleting a VM cluster, using the Kamaki python API. It reads the authentication info from the .kamakirc, and accepts the cluster specs as arguments.
 
 ### ansible_manager
 
@@ -20,11 +20,20 @@ The library is responsible for managing the ansible, that will run on the cluste
 
 ### cluster_creator
 
-The script is responsible for creating the entire lambda instance.
+The script is responsible for creating/deleting the entire lambda instance.
+When running the cluster_creator script set the argument action with the desired action, action='create' for creating a lambda cluster, action='delete' for deleting a lambda cluster.
+According to the action selected, certain arguments must be modified.
+
+If action is CREATE
 * It sets the provisioner arguments (cluster specs), then calls the provisioner to create the cluster.
 * After that, it gets the output dictionary of the provisioner and adds some more values to it, which are obtained using the provisioner, after the cluster creation.
 * It calls the ansible_manager, to create the inventory, using the dictionary as input.
 * Finally, it uses the created manager object (containing the inventory and constants), to run the required playbooks in the correct order, to create the lambda instance.
+
+If action is DELETE
+* It reads the cluster id from the arguments.
+* Creates a query to read the cluster information from the database with this id.
+* It call the delete_lambda_cluster method of the provisioner with the information it retrieved from the database.
 
 ## Prerequisites
 
@@ -46,7 +55,7 @@ default_cloud = lambda
 url = https://accounts.okeanos.grnet.gr/identity/v2.0
 token = your-okeanos-token
 ```
-Note that you may retrieve your ~okeanos API token, after logging into the service, by visiting [this page][api_link]. 
+Note that you may retrieve your ~okeanos API token, after logging into the service, by visiting [this page][api_link].
 
 - Install required packages. Within the `core` directory execute `sudo pip install -r requirements.txt`.
 - Install package using `sudo python setup.py install`
@@ -54,7 +63,7 @@ Note that you may retrieve your ~okeanos API token, after logging into the servi
 ## Usage
 
 
-To create a lambda instance, one must run `python cluster_creator.py` from within the `core/fokia` directory. To change the default settings (one master instance and one slave instance) one has to edit the `cluster_creator.py` script prior to executing it. 
+To create a lambda instance, one must run `python cluster_creator.py` from within the `core/fokia` directory. To change the default settings (one master instance and one slave instance) one has to edit the `cluster_creator.py` script prior to executing it.
 
 
 
