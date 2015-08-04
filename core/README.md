@@ -22,7 +22,7 @@ The library is responsible for managing the ansible, that will run on the cluste
 
 The script is responsible for creating/deleting the entire lambda instance.
 Run script as `cluster_creator.py --action=create` for creating a lambda cluster.
-Run script as `cluster_creator.py --action=delete` for deleting a lambda cluster.
+Run script as `cluster_creator.py --action=delete --cluster_id=<id>` for deleting a lambda cluster.
 According to the action selected, certain arguments must be modified.
 
 If action is CREATE
