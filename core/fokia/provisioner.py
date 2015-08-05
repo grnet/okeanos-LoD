@@ -156,6 +156,10 @@ class Provisioner:
                                               project_name=kwargs['project_name'])
 
         if response:
+            # Check flavors for master and slaves
+            check_flavor(vcpus=kwargs['vcpus_master'], ram=kwargs['ram_master'],disk=kwargs['disk_master'])
+            check_flavor(vcpus=kwargs['vcpus_slave'], ram=kwargs['ram_slave'],disk=kwargs['disk_slave'])
+
             # Get ssh keys
             key = RSA.generate(2048)
             self.private_key = key.exportKey('PEM')
@@ -492,6 +496,17 @@ class Provisioner:
     """
     CHECK RESOURCES
     """
+    def check_flavor(vcpus, ram, disk):
+        """
+        Check if flavor with this resources allows creation.
+        """
+        flavor = self.find_flavor("vcpus"=vcpus, "ram"=ram, "disk"=disk)
+        #check flavor
+        if not flavor['SNF:allow_create']:
+            msg = 'This flavor does not allow create.'
+            raise ClientError(msg, error_flavor_list)
+            return False
+
     def check_all_resources(self, quotas, **kwargs):
         """
         Checks user's quota for every requested resource.
@@ -499,12 +514,6 @@ class Provisioner:
         :param **kwargs: arguments
         """
         project_id = self.find_project_id(**kwargs)['id']
-        flavor = self.find_flavor(**kwargs)
-        #check flavor
-        if not flavor['SNF:allow_create']:
-            msg = 'This flavor does not allow create.'
-            raise ClientError(msg, error_flavor_list)
-            return False
         # Check for VMs
         pending_vm = quotas[project_id]['cyclades.vm']['project_pending']
         limit_vm = quotas[project_id]['cyclades.vm']['project_limit']
