@@ -82,6 +82,9 @@ class Provisioner:
         self.private_key = None
         self.image_id = 'c6f5adce-21ad-4ce3-8591-acfe7eb73c02'
 
+    """
+    FIND RESOURCES
+    """
     def find_flavor(self, **kwargs):
         """
 
@@ -128,37 +131,9 @@ class Provisioner:
         logger.info("Retrieving project")
         return self.astakos.get_projects(**filter)[0]
 
-    def create_vm(self, vm_name=None, image_id=None, ip=None, personality=None, **kwargs):
-        """
-        :param vm_name: Name of the virtual machine to create
-        :param image_id: image id if you want another image than the default
-        :param kwargs: passed to the functions called for detail options
-        :return:
-        """
-        flavor_id = self.find_flavor(**kwargs)['id']
-        # Get image
-        if image_id == None:
-            image_id = self.image_id
-        else:
-            image_id = self.find_image(**kwargs)['id']
-        project_id = self.find_project_id(**kwargs)['id']
-        networks = list()
-        if ip != None:
-            ip_obj = dict()
-            ip_obj['uuid'] = ip['floating_network_id']
-            ip_obj['fixed_ip'] = ip['floating_ip_address']
-            networks.append(ip_obj)
-        networks.append({'uuid': kwargs['net_id']})
-        if personality == None:
-            personality = []
-        try:
-            okeanos_response = self.cyclades.create_server(name=vm_name, flavor_id=flavor_id,
-                                                           image_id=image_id,
-                                                           project_id=project_id,
-                                                           networks=networks, personality=personality)
-        except ClientError as ex:
-            raise ex
-        return okeanos_response
+    """
+    CREATE RESOURCES
+    """
 
     def create_lambda_cluster(self, vm_name, **kwargs):
         """
@@ -171,13 +146,15 @@ class Provisioner:
         ram = kwargs['slaves'] * kwargs['ram_slave'] + kwargs['ram_master']
         disk = kwargs['slaves'] * kwargs['disk_slave'] + kwargs['disk_master']
         project_id = self.find_project_id(**kwargs)['id']
-        response = self.check_all_resources(quotas, cluster_size=kwargs['cluster_size'],
+        cluster_size = kwargs['slaves'] + 1
+        response = self.check_all_resources(quotas, cluster_size=cluster_size,
                                               vcpus=vcpus,
                                               ram=ram,
                                               disk=disk,
                                               ip_request=kwargs['ip_request'],
                                               network_request=kwargs['network_request'],
                                               project_name=kwargs['project_name'])
+
         if response:
             # Get ssh keys
             key = RSA.generate(2048)
@@ -199,8 +176,6 @@ class Provisioner:
             master_personality.append(private)
             slave_personality = []
             slave_personality.append(authorized)
-            print(master_personality)
-            print(slave_personality)
 
             # Create private network for cluster
             self.vpn = self.create_vpn('lambda-vpn', project_id=project_id)
@@ -254,6 +229,179 @@ class Provisioner:
             inventory["slaves"] = self.slaves
             return inventory
 
+    def create_vm(self, vm_name=None, image_id=None, ip=None, personality=None, **kwargs):
+        """
+        :param vm_name: Name of the virtual machine to create
+        :param image_id: image id if you want another image than the default
+        :param kwargs: passed to the functions called for detail options
+        :return:
+        """
+        flavor_id = self.find_flavor(**kwargs)['id']
+        # Get image
+        if image_id == None:
+            image_id = self.image_id
+        else:
+            image_id = self.find_image(**kwargs)['id']
+        project_id = self.find_project_id(**kwargs)['id']
+        networks = list()
+        if ip != None:
+            ip_obj = dict()
+            ip_obj['uuid'] = ip['floating_network_id']
+            ip_obj['fixed_ip'] = ip['floating_ip_address']
+            networks.append(ip_obj)
+        networks.append({'uuid': kwargs['net_id']})
+        if personality == None:
+            personality = []
+        try:
+            okeanos_response = self.cyclades.create_server(name=vm_name, flavor_id=flavor_id,
+                                                           image_id=image_id,
+                                                           project_id=project_id,
+                                                           networks=networks, personality=personality)
+        except ClientError as ex:
+            raise ex
+        return okeanos_response
+
+    def create_vpn(self, network_name, project_id):
+        """
+        Creates a virtual private network
+        :param network_name: name of the network
+        :return: the virtual network object
+        """
+        try:
+            # Create vpn with custom type and the name given as argument
+            vpn = self.network_client.create_network(
+                        type=self.network_client.network_types[1],
+                        name=network_name,
+                        project_id=project_id)
+            return vpn
+        except ClientError as ex:
+            raise ex
+        return okeanos_response
+
+    def reserve_ip(self,project_id):
+        """
+        Reserve ip
+        :return: the ip object if successfull
+        """
+        list_float_ips = self.network_client.list_floatingips()
+        for ip in list_float_ips:
+            if ip['instance_id'] is None and ip['port_id'] is None:
+                return ip
+        try:
+            ip = self.network_client.create_floatingip(project_id=project_id)
+            return ip
+        except ClientError as ex:
+            raise ex
+        return okeanos_response
+
+    def create_private_subnet(self, net_id, cidr='192.168.0.0/24', gateway_ip='192.168.0.1'):
+        """
+        Creates a private subnets and connects it with this network
+        :param net_id: id of the network
+        :return: the id of the subnet if successfull
+        """
+        try:
+            subnet = self.network_client.create_subnet(net_id, cidr,
+                                                       gateway_ip=gateway_ip,
+                                                       enable_dhcp=True)
+            self.subnet = subnet
+            return subnet['id']
+        except ClientError as ex:
+            raise ex
+        return okeanos_response
+
+
+    def connect_vm(self, vm_id, net_id):
+        """
+        Connects the vm with this id to the network with the net_id
+        :param vm_id: id of the vm
+        :param net_id: id of the network
+        :return: returns True if successfull
+        """
+        try:
+            port = self.network_client.create_port(network_id=net_id,
+                                                   device_id=vm_id)
+            return True
+        except ClientError as ex:
+            raise ex
+        return okeanos_response
+
+    def attach_authorized_ip(self, ip, vm_id):
+        """
+        Attach the authorized ip with this id to the vm
+        :param fnet_id: id of the floating network of the ip
+        :param vm_id: id of the vm
+        :return: returns True if successfull
+        """
+        try:
+            port = self.network_client.create_port(network_id=ip['floating_network_id'],
+                                                   device_id=vm_id,
+                                                   fixed_ips=[dict(ip_address=ip['floating_ip_address']), ])
+            return True
+        except ClientError as ex:
+            raise ex
+        return okeanos_response
+
+    """
+    DELETE RESOURCES
+    """
+
+    def delete_lambda_cluster(self, details):
+        """
+        Delete a lambda cluster
+        :param details: details of the cluster we want to delete
+        :return: True if successfull
+        """
+        self.cyclades.get_server_details
+        # Delete every node
+        nodes = details['nodes']
+        for node in nodes:
+            if(not self.delete_vm(node)):
+                msg = 'Error deleting node with id ', node
+                raise ClientError(msg, error_fatal)
+
+        # Wait to complete deleting VMs
+        for node in nodes:
+            self.cyclades.wait_server(server_id=node, current_status='ACTIVE')
+
+        # Delete vpn
+        vpn = details['vpn']
+        if (not self.delete_vpn(vpn)):
+            msg = 'Error deleting node with id ', node
+            raise ClientError(msg, error_fatal)
+
+
+
+    def delete_vm(self, vm_id):
+        """
+        Delete a vm
+        :param vm_id: id of the vm we want to delete
+        :return: True if successfull
+        """
+        try:
+            self.cyclades.delete_server(vm_id)
+            return True
+        except ClientError as ex:
+            raise ex
+        return False
+
+    def delete_vpn(self, net_id):
+        """
+        Delete a virtual private network
+        :param net_id: id of the network we want to delete
+        :return: True if successfull
+        """
+        try:
+            self.network_client.delete_network(net_id)
+            return True
+        except ClientError as ex:
+            raise ex
+        return False
+
+    """
+    GET RESOURCES
+    """
+
     def get_cluster_details(self):
         """
         :returns: dictionary of basic details for the cluster
@@ -305,95 +453,6 @@ class Provisioner:
         """
         return self.private_key
 
-    def create_vpn(self, network_name, project_id):
-        """
-        Creates a virtual private network
-        :param network_name: name of the network
-        :return: the virtual network object
-        """
-        try:
-            # Create vpn with custom type and the name given as argument
-            vpn = self.network_client.create_network(
-                        type=self.network_client.network_types[1],
-                        name=network_name,
-                        project_id=project_id)
-            return vpn
-        except ClientError as ex:
-            raise ex
-        return okeanos_response
-
-    def destroy_vpn(self, id):
-        """
-        Destroy a virtual private network
-        :param id: id of the network we want to destroy
-        :return: True if successfull
-        """
-        try:
-            self.network_client.delete_network(id)
-            return True
-        except ClientError as ex:
-            raise ex
-        return okeanos_response
-
-    def reserve_ip(self,project_id):
-        """
-        Reserve ip
-        :return: the ip object if successfull
-        """
-        try:
-            ip = self.network_client.create_floatingip(project_id=project_id)
-            return ip
-        except ClientError as ex:
-            raise ex
-        return okeanos_response
-
-    def create_private_subnet(self, net_id, cidr='192.168.0.0/24', gateway_ip='192.168.0.1'):
-        """
-        Creates a private subnets and connects it with this network
-        :param net_id: id of the network
-        :return: the id of the subnet if successfull
-        """
-        try:
-            subnet = self.network_client.create_subnet(net_id, cidr,
-                                                       gateway_ip=gateway_ip,
-                                                       enable_dhcp=True)
-            self.subnet = subnet
-            return subnet['id']
-        except ClientError as ex:
-            raise ex
-        return okeanos_response
-
-    def connect_vm(self, vm_id, net_id):
-        """
-        Connects the vm with this id to the network with the net_id
-        :param vm_id: id of the vm
-        :param net_id: id of the network
-        :return: returns True if successfull
-        """
-        try:
-            port = self.network_client.create_port(network_id=net_id,
-                                                   device_id=vm_id)
-            return True
-        except ClientError as ex:
-            raise ex
-        return okeanos_response
-
-    def attach_authorized_ip(self, ip, vm_id):
-        """
-        Attach the authorized ip with this id to the vm
-        :param fnet_id: id of the floating network of the ip
-        :param vm_id: id of the vm
-        :return: returns True if successfull
-        """
-        try:
-            port = self.network_client.create_port(network_id=ip['floating_network_id'],
-                                                   device_id=vm_id,
-                                                   fixed_ips=[dict(ip_address=ip['floating_ip_address']), ])
-            return True
-        except ClientError as ex:
-            raise ex
-        return okeanos_response
-
     def get_quotas(self, **kwargs):
         """
         Get the user quotas for the defined project.
@@ -430,6 +489,9 @@ class Provisioner:
                 return ip
         return None
 
+    """
+    CHECK RESOURCES
+    """
     def check_all_resources(self, quotas, **kwargs):
         """
         Checks user's quota for every requested resource.
@@ -437,8 +499,12 @@ class Provisioner:
         :param **kwargs: arguments
         """
         project_id = self.find_project_id(**kwargs)['id']
-        # quotas = self.get_quotas()
-
+        flavor = self.find_flavor(**kwargs)
+        #check flavor
+        if not flavor['SNF:allow_create']:
+            msg = 'This flavor does not allow create.'
+            raise ClientError(msg, error_flavor_list)
+            return False
         # Check for VMs
         pending_vm = quotas[project_id]['cyclades.vm']['project_pending']
         limit_vm = quotas[project_id]['cyclades.vm']['project_limit']
@@ -498,48 +564,3 @@ class Provisioner:
             raise ClientError(msg, error_get_network_quota)
             return False
         return True
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Okeanos VM provisioning")
-    parser.add_argument('--cloud', type=str, dest="cloud", default="~okeanos")
-    parser.add_argument('--project-name', type=str, dest="project_name",
-                        default="lambda.grnet.gr")
-    parser.add_argument('--name', type=str, dest='name', default="to mikro debian sto livadi")
-
-
-    parser.add_argument('--slaves', type=int, dest='slaves', default=1)
-    parser.add_argument('--vcpus_master', type=int, dest='vcpus_master', default=4)
-    parser.add_argument('--vcpus_slave', type=int, dest='vcpus_slave', default=4)
-    parser.add_argument('--ram_master', type=int, dest='ram_master', default=4096)  # in MB
-    parser.add_argument('--ram_slave', type=int, dest='ram_slave', default=4096)  # in MB
-    parser.add_argument('--disk_master', type=int, dest='disk_master', default=40)  # in GB
-    parser.add_argument('--disk_slave', type=int, dest='disk_slave', default=40)  # in GB
-    parser.add_argument('--ip_request', type=int, dest='ip_request', default=1)
-    parser.add_argument('--network_request', type=int, dest='network_request', default=1)
-    parser.add_argument('--image_name', type=str, dest='image_name', default="debian")
-    parser.add_argument('--cluster_size', type=int, dest='cluster_size', default=2)
-
-    args = parser.parse_args()
-
-    provisioner = Provisioner(cloud_name=args.cloud)
-    """
-    print(provisioner.create_vm(vm_name=args.name, project_name=args.project_name,
-                             image_name="debian"))
-    """
-
-
-    response = provisioner.create_lambda_cluster(vm_name="lambda-master" , slaves=args.slaves,
-                                          cluster_size=args.cluster_size,
-                                          vcpus_master=args.vcpus_master,
-                                          vcpus_slave=args.vcpus_slave,
-                                          ram_master=args.ram_master,
-                                          ram_slave=args.ram_slave,
-                                          disk_master=args.disk_master,
-                                          disk_slave=args.disk_slave,
-                                          ip_request=args.ip_request,
-                                          network_request=args.network_request,
-                                          project_name=args.project_name)
-    # print(response)
-    # print(provisioner.get_cluster_details())
-    # print(provisioner.get_private_key())
