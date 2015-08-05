@@ -25,13 +25,15 @@ both the master and the slaves.
 
 ## Playbooks and Roles
 
-There are four (4) roles and five (5) playbooks. These are:
+There are four (8) roles and five (8) playbooks. These are:
 - proxy role, run from proxy playbook.
 - common role, run from common playbook.
 - apache-hadoop role, run from apache-hadoop playbook.
 - apache-kafka role, run from apache-kafka playbook.
 - apache-flink role, run from apache-flink playbook.
 - cluster-install playbook which runs all the roles with the above sequence.
+- rabbitmq-install role, run from celery-install playbook.
+- celery-install role, run from celery-install playbook.
 
 
 ## Role Explanation
@@ -68,6 +70,14 @@ There are four (4) roles and five (5) playbooks. These are:
 ### apache-flink
 - Downloads and installs Apache Flink on master node.
 - Starts and Apache Flink, Yarn session.
+
+### rabbitmq
+- Adds rabbitmq repository file in sources list.
+- Downloads and installs rabbitmq-server with aptitude.
+
+### celery
+- Install python-pip.
+- Installs celery using pip.
 
 
 
