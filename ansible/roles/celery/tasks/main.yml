@@ -1,0 +1,5 @@
+---
+  - name: Include tasks for celery.
+    include: install.yml
+    tags:
+      - celery-install
