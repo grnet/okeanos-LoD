@@ -505,7 +505,7 @@ class Provisioner:
         :param vcpus: nummber of CPUs for the vm
         :param ram: amount of RAM for the vm
         :param disk: amount of disk space for the vm
-        :returns: True if the flavor for this resources allows creation, otherwise False.
+        :returns: True if the flavor for these resources allows creation, otherwise False.
         Fing the flavor for these resources and return the field SNF:allow_create.
         """
         flavor = self.find_flavor(vcpus=vcpus, ram=ram, disk=disk)
