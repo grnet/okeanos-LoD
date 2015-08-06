@@ -500,15 +500,17 @@ class Provisioner:
     """
     CHECK RESOURCES
     """
-    def check_flavor(vcpus, ram, disk):
+    def check_flavor(self, vcpus, ram, disk):
         """
-        Check if flavor with this resources allows creation.
+        :param vcpus: nummber of CPUs for the vm
+        :param ram: amount of RAM for the vm
+        :param disk: amount of disk space for the vm
+        :returns: True if the flavor for this resources allows creation, otherwise False.
+        Fing the flavor for these resources and return the field SNF:allow_create.
         """
-        flavor = self.find_flavor("vcpus"=vcpus, "ram"=ram, "disk"=disk)
+        flavor = self.find_flavor(vcpus=vcpus, ram=ram, disk=disk)
         #check flavor
-        if not flavor['SNF:allow_create']:
-            return False
-        return True
+        return flavor['SNF:allow_create']
 
     def check_all_resources(self, quotas, **kwargs):
         """
