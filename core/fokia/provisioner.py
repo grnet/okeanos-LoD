@@ -157,10 +157,10 @@ class Provisioner:
 
         if response:
             # Check flavors for master and slaves
-            if not check_flavor(vcpus=kwargs['vcpus_master'], ram=kwargs['ram_master'],disk=kwargs['disk_master']):
+            if not self.check_flavor(vcpus=kwargs['vcpus_master'], ram=kwargs['ram_master'],disk=kwargs['disk_master']):
                 msg = 'This flavor does not allow create.'
                 raise ClientError(msg, error_flavor_list)
-            if not check_flavor(vcpus=kwargs['vcpus_slave'], ram=kwargs['ram_slave'],disk=kwargs['disk_slave']):
+            if not self.check_flavor(vcpus=kwargs['vcpus_slave'], ram=kwargs['ram_slave'],disk=kwargs['disk_slave']):
                 msg = 'This flavor does not allow create.'
                 raise ClientError(msg, error_flavor_list)
 
