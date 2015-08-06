@@ -157,8 +157,12 @@ class Provisioner:
 
         if response:
             # Check flavors for master and slaves
-            check_flavor(vcpus=kwargs['vcpus_master'], ram=kwargs['ram_master'],disk=kwargs['disk_master'])
-            check_flavor(vcpus=kwargs['vcpus_slave'], ram=kwargs['ram_slave'],disk=kwargs['disk_slave'])
+            if not check_flavor(vcpus=kwargs['vcpus_master'], ram=kwargs['ram_master'],disk=kwargs['disk_master']):
+                msg = 'This flavor does not allow create.'
+                raise ClientError(msg, error_flavor_list)
+            if not check_flavor(vcpus=kwargs['vcpus_slave'], ram=kwargs['ram_slave'],disk=kwargs['disk_slave']):
+                msg = 'This flavor does not allow create.'
+                raise ClientError(msg, error_flavor_list)
 
             # Get ssh keys
             key = RSA.generate(2048)
@@ -503,9 +507,8 @@ class Provisioner:
         flavor = self.find_flavor("vcpus"=vcpus, "ram"=ram, "disk"=disk)
         #check flavor
         if not flavor['SNF:allow_create']:
-            msg = 'This flavor does not allow create.'
-            raise ClientError(msg, error_flavor_list)
             return False
+        return True
 
     def check_all_resources(self, quotas, **kwargs):
         """
