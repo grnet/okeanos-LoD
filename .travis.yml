@@ -15,6 +15,5 @@ install:
 
 script:
   # We'll add some commands to test the role here.
-  - cd ansible && ansible-playbook -i roles/common/tests/inventory roles/common/tests/test.yml  --syntax-check
-  #- "ansible-playbook -i ansible/roles/tests/inventory ansible/roles/tests/test.yml --connection=local --sudo"
+  - cd ansible/roles/common/tests && ansible-playbook -i inventory test.yml  --syntax-check
 
