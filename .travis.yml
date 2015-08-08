@@ -18,11 +18,21 @@ script:
   #- cd ansible/roles/common/tests && ansible-playbook -i inventory test.yml  --syntax-check
   #- ansible-playbook -i inventory test.yml  --connection=local --sudo 
   #- "ansible-playbook -i inventory test.yml --connection=local --sudo | tee /tmp/output.txt; grep -q 'changed=0.*failed=0' /tmp/output.txt && (echo 'Idempotence test: pass' &&  exit 0) || (echo 'Idempotence test: fail' && exit 1)"
-  - cd ansible/roles/apache-flink/tests && ansible-playbook -i inventory test.yml  --syntax-check
+  - cd ansible/roles/apache-flink/tests 
+  # Check the role/playbook's syntax.
+  - ansible-playbook -i inventory test.yml  --syntax-check
+  # Run the role/playbook with ansible-playbook.
+  - ansible-playbook -i inventory test.yml  --connection=local --sudo 
+  # Run the role/playbook again, checking to make sure it's idempotent.
   - ansible-playbook -i inventory test.yml  --connection=local --sudo 
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
+  # Some MySQL debugging (show all the logs).
+  - "sudo ls -lah /var/log"
+  - "sudo cat /var/log/apache-flink/error.log"
+  - "sudo wget -O hamlet.txt http://www.gutenberg.org/cache/epub/1787/pg1787.txt"
+  - "sudo bin/flink run ./examples/flink-java-examples-0.8.1-WordCount.jar file://`pwd`/hamlet.txt file://`pwd`/wordcount-result.txt"
 
 
 
