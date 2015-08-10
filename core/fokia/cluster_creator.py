@@ -85,7 +85,7 @@ if __name__ == "__main__":
         print 'VM provisioning took', round(provisioner_duration), 'seconds'
         print 'Ansible playbooks took', round(ansible_duration), 'seconds'
 
-    elif args.actin == 'delete':
+    elif args.action == 'delete':
         details = get_cluster_details(args['cluster_id'])
         if details != None:
             provisioner.delete_lambda_cluster(details)
