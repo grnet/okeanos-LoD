@@ -25,11 +25,11 @@ if __name__ == "__main__":
     script_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
     parser = argparse.ArgumentParser(description="Okeanos VM provisioning")
-    parser.add_argument('--cloud', type=str, dest="cloud", default="lambda")
+    parser.add_argument('--cloud', type=str, dest="cloud", default="~okeanos")
     parser.add_argument('--project-name', type=str, dest="project_name",
                         default="lambda.grnet.gr")
 
-    parser.add_argument('--slaves', type=int, dest='slaves', default=1)
+    parser.add_argument('--slaves', type=int, dest='slaves', default=2)
     parser.add_argument('--vcpus_master', type=int, dest='vcpus_master', default=4)
     parser.add_argument('--vcpus_slave', type=int, dest='vcpus_slave', default=4)
     parser.add_argument('--ram_master', type=int, dest='ram_master', default=4096)  # in MB
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     provisioner = Provisioner(cloud_name=args.cloud)
 
-    if args['action'] == 'create':
+    if args.action == 'create':
         provisioner.create_lambda_cluster('lambda-master', slaves=args.slaves,
                                           vcpus_master=args.vcpus_master,
                                           vcpus_slave=args.vcpus_slave,
@@ -85,7 +85,7 @@ if __name__ == "__main__":
         print 'VM provisioning took', round(provisioner_duration), 'seconds'
         print 'Ansible playbooks took', round(ansible_duration), 'seconds'
 
-    elif args['action'] == 'delete':
+    elif args.actin == 'delete':
         details = get_cluster_details(args['cluster_id'])
         if details != None:
             provisioner.delete_lambda_cluster(details)
