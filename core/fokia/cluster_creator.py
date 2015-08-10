@@ -17,6 +17,7 @@ def get_cluster_details(cluster_id):
     {'nodes':[master_id,node1_id,node2_id,...], 'vpn':vpn_id}
     """
     #3. return dictionary, return null if the query did not return any answer.
+    return None
 
 
 if __name__ == "__main__":
