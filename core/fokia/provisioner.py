@@ -197,9 +197,6 @@ class Provisioner:
                 ip = self.reserve_ip(project_id=project_id, ips=self.ips)
                 self.ips.append(ip)
 
-            for ip in self.ips:
-                print(ip)
-
             ip = None
             # Create master
             if len(self.ips) > 0:
