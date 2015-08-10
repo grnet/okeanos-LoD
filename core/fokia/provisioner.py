@@ -194,8 +194,11 @@ class Provisioner:
             ip_request=kwargs['ip_request']
             self.ips = list()
             for i in range(ip_request):
-                ip = self.reserve_ip(project_id=project_id)
+                ip = self.reserve_ip(project_id=project_id, ips=self.ips)
                 self.ips.append(ip)
+
+            for ip in self.ips:
+                print(ip)
 
             ip = None
             # Create master
@@ -286,14 +289,14 @@ class Provisioner:
             raise ex
         return okeanos_response
 
-    def reserve_ip(self,project_id):
+    def reserve_ip(self, project_id, ips):
         """
         Reserve ip
         :return: the ip object if successfull
         """
         list_float_ips = self.network_client.list_floatingips()
         for ip in list_float_ips:
-            if ip['instance_id'] is None and ip['port_id'] is None:
+            if ip['instance_id'] is None and ip['port_id'] is None and ip not in ips:
                 return ip
         try:
             ip = self.network_client.create_floatingip(project_id=project_id)
