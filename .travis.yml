@@ -1,0 +1,12 @@
+language: python
+python: 
+ - "2.7"
+
+install: 
+ - pip install tox
+
+script:
+ - cd core && tox -e $TOXENV_CORE 
+env:
+ - TOXENV_CORE=py27
+ - TOXENV_CORE=lint
