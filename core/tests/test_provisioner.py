@@ -239,7 +239,7 @@ def test_create_vpn():
             mock.patch('fokia.provisioner.cyclades'):
         provisioner = Provisioner("lambda")
         provisioner.network_client.create_network = test_ip
-        provisioner.reserve_ip('6ff62e8e-0ce9-41f7-ad99-13a18ecada5f')
+        provisioner.reserve_ip('6ff62e8e-0ce9-41f7-ad99-13a18ecada5f', [])
 
 
 def test_create_vm():
