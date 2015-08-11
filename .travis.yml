@@ -4,9 +4,10 @@ python:
 
 install: 
  - pip install tox
-
+ - pip install flake8-diff
 script:
- - cd core && tox -e $TOXENV_CORE 
+ - git fetch origin $TRAVIS_BRANCH:travis_pr_branch
+ - flake8-diff travis_pr_branch
+ - cd core && tox -e $TOXENV_CORE
 env:
  - TOXENV_CORE=py27
- - TOXENV_CORE=lint

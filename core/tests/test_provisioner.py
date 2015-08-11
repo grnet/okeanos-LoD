@@ -205,7 +205,8 @@ def test_find_flavor():
         provisioner.cyclades.list_flavors.return_value = test_flavors
 
         provisioner.create_vm(vm_name="tost", project_name="lambda.grnet.gr",
-                              project_mode="supahpower", image_name="archlinux", net_id="12345")
+                              project_mode="supahpower", image_name="archlinux", net_id="12345",
+                              flavor={'id': 3})
         provisioner.cyclades.create_server.assert_called_with(flavor_id=3,
                                                               image_id=u'c6f5adce-21ad-4ce3-8591-acfe7eb73c02',
                                                               name='tost',
@@ -229,7 +230,7 @@ def test_check_all_resources():
                                         vcpus=12,
                                         ram=4096 * 3,
                                         disk=180,
-                                        ip_request=1,
+                                        ip_allocation=all,
                                         network_request=1)
 
 
