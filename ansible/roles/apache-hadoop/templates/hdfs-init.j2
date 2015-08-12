@@ -19,14 +19,26 @@ START_COMMAND="$INSTALLATION_PATH/hadoop/sbin/start-dfs.sh"
 STOP_COMMAND="$INSTALLATION_PATH/hadoop/sbin/stop-dfs.sh"
 
 start(){
-  sudo -u $SCRIPT_USER nohup $START_COMMAND > /dev/null &
+  # Assert that there is no other Apache HDFS instance, created with this script, running.
+  [ -f $LOCKFILE ] && return
+
+  # Execute the command to start Apache HDFS. The command waits until HDFS has been started.
+  sudo -u $SCRIPT_USER $START_COMMAND > /dev/null
+
+  # Get the returned value of the executed command and create a lock file to prevent multiple instantiations.
   RETVAL=$?
   [ $RETVAL -eq 0 ] && $(sudo -u $SCRIPT_USER touch $LOCKFILE)
   return $RETVAL
 }
 
 stop(){
-  sudo -u $SCRIPT_USER nohup $STOP_COMMAND > /dev/null &
+  # Assert that an Apache HDFS instance, created with this script, is running.
+  [ ! -f $LOCKFILE ] && return 0
+
+  # Execute the command to stop Apache HDFS. The command waits until HDFS has been stopped.
+  sudo -u $SCRIPT_USER $STOP_COMMAND > /dev/null
+
+  # Get the returned value of the executed command and delete the lock file.
   RETVAL=$?
   [ $RETVAL -eq 0 ] && $(sudo -u $SCRIPT_USER rm -f $LOCKFILE)
   return $RETVAL
@@ -53,6 +65,7 @@ case "$1" in
     [ -f $LOCKFILE ] && restart || :
     ;;
   status)
+    # If the lock file exists, then Apache HDFS is running.
     [ -f $LOCKFILE ] && echo "Apache HDFS is running." || echo "Apache HDFS is not running."
     RETVAL=$?
     ;;

@@ -16,14 +16,26 @@ LOCKFILE="$INSTALLATION_PATH/kafka/kafka-lock"
 START_COMMAND="$INSTALLATION_PATH/kafka/bin/kafka-server-start.sh $INSTALLATION_PATH/kafka/config/server.properties"
 
 start(){
-  sudo -u $SCRIPT_USER /sbin/start-stop-daemon --start --background --make-pidfile --pidfile $PIDFILE --exec $START_COMMAND
+  # Assert that there is no other Apache Kafka instance, created with this script, running.
+  [ -f $LOCKFILE ] && return 0
+
+  # Execute the command to start Apache Kafka and wait until the service has been started.
+  sudo -u $SCRIPT_USER /sbin/start-stop-daemon --start --background --make-pidfile --pidfile $PIDFILE --exec $START_COMMAND --retry 5
+
+  # Get the returned value of the executed command and create a lock file to prevent multiple instantiations.
   RETVAL=$?
   [ $RETVAL -eq 0 ] && $(sudo -u $SCRIPT_USER touch $LOCKFILE)
   return $RETVAL
 }
 
 stop(){
-  sudo -u $SCRIPT_USER  /sbin/start-stop-daemon --stop --remove-pidfile --pidfile $PIDFILE
+  # Assert that an Apache Kafka instance, created with this script, is running.
+  [ ! -f $LOCKFILE ] && return 0
+
+  # Execute the command to stop Apache Kafka and wait until the service has been stopped.
+  sudo -u $SCRIPT_USER  /sbin/start-stop-daemon --stop --remove-pidfile --pidfile $PIDFILE --retry 5
+
+  # Get the returned value of the executed command and delete the lock file.
   RETVAL=$?
   [ $RETVAL -eq 0 ] && $(sudo -u $SCRIPT_USER rm -f $LOCKFILE)
   return $RETVAL
@@ -50,6 +62,7 @@ case "$1" in
     [ -f $LOCKFILE ] && restart || :
     ;;
   status)
+    # If the lock file exists, then Apache Kafka is running.
     [ -f $LOCKFILE ] && echo "Apache Kafka is running." || echo "Apache kafka is not running."
     RETVAL=$?
     ;;
