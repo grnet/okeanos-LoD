@@ -9,8 +9,10 @@ start(){
 
   # Start Apache HDFS.
   echo "Starting Apache HDFS..."
-  returnedValue=/etc/init.d/hdfs-init start > /dev/null
+  /etc/init.d/hdfs-init start
+  returnedValue=$?
   if [ $returnedValue -eq 0 ]
+  then
     echo "Apache HDFS has been started!"
 
     # Force Apache HDFS to exit safe mode so that Apache Flink can be started later on this script.
@@ -21,8 +23,10 @@ start(){
 
   # Start Apache Yarn.
   echo "Starting Apache Yarn..."
-  returnedValue=/etc/init.d/yarn-init start > /dev/null
+  /etc/init.d/yarn-init start
+  returnedValue=$?
   if [ $returnedValue -eq 0 ]
+  then
     echo "Apache Yarn has been started!"
   else
     echo "Apache Yarn has failed to start with returned code $returnedValue."
@@ -30,8 +34,10 @@ start(){
 
   # Start Apache Zookeeper.
   echo "Starting Apache Zookeeper..."
-  returnedValue=/etc/init.d/zookeeper-init start > /dev/null
+  /etc/init.d/zookeeper-init start
+  returnedValue=$?
   if [ $returnedValue -eq 0 ]
+  then
     echo "Apache Zookeeper has been started!"
   else
     echo "Apache Zookeeper has failed to start with returned code $returnedValue."
@@ -41,8 +47,10 @@ start(){
   for node in $(cat /etc/hosts | grep "192.168." | cut -f 1)
   do  
     echo "Starting Apache Kafka at $node..."
-    returnedValue=ssh -l root $node /etc/init.d/kafka-init start > /dev/null
+    ssh -l root $node /etc/init.d/kafka-init start
+    returnedValue=$?
     if [ $returnedValue -eq 0 ]
+    then
       echo "Apache Kafka at $node has been started!"
     else
       echo "Apache Kafka at $node has failed to start with returned code $returnedValue."
@@ -53,8 +61,10 @@ start(){
   # Note that Apache Flink might take some time before being fully operational due to the fact
   # that it runs as an Apache Yarn application.
   echo "Starting Apache Flink..."
-  returnedValue=/etc/init.d/flink-init start > /dev/null
+  /etc/init.d/flink-init start
+  returnedValue=$?
   if [ $returnedValue -eq 0 ]
+  then
     echo "Apache Flink has been started!"
   else
     echo "Apache Flink has failed to start with returned code $returnedValue."
@@ -69,8 +79,10 @@ start(){
 stop(){
   # Stop Apache Flink.
   echo "Stopping Apache Flink..."
-  returnedValue=/etc/init.d/flink-init stop > /dev/null
+  /etc/init.d/flink-init stop
+  returnedValue=$?
   if [ $returnedValue -eq 0 ]
+  then
     echo "Apache Flink has been stopped!"
   else
     echo "Apache Flink has failed to stop with returned code $returnedValue."
@@ -78,8 +90,10 @@ stop(){
 
   # Stop Apache Yarn.
   echo "Stopping Apache Yarn..."
-  returnedValue=/etc/init.d/yarn-init stop > /dev/null
+  /etc/init.d/yarn-init stop
+  returnedValue=$?
   if [ $returnedValue -eq 0 ]
+  then
     echo "Apache Yarn has been stopped!"
   else
     echo "Apache Yarn has failed to stop with returned code $returnedValue."
@@ -87,8 +101,10 @@ stop(){
 
   # Stop Apache HDFS.
   echo "Stopping Apache HDFS..."
-  returnedValue=/etc/init.d/hdfs-init stop > /dev/null
+  /etc/init.d/hdfs-init stop
+  returnedValue=$?
   if [ $returnedValue -eq 0 ]
+  then
     echo "Apache HDFS has been stopped!"
   else
     echo "Apache HDFS has failed to stop with returned code $returnedValue."
@@ -98,8 +114,10 @@ stop(){
   for node in $(cat /etc/hosts | grep "192.168." | cut -f 1)
   do
     echo "Stopping Apache Kafka at $node..."
-    returnedValue=ssh -l root $node /etc/init.d/kafka-init stop > /dev/null
+    ssh -l root $node /etc/init.d/kafka-init stop
+    returnedValue=$?
     if [ $returnedValue -eq 0 ]
+    then
       echo "Apache Kafka at $node has been stopped!"
     else
       echo "Apache Kafka at $node has failed to stop with returned code $returnedValue."
@@ -108,8 +126,10 @@ stop(){
 
   # Stop Apache Zookeeper.
   echo "Stopping Apache Zookeeper..."
-  returnedValue=/etc/init.d/zookeeper-init stop > /dev/null
+  /etc/init.d/zookeeper-init stop
+  returnedValue=$?
   if [ $returnedValue -eq 0 ]
+  then
     echo "Apache Zookeeper has been stopped!"
   else
     echo "Apache Zookeeper has failed to stop with returned code $returnedValue."
