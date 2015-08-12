@@ -20,7 +20,7 @@ STOP_COMMAND="$INSTALLATION_PATH/hadoop/sbin/stop-yarn.sh"
 
 start(){
   # Assert that there is no other Apache Yarn instance, created with this script, running.
-  [-f $LOCKFILE ] && return 0
+  [ -f $LOCKFILE ] && return 0
 
   # Execute the command to start Apache Yarn. The command waits until Yarn has been started.
   sudo -u $SCRIPT_USER $START_COMMAND > /dev/null
