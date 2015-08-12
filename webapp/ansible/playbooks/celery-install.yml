@@ -1,6 +1,6 @@
 ---
 
-  - hosts: master
+  - hosts: service-vms
     user: root
     gather_facts: yes
     roles:
