@@ -22,11 +22,11 @@
      <value>{{ dfs_replication }}</value>
    </property>
    <property>
-     <name>dfs.permissions</name>
+     <name>dfs.permissions.enabled</name>
      <value>false</value>
    </property>
    <property>
      <name>dfs.datanode.data.dir</name>
-     <value>{{ installation_path }}/hadoop/hdfs/data</value>
+     <value>file://{{ installation_path }}/hadoop/hdfs/data</value>
    </property>
 </configuration>
