@@ -1,0 +1,155 @@
+#!/bin/bash
+
+# The full path of the lock file to use.
+LOCKFILE="/root/lambda-lock"
+
+start(){
+  # Assert that there is no other Lambda instance, created with this script, running.
+  [ -f $LOCKFILE ] && return 0
+
+  # Start Apache HDFS.
+  echo "Starting Apache HDFS..."
+  returnedValue=/etc/init.d/hdfs-init start > /dev/null
+  if [ $returnedValue -eq 0 ]
+    echo "Apache HDFS has been started!"
+
+    # Force Apache HDFS to exit safe mode so that Apache Flink can be started later on this script.
+    {{ hadoop_home }}/bin/hdfs dfsadmin -safemode leave
+  else
+    echo "Apache HDFS has failed to start with returned code $returnedValue."
+  fi
+
+  # Start Apache Yarn.
+  echo "Starting Apache Yarn..."
+  returnedValue=/etc/init.d/yarn-init start > /dev/null
+  if [ $returnedValue -eq 0 ]
+    echo "Apache Yarn has been started!"
+  else
+    echo "Apache Yarn has failed to start with returned code $returnedValue."
+  fi
+
+  # Start Apache Zookeeper.
+  echo "Starting Apache Zookeeper..."
+  returnedValue=/etc/init.d/zookeeper-init start > /dev/null
+  if [ $returnedValue -eq 0 ]
+    echo "Apache Zookeeper has been started!"
+  else
+    echo "Apache Zookeeper has failed to start with returned code $returnedValue."
+  fi
+
+  # Start Apache Kafka on master node and on each slave node.
+  for node in $(cat /etc/hosts | grep "192.168." | cut -f 1)
+  do  
+    echo "Starting Apache Kafka at $node..."
+    returnedValue=ssh -l root $node /etc/init.d/kafka-init start > /dev/null
+    if [ $returnedValue -eq 0 ]
+      echo "Apache Kafka at $node has been started!"
+    else
+      echo "Apache Kafka at $node has failed to start with returned code $returnedValue."
+    fi
+  done
+
+  # Start Apache Flink.
+  # Note that Apache Flink might take some time before being fully operational due to the fact
+  # that it runs as an Apache Yarn application.
+  echo "Starting Apache Flink..."
+  returnedValue=/etc/init.d/flink-init start > /dev/null
+  if [ $returnedValue -eq 0 ]
+    echo "Apache Flink has been started!"
+  else
+    echo "Apache Flink has failed to start with returned code $returnedValue."
+  fi
+
+  # Create a lock file to prevent multiple instantiations.
+  touch $LOCKFILE
+
+  return 0
+}
+
+stop(){
+  # Stop Apache Flink.
+  echo "Stopping Apache Flink..."
+  returnedValue=/etc/init.d/flink-init stop > /dev/null
+  if [ $returnedValue -eq 0 ]
+    echo "Apache Flink has been stopped!"
+  else
+    echo "Apache Flink has failed to stop with returned code $returnedValue."
+  fi
+
+  # Stop Apache Yarn.
+  echo "Stopping Apache Yarn..."
+  returnedValue=/etc/init.d/yarn-init stop > /dev/null
+  if [ $returnedValue -eq 0 ]
+    echo "Apache Yarn has been stopped!"
+  else
+    echo "Apache Yarn has failed to stop with returned code $returnedValue."
+  fi
+
+  # Stop Apache HDFS.
+  echo "Stopping Apache HDFS..."
+  returnedValue=/etc/init.d/hdfs-init stop > /dev/null
+  if [ $returnedValue -eq 0 ]
+    echo "Apache HDFS has been stopped!"
+  else
+    echo "Apache HDFS has failed to stop with returned code $returnedValue."
+  fi
+
+  # Stop Apache Kafka on master node and on each slave node.
+  for node in $(cat /etc/hosts | grep "192.168." | cut -f 1)
+  do
+    echo "Stopping Apache Kafka at $node..."
+    returnedValue=ssh -l root $node /etc/init.d/kafka-init stop > /dev/null
+    if [ $returnedValue -eq 0 ]
+      echo "Apache Kafka at $node has been stopped!"
+    else
+      echo "Apache Kafka at $node has failed to stop with returned code $returnedValue."
+    fi
+  done
+
+  # Stop Apache Zookeeper.
+  echo "Stopping Apache Zookeeper..."
+  returnedValue=/etc/init.d/zookeeper-init stop > /dev/null
+  if [ $returnedValue -eq 0 ]
+    echo "Apache Zookeeper has been stopped!"
+  else
+    echo "Apache Zookeeper has failed to stop with returned code $returnedValue."
+  fi
+
+  # Remove lock file.
+  rm -f $LOCKFILE
+
+  return 0
+}
+
+restart(){
+  stop
+  start
+}
+
+RETVAL=0
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart|reload|force-reload)
+    restart
+    ;;
+  condrestart)
+    [ -f $LOCKFILE ] && restart || :
+    ;;
+  status)
+    # If the lock file exists, then the Lambda instance is running.
+    [ -f $LOCKFILE ] && echo "Lambda instance is running." || echo "Lambda instance is not running."
+    RETVAL=$?
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|status|restart|reload|force-reload|condrestart}"
+    RETVAL=1
+esac
+
+exit $RETVAL
+

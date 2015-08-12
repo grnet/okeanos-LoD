@@ -34,3 +34,6 @@
 
   - name: Set up ssh config for flink user.
     template: src=ssh-config.j2 dest=/home/flink/.ssh/config owner=flink group=lambda mode=600
+
+  - name: Copy Lambda Instance init script.
+    template: src=lambda-init.j2 dest=/etc/init.d/lambda-init owner=root group=lambda mode=0740
