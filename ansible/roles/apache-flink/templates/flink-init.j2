@@ -45,6 +45,8 @@ start(){
 
   # Save the application id of this Apache Flink application.
   $(sudo -u $SCRIPT_USER $HADOOP_HOME/bin/yarn application --list | cut -f1,4 | grep "flink" | cut -f1 > $APPLICATION_ID)
+  chown $SCRIPT_USER $APPLICATION_ID
+  chmod 644 $APPLICATION_ID
 
   return $RETVAL
 }
@@ -55,18 +57,15 @@ stop(){
 
   # Read the application id and execute the command to stop Apache Flink. The command will block
   # until the service has been stopped.
-  id=$(cat $APPLICATION_ID)
+  id=$(sudo -u $SCRIPT_USER cat $APPLICATION_ID)
   sudo -E -u $SCRIPT_USER $STOP_COMMAND $id > /dev/null
 
   # Delete the files on Apache HDFS created when Apache Flink was started.
   # These files are created by Apache Yarn to distribute Flink accross all nodes.
-  $HADOOP_HOME/bin/hadoop fs -rm -r -skipTrash /user/flink/.flink/$id
+  sudo -u $SCRIPT_USER $HADOOP_HOME/bin/hadoop fs -rm -r -skipTrash /user/flink/.flink/$id
 
   # Delete application id file.
-  rm $APPLICATION_ID
-
-  # Kill FlinkYarnSessionCli which is sometimes not killed by Apache Flink.
-  #id=$(sudo -u $SCRIPT_USER jps | grep FlinkYarnSessionCli | )
+  sudo -u $SCRIPT_USER rm $APPLICATION_ID
 
   # Get the returned value of the executed command and remove the lock file.
   RETVAL=$?
