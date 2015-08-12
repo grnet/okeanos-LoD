@@ -156,6 +156,14 @@ class Provisioner:
                                               project_name=kwargs['project_name'])
 
         if response:
+            # Check flavors for master and slaves
+            if not self.check_flavor(vcpus=kwargs['vcpus_master'], ram=kwargs['ram_master'],disk=kwargs['disk_master']):
+                msg = 'This flavor does not allow create.'
+                raise ClientError(msg, error_flavor_list)
+            if not self.check_flavor(vcpus=kwargs['vcpus_slave'], ram=kwargs['ram_slave'],disk=kwargs['disk_slave']):
+                msg = 'This flavor does not allow create.'
+                raise ClientError(msg, error_flavor_list)
+
             # Get ssh keys
             key = RSA.generate(2048)
             self.private_key = key.exportKey('PEM')
@@ -186,7 +194,7 @@ class Provisioner:
             ip_request=kwargs['ip_request']
             self.ips = list()
             for i in range(ip_request):
-                ip = self.reserve_ip(project_id=project_id)
+                ip = self.reserve_ip(project_id=project_id, ips=self.ips)
                 self.ips.append(ip)
 
             ip = None
@@ -278,14 +286,14 @@ class Provisioner:
             raise ex
         return okeanos_response
 
-    def reserve_ip(self,project_id):
+    def reserve_ip(self, project_id, ips):
         """
         Reserve ip
         :return: the ip object if successfull
         """
         list_float_ips = self.network_client.list_floatingips()
         for ip in list_float_ips:
-            if ip['instance_id'] is None and ip['port_id'] is None:
+            if ip['instance_id'] is None and ip['port_id'] is None and ip not in ips:
                 return ip
         try:
             ip = self.network_client.create_floatingip(project_id=project_id)
@@ -492,6 +500,18 @@ class Provisioner:
     """
     CHECK RESOURCES
     """
+    def check_flavor(self, vcpus, ram, disk):
+        """
+        :param vcpus: nummber of CPUs for the vm
+        :param ram: amount of RAM for the vm
+        :param disk: amount of disk space for the vm
+        :returns: True if the flavor for these resources allows creation, otherwise False.
+        Fing the flavor for these resources and return the field SNF:allow_create.
+        """
+        flavor = self.find_flavor(vcpus=vcpus, ram=ram, disk=disk)
+        #check flavor
+        return flavor['SNF:allow_create']
+
     def check_all_resources(self, quotas, **kwargs):
         """
         Checks user's quota for every requested resource.
@@ -499,12 +519,6 @@ class Provisioner:
         :param **kwargs: arguments
         """
         project_id = self.find_project_id(**kwargs)['id']
-        flavor = self.find_flavor(**kwargs)
-        #check flavor
-        if not flavor['SNF:allow_create']:
-            msg = 'This flavor does not allow create.'
-            raise ClientError(msg, error_flavor_list)
-            return False
         # Check for VMs
         pending_vm = quotas[project_id]['cyclades.vm']['project_pending']
         limit_vm = quotas[project_id]['cyclades.vm']['project_limit']
