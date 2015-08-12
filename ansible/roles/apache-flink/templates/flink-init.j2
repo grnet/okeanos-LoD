@@ -37,14 +37,14 @@ start(){
   # Wait for a minute Apache Flink to start. The condition check whether an application under user "flink" has been
   # started on Apache Yarn and whether a minute has passed.
   i=0
-  while [ "$(sudo -u $SCRIPT_USER $HADOOP_HOME/bin/yarn application --list | cut -f4 | grep "flink")" == "" && $i -lt 6 ]
+  while [ "$(sudo -u $SCRIPT_USER $HADOOP_HOME/bin/yarn application --list | cut -f4 | grep "flink")" == "" ] && [ $i -lt 6 ]
   do
     sleep 10
     i=$((i+1))
   done
 
   # Save the application id of this Apache Flink application.
-  $(sudo -u $SCRIPT_USER $HADOOP_HOME/bin/yarn application --list | cut -f1,4 | grep "flink" | cut -f1) > $APPLICATION_ID
+  $(sudo -u $SCRIPT_USER $HADOOP_HOME/bin/yarn application --list | cut -f1,4 | grep "flink" | cut -f1 > $APPLICATION_ID)
 
   return $RETVAL
 }
@@ -60,7 +60,7 @@ stop(){
 
   # Delete the files on Apache HDFS created when Apache Flink was started.
   # These files are created by Apache Yarn to distribute Flink accross all nodes.
-  $HADOOP_HOME/bin/hadoop fs -rm -r /user/flink/.flink/$id
+  $HADOOP_HOME/bin/hadoop fs -rm -r -skipTrash /user/flink/.flink/$id
 
   # Delete application id file.
   rm $APPLICATION_ID
