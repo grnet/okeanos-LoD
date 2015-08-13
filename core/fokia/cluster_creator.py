@@ -36,7 +36,8 @@ if __name__ == "__main__":
     parser.add_argument('--ram_slave', type=int, dest='ram_slave', default=4096)  # in MB
     parser.add_argument('--disk_master', type=int, dest='disk_master', default=40)  # in GB
     parser.add_argument('--disk_slave', type=int, dest='disk_slave', default=40)  # in GB
-    parser.add_argument('--ip_request', type=int, dest='ip_request', default=1)
+    parser.add_argument('--ip_alloc', type=str, dest='ip_alloc', default="master",
+                        help="Choose between none, master, all")
     parser.add_argument('--network_request', type=int, dest='network_request', default=1)
     parser.add_argument('--image_name', type=str, dest='image_name', default='debian')
     parser.add_argument('--action', type=str, dest='action', default='create')
@@ -53,7 +54,7 @@ if __name__ == "__main__":
                                           ram_slave=args.ram_slave,
                                           disk_master=args.disk_master,
                                           disk_slave=args.disk_slave,
-                                          ip_request=args.ip_request,
+                                          ip_allocation=args.ip_alloc,
                                           network_request=args.network_request,
                                           project_name=args.project_name)
 
