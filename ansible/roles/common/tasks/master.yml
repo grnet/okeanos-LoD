@@ -42,4 +42,4 @@
     # The lock file neends to be created so that lambda-init script is aware that there is
     # a Lambda Instance running.
   - name: Create Lambda Instance lock file.
-    file: /root/lambda-lock state=touch owner=root group=lambda mode=0640
+    file: path=/root/lambda-lock state=touch owner=root group=lambda mode=0640
