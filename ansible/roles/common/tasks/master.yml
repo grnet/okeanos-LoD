@@ -37,3 +37,9 @@
 
   - name: Copy Lambda Instance init script.
     template: src=lambda-init.j2 dest=/etc/init.d/lambda-init owner=root group=lambda mode=0740
+
+    # The Lambda services will be started individually during the execution of the playbooks.
+    # The lock file neends to be created so that lambda-init script is aware that there is
+    # a Lambda Instance running.
+  - name: Create Lambda Instance lock file.
+    file: /root/lambda-lock state=touch owner=root group=lambda mode=0640
