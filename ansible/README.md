@@ -69,9 +69,6 @@ There are four (4) roles and five (5) playbooks. These are:
 - Downloads and installs Apache Flink on master node.
 - Starts and Apache Flink, Yarn session.
 
-
-
-
 ## How to deploy
 
 You can deploy the whole cluster by running the cluster-install playbook:

@@ -11,6 +11,16 @@ To use this code you need:
 2. The vm should have a public ip.
 3. Python should be installed on the vm.
 
+## Tasks
+
+### rabbitmq
+- Adds rabbitmq repository file in sources list.
+- Downloads and installs rabbitmq-server with aptitude.
+
+### celery
+- Install python-pip.
+- Installs celery using pip.
+
 ## Usage
 To use this code, run
 

@@ -3,3 +3,5 @@
   user: root
   roles:
     - roles/service-vm
+    - rabbitmq
+    - celery
