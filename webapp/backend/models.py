@@ -22,12 +22,14 @@ class Project(models.Model):
     description = models.TextField("Project Description", default="",
                                     help_text="The description of a project.")
 
+
 class Server(models.Model):
     """
     Stores information about every server created for the LoD service.
     id: the okeanos id of the server.
     """
-    id = models.AutoField("Server ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Server id provided by kamaki.")
+    id = models.AutoField("Server ID", primary_key=True, null=False, blank=False,
+                unique=True, default="", help_text="Server id provided by kamaki.")
 
 class Cluster(models.Model):
     """
