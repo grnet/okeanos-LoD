@@ -10,8 +10,7 @@ class User(models.Model):
     id: the okeanos id of the user.
     token: the okeanos token of the user.
     """
-    id = models.CharField("UUID", primary_key=True, null=False, blank=False,
-    unique=True, default="", max_length=255, help_text="Unique user id asign by Astakos")
+    id = models.CharField("UUID", primary_key=True, null=False, blank=False, unique=True, default="", max_length=255, help_text="Unique user id asign by Astakos")
 
 class Project(models.Model):
     """
@@ -19,8 +18,7 @@ class Project(models.Model):
     id: the okeanos id of the project.
     description: a small description of the project.
     """
-    id = models.AutoField("Project ID", primary_key=True, null=False, blank=False,
-                unique=True, default="", help_text="Project id provided by kamaki.")
+    id = models.AutoField("Project ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Project id provided by kamaki.")
     description = models.TextField("Project Description", default="",
                                     help_text="The description of a project.")
 
@@ -29,8 +27,7 @@ class Server(models.Model):
     Stores information about every server created for the LoD service.
     id: the okeanos id of the server.
     """
-    id = models.AutoField("Server ID", primary_key=True, null=False, blank=False,
-                unique=True, default="", help_text="Server id provided by kamaki.")
+    id = models.AutoField("Server ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Server id provided by kamaki.")
 
 class Cluster(models.Model):
     """
