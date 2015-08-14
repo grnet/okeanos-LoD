@@ -20,7 +20,7 @@ class Project(models.Model):
     """
     id = models.AutoField("Project ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Project id provided by kamaki.")
     description = models.TextField("Project Description", default="",
-                                    help_text="The description of a project.")
+        help_text="The description of a project.")
 
 
 class Server(models.Model):
