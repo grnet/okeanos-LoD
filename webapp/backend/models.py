@@ -10,7 +10,8 @@ class User(models.Model):
     id: the okeanos id of the user.
     token: the okeanos token of the user.
     """
-    id = models.CharField("UUID", primary_key=True, null=False, blank=False, unique=True, default="", max_length=255, help_text="Unique user id asign by Astakos")
+    id = models.CharField("UUID", primary_key=True, null=False, blank=False,
+    unique=True, default="", max_length=255, help_text="Unique user id asign by Astakos")
 
 class Project(models.Model):
     """
@@ -18,8 +19,18 @@ class Project(models.Model):
     id: the okeanos id of the project.
     description: a small description of the project.
     """
-    id = models.AutoField("Project ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Project id provided by kamaki.")
-    description = models.TextField("Project Description", default="", help_text="The description of a project.")
+    id = models.AutoField("Project ID", primary_key=True, null=False, blank=False,
+                unique=True, default="", help_text="Project id provided by kamaki.")
+    description = models.TextField("Project Description", default="",
+                                    help_text="The description of a project.")
+
+class Server(models.Model):
+    """
+    Stores information about every server created for the LoD service.
+    id: the okeanos id of the server.
+    """
+    id = models.AutoField("Server ID", primary_key=True, null=False, blank=False,
+                unique=True, default="", help_text="Server id provided by kamaki.")
 
 class Cluster(models.Model):
     """
@@ -33,13 +44,6 @@ class Cluster(models.Model):
     # with unique=True.
     master_server = models.OneToOneField(Server, null=True, blank=True, on_delete=models.CASCADE)
     cluster_info = models.CharField('Cluster info', help_text="Cluster information in xml format.")
-
-class Server(models.Model):
-    """
-    Stores information about every server created for the LoD service.
-    id: the okeanos id of the server.
-    """
-    id = models.AutoField("Server ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Server id provided by kamaki.")
 
 class PrivateNetwork(models.Model):
     """
@@ -62,8 +66,10 @@ class UserProjectConnection(models.Model):
     :model: models.User
     :model: models.Project
     """
-    user_id = models.ForeignKey(User, null=False, blank=False, unique=False, on_delete=models.CASCADE)
-    project_id = models.ForeignKey(Project, null=False, blank=False, unique=False, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, null=False, blank=False, unique=False,
+                                on_delete=models.CASCADE)
+    project_id = models.ForeignKey(Project, null=False, blank=False, unique=False,
+                                   on_delete=models.CASCADE)
 
 class UserClusterConnection(models.Model):
     """
@@ -71,8 +77,10 @@ class UserClusterConnection(models.Model):
     :model: models.User
     :model: models.Cluster
     """
-    user_id = models.ForeignKey(User, null=False, blank=False, unique=False, on_delete=models.CASCADE)
-    cluster_id = models.ForeignKey(Cluster, null=False, blank=False, unique=False, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, null=False, blank=False, unique=False,
+                                on_delete=models.CASCADE)
+    cluster_id = models.ForeignKey(Cluster, null=False, blank=False, unique=False,
+                                   on_delete=models.CASCADE)
 
 class ClusterServerConnection(models.Model):
     """
@@ -80,8 +88,10 @@ class ClusterServerConnection(models.Model):
     :model: models.Server
     :model: models.Cluster
     """
-    server_id = models.ForeignKey(Server, null=False, blank=False, unique=False, on_delete=models.CASCADE)
-    cluster_id = models.ForeignKey(Cluster, null=False, blank=False, unique=False, on_delete=models.CASCADE)
+    server_id = models.ForeignKey(Server, null=False, blank=False, unique=False,
+                                  on_delete=models.CASCADE)
+    cluster_id = models.ForeignKey(Cluster, null=False, blank=False, unique=False,
+                                   on_delete=models.CASCADE)
 
 class ClusterNetworkConnection(models.Model):
     """
@@ -89,8 +99,10 @@ class ClusterNetworkConnection(models.Model):
     :model: models.PrivateNetwork
     :model: models.Cluster
     """
-    network_id = models.ForeignKey(PrivateNetwork, null=False, blank=False, unique=False, on_delete=models.CASCADE)
-    cluster_id = models.ForeignKey(Cluster, null=False, blank=False, unique=False, on_delete=models.CASCADE)
+    network_id = models.ForeignKey(PrivateNetwork, null=False, blank=False, unique=False,
+                                   on_delete=models.CASCADE)
+    cluster_id = models.ForeignKey(Cluster, null=False, blank=False, unique=False,
+                                   on_delete=models.CASCADE)
 
 class ClusterProjectConnection(models.Model):
     """
@@ -98,5 +110,7 @@ class ClusterProjectConnection(models.Model):
     :model: models.Cluster
     :model: models.Project
     """
-    project_id = models.ForeignKey(Project, null=False, blank=False, unique=False, on_delete=models.CASCADE)
-    cluster_id = models.ForeignKey(Cluster, null=False, blank=False, unique=False, on_delete=models.CASCADE)
+    project_id = models.ForeignKey(Project, null=False, blank=False, unique=False,
+                                   on_delete=models.CASCADE)
+    cluster_id = models.ForeignKey(Cluster, null=False, blank=False, unique=False,
+                                   on_delete=models.CASCADE)
