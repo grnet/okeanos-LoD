@@ -20,7 +20,7 @@ class Project(models.Model):
     """
     id = models.AutoField("Project ID", primary_key=True, null=False, blank=False, unique=True, default="", help_text="Project id provided by kamaki.")
     description = models.TextField("Project Description", default="",
-                                    help_text="The description of a project.")
+                                   help_text="The description of a project.")
 
 
 class Server(models.Model):
@@ -29,8 +29,8 @@ class Server(models.Model):
     id: the okeanos id of the server.
     """
     id = models.AutoField("Server ID", primary_key=True, null=False, blank=False,
-                           unique=True, default="",
-                           help_text="Server id provided by kamaki.")
+                          unique=True, default="",
+                          help_text="Server id provided by kamaki.")
 
 class Cluster(models.Model):
     """
