@@ -23,8 +23,7 @@
     pip: name=Django
 
   - name: Download Django code from Github.
-    git: repo=https://github.com/gouzouni625/okeanos-LoD.git dest={{ repository_download_path }}/okeanos-LoD version=LAM-53-Django # version can be used to select a branch. See ansible git module documentation.
-                                                                                                                                   # The repository should be changed when the pull request gets merged.
+    git: repo=https://github.com/grnet/okeanos-LoD.git dest={{ repository_download_path }}/okeanos-LoD version=devel # version can be used to select a branch.
 
   - name: Change repository permissions.
     file: path={{ repository_download_path }} owner=root group=root recurse=yes
