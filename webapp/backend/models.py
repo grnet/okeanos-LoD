@@ -43,7 +43,7 @@ class Cluster(models.Model):
     # OneToOneField is a ForeignKey with unique=True. Django recommends using OneToOneField instead of a ForeignKey
     # with unique=True.
     master_server = models.OneToOneField(Server, null=True, blank=True, on_delete=models.CASCADE)
-    cluster_info = models.CharField('Cluster info', help_text="Cluster information in xml format.")
+    cluster_info = models.TextField('Cluster info', help_text="Cluster information in xml format.")
 
 class PrivateNetwork(models.Model):
     """
