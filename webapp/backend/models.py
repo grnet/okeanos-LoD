@@ -60,28 +60,6 @@ class PrivateNetwork(models.Model):
 OBJECT CONNECTIONS
 """
 
-class UserProjectConnection(models.Model):
-    """
-    Connection table for user and project.
-    :model: models.User
-    :model: models.Project
-    """
-    user_id = models.ForeignKey(User, null=False, blank=False, unique=False,
-                                on_delete=models.CASCADE)
-    project_id = models.ForeignKey(Project, null=False, blank=False, unique=False,
-                                   on_delete=models.CASCADE)
-
-class UserClusterConnection(models.Model):
-    """
-    Connection table for user and cluster.
-    :model: models.User
-    :model: models.Cluster
-    """
-    user_id = models.ForeignKey(User, null=False, blank=False, unique=False,
-                                on_delete=models.CASCADE)
-    cluster_id = models.ForeignKey(Cluster, null=False, blank=False, unique=False,
-                                   on_delete=models.CASCADE)
-
 class ClusterServerConnection(models.Model):
     """
     Connection table for cluster and server.
