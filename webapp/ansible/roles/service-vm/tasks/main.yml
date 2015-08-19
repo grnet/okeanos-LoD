@@ -1,14 +1,7 @@
 ---
-  - name: Fix locale problem.
-    command: update-locale LANGUAGE="en_US.UTF-8" LC_ALL="en_US.UTF-8"
-
-  - name: Upgrade packages.
-    apt: upgrade=dist update_cache=yes
-
-  - name: Install python-pip, python-dev, sudo and git packages.
+  - name: Install python-dev, sudo and git packages.
     apt: name={{ item }} state=latest
     with_items:
-      - python-pip
       - python-dev
       - sudo
       - git

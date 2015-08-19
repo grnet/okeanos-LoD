@@ -1,13 +1,4 @@
 ---
-
-- name: Add RabbitMQ repo in file
-  lineinfile: dest=/etc/apt/sources.list line="deb http://www.rabbitmq.com/debian/ testing main" state=present create=yes
-  tags:
-      - celery-install
-
-# Run the equivalent of "apt-get update" as a separate step
-- apt: update_cache=yes
-
 - name: Install RabbitMQ server.
   apt: name=rabbitmq-server install_recommends=no force=yes
   tags:
