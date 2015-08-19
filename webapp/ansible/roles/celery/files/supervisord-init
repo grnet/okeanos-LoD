@@ -1,0 +1,45 @@
+#!/bin/bash
+
+start(){
+  supervisord
+  RETVAL=$?
+  return $RETVAL
+}
+
+stop(){
+  supervisorctl stop all && supervisorctl shutdown
+  RETVAL=$?
+  return $RETVAL
+}
+
+restart(){
+  stop
+  start
+}
+
+RETVAL=0
+
+case "$1" in
+  start)
+    start
+    RETVAL=$?
+    ;;
+  stop)
+    stop
+    RETVAL=$?
+    ;;
+  restart|reload|force-reload)
+    restart
+    RETVAL=$?
+    ;;
+  status)
+    echo "$(supervisorctl status)"
+    RETVAL=$?
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|status|restart|reload|force-reload}"
+    RETVAL=1
+esac
+
+exit $RETVAL
+
