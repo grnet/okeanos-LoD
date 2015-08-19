@@ -7,3 +7,6 @@
 
   - name: Install python-pip.
     apt: name=python-pip install_recommends=no
+
+  - name: Create celery user.
+    user: name=celery shell=/bin/bash

@@ -1,7 +1,4 @@
 ---
-  - name: Create celery user.
-    user: name=celery shell=/bin/bash
-
   - name: Include tasks for celery.
     include: install.yml
     tags:

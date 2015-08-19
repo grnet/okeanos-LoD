@@ -19,7 +19,7 @@
     git: repo=https://github.com/grnet/okeanos-LoD.git dest={{ repository_download_path }}/okeanos-LoD version=devel # version can be used to select a branch.
 
   - name: Change repository permissions.
-    file: path={{ repository_download_path }} owner=root group=root recurse=yes
+    file: path={{ repository_download_path }} owner=celery group=celery recurse=yes
 
   - name: Setup Django database configuration.
     template: src=settings.py.j2 dest={{ repository_download_path}}/okeanos-LoD/webapp/webapp/settings.py
