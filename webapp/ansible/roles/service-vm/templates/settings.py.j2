@@ -105,3 +105,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+##### Celery configuration #####
+from kombu import Queue
+
+CELERY_QUEUES = (
+    Queue('events', routing_key='event'),
+    Queue('clusters', routing_key='cluster'),
+)
+
+CELERY_ROUTES = {
+        'backend.tasks.add': {       # To be removed after testing is done.
+            'queue': 'clusters',
+            'routing_key': 'cluster',
+        },
+}
+
