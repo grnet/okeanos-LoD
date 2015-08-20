@@ -15,7 +15,8 @@ class User(models.Model):
                           help_text="Unique user id asign by Astakos")
 
     def __unicode__(self):
-        return str(self.id)
+        info = "User id: " + str(self.id)
+        return info
 
     class Meta:
         verbose_name = "User"
@@ -36,7 +37,9 @@ class Project(models.Model):
                                    help_text="The description of a project.")
 
     def __unicode__(self):
-        return self.id
+        info = "Project id: " + str(self.id) + "\n" + \
+               "Description: " + str(self.description)
+        return info
 
     class Meta:
         verbose_name = "Project"
@@ -46,8 +49,6 @@ class Cluster(models.Model):
     """
     Stores every cluster created for the LoD service.
     id: a unique identifier the service creates for every cluster.
-    :model: models.Server
-    :model: models.Cluster_info
     """
     id = models.AutoField("Cluster ID", primary_key=True, null=False,
                           help_text="Auto-increment cluster id.")
@@ -70,6 +71,13 @@ class Server(models.Model):
     """
     Stores information about every server created for the LoD service.
     id: the okeanos id of the server.
+    cput: the cpus of the server.
+    ram: the ram of the server.
+    disk: the disk of the server.
+    pub_ip: the public ip of the server.
+    priv_ip: the private ip of the server.
+    cluster: the cluster the server belongs to.
+    :model: models.Cluster
     """
     id = models.AutoField("Server ID", primary_key=True, null=False, blank=False,
                           unique=True, default="",
@@ -103,6 +111,8 @@ class PrivateNetwork(models.Model):
     id: a unique identifier.
     subnet: the subnet of the network.
     gateway: the gateway of the network.
+    cluster: the cluster that this network belongs to.
+    :model: models.Cluster
     """
     id = models.AutoField("Network ID",
                           primary_key=True, null=False, blank=False,
@@ -111,9 +121,16 @@ class PrivateNetwork(models.Model):
     subnet = models.CharField(max_length=100)
     gateway = models.GenericIPAddressField("Gateway", null=False,
                                            blank=False, unique=False)
+    cluster = models.ForeignKey(Cluster, null=False, blank=False, unique=False,
+                                default=None,on_delete=models.CASCADE)
+
 
     def __unicode__(self):
-        return self.id
+        info = "Network id: " + str(self.id) + "\n" + \
+               "Subnet: " + str(self.subnet) + "\n" + \
+               "Gateway: " + str(self.gateway) + "\n" + \
+               "Cluster id: " + str(self.cluster.id)
+        return info
 
     class Meta:
         verbose_name = "PrivateNetwork"
@@ -123,53 +140,21 @@ class PrivateNetwork(models.Model):
 OBJECT CONNECTIONS
 """
 
-"""
-class ClusterServerConnection(models.Model):
-
-    Connection table for cluster and server.
-    :model: models.Server
-    :model: models.Cluster
-
-    server = models.ForeignKey(Server, null=False, blank=False, unique=False,
-                                  on_delete=models.CASCADE)
-    cluster = models.ForeignKey(Cluster, null=False, blank=False, unique=False,
-                                   on_delete=models.CASCADE)
-
-    def __unicode__(self):
-        info = "Cluster : " + str(self.cluster) + "\n" + \
-               "Server: " + str(self.server)
-        return info
-
-    class Meta:
-        verbose_name = "ClusterServerConnection"
-        app_label = 'backend'
-"""
-
-class ClusterNetworkConnection(models.Model):
-    """
-    Connection table for cluster and private network.
-    :model: models.PrivateNetwork
-    :model: models.Cluster
-    """
-    network_id = models.ForeignKey(PrivateNetwork, null=False, blank=False, unique=False,
-                                   on_delete=models.CASCADE)
-    cluster_id = models.ForeignKey(Cluster, null=False, blank=False, unique=False,
-                                   on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = "ClusterNetworkConnection"
-        app_label = 'backend'
-
 class ClusterProjectConnection(models.Model):
     """
     Connection table for cluster and project.
     :model: models.Cluster
     :model: models.Project
     """
-    project_id = models.ForeignKey(Project, null=False, blank=False, unique=False,
+    project = models.ForeignKey(Project, null=False, blank=False, unique=False,
                                    on_delete=models.CASCADE)
-    cluster_id = models.ForeignKey(Cluster, null=False, blank=False, unique=False,
+    cluster = models.ForeignKey(Cluster, null=False, blank=False, unique=False,
                                    on_delete=models.CASCADE)
+
+    def __unicode__(self):
+        info = "Project: " + self.project + "\n" + \
+               "Cluster: " + self.cluster
+        return info
 
     class Meta:
         verbose_name = "ClusterProjectConnection"

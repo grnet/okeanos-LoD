@@ -20,6 +20,19 @@
         {% else %}
             <p>No servers.</p>
         {% endif %}
+        {% if private_net %}
+            <ul>
+                <li>
+                    <h3>Private Network {{ private_net.id }}</h3>
+                    <span><ul>
+                        <li>Subnet     : {{ private_net.subnet }}</li>
+                        <li>Gateway    : {{ private_net.gateway }}</li>
+                    </ul></span>
+                </li>
+            </ul>
+        {% else %}
+            <p>No private network.</p>
+        {% endif %}
     </ul>
 {% else %}
 <p>No clusters.</p>

@@ -22,11 +22,13 @@ def list_lambda_instances(request):
     for cluster in clusters:
         # Get the servers of each cluster.
         servers = get_Servers_by_Cluster(cluster.id)
+        private_net = get_PrivateNetwork_by_Cluster(cluster.id)[0]
         template = loader.get_template('display-servers.html')
         # Context is a normal Python dictionary whose keys can be accessed in the template index.html
         context = Context({
             'cluster' : cluster,
-            'servers_list': servers
+            'servers_list': servers,
+            'private_net':private_net
         })
         templates.append(template.render(context))
     template = ''
