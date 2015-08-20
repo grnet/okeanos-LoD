@@ -24,7 +24,7 @@
     template: src=flink-init.j2 dest=/etc/init.d/flink-init owner=flink group=lambda mode=0740
 
   - name: Start Apache Flink.
-    shell: /etc/init.d/flink-init start > /dev/null &
+    shell: /etc/init.d/flink-init start > /dev/null
     tags:
       - start
 
