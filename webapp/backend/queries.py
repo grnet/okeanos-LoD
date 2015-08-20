@@ -170,7 +170,7 @@ def get_Servers_by_Cluster(cluster_id=1):
     return Server.objects.filter(cluster=cluster)
 
 def add_Server(server_id=1, cpus=1, disk=20, ram=2, pub_ip=None, priv_ip=None,
-               Cluster=None):
+               Cluster=None, hostname=""):
     """
     Add a new Server to the DB.
     :param server_id: the id provided by ~okeanos when the server is created.
@@ -179,10 +179,11 @@ def add_Server(server_id=1, cpus=1, disk=20, ram=2, pub_ip=None, priv_ip=None,
     :param disk: amount of disk.
     :param pub-ip: public ip of server.
     :param priv_ip: private ip of server.
+    :param hostname: hostname of server.
 
     """
     server = Server(id=server_id, cpus=cpus, disk=disk, ram=ram, pub_ip=pub_ip,
-                    priv_ip=priv_ip, Cluster=Cluster)
+                    priv_ip=priv_ip, Cluster=Cluster, hostname=hostname)
     server.save()
 
 def update_Server(server_id, cluster=None):

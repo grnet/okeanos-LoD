@@ -52,10 +52,6 @@ class Cluster(models.Model):
     """
     id = models.AutoField("Cluster ID", primary_key=True, null=False,
                           help_text="Auto-increment cluster id.")
-    # OneToOneField is a ForeignKey with unique=True. Django recommends
-    # using OneToOneField instead of a ForeignKey
-    # with unique=True.
-    # master_server = models.OneToOneField(Server, null=True, blank=True, on_delete=models.CASCADE)
     cluster_info = models.TextField('Cluster info', help_text="Cluster information in xml format.")
 
     def __unicode__(self):
@@ -71,6 +67,7 @@ class Server(models.Model):
     """
     Stores information about every server created for the LoD service.
     id: the okeanos id of the server.
+    hostname: the hostname of the server.
     cput: the cpus of the server.
     ram: the ram of the server.
     disk: the disk of the server.
@@ -82,6 +79,8 @@ class Server(models.Model):
     id = models.AutoField("Server ID", primary_key=True, null=False, blank=False,
                           unique=True, default="",
                           help_text="Server id provided by kamaki.")
+
+    hostname = models.TextField('Hostname', help_text="Hostname of the server.")
     cpus = models.IntegerField("CPUs", null=True, help_text="Number of cpus.")
     ram = models.IntegerField("RAM", null=True, help_text="Amount of ram.")
     disk = models.IntegerField("Hard Drive", null=True, help_text="Amount of disk space.")
@@ -93,6 +92,7 @@ class Server(models.Model):
 
     def __unicode__(self):
         info = "Server id: " + str(self.id) + "\n" + \
+               "Hostname: " + str(self.hostname) + "\n" + \
                "CPUs: " + str(self.cpus) + "\n" + \
                "Hard Drive: " + str(self.disk) + "\n" + \
                "RAM: " + str(self.ram) + "\n" + \

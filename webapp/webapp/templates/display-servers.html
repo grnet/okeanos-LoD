@@ -5,7 +5,7 @@
             <ul>
             {% for server in servers_list %}
                 <li>
-                    <h3>Server {{ server.id }}</h3>
+                    <h3>{{ server.hostname }}</h3>
                     <span><ul>
                         <li>ID         : {{ server.id }}</li>
                         <li>CPUs       : {{ server.cpus }}</li>
