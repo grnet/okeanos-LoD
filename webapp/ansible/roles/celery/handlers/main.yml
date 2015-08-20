@@ -1,0 +1,3 @@
+---
+  - name: start-supervisord
+    command: /etc/init.d/supervisord-init start

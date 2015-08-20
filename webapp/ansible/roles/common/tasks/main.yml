@@ -1,0 +1,12 @@
+---
+  - name: Fix locale problem.
+    command: update-locale LANGUAGE="en_US.UTF-8" LC_ALL="en_US.UTF-8"
+ 
+  - name: Upgrade packages.
+    apt: update_cache=yes
+
+  - name: Install python-pip.
+    apt: name=python-pip install_recommends=no
+
+  - name: Create celery user.
+    user: name=celery shell=/bin/bash

@@ -1,11 +1,5 @@
 ---
-
-- name: Install python-pip.
-  apt: name=python-pip install_recommends=no
-  tags:
-      - celery-install
-
 - name: Install Celery.
-  command: pip install celery
+  pip: name=celery
   tags:
       - celery-install
