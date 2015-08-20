@@ -46,3 +46,12 @@ Of course, you haven't actually done any work yet. Next, start your first app by
 
 You're seeing this message because you have DEBUG = True in your Django settings file and you haven't configured any URLs. Get to work!
 ```
+
+. After that, login to the vm and run:
+
+```bash
+supervisorctl status
+```
+
+to make sure that the workers are up and running. After that, reboot the vm and login again. Run the same command to make
+sure that the workers are started after the rebooting.
