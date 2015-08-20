@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from backend.models import *
 from backend.queries import *
+from django.template import Context, loader
 
 
 def index(request):
@@ -16,8 +17,19 @@ def list_lambda_instances(request):
 
     # Display the lambda clusters
     clusters = get_Clusters()
-    c = 'clusters :'
+    i = 1
+    templates = list()
     for cluster in clusters:
         # Get the servers of each cluster.
-        c = c + str(cluster)
-    return HttpResponse(c)
+        servers = get_Servers_by_Cluster(cluster.id)
+        template = loader.get_template('display-servers.html')
+        # Context is a normal Python dictionary whose keys can be accessed in the template index.html
+        context = Context({
+            'cluster' : cluster,
+            'servers_list': servers
+        })
+        templates.append(template.render(context))
+    template = ''
+    for t in templates:
+        template = template + t
+    return HttpResponse(template)
