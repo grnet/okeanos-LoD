@@ -47,9 +47,20 @@ class Server(models.Model):
     id = models.AutoField("Server ID", primary_key=True, null=False, blank=False,
                           unique=True, default="",
                           help_text="Server id provided by kamaki.")
+    cpus = models.IntegerField("CPUs", null=True, help_text="Number of cpus.")
+    ram = models.IntegerField("RAM", null=True, help_text="Amount of ram.")
+    disk = models.IntegerField("Hard Drive", null=True, help_text="Amount of disk space.")
+    pub_ip = models.GenericIPAddressField("Public ip", null=True, help_text="Public ip of server.")
+    priv_ip = models.GenericIPAddressField("Private ip", null=True, help_text="Private ip of server.")
 
     def __unicode__(self):
-        return self.id
+        info = "Server id: " + str(self.id) + "\n" + \
+               "CPUs: " + str(self.cpus) + "\n" + \
+               "Hard Drive: " + str(self.disk) + "\n" + \
+               "RAM: " + str(self.ram) + "\n" + \
+               "Public ip: " + str(self.pub_ip) + "\n" + \
+               "Private ip: " + str(self.priv_ip)
+        return info
 
     class Meta:
         verbose_name = "Server"
@@ -69,7 +80,10 @@ class Cluster(models.Model):
     cluster_info = models.TextField('Cluster info', help_text="Cluster information in xml format.")
 
     def __unicode__(self):
-        return self.id
+        info = "Cluster id: " + str(self.id) + "\n" + \
+               "Master server: " + str(self.master_server) + "\n" + \
+               "Cluster info: " + str(self.cluster_info)
+        return info
 
     class Meta:
         verbose_name = "Cluster"

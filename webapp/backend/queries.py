@@ -1,9 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
-from django.db import connection
-from django.conf import settings
-import django
-import models
+from models import *
 
 
 """
@@ -73,6 +69,11 @@ def add_Cluster(master_id=0, cluster_info=""):
     cluster = Cluster(master_id=master_id, cluster_info=cluster_info)
     cluster.save()
 
+def get_Clusters():
+    """
+    :returns: All clusters from the DB.
+    """
+    return Cluster.objects.all()
 
 def get_Cluster_by_Server(server_id=0):
     """
