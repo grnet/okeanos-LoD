@@ -1,7 +1,7 @@
 # Create your views here.
 from django.http import HttpResponse
-import backend.models
-import backend.queries
+from backend.models import *
+from backend.queries import *
 from django.template import Context, loader
 
 

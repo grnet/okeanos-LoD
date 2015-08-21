@@ -1,5 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
-import models
+from models import *
 
 
 """
