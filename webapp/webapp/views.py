@@ -1,7 +1,7 @@
 # Create your views here.
 from django.http import HttpResponse
-from backend.models import *
-from backend.queries import *
+import backend.models
+import backend.queries
 from django.template import Context, loader
 
 
@@ -10,7 +10,7 @@ def index(request):
 
 
 def list_lambda_instances(request):
-    #TODO
+    # TODO
     # Make sure user passed authentication.
     # Display the lambda clusters
     clusters = get_Clusters()
