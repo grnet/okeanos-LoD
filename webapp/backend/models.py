@@ -80,7 +80,7 @@ class Server(models.Model):
                           unique=True, default="",
                           help_text="Server id provided by kamaki.")
 
-    hostname = models.TextField('Hostname',default="", help_text="Hostname of the server.")
+    hostname = models.TextField('Hostname', default="", help_text="Hostname of the server.")
     cpus = models.IntegerField("CPUs", null=True, help_text="Number of cpus.")
     ram = models.IntegerField("RAM", null=True, help_text="Amount of ram.")
     disk = models.IntegerField("Hard Drive", null=True, help_text="Amount of disk space.")
@@ -122,8 +122,7 @@ class PrivateNetwork(models.Model):
     gateway = models.GenericIPAddressField("Gateway", null=False,
                                            blank=False, unique=False)
     cluster = models.ForeignKey(Cluster, null=False, blank=False, unique=False,
-                                default=None,on_delete=models.CASCADE)
-
+                                default=None, on_delete=models.CASCADE)
 
     def __unicode__(self):
         info = "Network id: " + str(self.id) + "\n" + \
@@ -147,9 +146,9 @@ class ClusterProjectConnection(models.Model):
     :model: models.Project
     """
     project = models.ForeignKey(Project, null=False, blank=False, unique=False,
-                                   on_delete=models.CASCADE)
+                                on_delete=models.CASCADE)
     cluster = models.ForeignKey(Cluster, null=False, blank=False, unique=False,
-                                   on_delete=models.CASCADE)
+                                on_delete=models.CASCADE)
 
     def __unicode__(self):
         info = "Project: " + self.project + "\n" + \
