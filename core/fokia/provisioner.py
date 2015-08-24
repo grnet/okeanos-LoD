@@ -8,35 +8,13 @@ logger = logging.getLogger(__name__)
 
 from kamaki.clients import astakos, cyclades
 from kamaki.clients import ClientError
-from kamaki.clients.utils import https
 from kamaki.cli.config import Config as KamakiConfig
-from kamaki import defaults
+from fokia.utils import patch_certs
 from fokia.cluster_error_constants import *
 from Crypto.PublicKey import RSA
 from base64 import b64encode
 
 storage_templates = ['drdb', 'ext_vlmc']
-
-
-def patch_certs(cert_path=None):
-    if not defaults.CACERTS_DEFAULT_PATH:
-        if cert_path:
-            https.patch_with_certs(cert_path)
-        else:
-            try:
-                from ssl import get_default_verify_paths
-                cert_path = get_default_verify_paths().cafile or \
-                    get_default_verify_paths().openssl_cafile
-            except:
-                pass
-
-            if cert_path:
-                https.patch_with_certs(cert_path)
-            else:
-                logger.warn("COULD NOT FIND ANY CERTIFICATES, PLEASE SET THEM IN YOUR "
-                            ".kamakirc global section, option ca_certs")
-                https.patch_ignore_ssl()
-
 
 class Provisioner:
     """
