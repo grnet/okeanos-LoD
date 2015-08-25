@@ -1,6 +1,9 @@
 from django.http import JsonResponse
 import json
 from fokia.utils import check_auth_token
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+from os import path, mkdir
 
 
 def authenticate(request):
@@ -110,10 +113,16 @@ def lambda_instance_status(request, instance_uuid):
                                   "uuid": database_instance.uuid,
                                   "id": database_instance.id}}, status=200)
 
+
 @csrf_exempt
 def upload(request):
     """
     Upload a file to the users folder
     """
-    print request.FILES.get('file')
-    return JsonResponse({"result": "Success"}, status=200)
+    uploaded_file = request.FILES.get('file')
+    new_file = path.join(settings.FILE_STORAGE, uploaded_file.name)
+    if not path.exists(settings.FILE_STORAGE):
+        mkdir(settings.FILE_STORAGE)
+    with open(new_file, 'wb+') as f:
+        f.write(uploaded_file.read())
+    return JsonResponse({"result": "success"}, status=200)
