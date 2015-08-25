@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from django.http import JsonResponse
 import json
 from fokia.utils import check_auth_token
@@ -21,22 +20,16 @@ def authenticate(request):
         return JsonResponse({"errors": [json.loads(info)]}, status=401)
 
 def list_lambda_instances(request):
-    # Retrieve token from HTTP Header.
-    #token = request.META['HTTP_TOKEN']
-
     #TODO
     # Make sure user passed authentication.
 
-    # Retrieve Lambda Instances' uuids from the database.
-    instances = LambdaInstance.objects.all()
+    # Retrieve Lambda Instances from the database.
+    database_instances = LambdaInstance.objects.all()
 
-    i = 1
-    result = {}
-    for instance in instances:
-      new_key = "Lambda Instance {number}".format(number = i)
-      result[new_key] = instance.uuid
-      i = i + 1
-
-    result = collections.OrderedDict(sorted(result.items()))
-
-    return JsonResponse(result, status=200)
+    instances_list = []
+    for database_instance in database_instances:
+      instances_list.append({"name": database_instance.name,
+                             "id": database_instance.id,
+                             "uuid": database_instance.uuid})
+   
+    return JsonResponse({"lambda-instances": instances_list}, status=200)

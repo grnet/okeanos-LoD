@@ -56,7 +56,9 @@ class LambdaInstance(models.Model):
                           help_text="Auto-increment instance id.")
     instance_info = models.TextField('Instance info', help_text="Instance information in xml format.")
 
-    uuid = models.BigIntegerField("Instance UUID", null=False,
+    name = models.CharField(max_length=100, help_text="A name given to the instance.")
+
+    uuid = models.BigIntegerField("Instance UUID", null=False, unique=True,
                           help_text="Unique key asigned to every instance.")
 
     def __unicode__(self):
