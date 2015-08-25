@@ -21,7 +21,7 @@ class User(models.Model):
     class Meta:
         verbose_name = "User"
         app_label = 'backend'
-       # db_tablespace = "tables"
+        #db_tablespace = "tables"
 
 
 class Project(models.Model):
@@ -45,6 +45,7 @@ class Project(models.Model):
         verbose_name = "Project"
         app_label = 'backend'
 
+
 class LambdaInstance(models.Model):
     """
     Stores every lambda instance created for the LoD service.
@@ -57,12 +58,13 @@ class LambdaInstance(models.Model):
     # To store instance info, create a python dictionary with the needed information an use
     # json.dumps(dict) to create a string out of the given dictionary. To parse the info use
     # json.loads() method.
-    instance_info = models.TextField('Instance info', blank=False, null=False, default='{}', help_text="Instance information in json format.")
+    instance_info = models.TextField('Instance info', blank=False, null=False, default='{}',
+                                     help_text="Instance information in json format.")
 
     name = models.CharField(max_length=100, help_text="A name given to the instance.")
 
     uuid = models.BigIntegerField("Instance UUID", null=False, unique=True,
-                          help_text="Unique key asigned to every instance.")
+                                  help_text="Unique key asigned to every instance.")
 
     STARTED = "1"
     STOPPED = "2"
@@ -84,7 +86,8 @@ class LambdaInstance(models.Model):
         (SCALING_UP, 'SCALING_UP'),
         (SCALING_DOWN, 'SCALING_DOWN'),
     )
-    status = models.CharField(max_length=10, choices=status_choices, default=PENDING, help_text="The status of this instance.")
+    status = models.CharField(max_length=10, choices=status_choices, default=PENDING,
+                              help_text="The status of this instance.")
 
     def __unicode__(self):
         info = "Instance id: " + str(self.id) + "\n" + \
@@ -151,10 +154,9 @@ class PrivateNetwork(models.Model):
                           unique=True, default="",
                           help_text="Private network id provided by kamaki.")
     subnet = models.CharField(max_length=100)
-    gateway = models.GenericIPAddressField("Gateway", null=False,
-                                           blank=False, unique=False)
+    gateway = models.GenericIPAddressField("Gateway", null=False, blank=False, unique=False)
     lambda_instance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False,
-                                default=None, on_delete=models.CASCADE)
+                                        default=None, on_delete=models.CASCADE)
 
     def __unicode__(self):
         info = "Network id: " + str(self.id) + "\n" + \
@@ -171,6 +173,7 @@ class PrivateNetwork(models.Model):
 OBJECT CONNECTIONS
 """
 
+
 class LambdaInstanceProjectConnection(models.Model):
     """
     Connection table for lambda instance and project.
@@ -180,7 +183,7 @@ class LambdaInstanceProjectConnection(models.Model):
     project = models.ForeignKey(Project, null=False, blank=False, unique=False,
                                 on_delete=models.CASCADE)
     lambda_instance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False,
-                                on_delete=models.CASCADE)
+                                        on_delete=models.CASCADE)
 
     def __unicode__(self):
         info = "Project: " + self.project + "\n" + \

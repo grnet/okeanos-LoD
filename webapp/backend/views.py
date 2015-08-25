@@ -19,6 +19,7 @@ def authenticate(request):
     else:
         return JsonResponse({"errors": [json.loads(info)]}, status=401)
 
+
 def list_lambda_instances(request):
     """
     Lists the lambda instances owned by the user.
@@ -35,7 +36,7 @@ def list_lambda_instances(request):
         page = int(request.GET.get("page"))
 
         if limit <= 0 or page <= 0:
-          return JsonResponse({"errors": "Zero or negative indexing is not supported"}, status=500)
+            return JsonResponse({"errors": "Zero or negative indexing is not supported"}, status=500)
 
         # Retrieve the lambda instances from the database.
         first_to_retrieve = (page - 1) * limit
@@ -45,15 +46,16 @@ def list_lambda_instances(request):
         database_instances = LambdaInstance.objects.all()
 
     if len(database_instances) == 0:
-      return JsonResponse({"errors": "No instances found"}, status=404)
+        return JsonResponse({"errors": "No instances found"}, status=404)
 
     instances_list = []
     for database_instance in database_instances:
-      instances_list.append({"name": database_instance.name,
-                             "id": database_instance.id,
-                             "uuid": database_instance.uuid})
+        instances_list.append({"name": database_instance.name,
+                               "id": database_instance.id,
+                               "uuid": database_instance.uuid})
 
     return JsonResponse({"lambda-instances": instances_list}, status=200)
+
 
 def lambda_instance_details(request, instance_uuid):
     """
@@ -76,6 +78,7 @@ def lambda_instance_details(request, instance_uuid):
                          "uuid": database_instance.uuid,
                          "details": json.loads(database_instance.instance_info)}, status=200)
 
+
 def lambda_instance_status(request, instance_uuid):
     """
     Returns the status of a specified lambda instance owned by the user.
@@ -93,4 +96,5 @@ def lambda_instance_status(request, instance_uuid):
         return JsonResponse({"errors": "Lambda instance not found"}, status=404)
 
     return JsonResponse({"name": database_instance.name,
-                         "status": LambdaInstance.status_choices[int(database_instance.status) - 1][1]}, status=200)
+                         "status": LambdaInstance.status_choices[int(database_instance.status)
+                                                                 - 1][1]}, status=200)
