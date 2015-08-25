@@ -20,9 +20,16 @@ def authenticate(request):
         return JsonResponse({"errors": [json.loads(info)]}, status=401)
 
 def list_lambda_instances(request):
-    # TODO
-    # Make sure user passed authentication.
+    """
+    Lists the lambda instances owned by the user.
+    """
 
+    # Authenticate user.
+    authentication_response = authenticate(request)
+    if authentication_response.status_code != 200:
+        return authentication_response
+
+    # Parse limit and page parameters.
     try:
         limit = int(request.GET.get("limit"))
         page = int(request.GET.get("page"))
@@ -30,10 +37,9 @@ def list_lambda_instances(request):
         if limit <= 0 or page <= 0:
           return JsonResponse({"errors": "Zero or negative indexing is not supported"}, status=500)
 
-        # Retrieve Lambda Instances from the database.
+        # Retrieve the lambda instances from the database.
         first_to_retrieve = (page - 1) * limit
         last_to_retrieve = page * limit
-
         database_instances = LambdaInstance.objects.all()[first_to_retrieve:last_to_retrieve]
     except:
         database_instances = LambdaInstance.objects.all()
@@ -50,8 +56,14 @@ def list_lambda_instances(request):
     return JsonResponse({"lambda-instances": instances_list}, status=200)
 
 def lambda_instance_details(request, instance_uuid):
-    # TODO
-    # Make sure user passed authentication.
+    """
+    Returns the details for a specific lambda instance owned by the user.
+    """
+
+    # Authenticate user.
+    authentication_response = authenticate(request)
+    if authentication_response.status_code != 200:
+        return authentication_response
 
     # Retrieve specified Lambda Instance.
     try:
@@ -65,8 +77,14 @@ def lambda_instance_details(request, instance_uuid):
                          "details": json.loads(database_instance.instance_info)}, status=200)
 
 def lambda_instance_status(request, instance_uuid):
-    # TODO
-    # Make sure user passed authentication.
+    """
+    Returns the status of a specified lambda instance owned by the user.
+    """
+
+    # Authenticate user.
+    authentication_response = authenticate(request)
+    if authentication_response.status_code != 200:
+        return authentication_response
 
     # Retrieve specified Lambda Instance.
     try:
