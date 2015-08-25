@@ -1,12 +1,12 @@
 # from django.core.exceptions import ObjectDoesNotExist
 # from models import User, Project, Cluster, Server, ClusterProjectConnection, PrivateNetwork
-# 
-# 
+#
+#
 # """
 # User
 # """
-# 
-# 
+#
+#
 # def get_User(user_id):
 #     """
 #     :returns: User with this id,returns None if User does not exists.
@@ -16,8 +16,8 @@
 #         return user
 #     except ObjectDoesNotExist:
 #         return None
-# 
-# 
+#
+#
 # def add_User(user_id):
 #     """
 #     Add a new User to the DB.
@@ -25,8 +25,8 @@
 #     """
 #     user = User(id=user_id)
 #     user.save()
-# 
-# 
+#
+#
 # def delete_User(user_id):
 #     """
 #     Deletes the user with this id.
@@ -37,12 +37,12 @@
 #         user.delete()
 #         return True
 #     return False
-# 
+#
 # """
 # Project
 # """
-# 
-# 
+#
+#
 # def get_Project(project_id):
 #     """
 #     :returns: Project with this id,returns None if Project does not exists.
@@ -52,8 +52,8 @@
 #         return project
 #     except DoesNotExist:
 #         return None
-# 
-# 
+#
+#
 # def add_Project(project_id, description=""):
 #     """
 #     Add a new Project to the DB.
@@ -61,8 +61,8 @@
 #     """
 #     project = Project(id=project_id, description=description)
 #     project.save()
-# 
-# 
+#
+#
 # def update_Project(project_id, description=""):
 #     """
 #     Update project to the DB.
@@ -72,22 +72,22 @@
 #     project = get_Project(project_id)
 #     project.description = description
 #     project.save()
-# 
-# 
+#
+#
 # def get_Projects():
 #     """
 #     :returns: All the projects in DB.
 #     """
 #     return Project.objects.all()
-# 
-# 
+#
+#
 # def get_Project_By_Cluster(cluster_id):
 #     """
 #     :returns: All the projects in DB that were used for this cluster.
 #     """
 #     return ClusterProjectConnection.objects.filter(cluster_id=cluster_id)
-# 
-# 
+#
+#
 # def delete_Project(project_id):
 #     """
 #     Deletes the project with this id.
@@ -98,13 +98,13 @@
 #         project.delete()
 #         return True
 #     return False
-# 
-# 
+#
+#
 # """
 # Cluster
 # """
-# 
-# 
+#
+#
 # def get_Cluster(cluster_id):
 #     """
 #     :returns: Cluster with this id,returns None if Cluster does not exists.
@@ -114,8 +114,8 @@
 #         return cluster
 #     except DoesNotExist:
 #         return None
-# 
-# 
+#
+#
 # def add_Cluster(cluster_info=""):
 #     """
 #     Add a new Cluster to the DB.
@@ -124,8 +124,8 @@
 #     """
 #     cluster = Cluster(cluster_info=cluster_info)
 #     cluster.save()
-# 
-# 
+#
+#
 # def update_Cluster(cluster_id, cluster_info=""):
 #     """
 #     Update cluster to the DB.
@@ -136,22 +136,22 @@
 #     cluster = get_Cluster(cluster_id)
 #     cluster.description = description
 #     cluster.save()
-# 
-# 
+#
+#
 # def get_Clusters():
 #     """
 #     :returns: All clusters from the DB.
 #     """
 #     return Cluster.objects.all()
-# 
-# 
+#
+#
 # def get_Project_By_Project(project_id):
 #     """
 #     :returns: All the clusters in DB that were used for project.
 #     """
 #     return ClusterProjectConnection.objects.filter(project_id=project_id)
-# 
-# 
+#
+#
 # def delete_Cluster(cluster_id):
 #     """
 #     Deletes the cluster with this id.
@@ -162,13 +162,13 @@
 #         cluster.delete()
 #         return True
 #     return False
-# 
-# 
+#
+#
 # """
 # Server
 # """
-# 
-# 
+#
+#
 # def get_Server(server_id=1):
 #     """
 #     :returns: Server with this id,returns None if Server does not exists.
@@ -178,16 +178,16 @@
 #         return server
 #     except DoesNotExist:
 #         return None
-# 
-# 
+#
+#
 # def get_Servers_by_Cluster(cluster_id=1):
 #     """
 #     :returns: Servers that belong to this cluster,returns None if no Servers are found.
 #     """
 #     cluster = Cluster.objects.get(id=cluster_id)
 #     return Server.objects.filter(cluster=cluster)
-# 
-# 
+#
+#
 # def add_Server(server_id=1, cpus=1, disk=20, ram=2, pub_ip=None, priv_ip=None,
 #                Cluster=None, hostname=""):
 #     """
@@ -199,13 +199,13 @@
 #     :param pub-ip: public ip of server.
 #     :param priv_ip: private ip of server.
 #     :param hostname: hostname of server.
-# 
+#
 #     """
 #     server = Server(id=server_id, cpus=cpus, disk=disk, ram=ram, pub_ip=pub_ip,
 #                     priv_ip=priv_ip, Cluster=Cluster, hostname=hostname)
 #     server.save()
-# 
-# 
+#
+#
 # def update_Server(server_id, cluster=None):
 #     """
 #     Update server to the DB.
@@ -215,8 +215,8 @@
 #     server = get_Server(server_id)
 #     server.cluster = cluster
 #     server.save()
-# 
-# 
+#
+#
 # def delete_Server(server_id):
 #     """
 #     Deletes the server with this id.
@@ -227,13 +227,13 @@
 #         server.delete()
 #         return True
 #     return False
-# 
-# 
+#
+#
 # """
 # PrivateNetwork
 # """
-# 
-# 
+#
+#
 # def get_PrivateNetwork(pn_id):
 #     """
 #     :returns: PrivateNetwork with this id,returns None if PrivateNetwork does not exists.
@@ -243,8 +243,8 @@
 #         return pn
 #     except DoesNotExist:
 #         return None
-# 
-# 
+#
+#
 # def add_PrivateNetwork(pn_id, subnet='', gateway=None, cluster=None):
 #     """
 #     Add a new private network to the DB.
@@ -255,8 +255,8 @@
 #     """
 #     pn = PrivateNetwork(id=pn_id, subnet=subnet, gateway=gateway, cluster=cluster)
 #     pn.save()
-# 
-# 
+#
+#
 # def update_PrivateNetwork(pn_id, cluster=None):
 #     """
 #     Update private network to the DB.
@@ -266,8 +266,8 @@
 #     pn = get_PrivateNetwork(pn_id)
 #     pn.cluster = cluster
 #     pn.save()
-# 
-# 
+#
+#
 # def get_PrivateNetwork_by_Cluster(pn_id):
 #     """
 #     :returns: PrivateNetwork that belong to this cluster,returns None
@@ -275,8 +275,8 @@
 #     """
 #     cluster = Cluster.objects.get(id=pn_id)
 #     return PrivateNetwork.objects.filter(cluster=cluster)
-# 
-# 
+#
+#
 # def delete_PrivateNetwork(pn_id):
 #     """
 #     Deletes the Private Network with this id.
@@ -287,13 +287,13 @@
 #         pn.delete()
 #         return True
 #     return False
-# 
-# 
+#
+#
 # """
 # ClusterProjectConnection
 # """
-# 
-# 
+#
+#
 # def add_ClusterProjectConnection(project, cluster):
 #     """
 #     Add a new cluster project connection to the DB.
