@@ -88,7 +88,8 @@ class Manager:
         pb = PlayBook(playbook=playbook_file, inventory=self.ansible_inventory, stats=stats,
                       callbacks=playbook_cb,
                       runner_callbacks=runner_cb, only_tags=tags)
-        pb.run()
+        playbook_result = pb.run()
+        return playbook_result
 
     def cleanup(self):
         os.remove(self.temp_file)
