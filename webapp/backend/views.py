@@ -407,3 +407,63 @@ def lambda_instance_destroy(request, instance_uuid):
     events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.DESTROYING)
 
     return JsonResponse({"result": "Accepted"}, status=202)
+
+def index(request):
+    return HttpResponse("Hello, world. You're at the polls index.")
+
+
+def create_cluster(request):
+    """
+    Creates a new lambda instance
+    """
+
+    # request.META contains all the headers of the request
+    # cloud_name = request.META.get('CLOUD_NAME')
+    # master_name = request.META.get('MASTER_NAME')
+    # slaves = request.META.get('SLAVES')
+    # vcpus_master = request.META.get('VCPUS_MASTER')
+    # vcpus_slave = request.META.get('VCPUS_SLAVE')
+    # ram_master = request.META.get('RAM_MASTER')
+    # ram_slave = request.META.get('RAM_SLAVE')
+    # disk_master = request.META.get('DISK_MASTER')
+    # disk_slave = request.META.get('DISK_SLAVE')
+    # ip_request = request.META.get('IP_REQUEST')
+    # network_request = request.META.get('NETWORK_REQUEST')
+    # project_name = request.META.get('PROJECT_NAME')
+
+    # tasks.create_cluster.delay(cloud_name=cloud_name,
+    #                            master_name=master_name,
+    #                            slaves=slaves,
+    #                            vcpus_master=vcpus_master,
+    #                            vcpus_slave=vcpus_slave,
+    #                            ram_master=ram_master,
+    #                            ram_slave=ram_slave,
+    #                            disk_master=disk_master,
+    #                            disk_slave=disk_slave,
+    #                            ip_request=ip_request,
+    #                            network_request=network_request,
+    #                            project_name=project_name)
+    #
+    result = tasks.create_cluster.delay()
+
+    # while not result.ready():
+    #     pass
+    #
+    # return HttpResponse("Creating cluster" + result.get())
+    return HttpResponse("Creating cluster")
+
+    # status, info = check_auth_token(auth_token, auth_url=auth_url)
+    # if status:
+    #     return JsonResponse({"result": "Success"}, status=200)
+    # else:
+    #     return JsonResponse({"errors": [json.loads(info)]}, status=401)
+
+
+def add(request):
+    x = randint(0, 9)
+    y = randint(0, 9)
+    result = tasks.add.delay(x, y)
+    while not result.ready():
+        pass
+
+    return HttpResponse("Adding {first} and {second} results to: {res}".format(first=x, second=y, res=result.get()))

@@ -15,7 +15,6 @@ Including another URLconf
 """
 from django.conf.urls import url
 from rest_framework.urlpatterns import format_suffix_patterns
-
 from . import views
 
 
@@ -33,6 +32,7 @@ urlpatterns = [
         name='lambda_instance_stop'),
     url(r'^lambda-instances/(?P<instance_uuid>[0-9]+)/destroy/?$', views.lambda_instance_destroy,
         name='lambda_instance_destroy'),
+    url(r'^create_cluster/', views.create_cluster, name='create_cluster'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

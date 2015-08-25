@@ -6,6 +6,7 @@ import fokia.utils
 
 from .events import set_lambda_instance_status
 from .models import LambdaInstance
+from fokia import cluster_creator
 
 
 @shared_task
@@ -79,3 +80,29 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slav
         set_lambda_instance_status.delay(instance_uuid, LambdaInstance.DESTROYED)
     except ClientError as exception:
         set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED, exception.message)
+
+
+
+@shared_task
+def create_cluster(cloud_name='lambda', master_name='lambda-master', slaves=1, vcpus_master=4, vcpus_slave=4,
+                   ram_master=4096, ram_slave=4096, disk_master=40, disk_slave=40,
+                   ip_request=1, network_request=11, project_name='lambda.grnet.gr'):
+    # new_cluster = Cluster.objects.create(master_server=None, status='Pending')
+    ansible_result = cluster_creator.create_cluster(cloud_name=cloud_name,
+                                                    master_name=master_name,
+                                                    slaves=slaves,
+                                                    vcpus_master=vcpus_master,
+                                                    vcpus_slave=vcpus_slave,
+                                                    ram_master=ram_master,
+                                                    ram_slave=ram_slave,
+                                                    disk_master=disk_master,
+                                                    disk_slave=disk_slave,
+                                                    ip_request=ip_request,
+                                                    network_request=network_request,
+                                                    project_name=project_name)
+
+    return ansible_result
+
+    # if ansible_result{
+    # new_cluster.status = 'Ready'
+    # new_cluster.save()
