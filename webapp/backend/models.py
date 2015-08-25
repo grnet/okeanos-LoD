@@ -64,6 +64,28 @@ class LambdaInstance(models.Model):
     uuid = models.BigIntegerField("Instance UUID", null=False, unique=True,
                           help_text="Unique key asigned to every instance.")
 
+    STARTED = "1"
+    STOPPED = "2"
+    PENDING = "3"
+    STARTING = "4"
+    STOPPING = "5"
+    DESTROYING = "6"
+    DESTROYED = "7"
+    SCALING_UP = "8"
+    SCALING_DOWN = "9"
+    status_choices = (
+        (STARTED, 'STARTED'),
+        (STOPPED, 'STOPPED'),
+        (PENDING, 'PENDING'),
+        (STARTING, 'STARTING'),
+        (STOPPING, 'STOPPING'),
+        (DESTROYING, 'DESTROYING'),
+        (DESTROYED, 'DESTROYED'),
+        (SCALING_UP, 'SCALING_UP'),
+        (SCALING_DOWN, 'SCALING_DOWN'),
+    )
+    status = models.CharField(max_length=10, choices=status_choices, default=PENDING, help_text="The status of this instance.")
+
     def __unicode__(self):
         info = "Instance id: " + str(self.id) + "\n" + \
                "Instance info: " + str(self.instance_info)

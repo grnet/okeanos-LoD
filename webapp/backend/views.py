@@ -63,3 +63,16 @@ def lambda_instance_details(request, instance_uuid):
                          "id": database_instance.id,
                          "uuid": database_instance.uuid,
                          "details": json.loads(database_instance.instance_info)}, status=200)
+
+def lambda_instance_status(request, instance_uuid):
+    # TODO
+    # Make sure user passed authentication.
+
+    # Retrieve specified Lambda Instance.
+    try:
+        database_instance = LambdaInstance.objects.get(uuid=instance_uuid)
+    except:
+        return JsonResponse({"errors": "Lambda instance not found"}, status=404)
+
+    return JsonResponse({"name": database_instance.name,
+                         "status": LambdaInstance.status_choices[int(database_instance.status) - 1][1]}, status=200)
