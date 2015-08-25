@@ -36,7 +36,8 @@ def list_lambda_instances(request):
         page = int(request.GET.get("page"))
 
         if limit <= 0 or page <= 0:
-            return JsonResponse({"errors": "Zero or negative indexing is not supported"}, status=500)
+            return JsonResponse({"errors": "Zero or negative indexing is not supported"},
+                                status=500)
 
         # Retrieve the lambda instances from the database.
         first_to_retrieve = (page - 1) * limit

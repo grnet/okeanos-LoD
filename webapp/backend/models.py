@@ -21,7 +21,7 @@ class User(models.Model):
     class Meta:
         verbose_name = "User"
         app_label = 'backend'
-        #db_tablespace = "tables"
+        # db_tablespace = "tables"
 
 
 class Project(models.Model):
