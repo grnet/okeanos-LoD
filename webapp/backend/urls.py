@@ -24,4 +24,5 @@ urlpatterns = [
         name='lambda_instance_details'),
     url(r'^lambda-instances/(?P<instance_uuid>[0-9]+)/status/?$', views.lambda_instance_status,
         name='lambda_instance_status'),
+    url(r'^upload_file/?', views.upload),
 ]

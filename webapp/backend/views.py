@@ -2,7 +2,6 @@ from django.http import JsonResponse
 import json
 from fokia.utils import check_auth_token
 
-from .models import LambdaInstance
 
 def authenticate(request):
     """
@@ -110,3 +109,11 @@ def lambda_instance_status(request, instance_uuid):
                                   status_choices[int(database_instance.status)][1],
                                   "uuid": database_instance.uuid,
                                   "id": database_instance.id}}, status=200)
+
+@csrf_exempt
+def upload(request):
+    """
+    Upload a file to the users folder
+    """
+    print request.FILES.get('file')
+    return JsonResponse({"result": "Success"}, status=200)
