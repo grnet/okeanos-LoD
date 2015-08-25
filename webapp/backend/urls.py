@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """webapp URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -20,5 +19,6 @@ from . import views
 
 urlpatterns = [
     url(r'^authenticate/', views.authenticate),
-    url(r'^lambda-instances/', views.list_lambda_instances, name='list_lambda_instances'),
+    url(r'^lambda-instances/?$', views.list_lambda_instances, name='list_lambda_instances'),
+    url(r'^lambda-instances/(?P<instance_uuid>[0-9]+)/?$', views.lambda_instance_details, name='lambda_instance_details'),
 ]

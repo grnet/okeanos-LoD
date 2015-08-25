@@ -23,8 +23,20 @@ def list_lambda_instances(request):
     # TODO
     # Make sure user passed authentication.
 
-    # Retrieve Lambda Instances from the database.
-    database_instances = LambdaInstance.objects.all()
+    try:
+        limit = int(request.GET.get("limit"))
+        page = int(request.GET.get("page"))
+
+        if limit <= 0 or page <= 0:
+          return JsonResponse({"errors": "Zero or negative indexing is not supported"}, status=500)
+
+        # Retrieve Lambda Instances from the database.
+        first_to_retrieve = (page - 1) * limit
+        last_to_retrieve = page * limit
+
+        database_instances = LambdaInstance.objects.all()[first_to_retrieve:last_to_retrieve]
+    except:
+        database_instances = LambdaInstance.objects.all()
 
     if len(database_instances) == 0:
       return JsonResponse({"errors": "No instances found"}, status=404)
