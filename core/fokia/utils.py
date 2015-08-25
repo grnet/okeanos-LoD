@@ -9,6 +9,11 @@ from kamaki.clients import astakos
 
 
 def patch_certs(cert_path=None):
+    """
+    Patch http certificates or ignore_ssl() if no certificates ca be found
+    :param cert_path: Path to the certificate file
+    """
+
     if not defaults.CACERTS_DEFAULT_PATH:
         if cert_path:
             https.patch_with_certs(cert_path)
@@ -29,6 +34,14 @@ def patch_certs(cert_path=None):
 
 
 def check_auth_token(auth_token, auth_url=None):
+    """
+    Checks the validity of a user authentication token.
+
+    :param auth_token: User authentication token
+    :param auth_url: Authentication url
+    :return: tuple(Success status, details)
+    """
+
     if not auth_url:
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
     patch_certs()
