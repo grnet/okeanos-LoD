@@ -54,7 +54,10 @@ class LambdaInstance(models.Model):
     """
     id = models.AutoField("Instance ID", primary_key=True, null=False,
                           help_text="Auto-increment instance id.")
-    instance_info = models.TextField('Instance info', help_text="Instance information in xml format.")
+    # To store instance info, create a python dictionary with the needed information an use
+    # json.dumps(dict) to create a string out of the given dictionary. To parse the info use
+    # json.loads() method.
+    instance_info = models.TextField('Instance info', blank=False, null=False, default='{}', help_text="Instance information in json format.")
 
     name = models.CharField(max_length=100, help_text="A name given to the instance.")
 

@@ -20,16 +20,34 @@ def authenticate(request):
         return JsonResponse({"errors": [json.loads(info)]}, status=401)
 
 def list_lambda_instances(request):
-    #TODO
+    # TODO
     # Make sure user passed authentication.
 
     # Retrieve Lambda Instances from the database.
     database_instances = LambdaInstance.objects.all()
+
+    if len(database_instances) == 0:
+      return JsonResponse({"errors": "No instances found"}, status=404)
 
     instances_list = []
     for database_instance in database_instances:
       instances_list.append({"name": database_instance.name,
                              "id": database_instance.id,
                              "uuid": database_instance.uuid})
-   
+
     return JsonResponse({"lambda-instances": instances_list}, status=200)
+
+def lambda_instance_details(request, instance_uuid):
+    # TODO
+    # Make sure user passed authentication.
+
+    # Retrieve specified Lambda Instance.
+    try:
+        database_instance = LambdaInstance.objects.get(uuid=instance_uuid)
+    except:
+        return JsonResponse({"errors": "Lambda instance not found"}, status=404)
+
+    return JsonResponse({"name": database_instance.name,
+                         "id": database_instance.id,
+                         "uuid": database_instance.uuid,
+                         "details": json.loads(database_instance.instance_info)}, status=200)
