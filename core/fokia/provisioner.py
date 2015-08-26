@@ -21,20 +21,26 @@ class Provisioner:
         provisions virtual machines on ~okeanos
     """
 
-    def __init__(self, cloud_name):
+    def __init__(self, auth_token, auth_url, cloud_name):
 
-        # Load .kamakirc configuration
-        logger.info("Retrieving .kamakirc configuration")
-        self.config = KamakiConfig()
-        patch_certs(self.config.get('global', 'ca_certs'))
-        cloud_section = self.config._sections['cloud'].get(cloud_name)
-        if not cloud_section:
-            message = "Cloud '%s' was not found in you .kamakirc configuration file. " \
-                      "Currently you have availablie in your configuration these clouds: %s"
-            raise KeyError(message % (cloud_name, self.config._sections['cloud'].keys()))
+        if auth_token is None:
 
-        # Get the authentication url and token
-        auth_url, auth_token = cloud_section['url'], cloud_section['token']
+            # Load .kamakirc configuration
+            logger.info("Retrieving .kamakirc configuration")
+            self.config = KamakiConfig()
+            patch_certs(self.config.get('global', 'ca_certs'))
+            cloud_section = self.config._sections['cloud'].get(cloud_name)
+            if not cloud_section:
+                message = "Cloud '%s' was not found in you .kamakirc configuration file. " \
+                          "Currently you have availablie in your configuration these clouds: %s"
+                raise KeyError(message % (cloud_name, self.config._sections['cloud'].keys()))
+
+            # Get the authentication url and token
+            auth_url, auth_token = cloud_section['url'], cloud_section['token']
+
+        else:
+            if not auth_url:
+                auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
         logger.info("Initiating Astakos Client")
         self.astakos = astakos.AstakosClient(auth_url, auth_token)

@@ -85,12 +85,16 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slav
 
 
 @shared_task
-def create_lambda_instance(cloud_name='lambda', master_name='lambda-master', slaves=1,
-                           vcpus_master=4, vcpus_slave=4, ram_master=4096, ram_slave=4096,
+def create_lambda_instance(auth_token=None, auth_url=None,
+                           cloud_name='lambda', master_name='lambda-master',
+                           slaves=1, vcpus_master=4, vcpus_slave=4,
+                           ram_master=4096, ram_slave=4096,
                            disk_master=40, disk_slave=40, ip_allocation='master',
                            network_request=1, project_name='lambda.grnet.gr'):
     # new_cluster = Cluster.objects.create(master_server=None, status='Pending')
-    ansible_result = cluster_creator.create_cluster(cloud_name=cloud_name,
+    ansible_result = cluster_creator.create_cluster(auth_token=auth_token,
+                                                    auth_url=auth_url,
+                                                    cloud_name=cloud_name,
                                                     master_name=master_name,
                                                     slaves=slaves,
                                                     vcpus_master=vcpus_master,

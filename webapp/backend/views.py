@@ -414,7 +414,14 @@ def create_lambda_instance(request):
     Creates a new lambda instance
     """
 
+    # Authenticate user
+    authentication_response = authenticate(request)
+    if authentication_response.status_code != 200:
+        return authentication_response
+
     # request.META contains all the headers of the request
+    auth_token = request.META.get("HTTP_X_API_KEY")
+    auth_url = request.META.get("HTTP_X_AUTH_URL")
     cloud_name = request.META.get('HTTP_CLOUD_NAME')
     master_name = request.META.get('HTTP_MASTER_NAME')
     slaves = int(request.META.get('HTTP_SLAVES'))
@@ -428,7 +435,9 @@ def create_lambda_instance(request):
     network_request = int(request.META.get('HTTP_NETWORK_REQUEST'))
     project_name = request.META.get('HTTP_PROJECT_NAME')
 
-    result = tasks.create_lambda_instance.delay(cloud_name=cloud_name,
+    result = tasks.create_lambda_instance.delay(auth_token=auth_token,
+                                                auth_url=auth_url,
+                                                cloud_name=cloud_name,
                                                 master_name=master_name,
                                                 slaves=slaves,
                                                 vcpus_master=vcpus_master,

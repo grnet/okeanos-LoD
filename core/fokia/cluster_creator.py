@@ -23,13 +23,14 @@ def get_cluster_details(cluster_id):
     return None
 
 
-def create_cluster(cloud_name='lambda', master_name='lambda-master',
+def create_cluster(auth_token=None, auth_url=None,
+                   cloud_name='lambda', master_name='lambda-master',
                    slaves=1, vcpus_master=4, vcpus_slave=4,
                    ram_master=4096, ram_slave=4096, disk_master=40, disk_slave=40,
                    ip_allocation='master', network_request=1, project_name='lambda.grnet.gr'):
     start_time = time.time()
 
-    provisioner = Provisioner(cloud_name=cloud_name)
+    provisioner = Provisioner(auth_token=auth_token, auth_url=auth_url, cloud_name=cloud_name)
     provisioner.create_lambda_cluster(vm_name=master_name,
                                       slaves=slaves,
                                       vcpus_master=vcpus_master,
