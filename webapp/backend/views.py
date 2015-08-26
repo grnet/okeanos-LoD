@@ -36,8 +36,9 @@ def list_lambda_instances(request):
         page = int(request.GET.get("page"))
 
         if limit <= 0 or page <= 0:
-            return JsonResponse({"errors": "Zero or negative indexing is not supported"},
-                                status=500)
+            return JsonResponse({"errors": [{"message": "Zero or negative indexing is not supported",
+                                             "code": 500,
+                                             "details": ""}]}, status=500)
 
         # Retrieve the lambda instances from the database.
         first_to_retrieve = (page - 1) * limit
@@ -47,7 +48,9 @@ def list_lambda_instances(request):
         database_instances = LambdaInstance.objects.all()
 
     if len(database_instances) == 0:
-        return JsonResponse({"errors": "No instances found"}, status=404)
+        return JsonResponse({"errors": [{"message": "No instances found",
+                                         "code": 404,
+                                         "details": ""}]}, status=404)
 
     instances_list = []
     for database_instance in database_instances:
@@ -55,7 +58,7 @@ def list_lambda_instances(request):
                                "id": database_instance.id,
                                "uuid": database_instance.uuid})
 
-    return JsonResponse({"lambda-instances": instances_list}, status=200)
+    return JsonResponse({"data": instances_list}, status=200)
 
 
 def lambda_instance_details(request, instance_uuid):
@@ -72,12 +75,14 @@ def lambda_instance_details(request, instance_uuid):
     try:
         database_instance = LambdaInstance.objects.get(uuid=instance_uuid)
     except:
-        return JsonResponse({"errors": "Lambda instance not found"}, status=404)
+        return JsonResponse({"errors": [{"message": "Lambda instance not found",
+                                         "code": 404,
+                                         "details": ""}]}, status=404)
 
-    return JsonResponse({"name": database_instance.name,
+    return JsonResponse({"data": {"name": database_instance.name,
                          "id": database_instance.id,
                          "uuid": database_instance.uuid,
-                         "details": json.loads(database_instance.instance_info)}, status=200)
+                         "details": json.loads(database_instance.instance_info)}}, status=200)
 
 
 def lambda_instance_status(request, instance_uuid):
@@ -94,8 +99,12 @@ def lambda_instance_status(request, instance_uuid):
     try:
         database_instance = LambdaInstance.objects.get(uuid=instance_uuid)
     except:
-        return JsonResponse({"errors": "Lambda instance not found"}, status=404)
+        return JsonResponse({"errors": [{"message": "Lambda instance not found",
+                                         "code": 404,
+                                         "details": ""}]}, status=404)
 
-    return JsonResponse({"name": database_instance.name,
-                         "status": LambdaInstance.status_choices[int(database_instance.status)][1]
-                         }, status=200)
+    return JsonResponse({"data": {"name": database_instance.name,
+                         "status": LambdaInstance.status_choices[int(database_instance.status)][1],
+                         "uuid": database_instance.uuid,
+                         "id": database_instance.id
+                         }}, status=200)
