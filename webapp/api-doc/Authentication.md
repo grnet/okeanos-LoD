@@ -41,7 +41,7 @@ if the authentication token is correct then the response is
 
 ```
 {
-  "result": "Success"
+  "result": "success"
 }
 ```
 
@@ -51,11 +51,9 @@ if the authentication token is not correct then the response is
 {
   "errors": [
     {
-      "unauthorized": {
-        "message": "Invalid token",
-        "code": 401,
-        "details": ""
-      }
+      "message": "Invalid token",
+      "code": 401,
+      "details": "unauthorized"
     }
   ]
 }

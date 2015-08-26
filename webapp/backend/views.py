@@ -14,12 +14,13 @@ def authenticate(request):
     # request.META contains all the headers of the request
     auth_token = request.META.get("HTTP_X_API_KEY")
     auth_url = request.META.get("HTTP_X_AUTH_URL")
-    print auth_token, auth_url
     status, info = check_auth_token(auth_token, auth_url=auth_url)
     if status:
-        return JsonResponse({"result": "Success"}, status=200)
+        return JsonResponse({"result": "success"}, status=200)
     else:
-        return JsonResponse({"errors": [json.loads(info)]}, status=401)
+        error_info = json.loads(info)['unauthorized']
+        error_info['details'] = error_info.get('details') + 'unauthorized'
+        return JsonResponse({"errors": [error_info]}, status=401)
 
 
 def list_lambda_instances(request):
@@ -119,10 +120,15 @@ def upload(request):
     """
     Upload a file to the users folder
     """
-    uploaded_file = request.FILES.get('file')
-    new_file = path.join(settings.FILE_STORAGE, uploaded_file.name)
-    if not path.exists(settings.FILE_STORAGE):
-        mkdir(settings.FILE_STORAGE)
-    with open(new_file, 'wb+') as f:
-        f.write(uploaded_file.read())
-    return JsonResponse({"result": "success"}, status=200)
+    authentication_status = authenticate(request)
+    if authentication_status.status_code == 200:
+        uploaded_file = request.FILES.get('file')
+        new_file_path = path.join(settings.FILE_STORAGE, uploaded_file.name)
+        if not path.exists(settings.FILE_STORAGE):
+            mkdir(settings.FILE_STORAGE)
+        with open(new_file_path, 'wb+') as f:
+            f.write(uploaded_file.read())
+        return JsonResponse({"result": "success"}, status=200)
+    else:
+        return JsonResponse({"errors": json.loads(authentication_status.content).get('errors')},
+                            status=authentication_status.status_code)
