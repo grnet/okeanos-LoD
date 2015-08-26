@@ -44,22 +44,22 @@ In this example we are going to get the status of the lambda instance with uuid 
 
 The request in curl
 
-<pre><code>
+```
     curl -kgX GET -H 'x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY' -G 'http://<url>:<port>/backend/lambda-instances/3/status'
-</code></pre>
+```
 
 
 ### Response body
 
 If the authentication is correct, a sample response is
 
-<pre><code>
+```
 {
   "data": {
     "status": "STARTED", "id": 14, "name": "Lambda Instance 2", "uuid": 1
   }
 }
-</code></pre>
+```
 
 For the case where the authentication token is not correct, refer to Authentication page.
 

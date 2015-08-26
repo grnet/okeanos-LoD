@@ -48,16 +48,16 @@ In this example we are going to list all the available lambda instances
 
 The request in curl
 
-<pre><code>
+```
     curl -kgX GET -H 'x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY' -G 'http://<url>:<port>/backend/lambda-instances'
-</code></pre>
+```
 
 
 ### Response body
 
 If the authentication token is correct, a sample response is
 
-<pre><code>
+```
 {
   "data": [
     {"uuid": 1, "name": "Physics Lambda Instance", "id": 1},
@@ -67,27 +67,27 @@ If the authentication token is correct, a sample response is
     {"uuid": 5, "name": "Lambda Instance for students", "id": 7},
   ]
 }
-</code></pre>
+```
 
 For the case where the authentication token is not correct, refer to Authentication page.
 
 In this example we are going to list the 2nd page of the lambda instances with a limit of 2
 lambda instance in each page.
 
-<pre><code>
+```
     curl -kgX GET -H 'x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY' -G 'http://<url>:<port>/backend/lambda-instances/?limit=2&page=2'
-</code></pre>
+```
 
 If the authentication token is correct, a sample response is
 
-<pre><code>
+```
 {
   "data": [
     {"uuid": 3, "name": "Another Lambda Instance", "id": 4},
     {"uuid": 4, "name": "Lambda Instance", "id": 5},
   ]
 }
-</code></pre>
+```
 
 ### Response messages
 
