@@ -26,7 +26,7 @@ def get_cluster_details(cluster_id):
 def create_cluster(cloud_name='lambda', master_name='lambda-master',
                    slaves=1, vcpus_master=4, vcpus_slave=4,
                    ram_master=4096, ram_slave=4096, disk_master=40, disk_slave=40,
-                   ip_alloc=1, network_request=1, project_name='lambda.grnet.gr'):
+                   ip_allocation='master', network_request=1, project_name='lambda.grnet.gr'):
     start_time = time.time()
 
     provisioner = Provisioner(cloud_name=cloud_name)
@@ -38,7 +38,7 @@ def create_cluster(cloud_name='lambda', master_name='lambda-master',
                                       ram_slave=ram_slave,
                                       disk_master=disk_master,
                                       disk_slave=disk_slave,
-                                      ip_allocation=ip_alloc,
+                                      ip_allocation=ip_allocation,
                                       network_request=network_request,
                                       project_name=project_name)
 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     # parser.add_argument('--ram_slave', type=int, dest='ram_slave', default=4096)  # in MB
     # parser.add_argument('--disk_master', type=int, dest='disk_master', default=40)  # in GB
     # parser.add_argument('--disk_slave', type=int, dest='disk_slave', default=40)  # in GB
-    # parser.add_argument('--ip_alloc', type=str, dest='ip_alloc', default="master",
+    # parser.add_argument('--ip_allocation', type=str, dest='ip_allocation', default="master",
     #                     help="Choose between none, master, all")
     # parser.add_argument('--network_request', type=int, dest='network_request', default=1)
     # parser.add_argument('--image_name', type=str, dest='image_name', default='debian')

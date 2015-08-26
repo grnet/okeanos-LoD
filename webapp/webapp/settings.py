@@ -106,7 +106,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-##### Celery configuration #####
+# Celery configuration #
 from kombu import Queue
 
 CELERY_QUEUES = (
@@ -115,14 +115,9 @@ CELERY_QUEUES = (
 )
 
 CELERY_ROUTES = {
-        'backend.tasks.create_cluster': {       # To be removed after testing is done.
-            'queue': 'clusters',
-            'routing_key': 'cluster',
-        },
-        'backend.tasks.add': {
-            'queue': 'clusters',
-            'routing_key': 'cluster',
-        },
+    'backend.tasks.create_lambda_instance': {
+        'queue': 'clusters',
+        'routing_key': 'cluster',
+    },
 
 }
-
