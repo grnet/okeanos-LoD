@@ -98,4 +98,4 @@ def lambda_instance_status(request, instance_uuid):
 
     return JsonResponse({"name": database_instance.name,
                          "status": LambdaInstance.status_choices[int(database_instance.status)][1]
-                        }, status=200)
+                         }, status=200)
