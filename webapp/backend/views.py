@@ -37,7 +37,7 @@ def list_lambda_instances(request):
 
         if limit <= 0 or page <= 0:
             return JsonResponse({"errors":
-				 [{"message": "Zero or negative indexing is not supported",
+                                 [{"message": "Zero or negative indexing is not supported",
                                    "code": 500,
                                    "details": ""}]}, status=500)
 
@@ -107,6 +107,6 @@ def lambda_instance_status(request, instance_uuid):
 
     return JsonResponse({"data": {"name": database_instance.name,
                                   "status": LambdaInstance.
-                                            status_choices[int(database_instance.status)][1],
+                                  status_choices[int(database_instance.status)][1],
                                   "uuid": database_instance.uuid,
                                   "id": database_instance.id}}, status=200)

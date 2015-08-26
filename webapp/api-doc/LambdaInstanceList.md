@@ -7,10 +7,10 @@ description: lists all lambda instances
 
 The lambda instances list call, given an authentication token through the header x-api-key,
 will firstly check the validity of the token. If the token is invalid, the API will reply
-with an 401 error. If the token is valid, the API will list retrieve all the lambda
-instances from the database and return them in json format allong with a 200 success code.
-If there are no lambda instances on the database the API will reply with a 404 no instances
-found code.
+with an 401 error. If the token is valid, the API will return all the lambda instances in
+json format along with a 200 success code. If there are no lambda instances the API will reply with a 404 no instances found code. Lambda instances can be viewed in pages with a limited
+number of instances per page. If at least one of the parameters limit and page is less than
+or equal to zero, the api will reply with a 500 zero or negative indexing in not supported code.
 
 ## Basic Parameters
 
@@ -24,7 +24,7 @@ found code.
 
 Type | Description | Required | Default value | Example value |
 ------|-------------|----------|---------------|---------------|
-x-api-key | authentication token | `Yes` |None| tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY
+x-api-key | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` |None| tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY
 
 
 ### Parameters
@@ -33,6 +33,13 @@ Name | Description | Required | Default value | Example value |
 ------|-------------|----------|---------------|---------------|
 limit  | number of lambda instances on each page |`No` |None| 3
 page   | the number of the page to return | `No` |None| 2
+
+### Keywords in response
+Name | Description | Default value |
+------|------------|---------------|
+name | The name of the lambda instance | Lambda Instance
+uuid | Unique integer identifying a lambda instance | None
+id   | Unique integer used to enumerate lambda instances | Auto Increment
 
 
 ## Example
@@ -62,21 +69,7 @@ If the authentication token is correct, a sample response is
 }
 </code></pre>
 
-If the authentication token is not correct, then the response is
-
-<pre><code>
-{
-  "errors": [
-    {
-      "unauthorized": {
-        "message": "Invalid token",
-        "code": 401,
-        "details": ""
-      }
-    }
-  ]
-}
-</code></pre>
+For the case where the authentication token is not correct, refer to Authentication page.
 
 In this example we are going to list the 2nd page of the lambda instances with a limit of 2
 lambda instance in each page.
