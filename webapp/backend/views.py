@@ -36,9 +36,10 @@ def list_lambda_instances(request):
         page = int(request.GET.get("page"))
 
         if limit <= 0 or page <= 0:
-            return JsonResponse({"errors": [{"message": "Zero or negative indexing is not supported",
-                                             "code": 500,
-                                             "details": ""}]}, status=500)
+            return JsonResponse({"errors":
+				 [{"message": "Zero or negative indexing is not supported",
+                                   "code": 500,
+                                   "details": ""}]}, status=500)
 
         # Retrieve the lambda instances from the database.
         first_to_retrieve = (page - 1) * limit
@@ -80,9 +81,10 @@ def lambda_instance_details(request, instance_uuid):
                                          "details": ""}]}, status=404)
 
     return JsonResponse({"data": {"name": database_instance.name,
-                         "id": database_instance.id,
-                         "uuid": database_instance.uuid,
-                         "details": json.loads(database_instance.instance_info)}}, status=200)
+                                  "id": database_instance.id,
+                                  "uuid": database_instance.uuid,
+                                  "details": json.loads(database_instance.instance_info)}},
+                        status=200)
 
 
 def lambda_instance_status(request, instance_uuid):
@@ -104,7 +106,7 @@ def lambda_instance_status(request, instance_uuid):
                                          "details": ""}]}, status=404)
 
     return JsonResponse({"data": {"name": database_instance.name,
-                         "status": LambdaInstance.status_choices[int(database_instance.status)][1],
-                         "uuid": database_instance.uuid,
-                         "id": database_instance.id
-                         }}, status=200)
+                                  "status": LambdaInstance.
+                                            status_choices[int(database_instance.status)][1],
+                                  "uuid": database_instance.uuid,
+                                  "id": database_instance.id}}, status=200)
