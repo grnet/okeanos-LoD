@@ -61,20 +61,21 @@ class LambdaInstance(models.Model):
     instance_info = models.TextField('Instance info', blank=False, null=False, default='{}',
                                      help_text="Instance information in json format.")
 
-    name = models.CharField(max_length=100, help_text="A name given to the instance.")
+    name = models.CharField(max_length=100, default="Lambda Instance",
+                            help_text="A name given to the instance.")
 
     uuid = models.BigIntegerField("Instance UUID", null=False, unique=True,
                                   help_text="Unique key asigned to every instance.")
 
-    STARTED = "1"
-    STOPPED = "2"
-    PENDING = "3"
-    STARTING = "4"
-    STOPPING = "5"
-    DESTROYING = "6"
-    DESTROYED = "7"
-    SCALING_UP = "8"
-    SCALING_DOWN = "9"
+    STARTED = "0"
+    STOPPED = "1"
+    PENDING = "2"
+    STARTING = "3"
+    STOPPING = "4"
+    DESTROYING = "5"
+    DESTROYED = "6"
+    SCALING_UP = "7"
+    SCALING_DOWN = "8"
     status_choices = (
         (STARTED, 'STARTED'),
         (STOPPED, 'STOPPED'),
@@ -95,7 +96,7 @@ class LambdaInstance(models.Model):
         return info
 
     class Meta:
-        verbose_name = "Cluster"
+        verbose_name = "Lambda Instance"
         app_label = 'backend'
 
 class Server(models.Model):
@@ -109,7 +110,7 @@ class Server(models.Model):
     pub_ip: the public ip of the server.
     priv_ip: the private ip of the server.
     lambda_instance: the lambda instance the server belongs to.
-    :model: models.Cluster
+    :model: models.LambdaInstance.
     """
     id = models.AutoField("Server ID", primary_key=True, null=False, blank=False,
                           unique=True, default="",

@@ -97,5 +97,5 @@ def lambda_instance_status(request, instance_uuid):
         return JsonResponse({"errors": "Lambda instance not found"}, status=404)
 
     return JsonResponse({"name": database_instance.name,
-                         "status": LambdaInstance.status_choices[int(database_instance.status)
-                                                                 - 1][1]}, status=200)
+                         "status": LambdaInstance.status_choices[int(database_instance.status)][1]
+                        }, status=200)
