@@ -16,6 +16,7 @@ from rest_framework_xml.renderers import XMLRenderer
 
 from django.views.decorators.csrf import csrf_exempt
 
+from django.utils.datastructures import SortedDict
 from fokia.utils import check_auth_token
 from .models import ProjectFile, LambdaInstance, Server, PrivateNetwork
 from .authenticate_user import KamakiTokenAuthentication
@@ -450,16 +451,13 @@ def create_lambda_instance(request):
                                                 network_request=network_request,
                                                 project_name=project_name)
 
-    # result = tasks.create_lambda_instance.delay()
-
-    while not result.ready():
-        pass
-
-    return HttpResponse("Created cluster" + result.get())
     # return HttpResponse("Creating cluster")
 
-    # status, info = check_auth_token(auth_token, auth_url=auth_url)
-    # if status:
-    #     return JsonResponse({"result": "Success"}, status=200)
-    # else:
-    #     return JsonResponse({"errors": [json.loads(info)]}, status=401)
+    specs = SortedDict([('master_name', master_name), ('slaves', slaves),
+                        ('vcpus_master', vcpus_master), ('vcpus_slave', vcpus_slave),
+                        ('ram_master', ram_master), ('ram_slave', ram_slave),
+                        ('disk_master', disk_master), ('disk_slave', disk_slave),
+                        ('ip_allocation', ip_allocation), ('network_request', network_request),
+                        ('project_name', project_name)])
+
+    return JsonResponse({"specs": specs}, status=200)
