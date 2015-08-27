@@ -26,13 +26,13 @@ urlpatterns = [
         name='lambda_instance_details'),
     url(r'^lambda-instances/(?P<instance_uuid>[0-9]+)/status/?$', views.lambda_instance_status,
         name='lambda_instance_status'),
-    url(r'^create_lambda_instance/', views.create_lambda_instance, name='create_lambda_instance'),
     url(r'^lambda-instances/(?P<instance_uuid>[0-9]+)/start/?$', views.lambda_instance_start,
         name='lambda_instance_start'),
     url(r'^lambda-instances/(?P<instance_uuid>[0-9]+)/stop/?$', views.lambda_instance_stop,
         name='lambda_instance_stop'),
     url(r'^lambda-instances/(?P<instance_uuid>[0-9]+)/destroy/?$', views.lambda_instance_destroy,
         name='lambda_instance_destroy'),
+    url(r'^create_lambda_instance/?$', views.create_lambda_instance, name='create_lambda_instance'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
