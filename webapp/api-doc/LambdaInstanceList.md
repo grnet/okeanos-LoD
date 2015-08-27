@@ -14,10 +14,12 @@ or equal to zero, the api will reply with a 500 zero or negative indexing in not
 
 ## Basic Parameters
 
-| **Description** | lambda instances list       |
-| **URL**         | /backend/lambda-instances   |
-| **HTTP Method** | GET                         |
-| **Security**    | Basic Authentication        |
+Type | Description |
+-------|-----------------|
+**Description** | lambda instances list
+**URL**         | /backend/lambda-instances
+**HTTP Method** | GET
+**Security**    | Basic Authentication
 
 
 ### Headers

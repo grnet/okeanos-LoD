@@ -9,10 +9,12 @@ Lambda instance details call, given an authentication token through the header x
 
 ## Basic Parameters
 
-| **Description** | lambda instance details |
-| **URL**         | /backend/lambda-instance/[uuid]   |
-| **HTTP Method** | GET |
-| **Security**    | Basic Authentication        |
+Type | Description |
+-------|-----------------|
+**Description** | lambda instance details
+**URL**         | /backend/lambda-instance/[uuid]
+**HTTP Method** | GET
+**Security**    | Basic Authentication
 
 
 ### Headers
