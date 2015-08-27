@@ -436,7 +436,7 @@ def create_lambda_instance(request):
     network_request = int(request.META.get('HTTP_NETWORK_REQUEST'))
     project_name = request.META.get('HTTP_PROJECT_NAME')
 
-    result = tasks.create_lambda_instance.delay(auth_token=auth_token,
+    tasks.create_lambda_instance.delay(auth_token=auth_token,
                                                 auth_url=auth_url,
                                                 cloud_name=cloud_name,
                                                 master_name=master_name,
