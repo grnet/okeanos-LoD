@@ -1,6 +1,9 @@
 ---
   - name: Fix locale problem.
     command: update-locale LANGUAGE="en_US.UTF-8" LC_ALL="en_US.UTF-8"
+
+  - name: Copy sources list.
+    copy: src=sources.list dest=/etc/apt/sources.list owner=root group=root mode=0640
  
   - name: Upgrade packages.
     apt: update_cache=yes
