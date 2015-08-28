@@ -135,6 +135,11 @@ CELERY_ROUTES = {
             'queue': 'events_queue',
             'routing_key': 'event_key',
         },
+    'backend.tasks.create_lambda_instance': {
+        'queue': 'clusters',
+        'routing_key': 'cluster',
+    },
+
 }
 
 FILE_STORAGE = os.path.join(BASE_DIR,'uploaded_files')
