@@ -73,6 +73,7 @@ command={{ flink_home }}/bin/yarn-session.sh -n {{ flink_number_of_task_managers
 autostart=false
 user=flink
 stdout_logfile = /home/flink/supervisord_flink_logs.log
+environment=JAVA_HOME="/usr",HADOOP_HOME="/usr/local/hadoop",HADOOP_CONF_DIR="/usr/local/hadoop/etc/hadoop/"
 
 ;[program:theprogramname]
 ;command=/bin/cat              ; the program (relative uses PATH, can take args)
