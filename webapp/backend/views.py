@@ -1,4 +1,5 @@
 import json
+
 from os import path, mkdir
 
 from django.http import JsonResponse
@@ -16,6 +17,10 @@ from fokia.utils import check_auth_token
 from .models import ProjectFile, LambdaInstance
 from .authenticate_user import KamakiTokenAuthentication
 from .serializers import ProjectFileSerializer
+
+import .tasks
+import .events
+from .models import LambdaInstance
 
 
 def authenticate(request):
@@ -177,3 +182,47 @@ class ProjectFileList(APIView):
         # TODO: Change this to an event call that update the db
         file_data.delete()
         return Response({"result": "success"}, status=200)
+
+
+def lambda_instance_start(request, instance_uuid):
+    """
+    Starts a specific lambda instance owned by the user.
+    """
+
+    # Check if the specified lambda instance exists.
+    if not LambdaInstance.objects.get(uuid=instance_uuid).exists():
+        return JsonResponse({"errors": [{"message": "Lambda instance not found",
+                                         "code": 404,
+                                         "details": ""}]}, status=404)
+
+    # Create task to start the lambda instance.
+    auth_token = request.META.get("HTTP_X_API_KEY")
+    tasks.lambda_instance_start(token, instance_uuid).delay()
+
+    # Create event to update the database.
+    events.set_lambda_instance_status(uuid, LambdaInstance.STARTING).delay()
+
+    return JsonResponse({"result": "Success"}, status=200)
+
+
+def lambda_instance_stop(request, instance_uuid):
+    """
+    Stops a specific lambda instance owned by the user.
+    """
+
+    # Check if the specified lambda instance exists.
+    if not LambdaInstance.objects.get(uuid=instance_uuid).exists():
+        return JsonResponse({"errors": [{"message": "Lambda instance not found",
+                                         "code": 404,
+                                         "details": ""}]}, status=404)
+
+ 
+    # Create task to stop the lambda instance.
+    auth_token = request.META.get("HTTP_X_API_KEY")
+    tasks.lambda_instance_stop(token, instance_uuid).delay()
+
+    # Create event to update the database.
+    events.set_lambda_instance_status(uuid, LambdaInstance.STOPPING).delay()
+
+    return JsonResponse({"result": "Success"}, status=200)
+
