@@ -32,42 +32,88 @@ start(){
     echo "Apache Yarn has failed to start with returned code $returnedValue."
   fi
 
-  # Start Apache Zookeeper.
-  echo "Starting Apache Zookeeper..."
-  /etc/init.d/zookeeper-init start
+  # Start supervisord on master node.
+  echo "Starting Supervisord..."
+  supervisord -c /etc/supervisor/supervisord.conf --logfile=/root/supervisord.log
   returnedValue=$?
   if [ $returnedValue -eq 0 ]
   then
-    echo "Apache Zookeeper has been started!"
+    echo "Supervisord on master node has been started!"
   else
-    echo "Apache Zookeeper has failed to start with returned code $returnedValue."
+    echo "Supervisord on master node has failed to start with returned code $returnedValue."
   fi
 
-  # Start Apache Kafka on master node and on each slave node.
-  for node in $(cat /etc/hosts | grep "192.168." | cut -f 1)
-  do  
-    echo "Starting Apache Kafka at $node..."
-    ssh -l root $node /etc/init.d/kafka-init start
-    returnedValue=$?
-    if [ $returnedValue -eq 0 ]
+  # Start Apache Zookeeper.
+  echo "Starting Apache Zookeeper..."
+  supervisorctl start apache_zookeeper
+  # Wait for Apache Zookeeper to start.
+  while [ "$(supervisorctl status apache_zookeeper | tr -s ' ' | cut -f2 -d' ')" == "STARTING" ] 
+  do
+    sleep 10
+  done
+  apache_zookeeper_status=$(supervisorctl status apache_zookeeper | tr -s ' ' | cut -f2 -d' ')
+  if [ "$apache_zookeeper_status" != "RUNNING" ]
+  then
+    echo "Apache Zookeeper has failed to start with code $apache_zookeeper_status."
+  else
+    echo "Apache Zookeeper has been started!"
+  fi
+
+  # Start Apache Kafka on master node.
+  echo "Starting Apache kafka..."
+  supervisorctl start apache_kafka
+  # Wait for Apache Kafka to start.
+  while [ "$(supervisorctl status apache_kafka | tr -s ' ' | cut -f2 -d' ')" == "STARTING" ] 
+  do
+    sleep 10
+  done
+  apache_kafka_status=$(supervisorctl status apache_kafka | tr -s ' ' | cut -f2 -d' ')
+  if [ "$apache_kafka_status" != "RUNNING" ]
+  then
+    echo "Apache kafka has failed to start with code $apache_kafka_status."
+  else
+    echo "Apache kafka has been started!"
+  fi
+
+  # Start Apache Kafka on each slave node.
+  for node in $(cat /etc/hosts | grep "snf" | cut -f2)
+  do
+    if [ "$node" == "$(hostname).local" ]
     then
-      echo "Apache Kafka at $node has been started!"
-    else
-      echo "Apache Kafka at $node has failed to start with returned code $returnedValue."
+      continue
     fi
+    echo "Starting Apache Kafka at $node..."
+    ssh -l root $node supervisord -c /etc/supervisor/supervisord.conf --logfile=/root/supervisord.log
+    echo "Supervisord on $node has been started!"
+    ssh -l root $node supervisorctl start apache_kafka
+   # Wait for Apache kafka to start.
+   while [ "$(ssh -l root $node supervisorctl status apache_kafka | tr -s ' ' | cut -f2 -d' ')" == "STARTING" ] 
+   do
+     sleep 10
+   done
+   apache_kafka_status=$(ssh -l root $node supervisorctl status apache_kafka | tr -s ' ' | cut -f2 -d' ') 
+   if [ "$apache_kafka_status" != "RUNNING" ]
+   then
+     echo "Apache Kafka at $node has failed to start with code $apache_kafka_status."
+   else
+     echo "Apache Kafka at $node has been started!"
+   fi
   done
 
   # Start Apache Flink.
-  # Note that Apache Flink might take some time before being fully operational due to the fact
-  # that it runs as an Apache Yarn application.
   echo "Starting Apache Flink..."
-  /etc/init.d/flink-init start
-  returnedValue=$?
-  if [ $returnedValue -eq 0 ]
+  supervisorctl start apache_flink
+  # Wait for Apache Flink to start.
+  while [ "$(supervisorctl status apache_flink | tr -s ' ' | cut -f2 -d' ')" == "STARTING" ] 
+  do
+    sleep 10
+  done
+  apache_flink_status=$(supervisorctl status apache_flink | tr -s ' ' | cut -f2 -d' ')
+  if [ "$apache_flink_status" != "RUNNING" ]
   then
-    echo "Apache Flink has been started!"
+    echo "Apache Flink has failed to start with code $apache_flink_status."
   else
-    echo "Apache Flink has failed to start with returned code $returnedValue."
+    echo "Apache Flink has been started!"
   fi
 
   # Create a lock file to prevent multiple instantiations.
@@ -79,13 +125,13 @@ start(){
 stop(){
   # Stop Apache Flink.
   echo "Stopping Apache Flink..."
-  /etc/init.d/flink-init stop
-  returnedValue=$?
-  if [ $returnedValue -eq 0 ]
+  supervisorctl stop apache_flink
+  apache_flink_status=$(supervisorctl status apache_flink | tr -s ' ' | cut -f2 -d' ')
+  if [ "$apache_flink_status" == "STOPPED" ]
   then
     echo "Apache Flink has been stopped!"
   else
-    echo "Apache Flink has failed to stop with returned code $returnedValue."
+    echo "Apache Flink has failed to stop with returned code $apache_flink_status."
   fi
 
   # Stop Apache Yarn.
@@ -110,29 +156,54 @@ stop(){
     echo "Apache HDFS has failed to stop with returned code $returnedValue."
   fi
 
-  # Stop Apache Kafka on master node and on each slave node.
-  for node in $(cat /etc/hosts | grep "192.168." | cut -f 1)
+  # Stop Apache Kafka on master node.
+  supervisorctl stop apache_kafka
+  apache_kafka_status=$(supervisorctl status apache_kafka | tr -s ' ' | cut -f2 -d' ')
+  if [ "$apache_kafka_status" == "STOPPED" ]
+  then
+    echo "Apache kafka has been stopped!"
+  else
+    echo "Apache kafka has failed to stop with returned code $apache_kafka_status"
+  fi
+
+  # Stop Apache Kafka on each slave node.
+  for node in $(cat /etc/hosts | grep "snf" | cut -f2)
   do
+    if [ "$node" == "$(hostname).local" ]
+    then
+      continue
+    fi
     echo "Stopping Apache Kafka at $node..."
-    ssh -l root $node /etc/init.d/kafka-init stop
-    returnedValue=$?
-    if [ $returnedValue -eq 0 ]
+    ssh -l root $node supervisorctl stop apache_kafka
+    apache_kafka_status=$(ssh -l root $node supervisorctl status apache_kafka | tr -s ' ' | cut -f2 -d' ')
+    echo "Stopping Supervisord at $node..."
+    ssh -l root $node supervisorctl shutdown
+    if [ "$apache_kafka_status" == "STOPPED" ]
     then
       echo "Apache Kafka at $node has been stopped!"
     else
-      echo "Apache Kafka at $node has failed to stop with returned code $returnedValue."
+      echo "Apache Kafka at $node has failed to stop with returned code $apache_kafka_status"
     fi
   done
 
   # Stop Apache Zookeeper.
-  echo "Stopping Apache Zookeeper..."
-  /etc/init.d/zookeeper-init stop
-  returnedValue=$?
-  if [ $returnedValue -eq 0 ]
+  supervisorctl stop apache_zookeeper
+  apache_zookeeper_status=$(supervisorctl status apache_zookeeper | tr -s ' ' | cut -f2 -d' ')
+  if [ "$apache_zookeeper_status" == "STOPPED" ]
   then
     echo "Apache Zookeeper has been stopped!"
   else
-    echo "Apache Zookeeper has failed to stop with returned code $returnedValue."
+    echo "Apache Zookeeper has failed to stop with returned code $apache_zookeeper_status"
+  fi
+
+  # Stop Supervisord on master node.
+  supervisorctl shutdown
+  returnedValue=$?
+  if [ $returnedValue -eq 0 ]
+  then
+    echo "Supervisord on master node has been stopped!"
+  else
+    echo "Supervisord on master node has failed to stop with returned code $returnedValue."
   fi
 
   # Remove lock file.
