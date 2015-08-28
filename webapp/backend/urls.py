@@ -14,10 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 from django.conf.urls import url
+from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views
 
+
 urlpatterns = [
+    url(r'^authenticate/?$', views.authenticate),
+    url(r'^upload_file/?$', views.ProjectFileList.as_view()),
     url(r'^authenticate/', views.authenticate),
     url(r'^lambda-instances/?$', views.list_lambda_instances, name='list_lambda_instances'),
     url(r'^lambda-instances/(?P<instance_uuid>[0-9]+)/?$', views.lambda_instance_details,
@@ -26,3 +30,5 @@ urlpatterns = [
         name='lambda_instance_status'),
     url(r'^upload_file/?', views.upload),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)

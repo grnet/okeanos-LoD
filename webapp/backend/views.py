@@ -2,7 +2,11 @@ from django.http import JsonResponse
 import json
 from fokia.utils import check_auth_token
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.views import APIView, api_settings
+from rest_framework.response import Response
+from rest_framework import status
 from django.conf import settings
+from .models import ProjectFile
 from os import path, mkdir
 
 
@@ -115,20 +119,30 @@ def lambda_instance_status(request, instance_uuid):
                                   "id": database_instance.id}}, status=200)
 
 
-@csrf_exempt
-def upload(request):
+class ProjectFileList(APIView):
     """
-    Upload a file to the users folder
+    List uploaded files, upload a file to the users folder.
     """
-    authentication_status = authenticate(request)
-    if authentication_status.status_code == 200:
+    def get(self, request):
+
+
+
+    def put(self, request):
+        authentication_status = authenticate(request)
+        if authentication_status.status_code != 200:
+            return Response({"errors": json.loads(authentication_status.content).get('errors')},
+                                status=authentication_status.status_code)
         uploaded_file = request.FILES.get('file')
+        description = request.data.get('description', '')
         new_file_path = path.join(settings.FILE_STORAGE, uploaded_file.name)
+
         if not path.exists(settings.FILE_STORAGE):
             mkdir(settings.FILE_STORAGE)
         with open(new_file_path, 'wb+') as f:
             f.write(uploaded_file.read())
-        return JsonResponse({"result": "success"}, status=200)
-    else:
-        return JsonResponse({"errors": json.loads(authentication_status.content).get('errors')},
-                            status=authentication_status.status_code)
+        if path.isfile(new_file_path):
+            ProjectFile.objects.create(name=uploaded_file.name,
+                                       path=new_file_path,
+                                       description=description)
+        return Response({"result": "success"}, status=200)
+

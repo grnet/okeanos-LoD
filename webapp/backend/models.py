@@ -45,6 +45,16 @@ class Project(models.Model):
         verbose_name = "Project"
         app_label = 'backend'
 
+class ProjectFile(models.Model):
+    id = models.AutoField("File ID", primary_key=True, unique=True, help_text="Project file id.")
+    name = models.CharField(max_length=100)
+    path = models.CharField(max_length=400)
+    description = models.CharField(max_length=400,blank=True, default='')
+
+class Token(models.Model):
+    user = models.OneToOneField(UserInfo, related_name='kamaki_token')
+    key = models.CharField(max_length=40, null=True)
+    creation_date = models.DateTimeField('Creation Date')
 
 class LambdaInstance(models.Model):
     """

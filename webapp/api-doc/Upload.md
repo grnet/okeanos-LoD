@@ -35,7 +35,7 @@ Name | Description | Required | Default value | Example value |
 Example of request
 
 ```
-curl -X GET -H "x-api-key: tJ3b39yg7mceuqdoS_TH7m0d6yxmlWLMDenalKcttR" 'http://snf-670397.vm.okeanos.grnet.gr:8000/backend/upload_file/'
+curl -X POST -H "x-api-key: tJ3b39yg7mceuqdoS_TH7m0d6yxmlWLMDenalKcttR" -F "file=project.jar" -F "description=Science project executable" 'http://snf-670397.vm.okeanos.grnet.gr:8000/backend/upload_file/'
 ```
 
 ### Response body 
