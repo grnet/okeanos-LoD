@@ -103,6 +103,7 @@ class LambdaInstance(models.Model):
     DESTROYED = "6"
     SCALING_UP = "7"
     SCALING_DOWN = "8"
+    FAILED = "9"
     status_choices = (
         (STARTED, 'STARTED'),
         (STOPPED, 'STOPPED'),
@@ -113,6 +114,7 @@ class LambdaInstance(models.Model):
         (DESTROYED, 'DESTROYED'),
         (SCALING_UP, 'SCALING_UP'),
         (SCALING_DOWN, 'SCALING_DOWN'),
+        (FAILED, 'FAILED'),
     )
     status = models.CharField(max_length=10, choices=status_choices, default=PENDING,
                               help_text="The status of this instance.")
@@ -140,7 +142,7 @@ class Server(models.Model):
     lambda_instance: the lambda instance the server belongs to.
     :model: models.LambdaInstance.
     """
-    id = models.AutoField("Server ID", primary_key=True, null=False, blank=False,
+    id = models.BigIntegerField("Server ID", primary_key=True, null=False, blank=False,
                           unique=True, default="",
                           help_text="Server id provided by kamaki.")
 
