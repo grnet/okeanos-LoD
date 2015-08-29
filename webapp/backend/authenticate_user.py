@@ -1,4 +1,7 @@
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.views import exceptions
+
+from .models import Token
 
 
 class KamakiTokenAuthentication(TokenAuthentication):
@@ -10,4 +13,4 @@ class KamakiTokenAuthentication(TokenAuthentication):
         except self.model.DoesNotExist:
             raise exceptions.AuthenticationFailed('Invalid token')
 
-        return (token.user, token)
+        return token.user, token

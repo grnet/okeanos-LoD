@@ -2,19 +2,37 @@ from django.http import JsonResponse
 import json
 from fokia.utils import check_auth_token
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.views import APIView, api_settings
+from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
-from .models import ProjectFile
+from .models import ProjectFile, LambdaInstance, User, Token
 from os import path, mkdir
+from django.utils import timezone
+from .authenticate_user import KamakiTokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
+
+@api_view(['POST'])
+def register_user(request):
+    auth_token = request.META.get("HTTP_AUTHENTICATION").split()[-1]
+    auth_url = request.META.get("HTTP_AUTH_URL")
+    status, info = check_auth_token(auth_token, auth_url=auth_url)
+    if status and (Token.objects.filter(key=auth_token).count() == 0):
+        uuid = info['access']['user']['id']
+        user = User.objects.create(uuid=uuid)
+        Token.objects.create(user=user, key=auth_token, creation_date=timezone.now())
+        return Response({"result": "success"}, status=200)
+    else:
+        error_info = json.loads(info)['unauthorized']
+        error_info['details'] = error_info.get('details') + 'unauthorized'
+        return Response({"errors": [error_info]}, status=401)
 
 def authenticate(request):
     """
     Checks the validity of the authentication token of the user
     """
-
     # request.META contains all the headers of the request
     auth_token = request.META.get("HTTP_X_API_KEY")
     auth_url = request.META.get("HTTP_X_AUTH_URL")
@@ -123,16 +141,17 @@ class ProjectFileList(APIView):
     """
     List uploaded files, upload a file to the users folder.
     """
+
+    authentication_classes = KamakiTokenAuthentication,
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
-
-
+        pass
 
     def put(self, request):
-        authentication_status = authenticate(request)
-        if authentication_status.status_code != 200:
-            return Response({"errors": json.loads(authentication_status.content).get('errors')},
-                                status=authentication_status.status_code)
         uploaded_file = request.FILES.get('file')
+        if not uploaded_file:
+            return Response({"errors" : [{"message": "No file uploaded", "code":422}]}, status=422)
         description = request.data.get('description', '')
         new_file_path = path.join(settings.FILE_STORAGE, uploaded_file.name)
 

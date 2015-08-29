@@ -10,7 +10,8 @@ class User(models.Model):
     id: the okeanos id of the user.
     token: the okeanos token of the user.
     """
-    id = models.CharField("UUID", primary_key=True, null=False, blank=False,
+    id = models.AutoField("id", primary_key=True)
+    uuid = models.CharField("uuid", null=False, blank=False,
                           unique=True, default="", max_length=255,
                           help_text="Unique user id asign by Astakos")
 
@@ -22,6 +23,9 @@ class User(models.Model):
         verbose_name = "User"
         app_label = 'backend'
         # db_tablespace = "tables"
+
+    def is_authenticated(self, *args):
+        return True
 
 
 class Project(models.Model):
@@ -51,10 +55,18 @@ class ProjectFile(models.Model):
     path = models.CharField(max_length=400)
     description = models.CharField(max_length=400,blank=True, default='')
 
+    class Meta:
+        verbose_name = "ProjectFile"
+        app_label = "backend"
+
 class Token(models.Model):
-    user = models.OneToOneField(UserInfo, related_name='kamaki_token')
-    key = models.CharField(max_length=40, null=True)
+    user = models.OneToOneField(User, related_name='kamaki_token')
+    key = models.CharField(max_length=60, null=True)
     creation_date = models.DateTimeField('Creation Date')
+
+    class Meta:
+        verbose_name = "Token"
+        app_label = "backend"
 
 class LambdaInstance(models.Model):
     """
