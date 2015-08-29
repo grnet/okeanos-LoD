@@ -200,13 +200,13 @@ def lambda_instance_start(request, instance_uuid):
                                          "code": 404,
                                          "details": ""}]}, status=404)
 
-    instance_servers = Server.objects.filter(lambda_instance =
-                                    LambdaInstance.objects.get(uuid=instance_uuid))
+    instance_servers = Server.objects.filter(lambda_instance =LambdaInstance.objects.get(
+        uuid=instance_uuid))
     master_id = instance_servers.exclude(pub_ip=None).values('id')[0]['id']
     slaves = instance_servers.filter(pub_ip=None).values('id')
     slave_ids = []
     for slave in slaves:
-      slave_ids.append(slave['id'])
+        slave_ids.append(slave['id'])
 
     # Create task to start the lambda instance.
     auth_token = request.META.get("HTTP_X_API_KEY")
@@ -238,13 +238,13 @@ def lambda_instance_stop(request, instance_uuid):
                                          "code": 404,
                                          "details": ""}]}, status=404)
 
-    instance_servers = Server.objects.filter(lambda_instance =
-                                    LambdaInstance.objects.get(uuid=instance_uuid))
+    instance_servers = Server.objects.filter(lambda_instance =LambdaInstance.objects.get(
+        uuid=instance_uuid))
     master_id = instance_servers.exclude(pub_ip=None).values('id')[0]['id']
     slaves = instance_servers.filter(pub_ip=None).values('id')
     slave_ids = []
     for slave in slaves:
-      slave_ids.append(slave['id'])
+        slave_ids.append(slave['id'])
 
     # Create task to stop the lambda instance.
     auth_token = request.META.get("HTTP_X_API_KEY")

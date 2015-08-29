@@ -12,7 +12,7 @@ Lambda instance status call, given an authentication token through the header x-
 Type | Description |
 -------|-----------------|
 **Description** | lambda instance status
-**URL**         | /backend/[uuid]/status
+**URL**         | /backend/lambda-instances/[uuid]/status
 **HTTP Method** | GET
 **Security**    | Basic Authentication
 

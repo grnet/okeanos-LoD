@@ -12,7 +12,7 @@ Lambda instance details call, given an authentication token through the header x
 Type | Description |
 -------|-----------------|
 **Description** | lambda instance details
-**URL**         | /backend/lambda-instance/[uuid]
+**URL**         | /backend/lambda-instances/[uuid]
 **HTTP Method** | GET
 **Security**    | Basic Authentication
 

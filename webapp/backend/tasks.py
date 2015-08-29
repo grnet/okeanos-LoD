@@ -6,6 +6,7 @@ from kamaki.clients.cyclades import CycladesComputeClient
 from .events import set_lambda_instance_status
 from .models import LambdaInstance
 
+
 @shared_task
 def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_ids):
     """
@@ -17,7 +18,7 @@ def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_
     """
 
     cyclades_url = AstakosClient(auth_url, auth_token).get_endpoint_url(
-                   CycladesComputeClient.service_type)
+        CycladesComputeClient.service_type)
     cyclades = CycladesComputeClient(cyclades_url, auth_token)
 
     try:
@@ -39,7 +40,6 @@ def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_
         set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STARTED)
     except:
         set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED)
-        return
 
 
 @shared_task
@@ -54,7 +54,7 @@ def lambda_instance_stop(instance_uuid, auth_url, auth_token, master_id, slave_i
     """
 
     cyclades_url = AstakosClient(auth_url, auth_token).get_endpoint_url(
-                   CycladesComputeClient.service_type)
+        CycladesComputeClient.service_type)
     cyclades = CycladesComputeClient(cyclades_url, auth_token)
 
     try:
@@ -71,7 +71,6 @@ def lambda_instance_stop(instance_uuid, auth_url, auth_token, master_id, slave_i
         # Wait until all slave nodes have been stopeed.
         for slave_id in slave_ids:
             cyclades.wait_server(slave_id, current_status="ACTIVE")
-
 
         # Update lambda instance status on the database to started.
         set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STOPPED)
