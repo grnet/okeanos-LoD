@@ -29,9 +29,9 @@ def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_
         cyclades.start_server(master_id)
 
         # Update lambda instance status on the database to started.
-        set_lambda_instance_status(instance_uuid, LambdaInstance.STARTED).delay()
+        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STARTED)
     except:
-        set_lambda_instance_status(instance_uuid, LambdaInstance.FAILED).delay()
+        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED)
         return
 
 
@@ -59,6 +59,6 @@ def lambda_instance_stop(instance_uuid, auth_url, auth_token, master_id, slave_i
             cyclades.shutdown_server(slave_id)
 
         # Update lambda instance status on the database to started.
-        set_lambda_instance_status(instance_uuid, LambdaInstance.STOPPED).delay()
+        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STOPPED)
     except:
-        set_lambda_instance_status(instance_uuid, LambdaInstance.FAILED).delay()
+        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED)

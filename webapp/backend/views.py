@@ -195,15 +195,18 @@ def lambda_instance_start(request, instance_uuid):
         return authentication_response
 
     # Check if the specified lambda instance exists.
-    if not LambdaInstance.objects.get(uuid=instance_uuid).exists():
+    if not LambdaInstance.objects.filter(uuid=instance_uuid).exists():
         return JsonResponse({"errors": [{"message": "Lambda instance not found",
                                          "code": 404,
                                          "details": ""}]}, status=404)
 
     instance_servers = Server.objects.filter(lambda_instance =
                                     LambdaInstance.objects.get(uuid=instance_uuid))
-    master_id = instance_servers.exclude(pub_ip=None).values('id')
-    slave_ids = instance_servers.filter(pub_ip=None).values('id')
+    master_id = instance_servers.exclude(pub_ip=None).values('id')[0]['id']
+    slaves = instance_servers.filter(pub_ip=None).values('id')
+    slave_ids = []
+    for slave in slaves:
+      slave_ids.append(slave['id'])
 
     # Create task to start the lambda instance.
     auth_token = request.META.get("HTTP_X_API_KEY")
@@ -211,10 +214,10 @@ def lambda_instance_start(request, instance_uuid):
     if not auth_url:
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
-    tasks.lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_ids).delay()
+    tasks.lambda_instance_start.delay(instance_uuid, auth_url, auth_token, master_id, slave_ids)
 
     # Create event to update the database.
-    events.set_lambda_instance_status(instance_uuid, LambdaInstance.STARTING).delay()
+    events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STARTING)
 
     return JsonResponse({"result": "Success"}, status=200)
 
@@ -230,15 +233,18 @@ def lambda_instance_stop(request, instance_uuid):
         return authentication_response
 
     # Check if the specified lambda instance exists.
-    if not LambdaInstance.objects.get(uuid=instance_uuid).exists():
+    if not LambdaInstance.objects.filter(uuid=instance_uuid).exists():
         return JsonResponse({"errors": [{"message": "Lambda instance not found",
                                          "code": 404,
                                          "details": ""}]}, status=404)
 
     instance_servers = Server.objects.filter(lambda_instance =
                                     LambdaInstance.objects.get(uuid=instance_uuid))
-    master_id = instance_servers.exclude(pub_ip=None).values('id')
-    slave_ids = instance_servers.filter(pub_ip=None).values('id')
+    master_id = instance_servers.exclude(pub_ip=None).values('id')[0]['id']
+    slaves = instance_servers.filter(pub_ip=None).values('id')
+    slave_ids = []
+    for slave in slaves:
+      slave_ids.append(slave['id'])
 
     # Create task to stop the lambda instance.
     auth_token = request.META.get("HTTP_X_API_KEY")
@@ -246,10 +252,10 @@ def lambda_instance_stop(request, instance_uuid):
     if not auth_url:
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
-    tasks.lambda_instance_stop(instance_uuid, auth_url, auth_token, master_id, slave_ids).delay()
+    tasks.lambda_instance_stop.delay(instance_uuid, auth_url, auth_token, master_id, slave_ids)
 
     # Create event to update the database.
-    events.set_lambda_instance_status(instance_uuid, LambdaInstance.STOPPING).delay()
+    events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STOPPING)
 
     return JsonResponse({"result": "Success"}, status=200)
 
