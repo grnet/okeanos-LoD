@@ -200,7 +200,7 @@ def lambda_instance_start(request, instance_uuid):
                                          "code": 404,
                                          "details": ""}]}, status=404)
 
-    instance_servers = Server.objects.filter(lambda_instance =LambdaInstance.objects.get(
+    instance_servers = Server.objects.filter(lambda_instance=LambdaInstance.objects.get(
         uuid=instance_uuid))
     master_id = instance_servers.exclude(pub_ip=None).values('id')[0]['id']
     slaves = instance_servers.filter(pub_ip=None).values('id')
@@ -238,7 +238,7 @@ def lambda_instance_stop(request, instance_uuid):
                                          "code": 404,
                                          "details": ""}]}, status=404)
 
-    instance_servers = Server.objects.filter(lambda_instance =LambdaInstance.objects.get(
+    instance_servers = Server.objects.filter(lambda_instance=LambdaInstance.objects.get(
         uuid=instance_uuid))
     master_id = instance_servers.exclude(pub_ip=None).values('id')[0]['id']
     slaves = instance_servers.filter(pub_ip=None).values('id')

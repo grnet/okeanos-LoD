@@ -24,14 +24,16 @@ def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_
     try:
         # Start all slave nodes.
         for slave_id in slave_ids:
-            cyclades.start_server(slave_id)
+            if cyclades.get_server_details(slave_id)["status"] != "ACTIVE":
+                cyclades.start_server(slave_id)
 
         # Wait until all slave nodes have been started.
         for slave_id in slave_ids:
             cyclades.wait_server(slave_id, current_status="STOPPED")
 
         # Start master node.
-        cyclades.start_server(master_id)
+        if cyclades.get_server_details(master_id)["status"] != "ACTIVE":
+            cyclades.start_server(master_id)
 
         # Wait until master node has been started.
         cyclades.wait_server(master_id, current_status="STOPPED")
@@ -59,14 +61,16 @@ def lambda_instance_stop(instance_uuid, auth_url, auth_token, master_id, slave_i
 
     try:
         # Stop master node.
-        cyclades.shutdown_server(master_id)
+        if cyclades.get_server_details(master_id)["status"] != "STOPPED":
+            cyclades.shutdown_server(master_id)
 
         # Wait until master node has been stopped.
         cyclades.wait_server(master_id, current_status="ACTIVE")
 
         # Stop all slave nodes.
         for slave_id in slave_ids:
-            cyclades.shutdown_server(slave_id)
+            if cyclades.get_server_details(slave_id)["status"] != "STOPPED":
+                cyclades.shutdown_server(slave_id)
 
         # Wait until all slave nodes have been stopeed.
         for slave_id in slave_ids:
