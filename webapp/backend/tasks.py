@@ -1,5 +1,6 @@
 from celery import shared_task
 
+from kamaki.clients import ClientError
 from kamaki.clients.astakos import AstakosClient
 from kamaki.clients.cyclades import CycladesComputeClient
 
@@ -40,8 +41,8 @@ def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_
 
         # Update lambda instance status on the database to started.
         set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STARTED)
-    except:
-        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED)
+    except ClientError as exception:
+        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED, exception.message)
 
 
 @shared_task
@@ -78,5 +79,5 @@ def lambda_instance_stop(instance_uuid, auth_url, auth_token, master_id, slave_i
 
         # Update lambda instance status on the database to started.
         set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STOPPED)
-    except:
-        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED)
+    except ClientError as exception:
+        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED, exception.message)

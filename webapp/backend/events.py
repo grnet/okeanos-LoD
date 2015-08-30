@@ -4,7 +4,7 @@ from .models import LambdaInstance
 
 
 @shared_task
-def set_lambda_instance_status(uuid, status):
+def set_lambda_instance_status(uuid, status, failure_message=""):
     """
     Sets the status of a specified lambda instance to the specified status.
     The existence of the lambda instance should have been previously checked.
@@ -15,4 +15,5 @@ def set_lambda_instance_status(uuid, status):
 
     lambda_instance = LambdaInstance.objects.get(uuid=uuid)
     lambda_instance.status = status
+    lambda_instance.failure_message = failure_message
     lambda_instance.save()

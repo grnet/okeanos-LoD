@@ -94,6 +94,9 @@ class LambdaInstance(models.Model):
     uuid = models.BigIntegerField("Instance UUID", null=False, unique=True,
                                   help_text="Unique key asigned to every instance.")
 
+    failure_message = models.CharField(max_length=100, default="",
+                                       help_text="Error message regarding this lambda instance")
+
     STARTED = "0"
     STOPPED = "1"
     PENDING = "2"
