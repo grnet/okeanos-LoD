@@ -297,10 +297,9 @@ def lambda_instance_destroy(request, instance_uuid):
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
     tasks.lambda_instance_destroy.delay(instance_uuid, auth_url, auth_token, master_id, slave_ids,
-                            public_ip_id, private_network_id)
+                                        public_ip_id, private_network_id)
 
     # Create event to update the database.
     events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.DESTROYING)
 
     return JsonResponse({"result": "Success"}, status=200)
-

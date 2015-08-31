@@ -108,7 +108,7 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slav
 
     # Create cyclades compute client.
     cyclades_compute_url = AstakosClient(auth_url, auth_token).get_endpoint_url(
-    CycladesComputeClient.service_type)
+        CycladesComputeClient.service_type)
     cyclades_compute_client = CycladesComputeClient(cyclades_compute_url, auth_token)
 
     # Create cyclades network client.
