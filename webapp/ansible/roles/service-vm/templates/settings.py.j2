@@ -127,6 +127,10 @@ CELERY_ROUTES = {
             'queue': 'tasks_queue',
             'routing_key': 'task_key',
         },
+        'backend.tasks.lambda_instance_destroy': {
+            'queue': 'tasks_queue',
+            'routing_key': 'task_key',
+        },
         'backend.events.set_lambda_instance_status': {
             'queue': 'events_queue',
             'routing_key': 'event_key',

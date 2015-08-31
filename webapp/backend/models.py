@@ -79,6 +79,7 @@ class LambdaInstance(models.Model):
     id: a unique identifier the service creates for every Lambda Instance.
     uuid: A unique id asigned to every Lambda Instance. This key will be used by the API
           to reference a specific Lambda Instance.
+    failure_message: Message that denotes the reason of failure of the lambda instance.
     """
     id = models.AutoField("Instance ID", primary_key=True, null=False,
                           help_text="Auto-increment instance id.")
@@ -141,6 +142,7 @@ class Server(models.Model):
     ram: the ram of the server.
     disk: the disk of the server.
     pub_ip: the public ip of the server.
+    pub_ip_id: the id assigned to this public ip by ~okeanos.
     priv_ip: the private ip of the server.
     lambda_instance: the lambda instance the server belongs to.
     :model: models.LambdaInstance.
@@ -154,6 +156,8 @@ class Server(models.Model):
     ram = models.IntegerField("RAM", null=True, help_text="Amount of ram.")
     disk = models.IntegerField("Hard Drive", null=True, help_text="Amount of disk space.")
     pub_ip = models.GenericIPAddressField("Public ip", null=True, help_text="Public ip of server.")
+    pub_ip_id = models.BigIntegerField("~okeanos id of public ip", null=True, blank=False,
+                                       unique=True)
     priv_ip = models.GenericIPAddressField("Private ip", null=True,
                                            help_text="Private ip of server.")
     lambda_instance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False,
@@ -184,10 +188,10 @@ class PrivateNetwork(models.Model):
     lambda_instance: the lambda instance that this network belongs to.
     :model: models.LambdaInstance
     """
-    id = models.AutoField("Network ID",
-                          primary_key=True, null=False, blank=False,
-                          unique=True, default="",
-                          help_text="Private network id provided by kamaki.")
+    id = models.BigIntegerField("Network ID",
+                                primary_key=True, null=False, blank=False,
+                                unique=True, default="",
+                                help_text="Private network id provided by kamaki.")
     subnet = models.CharField(max_length=100)
     gateway = models.GenericIPAddressField("Gateway", null=False, blank=False, unique=False)
     lambda_instance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False,

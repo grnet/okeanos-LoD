@@ -20,7 +20,7 @@ from .serializers import ProjectFileSerializer
 
 import tasks
 import events
-from .models import LambdaInstance, Server
+from .models import LambdaInstance, Server, PrivateNetwork
 
 
 def authenticate(request):
@@ -59,8 +59,8 @@ def list_lambda_instances(request):
         if limit <= 0 or page <= 0:
             return JsonResponse({"errors":
                                  [{"message": "Zero or negative indexing is not supported",
-                                   "code": 500,
-                                   "details": ""}]}, status=500)
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
         # Retrieve the lambda instances from the database.
         first_to_retrieve = (page - 1) * limit
@@ -257,6 +257,50 @@ def lambda_instance_stop(request, instance_uuid):
 
     # Create event to update the database.
     events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STOPPING)
+
+    return JsonResponse({"result": "Success"}, status=200)
+
+
+def lambda_instance_destroy(request, instance_uuid):
+    """
+    Destroys a specific lambda instance owned by the user.
+    """
+
+    # Authenticate user.
+    authentication_response = authenticate(request)
+    if authentication_response.status_code != 200:
+        return authentication_response
+
+    # Check if the specified lambda instance exists.
+    if not LambdaInstance.objects.filter(uuid=instance_uuid).exists():
+        return JsonResponse({"errors": [{"message": "Lambda instance not found",
+                                         "code": 404,
+                                         "details": ""}]}, status=404)
+
+    instance_servers = Server.objects.filter(lambda_instance=LambdaInstance.objects.get(
+        uuid=instance_uuid))
+    master_id = instance_servers.exclude(pub_ip=None).values('id')[0]['id']
+    slaves = instance_servers.filter(pub_ip=None).values('id')
+    slave_ids = []
+    for slave in slaves:
+        slave_ids.append(slave['id'])
+
+    public_ip_id = instance_servers.exclude(pub_ip=None).values('pub_ip_id')[0]['pub_ip_id']
+
+    private_network_id = PrivateNetwork.objects.get(lambda_instance=LambdaInstance.objects.get(
+        uuid=instance_uuid)).id
+
+    # Create task to destroy the lambda instance.
+    auth_token = request.META.get("HTTP_X_API_KEY")
+    auth_url = request.META.get("HTTP_X_AUTH_URL")
+    if not auth_url:
+        auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+
+    tasks.lambda_instance_destroy.delay(instance_uuid, auth_url, auth_token, master_id, slave_ids,
+                            public_ip_id, private_network_id)
+
+    # Create event to update the database.
+    events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.DESTROYING)
 
     return JsonResponse({"result": "Success"}, status=200)
 

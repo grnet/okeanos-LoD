@@ -10,7 +10,7 @@ will firstly check the validity of the token. If the token is invalid, the API w
 with an 401 error. If the token is valid, the API will return all the lambda instances in
 json format along with a 200 success code. If there are no lambda instances the API will reply with a 404 no instances found code. Lambda instances can be viewed in pages with a limited
 number of instances per page. If at least one of the parameters limit and page is less than
-or equal to zero, the api will reply with a 500 zero or negative indexing in not supported code.
+or equal to zero, the api will reply with a 400 zero or negative indexing in not supported code.
 
 ## Basic Parameters
 
@@ -98,4 +98,4 @@ The main response messages are:
 - HTTP/1.1 201 OK : (Success)
 - HTTP/1.1 404 NO INSTANCES FOUND : (Fail)
 - HTTP/1.1 401 UNAUTHORIZED : (Fail)
-- HTTP/1.1 500 ZERO OR NEGATIVE INDEXING IS NOT SUPPORTED : (Fail)
+- HTTP/1.1 400 ZERO OR NEGATIVE INDEXING IS NOT SUPPORTED : (Fail)

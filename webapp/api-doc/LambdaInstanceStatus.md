@@ -38,7 +38,7 @@ id   | Unique integer used to enumerate lambda instances | Auto Increment
 status | The status of lambda instance | PENDING
 
 The possible values of the keyword status are:
-STARTED, STOPPED, PENDING, STARTING, STOPING, DESTROYING, DESTROYED, SCALING_UP, SCALING_DOWN.
+STARTED, STOPPED, PENDING, STARTING, STOPING, DESTROYING, DESTROYED, SCALING_UP, SCALING_DOWN, FAILED.
 
 ## Example
 
