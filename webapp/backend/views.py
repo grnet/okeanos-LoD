@@ -1,42 +1,33 @@
-from django.http import JsonResponse
 import json
-from fokia.utils import check_auth_token
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.views import APIView
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from django.conf import settings
-from .models import ProjectFile, LambdaInstance, User, Token
 from os import path, mkdir
-from django.utils import timezone
-from .authenticate_user import KamakiTokenAuthentication
+
+from django.http import JsonResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.conf import settings
+
 from rest_framework.permissions import IsAuthenticated
 
+from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 
-@api_view(['POST'])
-def register_user(request):
-    auth_token = request.META.get("HTTP_AUTHENTICATION").split()[-1]
-    auth_url = request.META.get("HTTP_AUTH_URL")
-    status, info = check_auth_token(auth_token, auth_url=auth_url)
-    if status and (Token.objects.filter(key=auth_token).count() == 0):
-        uuid = info['access']['user']['id']
-        user = User.objects.create(uuid=uuid)
-        Token.objects.create(user=user, key=auth_token, creation_date=timezone.now())
-        return Response({"result": "success"}, status=200)
-    else:
-        error_info = json.loads(info)['unauthorized']
-        error_info['details'] = error_info.get('details') + 'unauthorized'
-        return Response({"errors": [error_info]}, status=401)
+from rest_framework_xml.renderers import XMLRenderer
+
+from fokia.utils import check_auth_token
+from .models import ProjectFile, LambdaInstance
+from .authenticate_user import KamakiTokenAuthentication
+from .serializers import ProjectFileSerializer
+
 
 def authenticate(request):
     """
     Checks the validity of the authentication token of the user
+    .. deprecated::
+    Use authenticate_user.KamakiTokenAuthentication
+
     """
     # request.META contains all the headers of the request
-    auth_token = request.META.get("HTTP_X_API_KEY")
-    auth_url = request.META.get("HTTP_X_AUTH_URL")
-    status, info = check_auth_token(auth_token, auth_url=auth_url)
+    auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+    status, info = check_auth_token(auth_token)
     if status:
         return JsonResponse({"result": "success"}, status=200)
     else:
@@ -143,25 +134,46 @@ class ProjectFileList(APIView):
     """
 
     authentication_classes = KamakiTokenAuthentication,
-    permission_classes = (IsAuthenticated,)
+    permission_classes = IsAuthenticated,
+    renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
-    def get(self, request):
-        pass
+    def get(self, request, format=None):
+        files = ProjectFile.objects.filter(owner=request.user)
+        file_serializer = ProjectFileSerializer(files, many=True)
+        return Response(file_serializer.data, status=200, content_type=format)
 
-    def put(self, request):
+    def put(self, request, format=None):
         uploaded_file = request.FILES.get('file')
         if not uploaded_file:
-            return Response({"errors" : [{"message": "No file uploaded", "code":422}]}, status=422)
+            return Response({"errors": [{"message": "No file uploaded", "code": 422}]}, status=422)
         description = request.data.get('description', '')
         new_file_path = path.join(settings.FILE_STORAGE, uploaded_file.name)
-
         if not path.exists(settings.FILE_STORAGE):
             mkdir(settings.FILE_STORAGE)
         with open(new_file_path, 'wb+') as f:
             f.write(uploaded_file.read())
         if path.isfile(new_file_path):
+            # TODO: Change this to an event call that updates the db
             ProjectFile.objects.create(name=uploaded_file.name,
                                        path=new_file_path,
-                                       description=description)
-        return Response({"result": "success"}, status=200)
+                                       description=description,
+                                       owner=request.user)
+        return Response({"result": "success"}, status=201)
 
+    def delete(self, request, format=None):
+        file_id = request.data.get('id')
+        if not file_id:
+            return Response({"errors:"[{"message": "missing id header", "code": 422}]},
+                            status=422)
+        try:
+            file_data = ProjectFile.objects.get(id=file_id)
+        except ProjectFile.DoesNotExist:
+            return Response({"errors:"[{"message": "file does not exist", "code": 400}]},
+                            status=400)
+
+        if file_data.owner != request.user:
+            return Response({"errors:"[{"message": "file does not exist", "code": 400}]},
+                            status=400)
+        # TODO: Change this to an event call that update the db
+        file_data.delete()
+        return Response({"result": "success"}, status=200)

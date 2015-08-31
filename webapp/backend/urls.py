@@ -21,8 +21,7 @@ from . import views
 
 urlpatterns = [
     url(r'^authenticate/?$', views.authenticate),
-    url(r'^upload_file/?$', views.ProjectFileList.as_view()),
-    url(r'^register/?$', views.register_user),
+    url(r'^user_files/?$', views.ProjectFileList.as_view()),
     url(r'^lambda-instances/?$', views.list_lambda_instances, name='list_lambda_instances'),
     url(r'^lambda-instances/(?P<instance_uuid>[0-9]+)/?$', views.lambda_instance_details,
         name='lambda_instance_details'),

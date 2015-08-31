@@ -5,4 +5,4 @@ from .models import ProjectFile
 class ProjectFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectFile
-        fields = ('name', 'path', 'description')
+        fields = ('id', 'name', 'description')

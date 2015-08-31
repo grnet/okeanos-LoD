@@ -127,3 +127,11 @@ CELERY_ROUTES = {
 
 FILE_STORAGE = os.path.join(BASE_DIR,'uploaded_files')
 
+REST_FRAMEWORK = {
+  'DEFAULT_RENDERER_CLASSES': (
+    'rest_framework_xml.renderers.XMLRenderer',
+    'rest_framework.renderers.JSONRenderer',
+    'rest_framework.renderers.BrowsableAPIRenderer',
+  )
+}
+
