@@ -4,13 +4,15 @@ from django.db import models
 OBJECTS
 """
 
+
 class User(models.Model):
     """
     Stores information about every lambda-user.
     id: the okeanos id of the user.
     token: the okeanos token of the user.
     """
-    id = models.CharField("UUID", primary_key=True, null=False, blank=False,
+    id = models.AutoField("id", primary_key=True)
+    uuid = models.CharField("uuid", null=False, blank=False,
                           unique=True, default="", max_length=255,
                           help_text="Unique user id asign by Astakos")
 
@@ -22,6 +24,9 @@ class User(models.Model):
         verbose_name = "User"
         app_label = 'backend'
         # db_tablespace = "tables"
+
+    def is_authenticated(self, *args):
+        return True
 
 
 class Project(models.Model):
@@ -44,6 +49,28 @@ class Project(models.Model):
     class Meta:
         verbose_name = "Project"
         app_label = 'backend'
+
+
+class ProjectFile(models.Model):
+    id = models.AutoField("File ID", primary_key=True, unique=True, help_text="Project file id.")
+    name = models.CharField(max_length=100)
+    path = models.CharField(max_length=400)
+    description = models.CharField(max_length=400, blank=True, default='')
+    owner = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        verbose_name = "ProjectFile"
+        app_label = "backend"
+
+
+class Token(models.Model):
+    user = models.OneToOneField(User, related_name='kamaki_token')
+    key = models.CharField(max_length=100, null=True)
+    creation_date = models.DateTimeField('Creation Date')
+
+    class Meta:
+        verbose_name = "Token"
+        app_label = "backend"
 
 
 class LambdaInstance(models.Model):
@@ -99,6 +126,7 @@ class LambdaInstance(models.Model):
         verbose_name = "Lambda Instance"
         app_label = 'backend'
 
+
 class Server(models.Model):
     """
     Stores information about every server created for the LoD service.
@@ -140,6 +168,7 @@ class Server(models.Model):
     class Meta:
         verbose_name = "Server"
         app_label = 'backend'
+
 
 class PrivateNetwork(models.Model):
     """
