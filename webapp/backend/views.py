@@ -17,13 +17,12 @@ from rest_framework_xml.renderers import XMLRenderer
 from django.views.decorators.csrf import csrf_exempt
 
 from fokia.utils import check_auth_token
-from .models import ProjectFile, LambdaInstance
+from .models import ProjectFile, LambdaInstance, Server, PrivateNetwork
 from .authenticate_user import KamakiTokenAuthentication
 from .serializers import ProjectFileSerializer
 
 import tasks
 import events
-from .models import LambdaInstance, Server, PrivateNetwork
 
 
 def authenticate(request):
