@@ -12,8 +12,8 @@ with a "401 Unauthorized" code. If the token is valid, the API will return all t
 
 ## Basic Parameters
 
-Type            | Description              
-----------------|--------------------------
+Type            | Description              |
+----------------|--------------------------|
 **Description** | lambda instances list
 **URL**         | /backend/lambda-instances
 **HTTP Method** | GET
@@ -22,22 +22,21 @@ Type            | Description
 
 ### Headers
 
-Type  | Description | Required | Default value | Example value 
-----------|-------------|----------|---------------|---------------
-x-api-key | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` | None | tJ3b3f32f23ceuqdoS_..
+Type  | Description | Required | Default value | Example value |
+----------|-------------|----------|---------------|---------------|
+x-api-key | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` | None | tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY
 
 
 ### Parameters
 
-Name   | Description | Required | Default value | Example value 
--------|-------------|----------|---------------|---------------
+Name   | Description | Required | Default value | Example value |
+-------|-------------|----------|---------------|---------------|
 limit  | number of lambda instances on each page | `No` | None | 3
 page   | the number of the page to return | `No` | None | 2
 
-
 ### Keywords in response
-Name  | Description | Default value 
-------|------------|---------------
+Name  | Description | Default value |
+------|------------|---------------|
 name  | The name of the lambda instance | Lambda Instance
 uuid  | Unique integer identifying a lambda instance | None
 id    | Unique integer used to enumerate lambda instances | Auto Increment
@@ -70,7 +69,7 @@ If the authentication token is correct, a sample response is
 }
 ```
 
-For the case where the authentication token is not correct, refer to [Authentication page](Authentication.md).
+For the case where the authentication token is not correct, refer to Authentication page.
 
 In this example we are going to list the 2nd page of the lambda instances with a limit of 2
 lambda instance in each page.

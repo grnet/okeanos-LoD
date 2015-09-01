@@ -14,8 +14,6 @@ will also return a "202 ACCEPTED" code.
 
 ## Basic Parameters
 
-|Type            | Description
-|----------------|--------------------------
 | **Description** | lambda instance destroy
 | **URL**         | backend/lambda-instances/[uuid]/destroy
 | **HTTP Method** | POST
@@ -24,16 +22,16 @@ will also return a "202 ACCEPTED" code.
 
 ### Headers
 
-Type | Description | Required | Default value | Example value 
-------|-------------|----------|---------------|---------------
-x-api-key | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` | None | tJ3b3f32f23ceuqdoS_..
+Type | Description | Required | Default value | Example value |
+------|-------------|----------|---------------|---------------|
+x-api-key | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` | None | tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY
 
 
 ### Parameters
 
-Name | Description | Required | Default value | Example value 
-------|-------------|----------|---------------|---------------
-uuid  | The uuid of the specified lambda instance. For more information see [List Lambda instances page](LambdaInstanceList.md). |`Yes` |None| 3
+Name | Description | Required | Default value | Example value |
+------|-------------|----------|---------------|---------------|
+uuid  | The uuid of the specified lambda instance. For more information see LambdaInstanceList page. |`Yes` |None| 3
 
 
 ## Example
@@ -57,7 +55,7 @@ If the authentication is correct the response will be
 }
 ```
 
-For the case where the authentication token is not correct, refer to [Authentication page](Authentication.md).
+For the case where the authentication token is not correct, refer to Authentication page.
 
 ### Response messages
 
