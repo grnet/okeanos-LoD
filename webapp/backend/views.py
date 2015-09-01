@@ -3,6 +3,7 @@ import json
 from os import path, mkdir
 
 from django.http import JsonResponse
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.conf import settings
@@ -12,6 +13,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 
 from rest_framework_xml.renderers import XMLRenderer
+
+from django.views.decorators.csrf import csrf_exempt
 
 from fokia.utils import check_auth_token
 from .models import ProjectFile, LambdaInstance
@@ -45,6 +48,13 @@ def list_lambda_instances(request):
     """
     Lists the lambda instances owned by the user.
     """
+
+    # Verify that the request method is GET.
+    if request.method != 'GET':
+        return JsonResponse({"errors":
+                             [{"message": "",
+                               "code": 400,
+                               "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -88,6 +98,13 @@ def lambda_instance_details(request, instance_uuid):
     Returns the details for a specific lambda instance owned by the user.
     """
 
+    # Verify that the request method is GET.
+    if request.method != 'GET':
+        return JsonResponse({"errors":
+                             [{"message": "",
+                               "code": 400,
+                               "details": ""}]}, status=400)
+
     # Authenticate user.
     authentication_response = authenticate(request)
     if authentication_response.status_code != 200:
@@ -112,6 +129,13 @@ def lambda_instance_status(request, instance_uuid):
     """
     Returns the status of a specified lambda instance owned by the user.
     """
+
+    # Verify that the request method is GET.
+    if request.method != 'GET':
+        return JsonResponse({"errors":
+                             [{"message": "",
+                               "code": 400,
+                               "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -185,10 +209,18 @@ class ProjectFileList(APIView):
         return Response({"result": "success"}, status=200)
 
 
+@csrf_exempt
 def lambda_instance_start(request, instance_uuid):
     """
     Starts a specific lambda instance owned by the user.
     """
+
+    # Verify that the request method is POST.
+    if request.method != 'POST':
+        return JsonResponse({"errors":
+                             [{"message": "",
+                               "code": 400,
+                               "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -241,10 +273,18 @@ def lambda_instance_start(request, instance_uuid):
     return JsonResponse({"result": "Success"}, status=200)
 
 
+@csrf_exempt
 def lambda_instance_stop(request, instance_uuid):
     """
     Stops a specific lambda instance owned by the user.
     """
+
+    # Verify that the request method is POST.
+    if request.method != 'POST':
+        return JsonResponse({"errors":
+                             [{"message": "",
+                               "code": 400,
+                               "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -298,10 +338,18 @@ def lambda_instance_stop(request, instance_uuid):
     return JsonResponse({"result": "Success"}, status=200)
 
 
+@csrf_exempt
 def lambda_instance_destroy(request, instance_uuid):
     """
     Destroys a specific lambda instance owned by the user.
     """
+
+    # Verify that the request method is POST.
+    if request.method != 'POST':
+        return JsonResponse({"errors":
+                             [{"message": "",
+                               "code": 400,
+                               "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
