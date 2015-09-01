@@ -47,7 +47,7 @@ In this example we are going to get the status of the lambda instance with uuid 
 The request in curl
 
 ```
-    curl -X GET -H "x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<url>:<port>/backend/lambda-instances/3/status'
+curl -X GET -H "x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<url>/backend/lambda-instances/3/status'
 ```
 
 
@@ -69,6 +69,6 @@ For the case where the authentication token is not correct, refer to Authenticat
 
 The main response messages are:
 
-- HTTP/1.1 201 OK : (Success)
+- HTTP/1.1 200 OK : (Success)
 - HTTP/1.1 401 UNAUTHORIZED : (Fail)
 - HTTP/1.1 404 NOT FOUND : (Fail)

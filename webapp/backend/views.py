@@ -269,7 +269,7 @@ def lambda_instance_start(request, instance_uuid):
     # Create event to update the database.
     events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STARTING)
 
-    return JsonResponse({"result": "Success"}, status=200)
+    return JsonResponse({"result": "Accepted"}, status=202)
 
 
 @csrf_exempt
@@ -334,7 +334,7 @@ def lambda_instance_stop(request, instance_uuid):
     # Create event to update the database.
     events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STOPPING)
 
-    return JsonResponse({"result": "Success"}, status=200)
+    return JsonResponse({"result": "Accepted"}, status=202)
 
 
 @csrf_exempt
@@ -406,4 +406,4 @@ def lambda_instance_destroy(request, instance_uuid):
     # Create event to update the database.
     events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.DESTROYING)
 
-    return JsonResponse({"result": "Success"}, status=200)
+    return JsonResponse({"result": "Accepted"}, status=202)

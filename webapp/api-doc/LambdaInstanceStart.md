@@ -5,7 +5,7 @@ description: Starts a  specified lambda instance
 
 # API - lambda instance start - Description
 
-Lambda instance start call, given an authentication token through the header x-api-key, will firstly check the validity of the token. If the token is invalid, the API will reply with a "401 Unauthorized" code. If the token is valid, the API will search for the specified lambda instance. If the specified lambda instance does not exist, the API will reply with a "404 Not Found" code. If the specified lambda instance exists, the API will reply with a "200 OK" code and will also start the VMs on ~okeanos and the lambda services for the specified lambda instance.
+Lambda instance start call, given an authentication token through the header x-api-key, will firstly check the validity of the token. If the token is invalid, the API will reply with a "401 Unauthorized" code. If the token is valid, the API will search for the specified lambda instance. If the specified lambda instance does not exist, the API will reply with a "404 Not Found" code. If the specified lambda instance exists, the API will reply with a "202 ACCEPTED" code and will also start the VMs on ~okeanos and the lambda services for the specified lambda instance.
 
 ## Basic Parameters
 Type | Description |
@@ -37,7 +37,7 @@ In this example we are going to start the lambda instance with uuid 3
 The request in curl
 
 ```
-    curl -X POST -H "x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<url>:<port>/backend/lambda-instances/3/start'
+curl -X POST -H "x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<url>/backend/lambda-instances/3/start'
 ```
 
 
@@ -57,5 +57,5 @@ For the case where the authentication token is not correct, refer to Authenticat
 
 The main response messages are:
 
-- HTTP/1.1 201 OK : (Success)
+- HTTP/1.1 202 ACCEPTED : (Success)
 - HTTP/1.1 401 UNAUTHORIZED : (Fail)

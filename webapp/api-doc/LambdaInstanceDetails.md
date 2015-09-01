@@ -44,7 +44,7 @@ In this example we are going to get the details of the lambda instance with uuid
 The request in curl
 
 ```
-    curl -X GET -H "x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<url>:<port>/backend/lambda-instances/3/'
+curl -X GET -H "x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<url>/backend/lambda-instances/3/'
 ```
 
 
