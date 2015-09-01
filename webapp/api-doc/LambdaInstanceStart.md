@@ -12,7 +12,7 @@ Type | Description |
 -------|-----------------|
 **Description** | lambda instance start
 **URL**         | backend/lambda-instances/[uuid]/start
-**HTTP Method** | GET
+**HTTP Method** | POST
 **Security**    | Basic Authentication
 
 
@@ -37,7 +37,7 @@ In this example we are going to start the lambda instance with uuid 3
 The request in curl
 
 ```
-    curl -X GET -H "x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<url>:<port>/backend/lambda-instances/3/start'
+    curl -X POST -H "x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<url>:<port>/backend/lambda-instances/3/start'
 ```
 
 

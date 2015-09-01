@@ -14,10 +14,10 @@ will also return a "200 OK" code.
 
 ## Basic Parameters
 
-| **Description** | lambda instance destroy |
-| **URL**         | backend/lambda-instances/[uuid]/destroy  |
-| **HTTP Method** | GET |
-| **Security**    | Basic Authentication        |
+| **Description** | lambda instance destroy
+| **URL**         | backend/lambda-instances/[uuid]/destroy
+| **HTTP Method** | POST
+| **Security**    | Basic Authentication
 
 
 ### Headers
@@ -41,7 +41,7 @@ In this example we are going to destroy the lambda instance with uuid 3
 The request in curl
 
 ```
-    curl -X GET -H "x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<url>:<port>/backend/lambda-instances/3/destroy'
+    curl -X POST -H "x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<url>:<port>/backend/lambda-instances/3/destroy'
 ```
 
 
