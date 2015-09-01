@@ -21,7 +21,7 @@ class KamakiTokenAuthentication(TokenAuthentication):
             token = self.model.objects.get(key=hashed_token_key)
             if timezone.now() > token.creation_date + timezone.timedelta(days=5):
                 raise OldTokenException
-        except (self.model.DoesNotExist, OldTokenException) as ex:
+        except (self.model.DoesNotExist, OldTokenException):
             status, info = check_auth_token(key)
             if status:
                 uuid = info['access']['user']['id']

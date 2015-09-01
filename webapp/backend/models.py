@@ -55,7 +55,7 @@ class ProjectFile(models.Model):
     id = models.AutoField("File ID", primary_key=True, unique=True, help_text="Project file id.")
     name = models.CharField(max_length=100)
     path = models.CharField(max_length=400)
-    description = models.CharField(max_length=400,blank=True, default='')
+    description = models.CharField(max_length=400, blank=True, default='')
     owner = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, null=True)
 
     class Meta:
