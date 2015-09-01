@@ -114,14 +114,26 @@ STATIC_URL = '/static/'
 from kombu import Queue
 
 CELERY_QUEUES = (
-    Queue('events', routing_key='event'),
-    Queue('clusters', routing_key='cluster'),
+    Queue('events_queue', routing_key='event_key'),
+    Queue('tasks_queue', routing_key='task_key'),
 )
 
 CELERY_ROUTES = {
-        'backend.tasks.add': {       # To be removed after testing is done.
-            'queue': 'clusters',
-            'routing_key': 'cluster',
+        'backend.tasks.lambda_instance_start': {
+            'queue': 'tasks_queue',
+            'routing_key': 'task_key',
+        },
+        'backend.tasks.lambda_instance_stop': {
+            'queue': 'tasks_queue',
+            'routing_key': 'task_key',
+        },
+        'backend.tasks.lambda_instance_destroy': {
+            'queue': 'tasks_queue',
+            'routing_key': 'task_key',
+        },
+        'backend.events.set_lambda_instance_status': {
+            'queue': 'events_queue',
+            'routing_key': 'event_key',
         },
 }
 

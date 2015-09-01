@@ -21,6 +21,12 @@
   - name: Change repository permissions.
     file: path={{ repository_download_path }} owner=celery group=celery recurse=yes
 
+  - name: Install Fokia requirements.
+    pip: requirements={{ repository_download_path }}/okeanos-LoD/core/requirements.txt
+
+  - name: Install Fokia.
+    command: python setup.py install chdir="{{ repository_download_path }}/okeanos-LoD/core/"
+
   - name: Setup Django database configuration.
     template: src=settings.py.j2 dest={{ repository_download_path}}/okeanos-LoD/webapp/webapp/settings.py
     notify:

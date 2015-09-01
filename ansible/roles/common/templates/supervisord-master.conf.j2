@@ -56,19 +56,24 @@ serverurl=unix:///tmp/supervisor.sock ; use a unix:// URL  for a unix socket
 ; create one or more 'real' program: sections to be able to control them under
 ; supervisor.
 
-[program:celery_events_worker]
-command=celery -A webapp worker --loglevel=info -Q events_queue
-directory=/var/www/okeanos-LoD/webapp
-autostart=true
-user=celery
-stdout_logfile=/root/celery_events_worker.log
+[program:apache_zookeeper]
+command={{ kafka_home }}/bin/zookeeper-server-start.sh {{ kafka_home }}/config/zookeeper.properties
+autostart=false
+user=kafka
+stdout_logfile=/home/kafka/supervisord_zookeeper_logs.log
 
-[program:celery_clusters_worker]
-command=celery -A webapp worker --loglevel=info -Q tasks_queue
-directory=/var/www/okeanos-LoD/webapp
-autostart=true
-user=celery
-stdout_logfile=/root/celery_clusters_worker.log
+[program:apache_kafka]
+command={{ kafka_home }}/bin/kafka-server-start.sh {{ kafka_home }}/config/server.properties
+autostart=false
+user=kafka
+stdout_logfile=/home/kafka/supervisord_kafka_logs.log
+
+[program:apache_flink]
+command={{ flink_home }}/bin/yarn-session.sh -n {{ flink_number_of_task_managers }} -tm {{ flink_ram_per_task_manager }}
+autostart=false
+user=flink
+stdout_logfile = /home/flink/supervisord_flink_logs.log
+environment=JAVA_HOME="/usr",HADOOP_HOME="/usr/local/hadoop",HADOOP_CONF_DIR="/usr/local/hadoop/etc/hadoop/"
 
 ;[program:theprogramname]
 ;command=/bin/cat              ; the program (relative uses PATH, can take args)

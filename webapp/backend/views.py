@@ -1,7 +1,9 @@
 import json
+
 from os import path, mkdir
 
 from django.http import JsonResponse
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.conf import settings
@@ -12,10 +14,15 @@ from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 
 from rest_framework_xml.renderers import XMLRenderer
 
+from django.views.decorators.csrf import csrf_exempt
+
 from fokia.utils import check_auth_token
-from .models import ProjectFile, LambdaInstance
+from .models import ProjectFile, LambdaInstance, Server, PrivateNetwork
 from .authenticate_user import KamakiTokenAuthentication
 from .serializers import ProjectFileSerializer
+
+import tasks
+import events
 
 
 def authenticate(request):
@@ -41,6 +48,13 @@ def list_lambda_instances(request):
     Lists the lambda instances owned by the user.
     """
 
+    # Verify that the request method is GET.
+    if request.method != 'GET':
+        return JsonResponse({"errors":
+                             [{"message": "",
+                               "code": 400,
+                               "details": ""}]}, status=400)
+
     # Authenticate user.
     authentication_response = authenticate(request)
     if authentication_response.status_code != 200:
@@ -54,8 +68,8 @@ def list_lambda_instances(request):
         if limit <= 0 or page <= 0:
             return JsonResponse({"errors":
                                  [{"message": "Zero or negative indexing is not supported",
-                                   "code": 500,
-                                   "details": ""}]}, status=500)
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
         # Retrieve the lambda instances from the database.
         first_to_retrieve = (page - 1) * limit
@@ -83,6 +97,13 @@ def lambda_instance_details(request, instance_uuid):
     Returns the details for a specific lambda instance owned by the user.
     """
 
+    # Verify that the request method is GET.
+    if request.method != 'GET':
+        return JsonResponse({"errors":
+                             [{"message": "",
+                               "code": 400,
+                               "details": ""}]}, status=400)
+
     # Authenticate user.
     authentication_response = authenticate(request)
     if authentication_response.status_code != 200:
@@ -108,6 +129,13 @@ def lambda_instance_status(request, instance_uuid):
     Returns the status of a specified lambda instance owned by the user.
     """
 
+    # Verify that the request method is GET.
+    if request.method != 'GET':
+        return JsonResponse({"errors":
+                             [{"message": "",
+                               "code": 400,
+                               "details": ""}]}, status=400)
+
     # Authenticate user.
     authentication_response = authenticate(request)
     if authentication_response.status_code != 200:
@@ -123,7 +151,8 @@ def lambda_instance_status(request, instance_uuid):
 
     return JsonResponse({"data": {"name": database_instance.name,
                                   "status": LambdaInstance.
-                                  status_choices[int(database_instance.status)][1],
+                        status_choices[int(database_instance.status)][1],
+                                  "failure_message": database_instance.failure_message,
                                   "uuid": database_instance.uuid,
                                   "id": database_instance.id}}, status=200)
 
@@ -177,3 +206,204 @@ class ProjectFileList(APIView):
         # TODO: Change this to an event call that update the db
         file_data.delete()
         return Response({"result": "success"}, status=200)
+
+
+@csrf_exempt
+def lambda_instance_start(request, instance_uuid):
+    """
+    Starts a specific lambda instance owned by the user.
+    """
+
+    # Verify that the request method is POST.
+    if request.method != 'POST':
+        return JsonResponse({"errors":
+                             [{"message": "",
+                               "code": 400,
+                               "details": ""}]}, status=400)
+
+    # Authenticate user.
+    authentication_response = authenticate(request)
+    if authentication_response.status_code != 200:
+        return authentication_response
+
+    # Check if the specified lambda instance exists.
+    if not LambdaInstance.objects.filter(uuid=instance_uuid).exists():
+        return JsonResponse({"errors": [{"message": "Lambda instance not found",
+                                         "code": 404,
+                                         "details": ""}]}, status=404)
+
+    # Check the current status of the lambda instance.
+    database_instance = LambdaInstance.objects.get(uuid=instance_uuid)
+
+    if database_instance.status == LambdaInstance.STARTED:
+        return JsonResponse({"errors":
+                             [{"message": "The specified lambda instance is already started",
+                               "code": 400,
+                               "details": ""}]}, status=400)
+
+    if database_instance.status != LambdaInstance.STOPPED and \
+            LambdaInstance.FAILED != database_instance.status:
+        return JsonResponse({"errors":
+                             [{"message": "Cannot start lambda instance while current " +
+                                          "status is " + LambdaInstance.status_choices[
+                                              int(database_instance.status)][1],
+                               "code": 400,
+                               "details": ""}]}, status=400)
+
+    # Get the ids of the servers of the specified lambda instance.
+    instance_servers = Server.objects.filter(lambda_instance=database_instance)
+    master_id = instance_servers.exclude(pub_ip=None).values('id')[0]['id']
+    slaves = instance_servers.filter(pub_ip=None).values('id')
+    slave_ids = []
+    for slave in slaves:
+        slave_ids.append(slave['id'])
+
+    # Create task to start the lambda instance.
+    auth_token = request.META.get("HTTP_X_API_KEY")
+    auth_url = request.META.get("HTTP_X_AUTH_URL")
+    if not auth_url:
+        auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+
+    tasks.lambda_instance_start.delay(instance_uuid, auth_url, auth_token, master_id, slave_ids)
+
+    # Create event to update the database.
+    events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STARTING)
+
+    return JsonResponse({"result": "Accepted"}, status=202)
+
+
+@csrf_exempt
+def lambda_instance_stop(request, instance_uuid):
+    """
+    Stops a specific lambda instance owned by the user.
+    """
+
+    # Verify that the request method is POST.
+    if request.method != 'POST':
+        return JsonResponse({"errors":
+                             [{"message": "",
+                               "code": 400,
+                               "details": ""}]}, status=400)
+
+    # Authenticate user.
+    authentication_response = authenticate(request)
+    if authentication_response.status_code != 200:
+        return authentication_response
+
+    # Check if the specified lambda instance exists.
+    if not LambdaInstance.objects.filter(uuid=instance_uuid).exists():
+        return JsonResponse({"errors": [{"message": "Lambda instance not found",
+                                         "code": 404,
+                                         "details": ""}]}, status=404)
+
+    # Check the current status of the lambda instance.
+    database_instance = LambdaInstance.objects.get(uuid=instance_uuid)
+
+    if database_instance.status == LambdaInstance.STOPPED:
+        return JsonResponse({"errors":
+                             [{"message": "The specified lambda instance is already stopped",
+                               "code": 400,
+                               "details": ""}]}, status=400)
+
+    if database_instance.status != LambdaInstance.STARTED and \
+                    database_instance.status != LambdaInstance.FAILED:
+        return JsonResponse({"errors":
+                             [{"message": "Cannot stop lambda instance while current " +
+                                          "status is " + LambdaInstance.status_choices[
+                                              int(database_instance.status)][1],
+                               "code": 400,
+                               "details": ""}]}, status=400)
+
+    # Get the ids of the servers of the specified lambda instance.
+    instance_servers = Server.objects.filter(lambda_instance=LambdaInstance.objects.get(
+        uuid=instance_uuid))
+    master_id = instance_servers.exclude(pub_ip=None).values('id')[0]['id']
+    slaves = instance_servers.filter(pub_ip=None).values('id')
+    slave_ids = []
+    for slave in slaves:
+        slave_ids.append(slave['id'])
+
+    # Create task to stop the lambda instance.
+    auth_token = request.META.get("HTTP_X_API_KEY")
+    auth_url = request.META.get("HTTP_X_AUTH_URL")
+    if not auth_url:
+        auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+
+    tasks.lambda_instance_stop.delay(instance_uuid, auth_url, auth_token, master_id, slave_ids)
+
+    # Create event to update the database.
+    events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STOPPING)
+
+    return JsonResponse({"result": "Accepted"}, status=202)
+
+
+@csrf_exempt
+def lambda_instance_destroy(request, instance_uuid):
+    """
+    Destroys a specific lambda instance owned by the user.
+    """
+
+    # Verify that the request method is POST.
+    if request.method != 'POST':
+        return JsonResponse({"errors":
+                             [{"message": "",
+                               "code": 400,
+                               "details": ""}]}, status=400)
+
+    # Authenticate user.
+    authentication_response = authenticate(request)
+    if authentication_response.status_code != 200:
+        return authentication_response
+
+    # Check if the specified lambda instance exists.
+    if not LambdaInstance.objects.filter(uuid=instance_uuid).exists():
+        return JsonResponse({"errors": [{"message": "Lambda instance not found",
+                                         "code": 404,
+                                         "details": ""}]}, status=404)
+
+    # Check the current status of the lambda instance.
+    database_instance = LambdaInstance.objects.get(uuid=instance_uuid)
+
+    if database_instance.status == LambdaInstance.DESTROYED:
+        return JsonResponse({"errors":
+                             [{"message": "The specified lambda instance is already destroyed",
+                               "code": 400,
+                               "details": ""}]}, status=400)
+
+    if database_instance.status != LambdaInstance.STARTED and \
+                    LambdaInstance.STOPPED != database_instance.status and \
+                    LambdaInstance.FAILED != database_instance.status:
+        return JsonResponse({"errors":
+                             [{"message": "Cannot destroy lambda instance while current " +
+                                          "status is " + LambdaInstance.status_choices[
+                                              int(database_instance.status)][1],
+                               "code": 400,
+                               "details": ""}]}, status=400)
+
+    # Get the ids of the servers of the specified lambda instance.
+    instance_servers = Server.objects.filter(lambda_instance=LambdaInstance.objects.get(
+        uuid=instance_uuid))
+    master_id = instance_servers.exclude(pub_ip=None).values('id')[0]['id']
+    slaves = instance_servers.filter(pub_ip=None).values('id')
+    slave_ids = []
+    for slave in slaves:
+        slave_ids.append(slave['id'])
+
+    public_ip_id = instance_servers.exclude(pub_ip=None).values('pub_ip_id')[0]['pub_ip_id']
+
+    private_network_id = PrivateNetwork.objects.get(lambda_instance=LambdaInstance.objects.get(
+        uuid=instance_uuid)).id
+
+    # Create task to destroy the lambda instance.
+    auth_token = request.META.get("HTTP_X_API_KEY")
+    auth_url = request.META.get("HTTP_X_AUTH_URL")
+    if not auth_url:
+        auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+
+    tasks.lambda_instance_destroy.delay(instance_uuid, auth_url, auth_token, master_id, slave_ids,
+                                        public_ip_id, private_network_id)
+
+    # Create event to update the database.
+    events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.DESTROYING)
+
+    return JsonResponse({"result": "Accepted"}, status=202)
