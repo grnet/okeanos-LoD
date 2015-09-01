@@ -34,7 +34,8 @@ def create_new_lambda_instance(name=None, specs='{}'):
         rand_uuid = uuid.uuid4()
         instance, created = LambdaInstance.objects.get_or_create(uuid=rand_uuid)
     instance.instance_info = specs
-    instance.name = name
+    if name is not None:
+        instance.name = name
     instance.status = 'PENDING'
     instance.save()
     return rand_uuid

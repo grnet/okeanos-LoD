@@ -92,7 +92,7 @@ class LambdaInstance(models.Model):
     name = models.CharField(max_length=100, default="Lambda Instance",
                             help_text="A name given to the instance.")
 
-    uuid = models.BigIntegerField("Instance UUID", null=False, unique=True,
+    uuid = models.UUIDField("Instance UUID", null=False, unique=True, editable=False,
                                   help_text="Unique key asigned to every instance.")
 
     failure_message = models.CharField(max_length=100, default="",

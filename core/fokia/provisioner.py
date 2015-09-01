@@ -21,9 +21,9 @@ class Provisioner:
         provisions virtual machines on ~okeanos
     """
 
-    def __init__(self, auth_token, auth_url, cloud_name):
+    def __init__(self, auth_token, cloud_name=None):
 
-        if auth_token is None:
+        if auth_token is None and cloud_name is not None:
 
             # Load .kamakirc configuration
             logger.info("Retrieving .kamakirc configuration")
@@ -39,8 +39,7 @@ class Provisioner:
             auth_url, auth_token = cloud_section['url'], cloud_section['token']
 
         else:
-            if not auth_url:
-                auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+            auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
         logger.info("Initiating Astakos Client")
         self.astakos = astakos.AstakosClient(auth_url, auth_token)

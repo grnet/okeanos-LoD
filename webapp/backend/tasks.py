@@ -87,8 +87,7 @@ from . import events
 
 
 @shared_task
-def create_lambda_instance(auth_token=None, auth_url=None,
-                           cloud_name='lambda', master_name='lambda-master',
+def create_lambda_instance(auth_token=None, master_name='lambda-master',
                            slaves=1, vcpus_master=4, vcpus_slave=4,
                            ram_master=4096, ram_slave=4096,
                            disk_master=40, disk_slave=40, ip_allocation='master',
@@ -99,11 +98,9 @@ def create_lambda_instance(auth_token=None, auth_url=None,
                         'disk_master': disk_master, 'disk_slave': disk_slave,
                         'ip_allocation': ip_allocation, 'network_request': network_request,
                         'project_name': project_name})
-    result = events.create_new_lambda_instance(specs)
-    instance_uuid = result.get()
+    result = events.create_new_lambda_instance.delay(specs=specs)
+    # instance_uuid = result.get()
     ansible_result = cluster_creator.create_cluster(auth_token=auth_token,
-                                                    auth_url=auth_url,
-                                                    cloud_name=cloud_name,
                                                     master_name=master_name,
                                                     slaves=slaves,
                                                     vcpus_master=vcpus_master,
