@@ -242,12 +242,12 @@ def lambda_instance_start(request, instance_uuid):
                                "code": 400,
                                "details": ""}]}, status=400)
 
-    if (database_instance.status != LambdaInstance.STOPPED and
-          LambdaInstance.FAILED != database_instance.status):
+    if database_instance.status != LambdaInstance.STOPPED and \
+            LambdaInstance.FAILED != database_instance.status:
         return JsonResponse({"errors":
                              [{"message": "Cannot start lambda instance while current " +
-                                          "status is " + LambdaInstance.
-                                            status_choices[int(database_instance.status)][1],
+                                          "status is " + LambdaInstance.status_choices[
+                                              int(database_instance.status)][1],
                                "code": 400,
                                "details": ""}]}, status=400)
 
@@ -311,7 +311,7 @@ def lambda_instance_stop(request, instance_uuid):
         return JsonResponse({"errors":
                              [{"message": "Cannot stop lambda instance while current " +
                                           "status is " + LambdaInstance.status_choices[
-                                            int(database_instance.status)][1],
+                                              int(database_instance.status)][1],
                                "code": 400,
                                "details": ""}]}, status=400)
 
@@ -377,7 +377,7 @@ def lambda_instance_destroy(request, instance_uuid):
         return JsonResponse({"errors":
                              [{"message": "Cannot destroy lambda instance while current " +
                                           "status is " + LambdaInstance.status_choices[
-                                            int(database_instance.status)][1],
+                                              int(database_instance.status)][1],
                                "code": 400,
                                "details": ""}]}, status=400)
 
