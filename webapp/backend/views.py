@@ -81,7 +81,7 @@ class ProjectFileList(APIView):
         try:
             file_data = ProjectFile.objects.get(id=file_id)
         except ProjectFile.DoesNotExist:
-            return Response({"errors:"[{"message": "file does not exist", "code": 400}]},
+            return Response({"errors": [{"message": "file does not exist", "code": 400}]},
                             status=400)
 
         if file_data.owner != request.user:

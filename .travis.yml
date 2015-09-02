@@ -2,12 +2,54 @@ language: python
 python: 
  - "2.7"
 
+addons:
+  ssh_known_hosts: localhost
+
+services: postgresql
+
+env:
+ - DJANGO_SETTINGS_MODULE="webapp.settings"
+
+before_install:
+ - export DJANGO_SETTINGS_MODULE=webapp.settings
+
 install: 
- - pip install tox
- - pip install flake8-diff
+ - pip install tox ansible flake8-diff
+
+before_script:
+ - psql -c "CREATE DATABASE lambda_db;" -U postgres
+ - psql -c "CREATE USER lambda WITH PASSWORD 'change_me';" -U postgres
+ - psql -c "ALTER USER lambda WITH SUPERUSER;" -U postgres
+
 script:
+ - ssh-keygen -t rsa -C your_email@youremail.com -P '' -f ~/.ssh/id_rsa
+ - cat /home/travis/.ssh/id_rsa.pub >> /home/travis/.ssh/authorized_keys
+# - echo -e "Host *\n\tStrictHostKeyChecking no" >> /home/travis/.ssh/config
+ - ln -s /home/travis/.ssh/authorized_keys /home/travis/.ssh/authorized_keys2
+ - echo "Host localhost" >> /home/travis/.ssh/config
+ - echo "    StrictHostKeyChecking no" >> /home/travis/.ssh/config
+ - chmod g-rw,o-rw /home/travis/.ssh/*
  - git fetch origin $TRAVIS_BRANCH:travis_pr_branch
  - flake8-diff travis_pr_branch
- - cd core && tox -e $TOXENV_CORE
+ - cd core
+ - python setup.py install
+ - pip install -r requirements.txt
+# - tox -e $TOXENV_CORE
+
+
+ - cd ../webapp/ansible
+# - echo -e "[service-vms]\nlocalhost ansible_ssh_user=travis" > hosts
+# - cat hosts
+# - ansible-playbook -v playbooks/setup.yml --connection=local --sudo -vvvv
+
+ - cd ../
+ - pwd
+ - ls
+ - pip install -r requirements.txt
+ - python manage.py syncdb --noinput
+ - python manage.py makemigrations
+ - python manage.py migrate
+ - python manage.py test
+
 env:
  - TOXENV_CORE=py27
