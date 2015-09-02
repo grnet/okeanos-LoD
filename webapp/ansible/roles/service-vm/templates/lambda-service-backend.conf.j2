@@ -7,12 +7,13 @@
 	# value is not decisive as it is used as a last resort host regardless.
 	# However, you must set it for any further virtual host explicitly.
 	#ServerName www.example.com
-        ServerName {{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr
+	ServerName {{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr
 
 	#ServerAdmin webmaster@localhost
 	DocumentRoot {{ repository_download_path }}/okeanos-LoD/webapp/
 
 	WSGIScriptAlias / {{ repository_download_path }}/okeanos-LoD/webapp/webapp/wsgi.py
+	WSGIPassAuthorization On
 
 	# Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
 	# error, crit, alert, emerg.
