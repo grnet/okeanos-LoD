@@ -7,8 +7,8 @@ import fokia.utils
 
 from .events import set_lambda_instance_status
 from .models import LambdaInstance
-from fokia import cluster_creator
-import events
+from fokia import lambda_instance_manager
+from . import events
 
 
 @shared_task
@@ -100,17 +100,29 @@ def create_lambda_instance(auth_token=None, instance_name='Lambda Instance',
     instance_uuid = create_lambda_instance.request.id
     events.create_new_lambda_instance.delay(instance_uuid=instance_uuid,
                                             instance_name=instance_name, specs=specs)
-    ansible_result = cluster_creator.create_cluster(auth_token=auth_token,
-                                                    master_name=master_name,
-                                                    slaves=slaves,
-                                                    vcpus_master=vcpus_master,
-                                                    vcpus_slave=vcpus_slave,
-                                                    ram_master=ram_master,
-                                                    ram_slave=ram_slave,
-                                                    disk_master=disk_master,
-                                                    disk_slave=disk_slave,
-                                                    ip_allocation=ip_allocation,
-                                                    network_request=network_request,
-                                                    project_name=project_name)
 
-    return ansible_result
+    ansible_manager, provisioner_response = \
+        lambda_instance_manager.create_cluster(auth_token=auth_token,
+                                               master_name=master_name,
+                                               slaves=slaves,
+                                               vcpus_master=vcpus_master,
+                                               vcpus_slave=vcpus_slave,
+                                               ram_master=ram_master,
+                                               ram_slave=ram_slave,
+                                               disk_master=disk_master,
+                                               disk_slave=disk_slave,
+                                               ip_allocation=ip_allocation,
+                                               network_request=network_request,
+                                               project_name=project_name)
+
+    print provisioner_response
+
+    print lambda_instance_manager.run_playbook(ansible_manager, 'initialize.yml')
+
+    print lambda_instance_manager.run_playbook(ansible_manager, 'common-install.yml')
+
+    print lambda_instance_manager.run_playbook(ansible_manager, 'hadoop-install.yml')
+
+    print lambda_instance_manager.run_playbook(ansible_manager, 'kafka-install.yml')
+
+    print lambda_instance_manager.run_playbook(ansible_manager, 'flink-install.yml')

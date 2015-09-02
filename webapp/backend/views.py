@@ -17,14 +17,13 @@ from rest_framework_xml.renderers import XMLRenderer
 
 from django.views.decorators.csrf import csrf_exempt
 
-from django.utils.datastructures import SortedDict
 from fokia.utils import check_auth_token
 from .models import ProjectFile, LambdaInstance, Server, PrivateNetwork
 from .authenticate_user import KamakiTokenAuthentication
 from .serializers import ProjectFileSerializer
 
-import tasks
-import events
+from . import tasks
+from . import events
 
 
 def authenticate(request):
@@ -411,59 +410,6 @@ def lambda_instance_destroy(request, instance_uuid):
     return JsonResponse({"result": "Accepted"}, status=202)
 
 
-def create_lambda_instance(request):
-    """
-    Creates a new lambda instance
-    """
-
-    # Authenticate user
-    authentication_response = authenticate(request)
-    if authentication_response.status_code != 200:
-        return authentication_response
-
-    # request.META contains all the headers of the request
-    auth_token = request.META.get("HTTP_X_API_KEY")
-    auth_url = request.META.get("HTTP_X_AUTH_URL")
-    cloud_name = request.META.get('HTTP_CLOUD_NAME')
-    master_name = request.META.get('HTTP_MASTER_NAME')
-    slaves = int(request.META.get('HTTP_SLAVES'))
-    vcpus_master = int(request.META.get('HTTP_VCPUS_MASTER'))
-    vcpus_slave = int(request.META.get('HTTP_VCPUS_SLAVE'))
-    ram_master = int(request.META.get('HTTP_RAM_MASTER'))
-    ram_slave = int(request.META.get('HTTP_RAM_SLAVE'))
-    disk_master = int(request.META.get('HTTP_DISK_MASTER'))
-    disk_slave = int(request.META.get('HTTP_DISK_SLAVE'))
-    ip_allocation = request.META.get('HTTP_IP_ALLOCATION')
-    network_request = int(request.META.get('HTTP_NETWORK_REQUEST'))
-    project_name = request.META.get('HTTP_PROJECT_NAME')
-
-    tasks.create_lambda_instance.delay(auth_token=auth_token,
-                                       auth_url=auth_url,
-                                       cloud_name=cloud_name,
-                                       master_name=master_name,
-                                       slaves=slaves,
-                                       vcpus_master=vcpus_master,
-                                       vcpus_slave=vcpus_slave,
-                                       ram_master=ram_master,
-                                       ram_slave=ram_slave,
-                                       disk_master=disk_master,
-                                       disk_slave=disk_slave,
-                                       ip_allocation=ip_allocation,
-                                       network_request=network_request,
-                                       project_name=project_name)
-
-    # return HttpResponse("Creating cluster")
-
-    specs = SortedDict([('master_name', master_name), ('slaves', slaves),
-                        ('vcpus_master', vcpus_master), ('vcpus_slave', vcpus_slave),
-                        ('ram_master', ram_master), ('ram_slave', ram_slave),
-                        ('disk_master', disk_master), ('disk_slave', disk_slave),
-                        ('ip_allocation', ip_allocation), ('network_request', network_request),
-                        ('project_name', project_name)])
-
-    return JsonResponse({"specs": specs}, status=200)
-
-
 class CreateLambdaInstance(APIView):
     """
     Creates a new lambda instance
@@ -480,8 +426,8 @@ class CreateLambdaInstance(APIView):
 
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
 
-        master_name = cluster_specs['master_name']
         instance_name = cluster_specs['instance_name']
+        master_name = cluster_specs['master_name']
         slaves = int(cluster_specs['slaves'])
         vcpus_master = int(cluster_specs['vcpus_master'])
         vcpus_slave = int(cluster_specs['vcpus_slave'])

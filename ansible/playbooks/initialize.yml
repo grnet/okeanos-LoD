@@ -1,0 +1,12 @@
+---
+
+  - hosts: master
+    user: root
+    gather_facts: no
+    roles:
+      - wait_for_ssh
+
+  - hosts: master
+    user: root
+    roles:
+      - proxy

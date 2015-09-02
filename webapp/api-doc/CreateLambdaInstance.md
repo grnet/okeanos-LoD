@@ -13,7 +13,7 @@ Type | Description |
 -------|-----------------|
  **Description** | create a new lambda instance
  **URL**         | /backend/create_lambda_instance
- **HTTP Method** | GET
+ **HTTP Method** | POST
  **Security**    | Basic Authentication
 
 
@@ -21,30 +21,35 @@ Type | Description |
 
 Type | Description | Required | Default value | Example value |
 ------|-------------|----------|---------------|---------------|
-x-api-key | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` | None | tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY
-x-auth-url | ~okeanos authentication url. If you have an account you may find the authentication url at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` | None | https://accounts.okeanos.grnet.gr/identity/v2.0
-cloud-name | The cloud name specified in the .kamakirc file | `Yes` | None | lambda
-master-name | Name of the master node | `Yes` | None | lambda-master
+Authorization | authentication token | `Yes`    | None          | Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR 
+
+
+### Body
+
+Type | Description | Required | Default value | Example value |
+------|-------------|----------|---------------|---------------|
+instance_name | Name of the lambda instance | `Yes` | None | My first Lambda Instance
+master_name | Name of the master node | `Yes` | None | lambda-master
 slaves | Number of slaves | `Yes` | None | 3
-vcpus-master | Number of CPUs of the master node | `Yes` | None | 4
-vcpus-slave | Number of CPUs of each slave node | `Yes` | None | 2
-ram-master | Amount of RAM of master node in MB | `Yes` | None | 4096
-ram-master | Amount of RAM of each slave node in MB | `Yes` | None | 2048
-disk-master | Amount of HDD space of master node in GB | `Yes` | None | 40
-disk-slave | Amount of HDD space of each slave node in GB | `Yes` | None | 40
-ip-allocation | Allocation of public ips. Choose between none, master, all | `Yes` | None | master
-network-request | Number of private networks | `Yes` | None | 1
-project-name | Name of the project | `Yes` | None | lambda.grnet.gr
+vcpus_master | Number of CPUs of the master node | `Yes` | None | 4
+vcpus_slave | Number of CPUs of each slave node | `Yes` | None | 2
+ram_master | Amount of RAM of master node in MB | `Yes` | None | 4096
+ram_master | Amount of RAM of each slave node in MB | `Yes` | None | 2048
+disk_master | Amount of HDD space of master node in GB | `Yes` | None | 40
+disk_slave | Amount of HDD space of each slave node in GB | `Yes` | None | 40
+ip_allocation | Allocation of public ips. Choose between none, master, all | `Yes` | None | master
+network_request | Number of private networks | `Yes` | None | 1
+project_name | Name of the project | `Yes` | None | lambda.grnet.gr
 
 
 ## Example
 
-In this example we are going to create a new lambda instance, using the specs specified by the HTTP headers.
+In this example we are going to create a new lambda instance, using the specs specified in the json-formatted body, and the authentication token specified by HTTP header.
 
 The request in curl
 
 ```
-curl -X GET -H "x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" -H "x-auth-url: https://accounts.okeanos.grnet.gr/identity/v2.0" -H "cloud-name: lambda" -H "master-name: test-master" -H "slaves: 1" -H "vcpus-master: 4" -H "vcpus-slave: 4" -H "ram-master: 2048" -H "ram-slave: 2048" -H "disk-master: 40" -H "disk-slave: 40" -H "ip-allocation: master" -H "network-request: 1" -H "project-name: lambda.grnet.gr" '<url>:<port>/backend/create_lambda_instance/'
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" -d '{"project_name": "lambda.grnet.gr", "instance_name": "My first Lambda Instance", "network_request": 1, "master_name": "lambda-master", "vcpus_master": 4, "disk_slave": 40, "slaves": 1, "ram_slave": 4096, "ram_master": 4096, "vcpus_slave": 4, "ip_allocation": "master", "disk_master": 40}' '<url>:<port>/backend/create_lambda_instance/'
 ```
 
 
@@ -54,19 +59,7 @@ If the authentication token and url is correct, and all the headers are given co
 
 ```
 {
-  "specs": {
-    "master_name": "test-master",
-    "slaves": 1,
-    "vcpus_master": 4,
-    "vcpus_slave": 4,
-    "ram_master": 2048,
-    "ram_slave": 2048,
-    "disk_master": 40,
-    "disk_slave": 40,
-    "ip_allocation": "master",
-    "network_request": 1,
-    "project_name": "lambda.grnet.gr"
-  }
+  "uuid": "35380a49-aae4-4935-9844-dfd6737b8c51"
 }
 ```
 
@@ -75,6 +68,5 @@ If the authentication token and url is correct, and all the headers are given co
 
 The main response messages are:
 
-- HTTP/1.1 201 OK : (Success)
+- HTTP/1.1 202 ACCEPTED : (Success)
 - HTTP/1.1 401 UNAUTHORIZED : (Fail)
-
