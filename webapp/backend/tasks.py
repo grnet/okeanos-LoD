@@ -1,4 +1,3 @@
-from celery import Celery
 import json
 from celery import shared_task
 
@@ -9,6 +8,7 @@ import fokia.utils
 from .events import set_lambda_instance_status
 from .models import LambdaInstance
 from fokia import cluster_creator
+import events
 
 
 @shared_task
@@ -83,8 +83,6 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slav
     except ClientError as exception:
         set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED, exception.message)
 
-from . import events
-
 
 @shared_task
 def create_lambda_instance(auth_token=None, master_name='lambda-master',
@@ -98,7 +96,7 @@ def create_lambda_instance(auth_token=None, master_name='lambda-master',
                         'disk_master': disk_master, 'disk_slave': disk_slave,
                         'ip_allocation': ip_allocation, 'network_request': network_request,
                         'project_name': project_name})
-    result = events.create_new_lambda_instance.delay(specs=specs)
+    events.create_new_lambda_instance.delay(specs=specs)
     # instance_uuid = result.get()
     ansible_result = cluster_creator.create_cluster(auth_token=auth_token,
                                                     master_name=master_name,

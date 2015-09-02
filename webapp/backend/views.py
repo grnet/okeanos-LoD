@@ -53,9 +53,9 @@ def list_lambda_instances(request):
     # Verify that the request method is GET.
     if request.method != 'GET':
         return JsonResponse({"errors":
-                             [{"message": "",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -69,9 +69,9 @@ def list_lambda_instances(request):
 
         if limit <= 0 or page <= 0:
             return JsonResponse({"errors":
-                                 [{"message": "Zero or negative indexing is not supported",
-                                   "code": 400,
-                                   "details": ""}]}, status=400)
+                                     [{"message": "Zero or negative indexing is not supported",
+                                       "code": 400,
+                                       "details": ""}]}, status=400)
 
         # Retrieve the lambda instances from the database.
         first_to_retrieve = (page - 1) * limit
@@ -102,9 +102,9 @@ def lambda_instance_details(request, instance_uuid):
     # Verify that the request method is GET.
     if request.method != 'GET':
         return JsonResponse({"errors":
-                             [{"message": "",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -134,9 +134,9 @@ def lambda_instance_status(request, instance_uuid):
     # Verify that the request method is GET.
     if request.method != 'GET':
         return JsonResponse({"errors":
-                             [{"message": "",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -219,9 +219,9 @@ def lambda_instance_start(request, instance_uuid):
     # Verify that the request method is POST.
     if request.method != 'POST':
         return JsonResponse({"errors":
-                             [{"message": "",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -239,18 +239,18 @@ def lambda_instance_start(request, instance_uuid):
 
     if database_instance.status == LambdaInstance.STARTED:
         return JsonResponse({"errors":
-                             [{"message": "The specified lambda instance is already started",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "The specified lambda instance is already started",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     if database_instance.status != LambdaInstance.STOPPED and \
-            LambdaInstance.FAILED != database_instance.status:
+                    LambdaInstance.FAILED != database_instance.status:
         return JsonResponse({"errors":
-                             [{"message": "Cannot start lambda instance while current " +
-                                          "status is " + LambdaInstance.status_choices[
-                                              int(database_instance.status)][1],
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "Cannot start lambda instance while current " +
+                                              "status is " + LambdaInstance.status_choices[
+                                                  int(database_instance.status)][1],
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Get the ids of the servers of the specified lambda instance.
     instance_servers = Server.objects.filter(lambda_instance=database_instance)
@@ -283,9 +283,9 @@ def lambda_instance_stop(request, instance_uuid):
     # Verify that the request method is POST.
     if request.method != 'POST':
         return JsonResponse({"errors":
-                             [{"message": "",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -303,18 +303,18 @@ def lambda_instance_stop(request, instance_uuid):
 
     if database_instance.status == LambdaInstance.STOPPED:
         return JsonResponse({"errors":
-                             [{"message": "The specified lambda instance is already stopped",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "The specified lambda instance is already stopped",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     if database_instance.status != LambdaInstance.STARTED and \
                     database_instance.status != LambdaInstance.FAILED:
         return JsonResponse({"errors":
-                             [{"message": "Cannot stop lambda instance while current " +
-                                          "status is " + LambdaInstance.status_choices[
-                                              int(database_instance.status)][1],
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "Cannot stop lambda instance while current " +
+                                              "status is " + LambdaInstance.status_choices[
+                                                  int(database_instance.status)][1],
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Get the ids of the servers of the specified lambda instance.
     instance_servers = Server.objects.filter(lambda_instance=LambdaInstance.objects.get(
@@ -348,9 +348,9 @@ def lambda_instance_destroy(request, instance_uuid):
     # Verify that the request method is POST.
     if request.method != 'POST':
         return JsonResponse({"errors":
-                             [{"message": "",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -368,19 +368,19 @@ def lambda_instance_destroy(request, instance_uuid):
 
     if database_instance.status == LambdaInstance.DESTROYED:
         return JsonResponse({"errors":
-                             [{"message": "The specified lambda instance is already destroyed",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "The specified lambda instance is already destroyed",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     if database_instance.status != LambdaInstance.STARTED and \
                     LambdaInstance.STOPPED != database_instance.status and \
                     LambdaInstance.FAILED != database_instance.status:
         return JsonResponse({"errors":
-                             [{"message": "Cannot destroy lambda instance while current " +
-                                          "status is " + LambdaInstance.status_choices[
-                                              int(database_instance.status)][1],
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "Cannot destroy lambda instance while current " +
+                                              "status is " + LambdaInstance.status_choices[
+                                                  int(database_instance.status)][1],
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Get the ids of the servers of the specified lambda instance.
     instance_servers = Server.objects.filter(lambda_instance=LambdaInstance.objects.get(
@@ -463,6 +463,7 @@ def create_lambda_instance(request):
 
     return JsonResponse({"specs": specs}, status=200)
 
+
 class CreateLambdaInstance(APIView):
     """
     Creates a new lambda instance
@@ -473,7 +474,6 @@ class CreateLambdaInstance(APIView):
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
     parser_classes = (JSONParser,)
-
 
     def post(self, request, format=None):
         cluster_specs = request.data

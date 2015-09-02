@@ -136,8 +136,12 @@ CELERY_ROUTES = {
         'routing_key': 'event_key',
     },
     'backend.tasks.create_lambda_instance': {
-        'queue': 'clusters',
-        'routing_key': 'cluster',
+        'queue': 'tasks_queue',
+        'routing_key': 'tasks_queue',
+    },
+    'backend.events.create_new_lambda_instance': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
     },
 
 }

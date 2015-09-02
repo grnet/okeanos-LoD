@@ -1,7 +1,7 @@
+import uuid
+
 from celery import shared_task
 
-import uuid
-from celery import shared_task
 from .models import LambdaInstance
 
 
@@ -21,6 +21,7 @@ def set_lambda_instance_status(uuid, status, failure_message=""):
     lambda_instance.save()
 
 
+@shared_task
 def create_new_lambda_instance(name=None, specs='{}'):
     """
     Creates a new lambda instance entry into the DataBase

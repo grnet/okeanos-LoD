@@ -32,7 +32,8 @@ urlpatterns = [
         name='lambda_instance_stop'),
     url(r'^lambda-instances/(?P<instance_uuid>[0-9]+)/destroy/?$', views.lambda_instance_destroy,
         name='lambda_instance_destroy'),
-    url(r'^create_lambda_instance/?$', views.create_lambda_instance, name='create_lambda_instance'),
+    url(r'^create_lambda_instance/?$', views.CreateLambdaInstance.as_view(),
+        name='create_lambda_instance'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
