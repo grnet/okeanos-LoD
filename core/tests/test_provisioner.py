@@ -199,7 +199,7 @@ def test_find_flavor():
     with mock.patch('fokia.provisioner.astakos'), \
             mock.patch('fokia.provisioner.KamakiConfig'), \
             mock.patch('fokia.provisioner.cyclades'):
-        provisioner = Provisioner(None, None, "lambda")
+        provisioner = Provisioner(None, "lambda")
         provisioner.astakos.get_projects.return_value = test_projects
         provisioner.cyclades.list_images.return_value = test_images
         provisioner.cyclades.list_flavors.return_value = test_flavors
@@ -220,7 +220,7 @@ def test_check_all_resources():
     with mock.patch('fokia.provisioner.astakos'), \
             mock.patch('fokia.provisioner.KamakiConfig'), \
             mock.patch('fokia.provisioner.cyclades'):
-        provisioner = Provisioner(None, None, "lambda")
+        provisioner = Provisioner(None, "lambda")
         provisioner.astakos.get_projects.return_value = test_projects
         provisioner.astakos.get_quotas.return_value = test_quotas
         provisioner.check_all_resources(test_quotas,
@@ -238,7 +238,7 @@ def test_create_vpn():
     with mock.patch('fokia.provisioner.astakos'), \
             mock.patch('fokia.provisioner.KamakiConfig'), \
             mock.patch('fokia.provisioner.cyclades'):
-        provisioner = Provisioner(None, None, "lambda")
+        provisioner = Provisioner(None, "lambda")
         provisioner.network_client.create_network = test_ip
         provisioner.reserve_ip('6ff62e8e-0ce9-41f7-ad99-13a18ecada5f')
 
@@ -247,7 +247,7 @@ def test_create_vm():
     with mock.patch('fokia.provisioner.astakos'), \
             mock.patch('fokia.provisioner.KamakiConfig'), \
             mock.patch('fokia.provisioner.cyclades'):
-        provisioner = Provisioner(None, None, "lambda")
+        provisioner = Provisioner(None, "lambda")
         provisioner.cyclades.create_server = test_vm
 
 
@@ -255,7 +255,7 @@ def test_connect_vm():
     with mock.patch('fokia.provisioner.astakos'), \
             mock.patch('fokia.provisioner.KamakiConfig'), \
             mock.patch('fokia.provisioner.cyclades'):
-        provisioner = Provisioner(None, None, "lambda")
+        provisioner = Provisioner(None, "lambda")
         provisioner.network_client.create_port = True
 
 

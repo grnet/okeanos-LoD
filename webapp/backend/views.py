@@ -481,6 +481,7 @@ class CreateLambdaInstance(APIView):
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
 
         master_name = cluster_specs['master_name']
+        instance_name = cluster_specs['instance_name']
         slaves = int(cluster_specs['slaves'])
         vcpus_master = int(cluster_specs['vcpus_master'])
         vcpus_slave = int(cluster_specs['vcpus_slave'])
@@ -492,28 +493,19 @@ class CreateLambdaInstance(APIView):
         network_request = int(cluster_specs['network_request'])
         project_name = cluster_specs['project_name']
 
-        tasks.create_lambda_instance.delay(auth_token=auth_token,
-                                           master_name=master_name,
-                                           slaves=slaves,
-                                           vcpus_master=vcpus_master,
-                                           vcpus_slave=vcpus_slave,
-                                           ram_master=ram_master,
-                                           ram_slave=ram_slave,
-                                           disk_master=disk_master,
-                                           disk_slave=disk_slave,
-                                           ip_allocation=ip_allocation,
-                                           network_request=network_request,
-                                           project_name=project_name)
+        create = tasks.create_lambda_instance.delay(auth_token=auth_token,
+                                                    instance_name=instance_name,
+                                                    master_name=master_name,
+                                                    slaves=slaves,
+                                                    vcpus_master=vcpus_master,
+                                                    vcpus_slave=vcpus_slave,
+                                                    ram_master=ram_master,
+                                                    ram_slave=ram_slave,
+                                                    disk_master=disk_master,
+                                                    disk_slave=disk_slave,
+                                                    ip_allocation=ip_allocation,
+                                                    network_request=network_request,
+                                                    project_name=project_name)
+        instance_uuid = create.id
 
-        # return HttpResponse("Creating cluster")
-
-        specs = SortedDict([('master_name', master_name), ('slaves', slaves),
-                            ('vcpus_master', vcpus_master), ('vcpus_slave', vcpus_slave),
-                            ('ram_master', ram_master), ('ram_slave', ram_slave),
-                            ('disk_master', disk_master), ('disk_slave', disk_slave),
-                            ('ip_allocation', ip_allocation), ('network_request', network_request),
-                            ('project_name', project_name)])
-
-        # return JsonResponse({"specs": specs}, status=200)
-
-        return Response({"specs": specs}, status=200)
+        return Response({"uuid": instance_uuid}, status=202)

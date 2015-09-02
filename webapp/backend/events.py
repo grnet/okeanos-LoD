@@ -1,5 +1,3 @@
-import uuid
-
 from celery import shared_task
 
 from .models import LambdaInstance
@@ -22,7 +20,7 @@ def set_lambda_instance_status(uuid, status, failure_message=""):
 
 
 @shared_task
-def create_new_lambda_instance(name=None, specs='{}'):
+def create_new_lambda_instance(instance_uuid, instance_name, specs='{}'):
     """
     Creates a new lambda instance entry into the DataBase
     A unique uuid that identifies the lambda instance is created,
@@ -30,13 +28,7 @@ def create_new_lambda_instance(name=None, specs='{}'):
     The instance info is inserted in json format, the instance name is
     specified as argument, and the status is set to 'PENDING' (default)
     """
-    created = False
-    while not created:
-        rand_uuid = uuid.uuid4()
-        instance, created = LambdaInstance.objects.get_or_create(uuid=rand_uuid)
-    instance.instance_info = specs
-    if name is not None:
-        instance.name = name
-    instance.status = 'PENDING'
+
+    instance = LambdaInstance.objects.create(
+        uuid=instance_uuid, name=instance_name, instance_info=specs, status='PENDING')
     instance.save()
-    return rand_uuid
