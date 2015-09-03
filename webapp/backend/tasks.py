@@ -5,7 +5,6 @@ from kamaki.clients import ClientError
 
 import fokia.utils
 
-from .events import set_lambda_instance_status
 from .models import LambdaInstance
 from fokia import lambda_instance_manager
 from . import events
@@ -28,9 +27,9 @@ def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_
         fokia.lambda_instance_start(auth_url, auth_token, master_id, slave_ids)
 
         # Update lambda instance status on the database to started.
-        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STARTED)
+        events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STARTED)
     except ClientError as exception:
-        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED, exception.message)
+        events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED, exception.message)
 
 
 @shared_task
@@ -51,9 +50,9 @@ def lambda_instance_stop(instance_uuid, auth_url, auth_token, master_id, slave_i
         fokia.lambda_instance_stop(auth_url, auth_token, master_id, slave_ids)
 
         # Update lambda instance status on the database to started.
-        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STOPPED)
+        events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STOPPED)
     except ClientError as exception:
-        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED, exception.message)
+        events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED, exception.message)
 
 
 @shared_task
@@ -79,9 +78,9 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slav
                                       private_network_id)
 
         # Update lambda instance status on the database to destroyed.
-        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.DESTROYED)
+        events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.DESTROYED)
     except ClientError as exception:
-        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED, exception.message)
+        events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED, exception.message)
 
 
 @shared_task
@@ -91,12 +90,14 @@ def create_lambda_instance(auth_token=None, instance_name='Lambda Instance',
                            ram_master=4096, ram_slave=4096,
                            disk_master=40, disk_slave=40, ip_allocation='master',
                            network_request=1, project_name='lambda.grnet.gr'):
-    specs = json.dumps({'master_name': master_name, 'slaves': slaves,
-                        'vcpus_master': vcpus_master, 'vcpus_slave': vcpus_slave,
-                        'ram_master': ram_master, 'ram_slave': ram_slave,
-                        'disk_master': disk_master, 'disk_slave': disk_slave,
-                        'ip_allocation': ip_allocation, 'network_request': network_request,
-                        'project_name': project_name})
+    specs_dict = {'master_name': master_name, 'slaves': slaves,
+                  'vcpus_master': vcpus_master, 'vcpus_slave': vcpus_slave,
+                  'ram_master': ram_master, 'ram_slave': ram_slave,
+                  'disk_master': disk_master, 'disk_slave': disk_slave,
+                  'ip_allocation': ip_allocation, 'network_request': network_request,
+                  'project_name': project_name}
+    specs = json.dumps(specs_dict)
+
     instance_uuid = create_lambda_instance.request.id
     events.create_new_lambda_instance.delay(instance_uuid=instance_uuid,
                                             instance_name=instance_name, specs=specs)
@@ -116,10 +117,17 @@ def create_lambda_instance(auth_token=None, instance_name='Lambda Instance',
                                                    network_request=network_request,
                                                    project_name=project_name)
     except ClientError as exception:
-        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.CLUSTER_FAILED, exception.message)
+        events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                                status=LambdaInstance.CLUSTER_FAILED,
+                                                failure_message=exception.message)
         return
 
-    set_lambda_instance_status.delay(instance_uuid, LambdaInstance.CLUSTER_CREATED)
+    events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                            status=LambdaInstance.CLUSTER_CREATED)
+
+    events.insert_cluster_info.delay(instance_uuid=instance_uuid,
+                                     specs=specs_dict,
+                                     provisioner_response=provisioner_response)
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'initialize.yml')
     check = check_ansible_result(ansible_result)
@@ -182,14 +190,13 @@ def on_failure(exc, task_id, args, kwargs, einfo):
                                             status='LambdaInstance.FAILED',
                                             failure_message=exc.message)
 
-
 setattr(create_lambda_instance, 'on_failure', on_failure)
 
 
 def check_ansible_result(ansible_result):
-    for k, v in ansible_result.iteritems():
-        if v['unreachable'] != 0:
+    for _, value in ansible_result.iteritems():
+        if value['unreachable'] != 0:
             return 'Host unreachable'
-        if v['failures'] != 0:
+        if value['failures'] != 0:
             return 'Ansible task failed'
     return 'Ansible successful'
