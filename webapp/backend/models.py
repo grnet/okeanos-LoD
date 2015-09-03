@@ -108,6 +108,16 @@ class LambdaInstance(models.Model):
     SCALING_UP = "7"
     SCALING_DOWN = "8"
     FAILED = "9"
+    INIT_DONE = "10"
+    INIT_FAILED = "11"
+    COMMONS_INSTALLED = "12"
+    COMMONS_FAILED = "13"
+    HADOOP_INSTALLED = "14"
+    HADOOP_FAILED = "15"
+    KAFKA_INSTALLED = "16"
+    KAFKA_FAILED = "17"
+    FLINK_INSTALLED = "18"
+    FLINK_FAILED = "19"
     status_choices = (
         (STARTED, 'STARTED'),
         (STOPPED, 'STOPPED'),
@@ -119,6 +129,17 @@ class LambdaInstance(models.Model):
         (SCALING_UP, 'SCALING_UP'),
         (SCALING_DOWN, 'SCALING_DOWN'),
         (FAILED, 'FAILED'),
+        (INIT_DONE, 'INIT_DONE'),
+        (INIT_FAILED, 'INIT_FAILED'),
+        (COMMONS_INSTALLED, 'COMMONS_INSTALLED'),
+        (COMMONS_FAILED, 'COMMONS_FAILED'),
+        (HADOOP_INSTALLED, 'HADOOP_INSTALLED'),
+        (HADOOP_FAILED, 'HADOOP_FAILED'),
+        (KAFKA_INSTALLED, 'KAFKA_INSTALLED'),
+        (KAFKA_FAILED, 'KAFKA_FAILED'),
+        (FLINK_INSTALLED, 'FLINK_INSTALLED'),
+        (FLINK_FAILED, 'FLINK_FAILED'),
+
     )
     status = models.CharField(max_length=10, choices=status_choices, default=PENDING,
                               help_text="The status of this instance.")

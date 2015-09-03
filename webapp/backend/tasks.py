@@ -117,12 +117,66 @@ def create_lambda_instance(auth_token=None, instance_name='Lambda Instance',
 
     print provisioner_response
 
-    print lambda_instance_manager.run_playbook(ansible_manager, 'initialize.yml')
+    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'initialize.yml')
+    check = check_ansible_result(ansible_result)
+    if check != 'Ansible successful':
+        events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                                status='LambdaInstance.INIT_FAILED',
+                                                failure_message=check)
+        return
+    else:
+        events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                                status='LambdaInstance.INIT_DONE')
 
-    print lambda_instance_manager.run_playbook(ansible_manager, 'common-install.yml')
+    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'common-install.yml')
+    check = check_ansible_result(ansible_result)
+    if check != 'Ansible successful':
+        events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                                status='LambdaInstance.COMMONS_FAILED',
+                                                failure_message=check)
+        return
+    else:
+        events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                                status='LambdaInstance.COMMONS_INSTALLED')
 
-    print lambda_instance_manager.run_playbook(ansible_manager, 'hadoop-install.yml')
+    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'hadoop-install.yml')
+    check = check_ansible_result(ansible_result)
+    if check != 'Ansible successful':
+        events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                                status='LambdaInstance.HADOOP_FAILED',
+                                                failure_message=check)
+        return
+    else:
+        events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                                status='LambdaInstance.HADOOP_INSTALLED')
 
-    print lambda_instance_manager.run_playbook(ansible_manager, 'kafka-install.yml')
+    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'kafka-install.yml')
+    check = check_ansible_result(ansible_result)
+    if check != 'Ansible successful':
+        events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                                status='LambdaInstance.KAFKA_FAILED',
+                                                failure_message=check)
+        return
+    else:
+        events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                                status='LambdaInstance.KAFKA_INSTALLED')
 
-    print lambda_instance_manager.run_playbook(ansible_manager, 'flink-install.yml')
+    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'flink-install.yml')
+    check = check_ansible_result(ansible_result)
+    if check != 'Ansible successful':
+        events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                                status='LambdaInstance.FLINK_FAILED',
+                                                failure_message=check)
+        return
+    else:
+        events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                                status='LambdaInstance.FLINK_INSTALLED')
+
+
+def check_ansible_result(ansible_result):
+    for k, v in ansible_result.iteritems():
+        if v['unreachable'] != 0:
+            return 'Host unreachable'
+        if v['failures'] != 0:
+            return 'Ansible task failed'
+    return 'Ansible successful'
