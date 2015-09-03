@@ -29,7 +29,8 @@ def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_
         # Update lambda instance status on the database to started.
         events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STARTED)
     except ClientError as exception:
-        events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED, exception.message)
+        events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED,
+                                                exception.message)
 
 
 @shared_task
@@ -52,7 +53,8 @@ def lambda_instance_stop(instance_uuid, auth_url, auth_token, master_id, slave_i
         # Update lambda instance status on the database to started.
         events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STOPPED)
     except ClientError as exception:
-        events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED, exception.message)
+        events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED,
+                                                exception.message)
 
 
 @shared_task
@@ -80,7 +82,8 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slav
         # Update lambda instance status on the database to destroyed.
         events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.DESTROYED)
     except ClientError as exception:
-        events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED, exception.message)
+        events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED,
+                                                exception.message)
 
 
 @shared_task
@@ -189,6 +192,7 @@ def on_failure(exc, task_id, args, kwargs, einfo):
     events.set_lambda_instance_status.delay(instance_uuid=task_id,
                                             status='LambdaInstance.FAILED',
                                             failure_message=exc.message)
+
 
 setattr(create_lambda_instance, 'on_failure', on_failure)
 
