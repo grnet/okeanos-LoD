@@ -55,16 +55,16 @@ def insert_cluster_info(instance_uuid, specs, provisioner_response):
                           ram=specs['ram_master'],
                           disk=specs['disk_master'],
                           priv_ip=master['internal_ip'],
-                          pub_ip=provisioner_response['ips']['floating_ip_address'],
-                          pub_ip_id=provisioner_response['ips']['id'])
+                          pub_ip=provisioner_response['ips'][0]['floating_ip_address'],
+                          pub_ip_id=provisioner_response['ips'][0]['id'])
 
-    for _, value in provisioner_response['nodes']['slaves'].iteritems():
-        Server.objects.create(id=value['id'],
+    for slave in provisioner_response['nodes']['slaves']:
+        Server.objects.create(id=slave['id'],
                               lambda_instance=lambda_instance,
                               cpus=specs['vcpus_slave'],
                               ram=specs['ram_slave'],
                               disk=specs['disk_slave'],
-                              priv_ip=value['internal_ip'])
+                              priv_ip=slave['internal_ip'])
 
     PrivateNetwork.objects.create(id=provisioner_response['vpn']['id'],
                                   lambda_instance=lambda_instance,
