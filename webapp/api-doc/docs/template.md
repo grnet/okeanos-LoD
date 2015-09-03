@@ -9,24 +9,26 @@ description: [One line description]
 
 ## Basic Parameters 
 
-| **Description** | [API CALL DESCRIPTION] |
-| **URL**         | [The API Service URL]   |
-| **HTTP Method** | [METHOD TYPE  GET /POST ....] |
-| **Security**    | Basic Authentication        |
+|Type | Description 
+------|-------------
+| **Description** | [API CALL DESCRIPTION] 
+| **URL**         | [The API Service URL]   
+| **HTTP Method** | [METHOD TYPE  GET /POST ....] 
+| **Security**    | Basic Authentication       
 
 
 ### Headers 
 
-Type | Description | Required | Default value | Example value |
-------|-------------|----------|---------------|---------------|
+Type | Description | Required | Default value | Example value 
+------|-------------|----------|---------------|---------------
 token | ....... | `Yes` |None| |
 
 
 ### Parameters 
 
-Name | Description | Required | Default value | Example value |
-------|-------------|----------|---------------|---------------|
-.....  | ....... |`Yes` |None| |
+Name | Description | Required | Default value | Example value 
+------|-------------|----------|---------------|---------------
+.....  | ....... |`Yes` |None| 
 
 
 ## Example

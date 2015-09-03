@@ -18,7 +18,7 @@ Delete an uploaded file      | /backend/user_files | DELETE          | Token Aut
 
 Type          | Description          | Required | Default value | Example value
 ------------- | -------------------- | -------- | ------------- | -------------------------------------------
-Authorization | Authentication token | `Yes`    | None          | tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY |
+Authorization | Authentication token | `Yes`    | None          | tJ3b3f32f23ceuqdoS_T....|
 
 ### Body Parameters
 
@@ -52,6 +52,7 @@ curl -X DELETE -H "Authorization: Token tJ3b39yg7mceuqdoS_TH7m0d6yxmlWLMDenalKct
 ```
 
 ### Response messages
-he main response messages are:
+The main response messages are:
+
 - HTTP/1.1 200 OK : (Success)
 - HTTP/1.1 401 UNAUTHORIZED : (Fail)
