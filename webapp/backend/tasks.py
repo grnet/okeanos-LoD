@@ -101,21 +101,25 @@ def create_lambda_instance(auth_token=None, instance_name='Lambda Instance',
     events.create_new_lambda_instance.delay(instance_uuid=instance_uuid,
                                             instance_name=instance_name, specs=specs)
 
-    ansible_manager, provisioner_response = \
-        lambda_instance_manager.create_cluster(auth_token=auth_token,
-                                               master_name=master_name,
-                                               slaves=slaves,
-                                               vcpus_master=vcpus_master,
-                                               vcpus_slave=vcpus_slave,
-                                               ram_master=ram_master,
-                                               ram_slave=ram_slave,
-                                               disk_master=disk_master,
-                                               disk_slave=disk_slave,
-                                               ip_allocation=ip_allocation,
-                                               network_request=network_request,
-                                               project_name=project_name)
+    try:
+        ansible_manager, provisioner_response = \
+            lambda_instance_manager.create_cluster(auth_token=auth_token,
+                                                   master_name=master_name,
+                                                   slaves=slaves,
+                                                   vcpus_master=vcpus_master,
+                                                   vcpus_slave=vcpus_slave,
+                                                   ram_master=ram_master,
+                                                   ram_slave=ram_slave,
+                                                   disk_master=disk_master,
+                                                   disk_slave=disk_slave,
+                                                   ip_allocation=ip_allocation,
+                                                   network_request=network_request,
+                                                   project_name=project_name)
+    except ClientError as exception:
+        set_lambda_instance_status.delay(instance_uuid, LambdaInstance.CLUSTER_FAILED, exception.message)
+        return
 
-    print provisioner_response
+    set_lambda_instance_status.delay(instance_uuid, LambdaInstance.CLUSTER_CREATED)
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'initialize.yml')
     check = check_ansible_result(ansible_result)
@@ -171,6 +175,15 @@ def create_lambda_instance(auth_token=None, instance_name='Lambda Instance',
     else:
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status='LambdaInstance.FLINK_INSTALLED')
+
+
+def on_failure(exc, task_id, args, kwargs, einfo):
+    events.set_lambda_instance_status.delay(instance_uuid=task_id,
+                                            status='LambdaInstance.FAILED',
+                                            failure_message=exc.message)
+
+
+setattr(create_lambda_instance, 'on_failure', on_failure)
 
 
 def check_ansible_result(ansible_result):
