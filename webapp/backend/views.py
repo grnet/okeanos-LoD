@@ -98,6 +98,7 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = IsAuthenticated,
     queryset = LambdaInstance.objects.all()
     serializer_class = LambdaInstanceSerializer
+    lookup_field = 'uuid'
 
     def list(self, request, format=None):
         serializer = LambdaInstanceSerializer(self.queryset, many=True)
@@ -113,8 +114,8 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response(lambda_instances_list)
 
-    def retrieve(self, request, pk, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=pk))
+    def retrieve(self, request, uuid, format=None):
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=uuid))
 
         wanted_fields = ['id', 'uuid', 'name', 'instance_info']
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
@@ -126,8 +127,8 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(lambda_instance)
 
     @detail_route(methods=['get'])
-    def status(self, request, pk, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=pk))
+    def status(self, request, uuid, format=None):
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=uuid))
 
         wanted_fields = ['id', 'uuid', 'name', 'status', 'failure_message']
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
@@ -139,8 +140,8 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(lambda_instance)
 
     @detail_route(methods=['post'])
-    def start(self, request, pk, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=pk))
+    def start(self, request, uuid, format=None):
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=uuid))
         data = serializer.data
 
         # Check the current status of the lambda instance.
@@ -177,8 +178,8 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
 
     @detail_route(methods=['post'])
-    def stop(self, request, pk, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=pk))
+    def stop(self, request, uuid, format=None):
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=uuid))
         data = serializer.data
 
         # Check the current status of the lambda instance.
@@ -214,8 +215,8 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
 
-    def destroy(self, request, pk, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=pk))
+    def destroy(self, request, uuid, format=None):
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=uuid))
         data = serializer.data
 
         # Check the current status of the lambda instance.

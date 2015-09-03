@@ -21,7 +21,7 @@ Type | Description
 
 Type | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
-Authorization | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` | None | tJ3b3f32f23ceuqdoS_...
+Authorization | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` | None | Token tJ3b3f32f23ceuqdoS_...
 
 ### Parameters
 
@@ -47,7 +47,7 @@ In this example we are going to get the status of the lambda instance with uuid 
 The request in curl
 
 ```
-curl -X GET -H "x-api-key: tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<url>/backend/lambda-instances/3/status'
+curl -X GET -H "Authentication: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<url>/backend/lambda-instances/3/status/'
 ```
 
 
