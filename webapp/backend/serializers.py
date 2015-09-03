@@ -15,7 +15,7 @@ class ServerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Server
-        fields = ('id', 'hostname', 'cpus', 'ram', 'disk', 'pub_ip', 'pub_id_id', 'priv_ip')
+        fields = ('id', 'hostname', 'cpus', 'ram', 'disk', 'pub_ip', 'pub_ip_id', 'priv_ip')
 
 
 class PrivateNetworkSerializer(serializers.ModelSerializer):
@@ -33,10 +33,10 @@ class LambdaInstanceSerializer(serializers.ModelSerializer):
     A serializer for LambdaInstance objects.
     """
 
-    servers = ServerSerializer(many=True)
-    private_network = PrivateNetworkSerializer()
+    servers = ServerSerializer(many=True, read_only=True)
+    private_network = PrivateNetworkSerializer(many=True, read_only=True)
 
     class Meta:
         model = LambdaInstance
         fields = ('id', 'uuid', 'name', 'instance_info', 'status', 'failure_message', 'servers',
-                  'private_networks')
+                  'private_network')

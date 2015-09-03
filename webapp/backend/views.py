@@ -97,6 +97,7 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = KamakiTokenAuthentication,
     permission_classes = IsAuthenticated,
     queryset = LambdaInstance.objects.all()
+    serializer_class = LambdaInstanceSerializer
 
     def list(self, request, format=None):
         serializer = LambdaInstanceSerializer(self.queryset, many=True)
@@ -113,7 +114,7 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(lambda_instances_list)
 
     def retrieve(self, request, pk, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, pk=pk))
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=pk))
 
         wanted_fields = ['id', 'uuid', 'name', 'instance_info']
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
@@ -126,7 +127,7 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 
     @detail_route(methods=['get'])
     def status(self, request, pk, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, pk=pk))
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=pk))
 
         wanted_fields = ['id', 'uuid', 'name', 'status', 'failure_message']
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
@@ -139,24 +140,25 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 
     @detail_route(methods=['post'])
     def start(self, request, pk, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, pk=pk))
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=pk))
+        data = serializer.data
 
         # Check the current status of the lambda instance.
-        if serializer.data['status'] == LambdaInstance.STARTED:
+        if data['status'] == LambdaInstance.STARTED:
             return Response({"detail": "The specified lambda instance is already started"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if serializer.data['status'] != LambdaInstance.STOPPED and \
-            serializer.data['status'] != LambdaInstance.FAILED:
+        if data['status'] != LambdaInstance.STOPPED and \
+            data['status'] != LambdaInstance.FAILED:
             return Response({"detail": "Cannot start lambda instance while current status " +
-                             "is " + serializer.data['status']},
+                             "is " + data['status']},
                             status=status.HTTP_400_BAD_REQUEST)
 
         # Get the id of the master node and the ids of the slave nodes.
         master_id = None
         slave_ids = []
 
-        servers = serializer.servers
+        servers = data['servers']
         for server in servers:
             if server['pub_ip']:
                 master_id = server['id']
@@ -164,37 +166,38 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
                 slave_ids.append(server['id'])
 
         # Create task to start the lambda instance.
-        auth_token = request.META.get("HTTP_AUTHENTICATION")
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
-        tasks.lambda_instance_start.delay(serializer['uuid'], auth_url, auth_token, master_id,
+        tasks.lambda_instance_start.delay(data['uuid'], auth_url, auth_token, master_id,
                                           slave_ids)
 
         # Create event to update the database.
-        events.set_lambda_instance_status.delay(serializer['uuid'], LambdaInstance.STARTING)
+        events.set_lambda_instance_status.delay(data['uuid'], LambdaInstance.STARTING)
 
         return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
 
     @detail_route(methods=['post'])
     def stop(self, request, pk, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, pk=pk))
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=pk))
+        data = serializer.data
 
         # Check the current status of the lambda instance.
-        if serializer.data['status'] == LambdaInstance.STOPPED:
+        if data['status'] == LambdaInstance.STOPPED:
             return Response({"detail": "The specified lambda instance is already stopped"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if serializer.data['status'] != LambdaInstance.STARTED and \
-            serializer.data['status'] != LambdaInstance.FAILED:
+        if data['status'] != LambdaInstance.STARTED and \
+            data['status'] != LambdaInstance.FAILED:
             return Response({"detail": "Cannot stop lambda instance while current status " +
-                             "is " + serializer.data['status']},
+                             "is " + data['status']},
                             status=status.HTTP_400_BAD_REQUEST)
 
         # Get the id of the master node and the ids of the slave nodes.
         master_id = None
         slave_ids = []
 
-        servers = serializer.servers
+        servers = data['servers']
         for server in servers:
             if server['pub_ip']:
                 master_id = server['id']
@@ -202,31 +205,31 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
                 slave_ids.append(server['id'])
 
         # Create task to stop the lambda instance.
-        auth_token = request.META.get("HTTP_AUTHENTICATION")
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
-        tasks.lambda_instance_stop.delay(serializer['uuid'], auth_url, auth_token, master_id,
+        tasks.lambda_instance_stop.delay(data['uuid'], auth_url, auth_token, master_id,
                                           slave_ids)
 
         # Create event to update the database.
-        events.set_lambda_instance_status.delay(serializer['uuid'], LambdaInstance.STOPPING)
+        events.set_lambda_instance_status.delay(data['uuid'], LambdaInstance.STOPPING)
 
         return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
 
-    @detail_route(methods=['post'])
     def destroy(self, request, pk, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, pk=pk))
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=pk))
+        data = serializer.data
 
         # Check the current status of the lambda instance.
-        if serializer.data['status'] == LambdaInstance.DESTROYED:
+        if data['status'] == LambdaInstance.DESTROYED:
             return Response({"detail": "The specified lambda instance is already destroyed"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if serializer.data['status'] != LambdaInstance.STARTED and \
-            serializer.data['status'] != LambdaInstance.STOPPED and \
-                serializer.data['status'] != LambdaInstance.FAILED:
+        if data['status'] != LambdaInstance.STARTED and \
+            data['status'] != LambdaInstance.STOPPED and \
+                data['status'] != LambdaInstance.FAILED:
             return Response({"detail": "Cannot destroy lambda instance while current status " +
-                             "is " + serializer.data['status']},
+                             "is " + data['status']},
                             status=status.HTTP_400_BAD_REQUEST)
 
         # Get the id of the master node and the ids of the slave nodes.
@@ -234,7 +237,7 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         public_ip_id = None
         slave_ids = []
 
-        servers = serializer.servers
+        servers = data['servers']
         for server in servers:
             if server['pub_ip']:
                 master_id = server['id']
@@ -243,15 +246,15 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
                 slave_ids.append(server['id'])
 
         # Create task to destroy the lambda instance.
-        auth_token = request.META.get("HTTP_AUTHENTICATION")
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
-        tasks.lambda_instance_destroy.delay(serializer['uuid'], auth_url, auth_token, master_id,
+        tasks.lambda_instance_destroy.delay(data['uuid'], auth_url, auth_token, master_id,
                                             slave_ids, public_ip_id,
-                                            serializer.private_network['id'])
+                                            data['private_network'][0]['id'])
 
         # Create event to update the database.
-        events.set_lambda_instance_status.delay(serializer['uuid'], LambdaInstance.DESTROYING)
+        events.set_lambda_instance_status.delay(data['uuid'], LambdaInstance.DESTROYING)
 
         return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
 
