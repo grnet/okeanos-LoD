@@ -38,9 +38,10 @@ script:
 
 
  - cd ../webapp/ansible
-# - echo -e "[service-vms]\nlocalhost ansible_ssh_user=travis" > hosts
-# - cat hosts
-# - ansible-playbook -v playbooks/setup.yml --connection=local --sudo -vvvv
+ - echo -e "[service-vms]\nlocalhost ansible_ssh_user=travis" > hosts
+ - cat hosts
+ - ansible-playbook playbooks/setup.yml --syntax-check
+ - ansible-playbook -v playbooks/setup.yml --start-at-task="Upgrade packages." --connection=local --sudo -vvvv
 
  - cd ../
  - pwd

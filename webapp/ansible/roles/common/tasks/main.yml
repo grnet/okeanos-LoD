@@ -9,7 +9,7 @@
     apt: update_cache=yes
 
   - name: Install python-pip.
-    apt: name=python-pip install_recommends=no
+    apt: name=python-pip force=yes
 
   - name: Create celery user.
     user: name=celery shell=/bin/bash home=/home/celery
