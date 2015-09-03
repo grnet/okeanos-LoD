@@ -24,14 +24,14 @@ will also return a "202 ACCEPTED" code.
 
 ### Headers
 
-Type | Description | Required | Default value | Example value 
+Type | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
-x-api-key | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` | None | tJ3b3f32f23ceuqdoS_..
+Authorization | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` | None | tJ3b3f32f23ceuqdoS_..
 
 
 ### Parameters
 
-Name | Description | Required | Default value | Example value 
+Name | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
 uuid  | The uuid of the specified lambda instance. For more information see [List Lambda instances page](LambdaInstanceList.md). |`Yes` |None| 3
 

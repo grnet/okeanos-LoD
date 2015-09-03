@@ -9,7 +9,7 @@ Lambda instance details call, given an authentication token through the header x
 
 ## Basic Parameters
 
-Type   | Description     
+Type   | Description
 -------|-----------------
 **Description** | lambda instance details
 **URL**         | /backend/lambda-instances/[uuid]
@@ -19,20 +19,20 @@ Type   | Description
 
 ### Headers
 
-Type | Description | Required | Default value | Example value 
+Type | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
-x-api-key | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` | None | tJ3b3f32f23ceuqdoS
+Authorization | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` | None | tJ3b3f32f23ceuqdoS
 
 
 ### Parameters
 
-Name  | Description | Required | Default value | Example value 
+Name  | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
 uuid  | The uuid of the specified lambda instance. For more information see [List Lambda instances page](LambdaInstanceList.md) . |`Yes` |None| 3
 
 ### Keywords in response
 
-Name | Description | Default value 
+Name | Description | Default value
 ------|------------|---------------
 name | The name of the lambda instance | Lambda Instance
 uuid | Unique integer identifying a lambda instance | None

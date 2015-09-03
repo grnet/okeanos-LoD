@@ -148,8 +148,7 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
             return Response({"detail": "The specified lambda instance is already started"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if data['status'] != LambdaInstance.STOPPED and \
-            data['status'] != LambdaInstance.FAILED:
+        if data['status'] != LambdaInstance.STOPPED and data['status'] != LambdaInstance.FAILED:
             return Response({"detail": "Cannot start lambda instance while current status " +
                              "is " + data['status']},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -187,8 +186,7 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
             return Response({"detail": "The specified lambda instance is already stopped"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if data['status'] != LambdaInstance.STARTED and \
-            data['status'] != LambdaInstance.FAILED:
+        if data['status'] != LambdaInstance.STARTED and data['status'] != LambdaInstance.FAILED:
             return Response({"detail": "Cannot stop lambda instance while current status " +
                              "is " + data['status']},
                             status=status.HTTP_400_BAD_REQUEST)
