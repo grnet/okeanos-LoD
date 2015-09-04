@@ -98,21 +98,46 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = IsAuthenticated,
     queryset = LambdaInstance.objects.all()
     serializer_class = LambdaInstanceSerializer
+    # Check the model field of uuid in models.py and define the regular expression that will be
+    # used to parse the urls.
     lookup_field = 'uuid'
 
     def list(self, request, format=None):
-        serializer = LambdaInstanceSerializer(self.queryset, many=True)
+        # Calculate pagination parameters and use them to retrieve the requested lambda instances.
+        if 'limit' in request.query_params and 'page' in request.query_params:
+            try:
+                limit = int(request.query_params.get("limit"))
+                page = int(request.query_params.get("page"))
+            except (TypeError, ValueError):
+                return Response({"errors": [{"message": "Bad parameter"}]},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if limit <= 0 or page <= 0:
+                return Response({"errors":
+                                     [{"message": "Zero or negative indexing not supported"}]},
+                                status=status.HTTP_400_BAD_REQUEST)
+            else:
+                first_to_retrieve = (page - 1) * limit
+                last_to_retrieve = page * limit
+                serializer = LambdaInstanceSerializer(
+                    self.queryset[first_to_retrieve:last_to_retrieve], many=True)
+        elif 'limit' in request.query_params or 'page' in request.query_params:
+                return Response({"errors": [{"message": "Missing parameter"}]},
+                                status=status.HTTP_400_BAD_REQUEST)
+        else:
+                serializer = LambdaInstanceSerializer(self.queryset, many=True)
 
         wanted_fields = ['id', 'uuid', 'name']
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
 
         lambda_instances_list = []
+        # Remove unwanted fields from lambda instances information.
         for lambda_instance in serializer.data:
             for unwanted_field in unwanted_fields:
                 del lambda_instance[unwanted_field]
             lambda_instances_list.append(lambda_instance)
 
-        return Response(lambda_instances_list)
+        return Response(lambda_instances_list, status=status.HTTP_200_OK)
 
     def retrieve(self, request, uuid, format=None):
         serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=uuid))
@@ -121,10 +146,14 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
 
         lambda_instance = serializer.data
+        # Remove unwanted fields from lambda instance information.
         for unwanted_field in unwanted_fields:
             del lambda_instance[unwanted_field]
 
-        return Response(lambda_instance)
+        # Parse the instance info field.
+        lambda_instance['instance_info'] = json.loads(lambda_instance['instance_info'])
+
+        return Response(lambda_instance, status=status.HTTP_200_OK)
 
     @detail_route(methods=['get'])
     def status(self, request, uuid, format=None):
@@ -134,10 +163,11 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
 
         lambda_instance = serializer.data
+        # Remove unwanted fields from lambda instance information.
         for unwanted_field in unwanted_fields:
             del lambda_instance[unwanted_field]
 
-        return Response(lambda_instance)
+        return Response(lambda_instance, status=status.HTTP_200_OK)
 
     @detail_route(methods=['post'])
     def start(self, request, uuid, format=None):
@@ -208,7 +238,7 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
         tasks.lambda_instance_stop.delay(data['uuid'], auth_url, auth_token, master_id,
-                                          slave_ids)
+                                         slave_ids)
 
         # Create event to update the database.
         events.set_lambda_instance_status.delay(data['uuid'], LambdaInstance.STOPPING)

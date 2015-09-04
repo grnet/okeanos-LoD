@@ -7,7 +7,7 @@ description: Lists all lambda instances
 
 Lambda instances list call, given an authentication token through the header x-api-key,
 will firstly check the validity of the token. If the token is invalid, the API will reply
-with a "401 Unauthorized" code. If the token is valid, the API will return all the lambda instances in JSON format along with a "200 OK" code. If there are no lambda instances the API will reply with a "404 Not Found" code. Lambda instances can be viewed in pages with a limited number of instances per page. If at least one of the parameters limit and page is less than or equal to zero, the API will reply with a "400 Bad Request" code.
+with a "401 Unauthorized" code. If the token is valid, the API will return all the lambda instances in JSON format along with a "200 OK" code. If there are no lambda instances the API will reply with a "404 Not Found" code. Lambda instances can be viewed in pages with a limited number of instances per page. If at least one of the parameters limit and page is less than or equal to zero or missing, the API will reply with a "400 Bad Request" code.
 
 
 ## Basic Parameters
