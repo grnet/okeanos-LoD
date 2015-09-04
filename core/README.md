@@ -18,11 +18,11 @@ The library is responsible for managing the ansible, that will run on the cluste
 * It sets some ansible constants, required eg for SSH tunnelling through the master node
 * It runs ansible playbooks using the previously mentioned inventory and constants
 
-### cluster_creator
+### lambda_instance_manager
 
-The script is responsible for creating/deleting the entire lambda instance.
-Run script as `cluster_creator.py --action=create` for creating a lambda cluster.
-Run script as `cluster_creator.py --action=delete --cluster_id=<id>` for deleting a lambda cluster.
+The library is responsible for creating/deleting the entire lambda instance.
+Run script as `lambda_instance_manager.py --action=create` for creating a lambda cluster.
+Run script as `lambda_instance_manager.py --action=delete --cluster_id=<id>` for deleting a lambda cluster.
 According to the action selected, certain arguments must be modified.
 
 If action is CREATE
@@ -64,7 +64,7 @@ Note that you may retrieve your ~okeanos API token, after logging into the servi
 ## Usage
 
 
-To create a lambda instance, one must run `python cluster_creator.py` from within the `core/fokia` directory. To change the default settings (one master instance and one slave instance) one has to edit the `cluster_creator.py` script prior to executing it.
+To create a lambda instance, one must run `python lambda_instance_manager.py` from within the `core/fokia` directory. To change the default settings (one master instance and one slave instance) one has to edit the `lambda_instance_manager.py` script prior to executing it.
 
 
 

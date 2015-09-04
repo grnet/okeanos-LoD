@@ -13,8 +13,8 @@ class User(models.Model):
     """
     id = models.AutoField("id", primary_key=True)
     uuid = models.CharField("uuid", null=False, blank=False,
-                          unique=True, default="", max_length=255,
-                          help_text="Unique user id asign by Astakos")
+                            unique=True, default="", max_length=255,
+                            help_text="Unique user id asign by Astakos")
 
     def __unicode__(self):
         info = "User id: " + str(self.id)
@@ -92,10 +92,10 @@ class LambdaInstance(models.Model):
     name = models.CharField(max_length=100, default="Lambda Instance",
                             help_text="A name given to the instance.")
 
-    uuid = models.BigIntegerField("Instance UUID", null=False, unique=True,
-                                  help_text="Unique key asigned to every instance.")
+    uuid = models.UUIDField("Instance UUID", null=False, unique=True, editable=False,
+                            help_text="Unique key asigned to every instance.")
 
-    failure_message = models.CharField(max_length=100, default="",
+    failure_message = models.TextField(default="",
                                        help_text="Error message regarding this lambda instance")
 
     STARTED = "0"
@@ -108,6 +108,18 @@ class LambdaInstance(models.Model):
     SCALING_UP = "7"
     SCALING_DOWN = "8"
     FAILED = "9"
+    CLUSTER_CREATED = "10"
+    CLUSTER_FAILED = "11"
+    INIT_DONE = "12"
+    INIT_FAILED = "13"
+    COMMONS_INSTALLED = "14"
+    COMMONS_FAILED = "15"
+    HADOOP_INSTALLED = "16"
+    HADOOP_FAILED = "17"
+    KAFKA_INSTALLED = "18"
+    KAFKA_FAILED = "19"
+    FLINK_INSTALLED = "20"
+    FLINK_FAILED = "21"
     status_choices = (
         (STARTED, 'STARTED'),
         (STOPPED, 'STOPPED'),
@@ -119,6 +131,19 @@ class LambdaInstance(models.Model):
         (SCALING_UP, 'SCALING_UP'),
         (SCALING_DOWN, 'SCALING_DOWN'),
         (FAILED, 'FAILED'),
+        (CLUSTER_CREATED, 'CLUSTER_CREATED'),
+        (CLUSTER_FAILED, 'CLUSTER_FAILED'),
+        (INIT_DONE, 'INIT_DONE'),
+        (INIT_FAILED, 'INIT_FAILED'),
+        (COMMONS_INSTALLED, 'COMMONS_INSTALLED'),
+        (COMMONS_FAILED, 'COMMONS_FAILED'),
+        (HADOOP_INSTALLED, 'HADOOP_INSTALLED'),
+        (HADOOP_FAILED, 'HADOOP_FAILED'),
+        (KAFKA_INSTALLED, 'KAFKA_INSTALLED'),
+        (KAFKA_FAILED, 'KAFKA_FAILED'),
+        (FLINK_INSTALLED, 'FLINK_INSTALLED'),
+        (FLINK_FAILED, 'FLINK_FAILED'),
+
     )
     status = models.CharField(max_length=10, choices=status_choices, default=PENDING,
                               help_text="The status of this instance.")
@@ -148,8 +173,8 @@ class Server(models.Model):
     :model: models.LambdaInstance.
     """
     id = models.BigIntegerField("Server ID", primary_key=True, null=False, blank=False,
-                          unique=True, default="",
-                          help_text="Server id provided by kamaki.")
+                                unique=True, default="",
+                                help_text="Server id provided by kamaki.")
 
     hostname = models.TextField('Hostname', default="", help_text="Hostname of the server.")
     cpus = models.IntegerField("CPUs", null=True, help_text="Number of cpus.")
@@ -207,6 +232,7 @@ class PrivateNetwork(models.Model):
     class Meta:
         verbose_name = "PrivateNetwork"
         app_label = 'backend'
+
 
 """
 OBJECT CONNECTIONS

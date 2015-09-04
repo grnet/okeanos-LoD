@@ -4,7 +4,7 @@
 
   - name: Copy sources list.
     copy: src=sources.list dest=/etc/apt/sources.list owner=root group=root mode=0640
- 
+
   - name: Upgrade packages.
     apt: update_cache=yes
 
@@ -12,4 +12,4 @@
     apt: name=python-pip install_recommends=no
 
   - name: Create celery user.
-    user: name=celery shell=/bin/bash
+    user: name=celery shell=/bin/bash home=/home/celery

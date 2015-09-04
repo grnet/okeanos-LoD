@@ -11,6 +11,7 @@ from django.conf import settings
 from rest_framework.permissions import IsAuthenticated
 
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
+from rest_framework.parsers import JSONParser
 
 from rest_framework_xml.renderers import XMLRenderer
 
@@ -21,8 +22,8 @@ from .models import ProjectFile, LambdaInstance, Server, PrivateNetwork
 from .authenticate_user import KamakiTokenAuthentication
 from .serializers import ProjectFileSerializer
 
-import tasks
-import events
+from . import tasks
+from . import events
 
 
 def authenticate(request):
@@ -51,9 +52,9 @@ def list_lambda_instances(request):
     # Verify that the request method is GET.
     if request.method != 'GET':
         return JsonResponse({"errors":
-                             [{"message": "",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -67,9 +68,9 @@ def list_lambda_instances(request):
 
         if limit <= 0 or page <= 0:
             return JsonResponse({"errors":
-                                 [{"message": "Zero or negative indexing is not supported",
-                                   "code": 400,
-                                   "details": ""}]}, status=400)
+                                     [{"message": "Zero or negative indexing is not supported",
+                                       "code": 400,
+                                       "details": ""}]}, status=400)
 
         # Retrieve the lambda instances from the database.
         first_to_retrieve = (page - 1) * limit
@@ -100,9 +101,9 @@ def lambda_instance_details(request, instance_uuid):
     # Verify that the request method is GET.
     if request.method != 'GET':
         return JsonResponse({"errors":
-                             [{"message": "",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -132,9 +133,9 @@ def lambda_instance_status(request, instance_uuid):
     # Verify that the request method is GET.
     if request.method != 'GET':
         return JsonResponse({"errors":
-                             [{"message": "",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -217,9 +218,9 @@ def lambda_instance_start(request, instance_uuid):
     # Verify that the request method is POST.
     if request.method != 'POST':
         return JsonResponse({"errors":
-                             [{"message": "",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -237,18 +238,18 @@ def lambda_instance_start(request, instance_uuid):
 
     if database_instance.status == LambdaInstance.STARTED:
         return JsonResponse({"errors":
-                             [{"message": "The specified lambda instance is already started",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "The specified lambda instance is already started",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     if database_instance.status != LambdaInstance.STOPPED and \
-            LambdaInstance.FAILED != database_instance.status:
+                    LambdaInstance.FAILED != database_instance.status:
         return JsonResponse({"errors":
-                             [{"message": "Cannot start lambda instance while current " +
-                                          "status is " + LambdaInstance.status_choices[
-                                              int(database_instance.status)][1],
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "Cannot start lambda instance while current " +
+                                              "status is " + LambdaInstance.status_choices[
+                                                  int(database_instance.status)][1],
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Get the ids of the servers of the specified lambda instance.
     instance_servers = Server.objects.filter(lambda_instance=database_instance)
@@ -281,9 +282,9 @@ def lambda_instance_stop(request, instance_uuid):
     # Verify that the request method is POST.
     if request.method != 'POST':
         return JsonResponse({"errors":
-                             [{"message": "",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -301,18 +302,18 @@ def lambda_instance_stop(request, instance_uuid):
 
     if database_instance.status == LambdaInstance.STOPPED:
         return JsonResponse({"errors":
-                             [{"message": "The specified lambda instance is already stopped",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "The specified lambda instance is already stopped",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     if database_instance.status != LambdaInstance.STARTED and \
                     database_instance.status != LambdaInstance.FAILED:
         return JsonResponse({"errors":
-                             [{"message": "Cannot stop lambda instance while current " +
-                                          "status is " + LambdaInstance.status_choices[
-                                              int(database_instance.status)][1],
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "Cannot stop lambda instance while current " +
+                                              "status is " + LambdaInstance.status_choices[
+                                                  int(database_instance.status)][1],
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Get the ids of the servers of the specified lambda instance.
     instance_servers = Server.objects.filter(lambda_instance=LambdaInstance.objects.get(
@@ -346,9 +347,9 @@ def lambda_instance_destroy(request, instance_uuid):
     # Verify that the request method is POST.
     if request.method != 'POST':
         return JsonResponse({"errors":
-                             [{"message": "",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Authenticate user.
     authentication_response = authenticate(request)
@@ -366,19 +367,19 @@ def lambda_instance_destroy(request, instance_uuid):
 
     if database_instance.status == LambdaInstance.DESTROYED:
         return JsonResponse({"errors":
-                             [{"message": "The specified lambda instance is already destroyed",
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "The specified lambda instance is already destroyed",
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     if database_instance.status != LambdaInstance.STARTED and \
                     LambdaInstance.STOPPED != database_instance.status and \
                     LambdaInstance.FAILED != database_instance.status:
         return JsonResponse({"errors":
-                             [{"message": "Cannot destroy lambda instance while current " +
-                                          "status is " + LambdaInstance.status_choices[
-                                              int(database_instance.status)][1],
-                               "code": 400,
-                               "details": ""}]}, status=400)
+                                 [{"message": "Cannot destroy lambda instance while current " +
+                                              "status is " + LambdaInstance.status_choices[
+                                                  int(database_instance.status)][1],
+                                   "code": 400,
+                                   "details": ""}]}, status=400)
 
     # Get the ids of the servers of the specified lambda instance.
     instance_servers = Server.objects.filter(lambda_instance=LambdaInstance.objects.get(
@@ -407,3 +408,50 @@ def lambda_instance_destroy(request, instance_uuid):
     events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.DESTROYING)
 
     return JsonResponse({"result": "Accepted"}, status=202)
+
+
+class CreateLambdaInstance(APIView):
+    """
+    Creates a new lambda instance
+    """
+
+    authentication_classes = KamakiTokenAuthentication,
+    permission_classes = IsAuthenticated,
+    renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
+
+    parser_classes = (JSONParser,)
+
+    def post(self, request, format=None):
+        cluster_specs = request.data
+
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+
+        instance_name = cluster_specs['instance_name']
+        master_name = cluster_specs['master_name']
+        slaves = int(cluster_specs['slaves'])
+        vcpus_master = int(cluster_specs['vcpus_master'])
+        vcpus_slave = int(cluster_specs['vcpus_slave'])
+        ram_master = int(cluster_specs['ram_master'])
+        ram_slave = int(cluster_specs['ram_slave'])
+        disk_master = int(cluster_specs['disk_master'])
+        disk_slave = int(cluster_specs['disk_slave'])
+        ip_allocation = cluster_specs['ip_allocation']
+        network_request = int(cluster_specs['network_request'])
+        project_name = cluster_specs['project_name']
+
+        create = tasks.create_lambda_instance.delay(auth_token=auth_token,
+                                                    instance_name=instance_name,
+                                                    master_name=master_name,
+                                                    slaves=slaves,
+                                                    vcpus_master=vcpus_master,
+                                                    vcpus_slave=vcpus_slave,
+                                                    ram_master=ram_master,
+                                                    ram_slave=ram_slave,
+                                                    disk_master=disk_master,
+                                                    disk_slave=disk_slave,
+                                                    ip_allocation=ip_allocation,
+                                                    network_request=network_request,
+                                                    project_name=project_name)
+        instance_uuid = create.id
+
+        return Response({"uuid": instance_uuid}, status=202)

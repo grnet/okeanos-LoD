@@ -119,22 +119,35 @@ CELERY_QUEUES = (
 )
 
 CELERY_ROUTES = {
-        'backend.tasks.lambda_instance_start': {
-            'queue': 'tasks_queue',
-            'routing_key': 'task_key',
-        },
-        'backend.tasks.lambda_instance_stop': {
-            'queue': 'tasks_queue',
-            'routing_key': 'task_key',
-        },
-        'backend.tasks.lambda_instance_destroy': {
-            'queue': 'tasks_queue',
-            'routing_key': 'task_key',
-        },
-        'backend.events.set_lambda_instance_status': {
-            'queue': 'events_queue',
-            'routing_key': 'event_key',
-        },
+    'backend.tasks.lambda_instance_start': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.tasks.lambda_instance_stop': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.tasks.lambda_instance_destroy': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.events.set_lambda_instance_status': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+    'backend.tasks.create_lambda_instance': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.events.create_new_lambda_instance': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+    'backend.events.insert_cluster_info': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+
 }
 
 FILE_STORAGE = os.path.join(BASE_DIR,'uploaded_files')
