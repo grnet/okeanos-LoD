@@ -333,4 +333,3 @@ class CreateLambdaInstance(APIView):
         instance_uuid = create.id
 
         return Response({"uuid": instance_uuid}, status=202)
-
