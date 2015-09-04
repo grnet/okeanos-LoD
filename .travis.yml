@@ -5,10 +5,9 @@ python:
 addons:
   ssh_known_hosts: localhost
 
-services: postgresql
+sudo: true
 
-env:
- - DJANGO_SETTINGS_MODULE="webapp.settings"
+services: postgresql
 
 before_install:
  - export DJANGO_SETTINGS_MODULE=webapp.settings
@@ -22,35 +21,32 @@ before_script:
  - psql -c "ALTER USER lambda WITH SUPERUSER;" -U postgres
 
 script:
- - ssh-keygen -t rsa -C your_email@youremail.com -P '' -f ~/.ssh/id_rsa
- - cat /home/travis/.ssh/id_rsa.pub >> /home/travis/.ssh/authorized_keys
-# - echo -e "Host *\n\tStrictHostKeyChecking no" >> /home/travis/.ssh/config
- - ln -s /home/travis/.ssh/authorized_keys /home/travis/.ssh/authorized_keys2
- - echo "Host localhost" >> /home/travis/.ssh/config
- - echo "    StrictHostKeyChecking no" >> /home/travis/.ssh/config
- - chmod g-rw,o-rw /home/travis/.ssh/*
  - git fetch origin $TRAVIS_BRANCH:travis_pr_branch
  - flake8-diff travis_pr_branch
+
+
+
  - cd core
  - python setup.py install
  - pip install -r requirements.txt
-# - tox -e $TOXENV_CORE
+ - tox -e $TOXENV_CORE
 
 
- - cd ../webapp/ansible
+ - cd ../webapp
+ - pip install -r requirements.txt
+ - cd ansible
  - echo -e "[service-vms]\nlocalhost ansible_ssh_user=travis" > hosts
  - cat hosts
  - ansible-playbook playbooks/setup.yml --syntax-check
- - ansible-playbook -v playbooks/setup.yml --start-at-task="Upgrade packages." --connection=local --sudo -vvvv
+ - ansible-playbook -v playbooks/setup.yml -e "repository_url="$TRAVIS_BUILD_DIR -e  "repository_branch=HEAD"  --start-at-task="Upgrade packages." --connection=local -vvvv
 
- - cd ../
- - pwd
- - ls
- - pip install -r requirements.txt
- - python manage.py syncdb --noinput
+ - cd /var/www/okeanos-LoD/webapp/
  - python manage.py makemigrations
+ - python manage.py syncdb --noinput
  - python manage.py migrate
  - python manage.py test
+ - pip list
 
 env:
- - TOXENV_CORE=py27
+#  - DJANGO_SETTINGS_MODULE="webapp.settings" TOXENV_CORE=py27
+  - TOXENV_CORE=py27

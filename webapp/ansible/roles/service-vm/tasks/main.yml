@@ -13,7 +13,7 @@
     include: postgresql-install.yml
 
   - name: Download Django code from Github.
-    git: repo=https://github.com/grnet/okeanos-LoD.git dest={{ repository_download_path }}/okeanos-LoD update=yes version=devel # version can be used to select a branch.
+    git: repo={{ repository_url }}  dest={{ repository_download_path }}/okeanos-LoD update=yes version={{ repository_branch }}
 
   - name: Change repository permissions.
     file: path={{ repository_download_path }} owner=celery group=celery recurse=yes

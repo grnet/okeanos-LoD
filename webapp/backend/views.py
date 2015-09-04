@@ -1,5 +1,7 @@
 import json
-from os import path, mkdir
+import uuid
+
+from os import path, mkdir, remove
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -61,33 +63,43 @@ class ProjectFileList(APIView):
             return Response({"errors": [{"message": "No file uploaded", "code": 422}]}, status=422)
         description = request.data.get('description', '')
         new_file_path = path.join(settings.FILE_STORAGE, uploaded_file.name)
+
         if not path.exists(settings.FILE_STORAGE):
             mkdir(settings.FILE_STORAGE)
+
+        if ProjectFile.objects.filter(name=uploaded_file.name).count() > 0:
+            return Response({"errors": [{"message": "File name already exists"}]}, status=400)
+
         with open(new_file_path, 'wb+') as f:
             f.write(uploaded_file.read())
         if path.isfile(new_file_path):
+
             # TODO: Change this to an event call that updates the db
+            file_uuid = uuid.uuid4()
             ProjectFile.objects.create(name=uploaded_file.name,
                                        path=new_file_path,
                                        description=description,
-                                       owner=request.user)
-        return Response({"result": "success"}, status=201)
+                                       owner=request.user,
+                                       uuid=file_uuid)
+            return Response({"result": "success"}, status=201)
 
     def delete(self, request, format=None):
-        file_id = request.data.get('id')
-        if not file_id:
-            return Response({"errors:"[{"message": "missing id header", "code": 422}]},
+        file_uuid = request.data.get('uuid')
+        if not file_uuid:
+            return Response({"errors": [{"message": "missing id header"}]},
                             status=422)
         try:
-            file_data = ProjectFile.objects.get(id=file_id)
+            file_data = ProjectFile.objects.get(uuid=file_uuid)
         except ProjectFile.DoesNotExist:
-            return Response({"errors": [{"message": "file does not exist", "code": 400}]},
+            return Response({"errors": [{"message": "file does not exist"}]},
                             status=400)
 
         if file_data.owner != request.user:
-            return Response({"errors:"[{"message": "file does not exist", "code": 400}]},
+            return Response({"errors": [{"message": "file does not exist"}]},
                             status=400)
         # TODO: Change this to an event call that update the db
+        if path.isfile(file_data.path):
+            remove(file_data.path)
         file_data.delete()
         return Response({"result": "success"}, status=200)
 

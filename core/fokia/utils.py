@@ -53,7 +53,7 @@ def check_auth_token(auth_token, auth_url=None):
         if ex.message == 'UNAUTHORIZED':
             return False, ex.details
         else:
-            raise ex
+            raise
     return True, user_info
 
 

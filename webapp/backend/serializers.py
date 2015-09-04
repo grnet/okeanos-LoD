@@ -5,7 +5,7 @@ from .models import ProjectFile, LambdaInstance, Server, PrivateNetwork
 class ProjectFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectFile
-        fields = ('id', 'name', 'description')
+        fields = ('uuid', 'name', 'description')
 
 
 class ServerSerializer(serializers.ModelSerializer):
