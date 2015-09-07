@@ -3,7 +3,7 @@ from celery import shared_task
 
 from kamaki.clients import ClientError
 
-import fokia.utils
+from fokia import utils
 
 from .models import LambdaInstance
 from fokia import lambda_instance_manager
@@ -24,7 +24,7 @@ def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_
 
     try:
         # Start the VMs of the specified lambda instance.
-        fokia.lambda_instance_start(auth_url, auth_token, master_id, slave_ids)
+        utils.lambda_instance_start(auth_url, auth_token, master_id, slave_ids)
 
         # Update lambda instance status on the database to started.
         events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STARTED)
@@ -48,7 +48,7 @@ def lambda_instance_stop(instance_uuid, auth_url, auth_token, master_id, slave_i
 
     try:
         # Stop the VMs of the specified lambda instance.
-        fokia.lambda_instance_stop(auth_url, auth_token, master_id, slave_ids)
+        utils.lambda_instance_stop(auth_url, auth_token, master_id, slave_ids)
 
         # Update lambda instance status on the database to started.
         events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STOPPED)
@@ -76,7 +76,7 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slav
 
     try:
         # Destroy all VMs, the public ip and the private network of the lambda instance.
-        fokia.lambda_instance_destroy(auth_url, auth_token, master_id, slave_ids, public_ip_id,
+        utils.lambda_instance_destroy(auth_url, auth_token, master_id, slave_ids, public_ip_id,
                                       private_network_id)
 
         # Update lambda instance status on the database to destroyed.

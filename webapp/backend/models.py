@@ -93,7 +93,7 @@ class LambdaInstance(models.Model):
                             help_text="A name given to the instance.")
 
     uuid = models.UUIDField("Instance UUID", null=False, unique=True, editable=False,
-                            help_text="Unique key asigned to every instance.")
+                            help_text="Unique key assigned to every instance.")
 
     failure_message = models.TextField(default="",
                                        help_text="Error message regarding this lambda instance")
@@ -186,7 +186,8 @@ class Server(models.Model):
     priv_ip = models.GenericIPAddressField("Private ip", null=True,
                                            help_text="Private ip of server.")
     lambda_instance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False,
-                                        default=None, on_delete=models.CASCADE)
+                                        default=None, on_delete=models.CASCADE,
+                                        related_name="servers")
 
     def __unicode__(self):
         info = "Server id: " + str(self.id) + "\n" + \
@@ -220,7 +221,8 @@ class PrivateNetwork(models.Model):
     subnet = models.CharField(max_length=100)
     gateway = models.GenericIPAddressField("Gateway", null=False, blank=False, unique=False)
     lambda_instance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False,
-                                        default=None, on_delete=models.CASCADE)
+                                        default=None, on_delete=models.CASCADE,
+                                        related_name="private_network")
 
     def __unicode__(self):
         info = "Network id: " + str(self.id) + "\n" + \
