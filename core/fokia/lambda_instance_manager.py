@@ -12,7 +12,7 @@ from kamaki.clients.cyclades import CycladesComputeClient, CycladesNetworkClient
 script_path = '/var/www/okeanos-LoD/core/fokia'
 
 
-## Deprecated
+# Deprecated
 def create_lambda_instance(auth_token=None, master_name='lambda-master',
                            slaves=1, vcpus_master=4, vcpus_slave=4,
                            ram_master=4096, ram_slave=4096, disk_master=40, disk_slave=40,
