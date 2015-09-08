@@ -2,51 +2,12 @@ language: python
 python: 
  - "2.7"
 
-addons:
-  ssh_known_hosts: localhost
-
-sudo: true
-
-services: postgresql
-
-before_install:
- - export DJANGO_SETTINGS_MODULE=webapp.settings
-
 install: 
- - pip install tox ansible flake8-diff
-
-before_script:
- - psql -c "CREATE DATABASE lambda_db;" -U postgres
- - psql -c "CREATE USER lambda WITH PASSWORD 'change_me';" -U postgres
- - psql -c "ALTER USER lambda WITH SUPERUSER;" -U postgres
-
+ - pip install tox
+ - pip install flake8-diff
 script:
  - git fetch origin $TRAVIS_BRANCH:travis_pr_branch
  - flake8-diff travis_pr_branch
-
-
-
- - cd core
- - python setup.py install
- - pip install -r requirements.txt
- - tox -e $TOXENV_CORE
-
-
- - cd ../webapp
- - pip install -r requirements.txt
- - cd ansible
- - echo -e "[service-vms]\nlocalhost ansible_ssh_user=travis" > hosts
- - cat hosts
- - ansible-playbook playbooks/setup.yml --syntax-check
- - ansible-playbook -v playbooks/setup.yml -e "repository_url="$TRAVIS_BUILD_DIR -e  "repository_branch=HEAD"  --start-at-task="Upgrade packages." --connection=local -vvvv
-
- - cd /var/www/okeanos-LoD/webapp/
- - python manage.py makemigrations
- - python manage.py syncdb --noinput
- - python manage.py migrate
- - python manage.py test
- - pip list
-
+ - cd core && tox -e $TOXENV_CORE
 env:
-#  - DJANGO_SETTINGS_MODULE="webapp.settings" TOXENV_CORE=py27
-  - TOXENV_CORE=py27
+ - TOXENV_CORE=py27
