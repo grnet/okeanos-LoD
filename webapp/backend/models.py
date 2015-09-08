@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 """
 OBJECTS
@@ -52,7 +53,8 @@ class Project(models.Model):
 
 
 class ProjectFile(models.Model):
-    id = models.AutoField("File ID", primary_key=True, unique=True, help_text="Project file id.")
+    id = models.AutoField("id", primary_key=True, unique=True, help_text="Project file id.")
+    uuid = models.UUIDField("uuid", unique=True, default=uuid.uuid4, help_text="Project file uuid.")
     name = models.CharField(max_length=100)
     path = models.CharField(max_length=400)
     description = models.CharField(max_length=400, blank=True, default='')
