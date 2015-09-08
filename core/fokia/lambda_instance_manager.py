@@ -1,6 +1,9 @@
 import time
 from fokia.provisioner import Provisioner
 from fokia.ansible_manager import Manager
+# import os
+# import inspect
+
 # script_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 script_path = '/var/www/okeanos-LoD/core/fokia'
 
