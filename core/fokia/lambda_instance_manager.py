@@ -6,25 +6,13 @@ from fokia.ansible_manager import Manager
 # import inspect
 
 from storm.parsers import ssh_config_parser
+from kamaki.clients.astakos import AstakosClient
+from kamaki.clients.cyclades import CycladesComputeClient, CycladesNetworkClient
 # script_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 script_path = '/var/www/okeanos-LoD/core/fokia'
 
 
-def get_cluster_details(cluster_id):
-    """
-    :param cluster_id: id of the cluster
-    :returns: the details of the cluster after retrieving them from the database.
-    """
-    # TODO
-    # 1. create a query for the table cluster requesting the cluster info with this id
-    # 2. parse the answer, create a dictionary object with this format:
-    """
-    {'nodes':[master_id,node1_id,node2_id,...], 'vpn':vpn_id}
-    """
-    # 3. return dictionary, return null if the query did not return any answer.
-    return None
-
-
+## Deprecated
 def create_lambda_instance(auth_token=None, master_name='lambda-master',
                            slaves=1, vcpus_master=4, vcpus_slave=4,
                            ram_master=4096, ram_slave=4096, disk_master=40, disk_slave=40,
@@ -100,7 +88,7 @@ def create_cluster(cluster_id, auth_token=None, master_name='lambda-master',
     for i, slave in enumerate(provisioner_response['nodes']['slaves']):
         slave_ip = provisioner.get_server_private_ip(slave['id'])
         provisioner_response['nodes']['slaves'][i]['internal_ip'] = slave_ip
-    # provisioner_response['pk'] = provisioner.get_private_key()
+    provisioner_response['pk'] = provisioner.get_private_key()
 
     add_private_key(cluster_id, provisioner_response)
 
@@ -137,12 +125,61 @@ def run_playbook(ansible_manager, playbook):
     return ansible_result
 
 
-def destroy_cluster(cloud_name, cluster_id):
-    provisioner = Provisioner(cloud_name=cloud_name)
-    details = get_cluster_details(cluster_id=cluster_id)
-    if details is not None:
-        provisioner.delete_lambda_cluster(details)
-    delete_private_key(cluster_id, details)
+def lambda_instance_destroy(instance_uuid, auth_url, auth_token,
+                            master_id, slave_ids, public_ip_id, private_network_id):
+    """
+    Destroys the specified lambda instance. The VMs of the lambda instance, along with the public
+    ip and the private network used are destroyed and the status of the lambda instance gets
+    changed to DESTROYED. There is no going back from this state, the entries are kept to the
+    database for reference.
+    :param auth_url: The authentication url for ~okeanos API.
+    :param auth_token: The authentication token of the owner of the lambda instance.
+    :param master_id: The ~okeanos id of the VM that acts as the master node.
+    :param slave_ids: The ~okeanos ids of the VMs that act as the slave nodes.
+    :param public_ip_id: The ~okeanos id of the public ip assigned to master node.
+    :param private_network_id: The ~okeanos id of the private network used by the lambda instance.
+    """
+
+    # Create cyclades compute client.
+    cyclades_compute_url = AstakosClient(auth_url, auth_token).get_endpoint_url(
+        CycladesComputeClient.service_type)
+    cyclades_compute_client = CycladesComputeClient(cyclades_compute_url, auth_token)
+
+    # Create cyclades network client.
+    cyclades_network_url = AstakosClient(auth_url, auth_token).get_endpoint_url(
+        CycladesNetworkClient.service_type)
+    cyclades_network_client = CycladesNetworkClient(cyclades_network_url, auth_token)
+
+    # Get the current status of the VMs.
+    master_status = cyclades_compute_client.get_server_details(master_id)["status"]
+    slaves_status = []
+    for slave_id in slave_ids:
+        slaves_status.append(cyclades_compute_client.get_server_details(slave_id)["status"])
+
+    # Destroy all the VMs without caring for properly stopping the lambda services.
+    # Destroy master node.
+    if cyclades_compute_client.get_server_details(master_id)["status"] != "DELETED":
+        cyclades_compute_client.delete_server(master_id)
+
+    # Destroy all slave nodes.
+    for slave_id in slave_ids:
+        if cyclades_compute_client.get_server_details(slave_id)["status"] != "DELETED":
+            cyclades_compute_client.delete_server(slave_id)
+
+    # Wait for all the VMs to be destroyed before destroyed the public ip and the
+    # private network.
+    cyclades_compute_client.wait_server(master_id, current_status=master_status)
+    for i, slave_id in enumerate(slave_ids):
+        cyclades_compute_client.wait_server(slave_id, current_status=slaves_status[i])
+
+    # Destroy the public ip.
+    cyclades_network_client.delete_floatingip(public_ip_id)
+
+    # Destroy the private network.
+    cyclades_network_client.delete_network(private_network_id)
+
+    # Delete the private key
+    delete_private_key(instance_uuid, master_id)
 
 
 if __name__ == "__main__":

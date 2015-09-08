@@ -6,8 +6,7 @@ from kamaki.clients.utils import https
 from kamaki.clients import ClientError
 from kamaki import defaults
 from kamaki.clients.astakos import AstakosClient
-from kamaki.clients.cyclades import CycladesComputeClient, CycladesNetworkClient
-from lambda_instance_manager import delete_private_key
+from kamaki.clients.cyclades import CycladesComputeClient
 
 
 def patch_certs(cert_path=None):
@@ -121,60 +120,3 @@ def lambda_instance_stop(auth_url, auth_token, master_id, slave_ids):
     # Wait until all slave nodes have been stopped.
     for slave_id in slave_ids:
         cyclades_compute_client.wait_server(slave_id, current_status="ACTIVE")
-
-
-def lambda_instance_destroy(instance_uuid, auth_url, auth_token,
-                            master_id, slave_ids, public_ip_id, private_network_id):
-    """
-    Destroys the specified lambda instance. The VMs of the lambda instance, along with the public
-    ip and the private network used are destroyed and the status of the lambda instance gets
-    changed to DESTROYED. There is no going back from this state, the entries are kept to the
-    database for reference.
-    :param auth_url: The authentication url for ~okeanos API.
-    :param auth_token: The authentication token of the owner of the lambda instance.
-    :param master_id: The ~okeanos id of the VM that acts as the master node.
-    :param slave_ids: The ~okeanos ids of the VMs that act as the slave nodes.
-    :param public_ip_id: The ~okeanos id of the public ip assigned to master node.
-    :param private_network_id: The ~okeanos id of the private network used by the lambda instance.
-    """
-
-    # Create cyclades compute client.
-    cyclades_compute_url = AstakosClient(auth_url, auth_token).get_endpoint_url(
-        CycladesComputeClient.service_type)
-    cyclades_compute_client = CycladesComputeClient(cyclades_compute_url, auth_token)
-
-    # Create cyclades network client.
-    cyclades_network_url = AstakosClient(auth_url, auth_token).get_endpoint_url(
-        CycladesNetworkClient.service_type)
-    cyclades_network_client = CycladesNetworkClient(cyclades_network_url, auth_token)
-
-    # Get the current status of the VMs.
-    master_status = cyclades_compute_client.get_server_details(master_id)["status"]
-    slaves_status = []
-    for slave_id in slave_ids:
-        slaves_status.append(cyclades_compute_client.get_server_details(slave_id)["status"])
-
-    # Destroy all the VMs without caring for properly stopping the lambda services.
-    # Destroy master node.
-    if cyclades_compute_client.get_server_details(master_id)["status"] != "DELETED":
-        cyclades_compute_client.delete_server(master_id)
-
-    # Destroy all slave nodes.
-    for slave_id in slave_ids:
-        if cyclades_compute_client.get_server_details(slave_id)["status"] != "DELETED":
-            cyclades_compute_client.delete_server(slave_id)
-
-    # Wait for all the VMs to be destroyed before destroyed the public ip and the
-    # private network.
-    cyclades_compute_client.wait_server(master_id, current_status=master_status)
-    for i, slave_id in enumerate(slave_ids):
-        cyclades_compute_client.wait_server(slave_id, current_status=slaves_status[i])
-
-    # Destroy the public ip.
-    cyclades_network_client.delete_floatingip(public_ip_id)
-
-    # Destroy the private network.
-    cyclades_network_client.delete_network(private_network_id)
-
-    # Delete the private key
-    delete_private_key(instance_uuid, master_id)

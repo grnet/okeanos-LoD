@@ -76,8 +76,14 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slav
 
     try:
         # Destroy all VMs, the public ip and the private network of the lambda instance.
-        utils.lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slave_ids, public_ip_id,
-                                      private_network_id)
+        lambda_instance_manager.lambda_instance_destroy(
+            instance_uuid,
+            auth_url,
+            auth_token,
+            master_id,
+            slave_ids,
+            public_ip_id,
+            private_network_id)
 
         # Update lambda instance status on the database to destroyed.
         events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.DESTROYED)
