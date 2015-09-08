@@ -1,9 +1,11 @@
+import os
 import time
+from storm import Storm
 from fokia.provisioner import Provisioner
 from fokia.ansible_manager import Manager
-# import os
 # import inspect
 
+from storm.parsers import ssh_config_parser
 # script_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 script_path = '/var/www/okeanos-LoD/core/fokia'
 
@@ -62,8 +64,6 @@ def create_lambda_instance(auth_token=None, master_name='lambda-master',
     ansible_result = ansible_manager.run_playbook(
         playbook_file=script_path + "/../../ansible/playbooks/cluster-install.yml")
 
-    ansible_manager.cleanup()
-
     provisioner_duration = provisioner_time - start_time
     ansible_duration = time.time() - provisioner_time
 
@@ -74,7 +74,7 @@ def create_lambda_instance(auth_token=None, master_name='lambda-master',
     return ansible_result
 
 
-def create_cluster(auth_token=None, master_name='lambda-master',
+def create_cluster(cluster_id, auth_token=None, master_name='lambda-master',
                    slaves=1, vcpus_master=4, vcpus_slave=4,
                    ram_master=4096, ram_slave=4096, disk_master=40, disk_slave=40,
                    ip_allocation='master', network_request=1, project_name='lambda.grnet.gr'):
@@ -92,6 +92,7 @@ def create_cluster(auth_token=None, master_name='lambda-master',
                                       project_name=project_name)
 
     provisioner_response = provisioner.get_cluster_details()
+
     master_id = provisioner_response['nodes']['master']['id']
     master_ip = provisioner.get_server_private_ip(master_id)
     provisioner_response['nodes']['master']['internal_ip'] = master_ip
@@ -99,12 +100,35 @@ def create_cluster(auth_token=None, master_name='lambda-master',
     for i, slave in enumerate(provisioner_response['nodes']['slaves']):
         slave_ip = provisioner.get_server_private_ip(slave['id'])
         provisioner_response['nodes']['slaves'][i]['internal_ip'] = slave_ip
-    provisioner_response['pk'] = provisioner.get_private_key()
+    # provisioner_response['pk'] = provisioner.get_private_key()
+
+    add_private_key(cluster_id, provisioner_response)
 
     ansible_manager = Manager(provisioner_response)
     ansible_manager.create_inventory()
 
     return ansible_manager, provisioner_response
+
+
+def add_private_key(cluster_id, provisioner_response):
+    kf_path = os.path.expanduser('~') + '/.ssh/lambda_instances/' + str(cluster_id)
+    with open(kf_path, 'w') as kf:
+        kf.write(provisioner_response['pk'])
+    os.chmod(kf_path, 0o600)
+    sconfig = ssh_config_parser.ConfigParser(os.path.expanduser('~') + '/.ssh/config')
+    sconfig.load()
+    name = 'snf-' + str(provisioner_response['nodes']['master']['id']) + '.vm.okeanos.grnet.gr'
+    sconfig.add_host(name, {
+        'IdentityFile': kf_path
+    })
+    sconfig.write_to_ssh_config()
+
+
+def delete_private_key(cluster_id, master_id):
+    sconfig = Storm(os.path.expanduser('~') + '/.ssh/config')
+    name = 'snf-' + str(master_id) + '.vm.okeanos.grnet.gr'
+    sconfig.delete_entry(name)
+    os.remove(os.path.expanduser('~') + '/.ssh/lambda_instances/' + cluster_id)
 
 
 def run_playbook(ansible_manager, playbook):
@@ -118,6 +142,7 @@ def destroy_cluster(cloud_name, cluster_id):
     details = get_cluster_details(cluster_id=cluster_id)
     if details is not None:
         provisioner.delete_lambda_cluster(details)
+    delete_private_key(cluster_id, details)
 
 
 if __name__ == "__main__":

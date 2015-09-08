@@ -7,6 +7,7 @@ from kamaki.clients import ClientError
 from kamaki import defaults
 from kamaki.clients.astakos import AstakosClient
 from kamaki.clients.cyclades import CycladesComputeClient, CycladesNetworkClient
+from lambda_instance_manager import delete_private_key
 
 
 def patch_certs(cert_path=None):
@@ -122,8 +123,8 @@ def lambda_instance_stop(auth_url, auth_token, master_id, slave_ids):
         cyclades_compute_client.wait_server(slave_id, current_status="ACTIVE")
 
 
-def lambda_instance_destroy(auth_url, auth_token, master_id, slave_ids, public_ip_id,
-                            private_network_id):
+def lambda_instance_destroy(instance_uuid, auth_url, auth_token,
+                            master_id, slave_ids, public_ip_id, private_network_id):
     """
     Destroys the specified lambda instance. The VMs of the lambda instance, along with the public
     ip and the private network used are destroyed and the status of the lambda instance gets
@@ -174,3 +175,6 @@ def lambda_instance_destroy(auth_url, auth_token, master_id, slave_ids, public_i
 
     # Destroy the private network.
     cyclades_network_client.delete_network(private_network_id)
+
+    # Delete the private key
+    delete_private_key(instance_uuid, master_id)

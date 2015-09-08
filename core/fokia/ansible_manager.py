@@ -21,12 +21,12 @@ class Manager:
                  'ip': response['internal_ip']})
         self.cidr = provisioner_response['subnet']['cidr']
 
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as kf:
-            kf.write(provisioner_response['pk'])
-            self.temp_file = kf.name
-            # print self.temp_file
-        ansible.constants.ANSIBLE_SSH_ARGS = '-o "ProxyCommand ssh -i %s -o StrictHostKeyChecking=no -W %%h:%%p root@%s.vm.okeanos.grnet.gr"' \
-                                             % (self.temp_file, self.inventory['master']['name'])
+        # with tempfile.NamedTemporaryFile(mode='w', delete=False) as kf:
+        #     kf.write(provisioner_response['pk'])
+        #     self.temp_file = kf.name
+        # print self.temp_file
+        ansible.constants.ANSIBLE_SSH_ARGS = '-o "ProxyCommand ssh -o StrictHostKeyChecking=no -W %%h:%%p root@%s.vm.okeanos.grnet.gr"' \
+                                             % (self.inventory['master']['name'])
         ansible.constants.DEFAULT_TIMEOUT = 30
         # ansible.constants.DEFAULT_PRIVATE_KEY_FILE = self.temp_file
         ansible.constants.HOST_KEY_CHECKING = False
@@ -49,7 +49,7 @@ class Manager:
         self.ansible_inventory = ansible.inventory.Inventory(host_list=all_hosts)
 
         all_group = self.ansible_inventory.get_group('all')
-        all_group.set_variable('ansible_ssh_private_key_file', self.temp_file)
+        # all_group.set_variable('ansible_ssh_private_key_file', self.temp_file)
         all_group.set_variable('local_net', self.cidr)
 
         all_ansible_hosts = all_group.get_hosts()
@@ -91,9 +91,6 @@ class Manager:
         playbook_result = pb.run()
         return playbook_result
 
-    def cleanup(self):
-        os.remove(self.temp_file)
-
 
 if __name__ == "__main__":
     response = {
@@ -112,5 +109,3 @@ if __name__ == "__main__":
     # manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/test/testproxy.yml", tags=['install'])
 
     manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/cluster-install.yml")
-
-    manager.cleanup()
