@@ -1,7 +1,6 @@
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 import logging
-import re
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -16,8 +15,8 @@ from base64 import b64encode
 
 from fokia.provisioner_base import ProvisionerBase
 
-
 storage_templates = ['drdb', 'ext_vlmc']
+
 
 class Provisioner(ProvisionerBase):
     """
@@ -25,8 +24,6 @@ class Provisioner(ProvisionerBase):
     """
 
     def __init__(self, auth_token, cloud_name=None):
-
-        #super(C,self).__init__()
         super(Provisioner, self).__init__(auth_token=auth_token, cloud_name=cloud_name)
         self.master = None
         self.slaves = None
@@ -137,7 +134,6 @@ class Provisioner(ProvisionerBase):
             }
             return inventory
 
-
     """
     DELETE RESOURCES
     """
@@ -165,7 +161,6 @@ class Provisioner(ProvisionerBase):
         if (not self.delete_vpn(vpn)):
             msg = 'Error deleting node with id ', node
             raise ClientError(msg, error_fatal)
-
 
     """
     GET RESOURCES

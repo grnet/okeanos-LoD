@@ -11,12 +11,11 @@ from kamaki.clients import ClientError
 from kamaki.cli.config import Config as KamakiConfig
 from fokia.utils import patch_certs
 from fokia.cluster_error_constants import *
-from Crypto.PublicKey import RSA
-from base64 import b64encode
 
 import abc
 
 storage_templates = ['drdb', 'ext_vlmc']
+
 
 class ProvisionerBase:
     """
@@ -33,7 +32,8 @@ class ProvisionerBase:
             self.config = KamakiConfig()
             patch_certs(self.config.get('global', 'ca_certs'))
             if cloud_name is None:
-                cloud_section = self.config._sections['cloud'].get(self.config.get('global', 'default_cloud'))
+                cloud_section = self.config._sections['cloud'].get(self.config.get('global',
+                                                                                   'default_cloud'))
             else:
                 cloud_section = self.config._sections['cloud'].get(cloud_name)
             if not cloud_section:
@@ -115,10 +115,10 @@ class ProvisionerBase:
         :return: first project_id that matches the project name
         """
         filter = {
-            'name':  kwargs.get("project_name"),
+            'name': kwargs.get("project_name"),
             'state': kwargs.get("project_state"),
             'owner': kwargs.get("project_owner"),
-            'mode':  kwargs.get("project_mode"),
+            'mode': kwargs.get("project_mode"),
         }
         logger.info("Retrieving project")
         return self.astakos.get_projects(**filter)[0]
@@ -137,7 +137,7 @@ class ProvisionerBase:
         """
         flavor_id = flavor['id']
         # Get image
-        if image_id == None:
+        if image_id is None:
             image_id = self.image_id
         else:
             image_id = self.find_image(**kwargs)['id']
@@ -149,7 +149,7 @@ class ProvisionerBase:
             ip_obj['fixed_ip'] = ip['floating_ip_address']
             networks.append(ip_obj)
         networks.append({'uuid': kwargs['net_id']})
-        if personality == None:
+        if personality is None:
             personality = []
         try:
             okeanos_response = self.cyclades.create_server(name=vm_name,
@@ -216,8 +216,8 @@ class ProvisionerBase:
         :return: returns True if successfull
         """
         try:
-            port = self.network_client.create_port(network_id=net_id,
-                                                   device_id=vm_id)
+            self.network_client.create_port(network_id=net_id,
+                                            device_id=vm_id)
             return True
         except ClientError as ex:
             raise ex
@@ -230,10 +230,10 @@ class ProvisionerBase:
         :return: returns True if successfull
         """
         try:
-            port = self.network_client.create_port(network_id=ip['floating_network_id'],
-                                                   device_id=vm_id,
-                                                   fixed_ips=[dict(
-                                                       ip_address=ip['floating_ip_address']), ])
+            self.network_client.create_port(network_id=ip['floating_network_id'],
+                                            device_id=vm_id,
+                                            fixed_ips=[dict(
+                                                ip_address=ip['floating_ip_address']), ])
             return True
         except ClientError as ex:
             raise ex
