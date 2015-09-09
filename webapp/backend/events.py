@@ -1,6 +1,7 @@
 from celery import shared_task
 
-from .models import LambdaInstance, Server, PrivateNetwork, Application
+from .models import LambdaInstance, Server, PrivateNetwork, Application,\
+    LambdaInstanceApplicationConnection
 
 
 @shared_task
@@ -84,6 +85,7 @@ def create_new_application(uuid, name, path, description, owner):
     Application.objects.create(uuid=uuid, name=name, path=path, description=description,
                                owner=owner)
 
+
 @shared_task
 def delete_application(uuid):
     """
@@ -94,3 +96,49 @@ def delete_application(uuid):
 
     Application.objects.get(uuid=uuid).delete()
 
+
+@shared_task
+def set_application_status(application_uuid, status, failure_message=""):
+    """
+
+    :param application_uuid:
+    :param status:
+    :param failure_message:
+    :return:
+    """
+
+    application = Application.objects.get(uuid=application_uuid)
+    application.status = status
+    application.failure_message = failure_message
+    application.save()
+
+
+@shared_task
+def create_lambda_instance_application_connection(lambda_instance_uuid, application_uuid):
+    """
+    Creates a new entry of a connection between a lambda instance and an application on the
+    database. The existence of the lambda instance and the application should have been
+    previously checked.
+    :param lambda_instance_uuid: The uuid of the lambda instance.
+    :param application_uuid: The uuid of the application
+    """
+
+    lambda_instance = LambdaInstance.objects.get(uuid=lambda_instance_uuid)
+    application = Application.objcets.get(uuid=application_uuid)
+    LambdaInstanceApplicationConnection.objects.create(lambda_instance=lambda_instance,
+                                                       application=application)
+
+
+@shared_task
+def delete_lambda_instance_application_connection(lambda_instance_uuid, application_uuid):
+    """
+    Deletes an entry of a connection between a lambda instance an an application on the database.
+    The existence of the lambda instance and the application should have been previously checked.
+    :param lambda_instance_uuid: The uuid of the lambda instance.
+    :param application_uuid: The uuid of the application.
+    """
+
+    lambda_instance = LambdaInstance.objects.get(uuid=lambda_instance_uuid)
+    application = Application.objects.get(uuid=application_uuid)
+    LambdaInstanceApplicationConnection.objects.get(lambda_instance=lambda_instance,
+                                                    application=application).delete()

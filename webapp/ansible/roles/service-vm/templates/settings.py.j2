@@ -147,11 +147,23 @@ CELERY_ROUTES = {
         'queue': 'events_queue',
         'routing_key': 'event_key',
     },
-        'backend.events.create_new_application': {
+    'backend.events.create_new_application': {
         'queue': 'events_queue',
         'routing_key': 'event_key',
     },
-        'backend.events.delete_application': {
+    'backend.events.delete_application': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+    'backend.events.set_application_status': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+    'backend.events.create_lambda_instance_application_connection': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+    'backend.events.delete_lambda_instance_application_connection': {
         'queue': 'events_queue',
         'routing_key': 'event_key',
     },

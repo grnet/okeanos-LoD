@@ -59,6 +59,19 @@ class Application(models.Model):
     path = models.CharField(max_length=400, default="lambda_applications")
     description = models.CharField(max_length=400, blank=True, default='')
     owner = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, null=True)
+    failure_message = models.TextField(default="",
+                                       help_text="Error message regarding this application.")
+
+    UPLOADED = "0"
+    UPLOADING = "1"
+    FAILED_TO_UPLOAD = "2"
+    status_choices = (
+        (UPLOADED, 'UPLOADED'),
+        (UPLOADING, 'UPLOADING'),
+        (FAILED_TO_UPLOAD, 'FAILED_TO_UPLOAD'),
+    )
+    status = models.CharField(max_length=10, choices=status_choices, default=UPLOADING,
+                              help_text="The status of this application.")
 
     class Meta:
         verbose_name = "ProjectFile"
@@ -262,3 +275,14 @@ class LambdaInstanceProjectConnection(models.Model):
     class Meta:
         verbose_name = "LambdaInstanceProjectConnection"
         app_label = 'backend'
+
+
+class LambdaInstanceApplicationConnection(models.Model):
+    """
+    Connection table for lambda instance and application.
+    lambda_instance: models.LambdaInstance
+    application: models.Application
+    """
+
+    lambdaInstance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False)
+    application = models.ForeignKey(Application, null=False, blank=False, unique=False)

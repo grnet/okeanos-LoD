@@ -2,9 +2,12 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+import os
+
 from kamaki.clients.utils import https
 from kamaki.clients import ClientError
 from kamaki import defaults
+from kamaki.clients.pithos import PithosClient
 from kamaki.clients.astakos import AstakosClient
 from kamaki.clients.cyclades import CycladesComputeClient
 
@@ -120,3 +123,54 @@ def lambda_instance_stop(auth_url, auth_token, master_id, slave_ids):
     # Wait until all slave nodes have been stopped.
     for slave_id in slave_ids:
         cyclades_compute_client.wait_server(slave_id, current_status="ACTIVE")
+
+
+def upload_file_to_pithos(auth_url, auth_token, container_name, file_descriptor):
+    """
+    Uploads a given file to a specified container, under a specified name on Pithos.
+    :param auth_url: The authentication url for ~okeanos API.
+    :param auth_token: The authentication token of the user.
+    :param container_name: The name of the Pithos container to be used.
+    :param file_descriptor: A file descriptor of the file saved of the local file system.
+    """
+
+    # Create Astakos client.
+    astakos_client = AstakosClient(auth_url, auth_token)
+
+    # Create Pithos client.
+    pithos_url = astakos_client.astakos.get_endpoint_url(PithosClient.service_type)
+    pithos_client = PithosClient(pithos_url, auth_token)
+    pithos_client.account = astakos_client.user_info['id']
+
+    # Choose the container on Pithos that is used to store application. If the container doesn't
+    # exist, create it.
+    containers = pithos_client.list_containers()
+    if not any(container['name'] == container_name for container in containers):
+        pithos_client.create_container(container_name)
+    pithos_client.container = container_name
+
+    # Upload file to Pithos.
+    pithos_client.upload_object(os.path.basename(file_descriptor.name), file_descriptor)
+
+
+def delete_file_from_pithos(auth_url, auth_token, container_name, filename):
+    """
+    Deletes a file from a specified container on Pithos.
+    :param auth_url: The authentication url for ~okeanos API.
+    :param auth_token: The authentication token of the user.
+    :param container_name: The name of the Pithos container to be used.
+    :param filename: The name of the file to be deleted.
+    """
+
+    # Create Astakos client.
+    astakos_client = AstakosClient(auth_url, auth_token)
+
+    # Create Pithos client.
+    pithos_url = astakos_client.astakos.get_endpoint_url(PithosClient.service_type)
+    pithos_client = PithosClient(pithos_url, auth_token)
+    pithos_client.account = astakos_client.user_info['id']
+    pithos_client.container = container_name
+
+    # Delete the application from Pithos.
+    pithos_client.delete_object(filename)
+
