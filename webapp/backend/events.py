@@ -1,8 +1,6 @@
 from celery import shared_task
 
-from .models import LambdaInstance
-from .models import Server
-from .models import PrivateNetwork
+from .models import LambdaInstance, Server, PrivateNetwork, Application
 
 
 @shared_task
@@ -70,3 +68,29 @@ def insert_cluster_info(instance_uuid, specs, provisioner_response):
                                   lambda_instance=lambda_instance,
                                   subnet=provisioner_response['subnet']['cidr'],
                                   gateway=provisioner_response['subnet']['gateway_ip'])
+
+
+@shared_task
+def create_new_application(uuid, name, path, description, owner):
+    """
+    Creates a new entry of an application on the database.
+    :param uuid: The uuid of the new application.
+    :param name: The name of the new application.
+    :param path: The path where the new application is stored on Pithos.
+    :param description: The provided description of the new application.
+    :param owner: The owner of the new application.
+    """
+
+    Application.objects.create(uuid=uuid, name=name, path=path, description=description,
+                               owner=owner)
+
+@shared_task
+def delete_application(uuid):
+    """
+    Deletes a specified application from the database. The existence of the application should
+    have been previously checked.
+    :param uuid: The uuid of the application to be deleted.
+    """
+
+    Application.objects.get(uuid=uuid).delete()
+

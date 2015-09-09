@@ -20,9 +20,12 @@ from rest_framework_xml.renderers import XMLRenderer
 from fokia.utils import check_auth_token
 
 from . import tasks, events
-from .models import ProjectFile, LambdaInstance
-from .serializers import ProjectFileSerializer, LambdaInstanceSerializer
+from .models import Application, LambdaInstance
+from .serializers import ApplicationSerializer, LambdaInstanceSerializer
 from .authenticate_user import KamakiTokenAuthentication
+
+from kamaki.clients.astakos import AstakosClient
+from kamaki.clients.pithos import PithosClient
 
 
 def authenticate(request):
@@ -43,64 +46,97 @@ def authenticate(request):
         return JsonResponse({"errors": [error_info]}, status=401)
 
 
-class ProjectFileList(APIView):
+class Applications(APIView):
     """
-    List uploaded files, upload a file to the users folder.
+    Implements the calls to upload, list or delete applications.
     """
 
     authentication_classes = KamakiTokenAuthentication,
     permission_classes = IsAuthenticated,
-    renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
+    queryset = Application.objects.all()
+    serializer_class = ApplicationSerializer
 
+    # Get method is used to get a list of all the uploaded applications.
     def get(self, request, format=None):
-        files = ProjectFile.objects.filter(owner=request.user)
-        file_serializer = ProjectFileSerializer(files, many=True)
-        return Response(file_serializer.data, status=200, content_type=format)
+        serializer = ApplicationSerializer(self.queryset, many=True)
+        return Response(serializer.data, status=200, content_type=format)
 
-    def put(self, request, format=None):
+    # Post method is used to upload an application.
+    def post(self, request, format=None):
+        # Check if a file was sent with the request.
         uploaded_file = request.FILES.get('file')
         if not uploaded_file:
             return Response({"errors": [{"message": "No file uploaded", "code": 422}]}, status=422)
-        description = request.data.get('description', '')
-        new_file_path = path.join(settings.FILE_STORAGE, uploaded_file.name)
 
+        # Check if another file with same name already exists.
+        if self.queryset.filter(name=uploaded_file.name).count() > 0:
+            return Response({"errors": [{"message": "File name already exists"}]}, status=400)
+
+        # Get the description provided with the request.
+        description = request.data.get('description', '')
+
+        # Store uploaded file to local file system before sending it to Pithos.
         if not path.exists(settings.FILE_STORAGE):
             mkdir(settings.FILE_STORAGE)
 
-        if ProjectFile.objects.filter(name=uploaded_file.name).count() > 0:
-            return Response({"errors": [{"message": "File name already exists"}]}, status=400)
+        new_file_path = path.join(settings.FILE_STORAGE, uploaded_file.name)
 
-        with open(new_file_path, 'wb+') as f:
-            f.write(uploaded_file.read())
-        if path.isfile(new_file_path):
+        local_file = open(new_file_path, 'wb+')
+        # Djnago suggest to always save the uploaded file using chunks. That will avoiding reading the whole
+        # file into memory and possibly overwhelming it.
+        for chunk in uploaded_file.chunks():
+            local_file.write(chunk)
 
-            # TODO: Change this to an event call that updates the db
-            file_uuid = uuid.uuid4()
-            ProjectFile.objects.create(name=uploaded_file.name,
-                                       path=new_file_path,
-                                       description=description,
-                                       owner=request.user,
-                                       uuid=file_uuid)
-            return Response({"result": "success"}, status=201)
+        # Upload file from local file system to Pithos.
+        authentication_url = 'https://accounts.okeanos.grnet.gr/identity/v2.0'
+        authentication_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+        astakos = AstakosClient(authentication_url, authentication_token)
+        pithos_url = astakos.get_endpoint_url(PithosClient.service_type)
+        pithos = PithosClient(pithos_url, authentication_token)
+        pithos.account = astakos.user_info['id']
 
+        if(not any(container['name'] == "lambda_applications" for container in pithos.list_containers())):
+            pithos.create_container("lambda_applications", project_id="6ff62e8e-0ce9-41f7-ad99-13a18ecada5f")
+
+        pithos.container = "lambda_applications"
+        pithos.upload_object(uploaded_file.name, local_file)
+        local_file.close()
+
+        # Remove the file from the local file system.
+        remove(new_file_path)
+
+        # Create an event to insert a new entry on the database.
+        file_uuid = uuid.uuid4()
+        events.create_new_application.delay(file_uuid, uploaded_file.name, "lambda_applications",
+                                            description, request.user)
+
+        return Response({"uuid": file_uuid}, status=201)
+
+    # Delete method is used to delete a specified application.
     def delete(self, request, format=None):
-        file_uuid = request.data.get('uuid')
-        if not file_uuid:
+        # Get the provided uuid.
+        uuid = request.data.get('uuid')
+        if not uuid:
             return Response({"errors": [{"message": "missing id header"}]},
                             status=422)
-        try:
-            file_data = ProjectFile.objects.get(uuid=file_uuid)
-        except ProjectFile.DoesNotExist:
-            return Response({"errors": [{"message": "file does not exist"}]},
-                            status=400)
 
-        if file_data.owner != request.user:
-            return Response({"errors": [{"message": "file does not exist"}]},
-                            status=400)
-        # TODO: Change this to an event call that update the db
-        if path.isfile(file_data.path):
-            remove(file_data.path)
-        file_data.delete()
+        # Check if the specified application exists.
+        serializer = ApplicationSerializer(get_object_or_404(self.queryset, uuid=uuid))
+
+        authentication_url = 'https://accounts.okeanos.grnet.gr/identity/v2.0'
+        authentication_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+        astakos = AstakosClient(authentication_url, authentication_token)
+        pithos_url = astakos.get_endpoint_url(PithosClient.service_type)
+        pithos = PithosClient(pithos_url, authentication_token)
+        pithos.account = astakos.user_info['id']
+        pithos.container = "lambda_applications"
+
+        # Delete the application from Pithos.
+        pithos.delete_object(serializer.data['name'])
+
+        # Create an event to remove the application from the database.
+        events.delete_application(uuid)
+
         return Response({"result": "success"}, status=200)
 
 

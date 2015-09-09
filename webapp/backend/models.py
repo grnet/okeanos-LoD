@@ -52,11 +52,11 @@ class Project(models.Model):
         app_label = 'backend'
 
 
-class ProjectFile(models.Model):
-    id = models.AutoField("id", primary_key=True, unique=True, help_text="Project file id.")
-    uuid = models.UUIDField("uuid", unique=True, default=uuid.uuid4, help_text="Project file uuid.")
-    name = models.CharField(max_length=100)
-    path = models.CharField(max_length=400)
+class Application(models.Model):
+    id = models.AutoField("id", primary_key=True, unique=True, help_text="Application id.")
+    uuid = models.UUIDField("uuid", unique=True, default=uuid.uuid4, help_text="Application uuid.")
+    name = models.CharField(max_length=100, default="")
+    path = models.CharField(max_length=400, default="lambda_applications")
     description = models.CharField(max_length=400, blank=True, default='')
     owner = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, null=True)
 
