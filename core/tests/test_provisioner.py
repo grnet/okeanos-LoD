@@ -170,13 +170,16 @@ test_vm = {u'addresses': {}, u'links': [
      u'rel': u'bookmark'}], u'image':
     {u'id': u'0e399015-8723-4c78-8198-75bdf693cdde', u'links': [
         {
-            u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/images/0e399015-8723-4c78-8198-75bdf693cdde',
+            u'href': u'https://cyclades.okeanos.grnet.gr/compute/'
+                     u'v2.0/images/0e399015-8723-4c78-8198-75bdf693cdde',
             u'rel': u'self'},
         {
-            u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/images/0e399015-8723-4c78-8198-75bdf693cdde',
+            u'href': u'https://cyclades.okeanos.grnet.gr/compute/'
+                     u'v2.0/images/0e399015-8723-4c78-8198-75bdf693cdde',
             u'rel': u'bookmark'},
         {
-            u'href': u'https://cyclades.okeanos.grnet.gr/image/v1.0/images/0e399015-8723-4c78-8198-75bdf693cdde',
+            u'href': u'https://cyclades.okeanos.grnet.gr/image/'
+                     u'v1.0/images/0e399015-8723-4c78-8198-75bdf693cdde',
             u'rel': u'alternate'}]},
     u'suspended': False, u'flavor': {u'id': 3, u'links': [
         {u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/3',
