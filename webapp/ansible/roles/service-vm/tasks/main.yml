@@ -27,6 +27,9 @@
   - name: Install Fokia.
     command: python setup.py install chdir="{{ repository_download_path }}/okeanos-LoD/core/"
 
+  - name: Create lambda_instances dir for ssh keys
+    file: path=/home/celery/.ssh/lambda_instances state=directory mode=0755 owner=celery group=celery
+
   - name: Setup Django database configuration.
     template: src=settings.py.j2 dest={{ repository_download_path}}/okeanos-LoD/webapp/webapp/settings.py
     notify:
