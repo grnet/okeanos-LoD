@@ -109,13 +109,21 @@ def add_private_key(cluster_id, provisioner_response):
     sconfig.add_host(name, {
         'IdentityFile': kf_path
     })
+    for response in provisioner_response['nodes']['slaves']:
+        name = 'snf-' + str(response['id']) + '.local'
+        sconfig.add_host(name, {
+            'IdentityFile': kf_path
+        })
     sconfig.write_to_ssh_config()
 
 
-def delete_private_key(cluster_id, master_id):
+def delete_private_key(cluster_id, master_id, slave_ids):
     sconfig = Storm(os.path.expanduser('~') + '/.ssh/config')
     name = 'snf-' + str(master_id) + '.vm.okeanos.grnet.gr'
     sconfig.delete_entry(name)
+    for slave_id in slave_ids:
+        name = 'snf-' + str(slave_id) + '.local'
+        sconfig.delete_entry(name)
     os.remove(os.path.expanduser('~') + '/.ssh/lambda_instances/' + cluster_id)
 
 
@@ -179,7 +187,7 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token,
     cyclades_network_client.delete_network(private_network_id)
 
     # Delete the private key
-    delete_private_key(instance_uuid, master_id)
+    delete_private_key(instance_uuid, master_id, slave_ids)
 
 
 if __name__ == "__main__":
