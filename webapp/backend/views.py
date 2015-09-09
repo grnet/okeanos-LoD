@@ -7,7 +7,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, generics
 from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
@@ -46,7 +46,7 @@ def authenticate(request):
         return JsonResponse({"errors": [error_info]}, status=401)
 
 
-class Applications(APIView):
+class Application(generics.GenericAPIView):
     """
     Implements the calls to upload, list or delete applications.
     """
@@ -58,7 +58,7 @@ class Applications(APIView):
 
     # Get method is used to get a list of all the uploaded applications.
     def get(self, request, format=None):
-        serializer = ApplicationSerializer(self.queryset, many=True)
+        serializer = ApplicationSerializer(self.get_queryset(), many=True)
         return Response(serializer.data, status=200, content_type=format)
 
     # Post method is used to upload an application.
@@ -69,17 +69,17 @@ class Applications(APIView):
             return Response({"errors": [{"message": "No file uploaded", "code": 422}]}, status=422)
 
         # Check if another file with same name already exists.
-        if self.queryset.filter(name=uploaded_file.name).count() > 0:
+        if self.get_queryset().filter(name=uploaded_file.name).count() > 0:
             return Response({"errors": [{"message": "File name already exists"}]}, status=400)
 
         # Get the description provided with the request.
         description = request.data.get('description', '')
 
         # Store uploaded file to local file system before sending it to Pithos.
-        if not path.exists(settings.FILE_STORAGE):
-            mkdir(settings.FILE_STORAGE)
+        if not path.exists(settings.TEMPORARY_FILE_STORAGE):
+            mkdir(settings.TEMPORARY_FILE_STORAGE)
 
-        new_file_path = path.join(settings.FILE_STORAGE, uploaded_file.name)
+        new_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, uploaded_file.name)
 
         local_file = open(new_file_path, 'wb+')
         # Djnago suggest to always save the uploaded file using chunks. That will avoiding reading the whole
@@ -121,7 +121,7 @@ class Applications(APIView):
                             status=422)
 
         # Check if the specified application exists.
-        serializer = ApplicationSerializer(get_object_or_404(self.queryset, uuid=uuid))
+        serializer = ApplicationSerializer(get_object_or_404(self.get_queryset(), uuid=uuid))
 
         authentication_url = 'https://accounts.okeanos.grnet.gr/identity/v2.0'
         authentication_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
@@ -168,12 +168,12 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
                 first_to_retrieve = (page - 1) * limit
                 last_to_retrieve = page * limit
                 serializer = LambdaInstanceSerializer(
-                    self.queryset[first_to_retrieve:last_to_retrieve], many=True)
+                    self.get_queryset()[first_to_retrieve:last_to_retrieve], many=True)
         elif 'limit' in request.query_params or 'page' in request.query_params:
                 return Response({"errors": [{"message": "Missing parameter"}]},
                                 status=status.HTTP_400_BAD_REQUEST)
         else:
-                serializer = LambdaInstanceSerializer(self.queryset, many=True)
+                serializer = LambdaInstanceSerializer(self.get_queryset(), many=True)
 
         wanted_fields = ['id', 'uuid', 'name']
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
@@ -188,7 +188,7 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(lambda_instances_list, status=status.HTTP_200_OK)
 
     def retrieve(self, request, uuid, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=uuid))
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.get_queryset(), uuid=uuid))
 
         wanted_fields = ['id', 'uuid', 'name', 'instance_info']
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
@@ -205,7 +205,7 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 
     @detail_route(methods=['get'])
     def status(self, request, uuid, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=uuid))
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.get_queryset(), uuid=uuid))
 
         wanted_fields = ['id', 'uuid', 'name', 'status', 'failure_message']
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
@@ -219,7 +219,7 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 
     @detail_route(methods=['post'])
     def start(self, request, uuid, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=uuid))
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.get_queryset(), uuid=uuid))
         data = serializer.data
 
         # Check the current status of the lambda instance.
@@ -257,7 +257,7 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 
     @detail_route(methods=['post'])
     def stop(self, request, uuid, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=uuid))
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.get_queryset(), uuid=uuid))
         data = serializer.data
 
         # Check the current status of the lambda instance.
@@ -294,7 +294,7 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
 
     def destroy(self, request, uuid, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.queryset, uuid=uuid))
+        serializer = LambdaInstanceSerializer(get_object_or_404(self.get_queryset(), uuid=uuid))
         data = serializer.data
 
         # Check the current status of the lambda instance.

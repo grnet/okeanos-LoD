@@ -13,7 +13,7 @@ lambda_instances_router.include_format_suffixes = False
 
 urlpatterns = [
     url(r'^authenticate/?$', views.authenticate),
-    url(r'^apps/?$', views.Applications.as_view()),
+    url(r'^apps/?$', views.Application.as_view()),
     url(r'^create_lambda_instance/?$', views.CreateLambdaInstance.as_view(),
         name='create_lambda_instance'),
     url(r'^', include(lambda_instances_router.urls))

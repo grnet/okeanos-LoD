@@ -147,10 +147,15 @@ CELERY_ROUTES = {
         'queue': 'events_queue',
         'routing_key': 'event_key',
     },
-
+        'backend.events.create_new_application': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+        'backend.events.delete_application': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
 }
-
-FILE_STORAGE = os.path.join(BASE_DIR, 'uploaded_files')
 
 REST_FRAMEWORK = {
   'DEFAULT_RENDERER_CLASSES': (
@@ -159,3 +164,6 @@ REST_FRAMEWORK = {
     'rest_framework_xml.renderers.XMLRenderer',
   )
 }
+
+TEMPORARY_FILE_STORAGE = os.path.abspath("/tmp/lambda_applications")
+
