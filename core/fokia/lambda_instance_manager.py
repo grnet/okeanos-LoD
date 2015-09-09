@@ -1,13 +1,12 @@
-import os
-import time
 from storm import Storm
+from storm.parsers import ssh_config_parser
 from fokia.provisioner import Provisioner
 from fokia.ansible_manager import Manager
-# import inspect
-
-from storm.parsers import ssh_config_parser
 from kamaki.clients.astakos import AstakosClient
 from kamaki.clients.cyclades import CycladesComputeClient, CycladesNetworkClient
+import time
+import os
+# import inspect
 # script_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 script_path = '/var/www/okeanos-LoD/core/fokia'
 
@@ -105,14 +104,17 @@ def add_private_key(cluster_id, provisioner_response):
     os.chmod(kf_path, 0o600)
     sconfig = ssh_config_parser.ConfigParser(os.path.expanduser('~') + '/.ssh/config')
     sconfig.load()
-    name = 'snf-' + str(provisioner_response['nodes']['master']['id']) + '.vm.okeanos.grnet.gr'
-    sconfig.add_host(name, {
+    master_name = 'snf-' + str(provisioner_response['nodes']['master']['id']) + \
+                  '.vm.okeanos.grnet.gr'
+    sconfig.add_host(master_name, {
         'IdentityFile': kf_path
     })
     for response in provisioner_response['nodes']['slaves']:
-        name = 'snf-' + str(response['id']) + '.local'
-        sconfig.add_host(name, {
-            'IdentityFile': kf_path
+        slave_name = 'snf-' + str(response['id']) + '.local'
+        sconfig.add_host(slave_name, {
+            'IdentityFile': kf_path,
+            'Proxycommand': 'ssh -o StrictHostKeyChecking=no -W %%h:%%p '
+                            'root@%s' % (master_name)
         })
     sconfig.write_to_ssh_config()
 
