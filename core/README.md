@@ -66,6 +66,8 @@ Note that you may retrieve your ~okeanos API token, after logging into the servi
 
 To create a lambda instance, one must run `python lambda_instance_manager.py` from within the `core/fokia` directory. To change the default settings (one master instance and one slave instance) one has to edit the `lambda_instance_manager.py` script prior to executing it.
 
+**Note:** The intended use described above is **only** for when run from the service vm.
+For development purposes, uncomment the `script_path` commented out and import `os` and `inspect` libs.
 
 
 ## Testing
