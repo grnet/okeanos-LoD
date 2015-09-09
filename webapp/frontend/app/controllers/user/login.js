@@ -5,8 +5,6 @@ window.App.LoginController = Ember.Controller.extend({
 
 actions : {
   login: function(options) {
-    var _this = this;
-    var adapter = this.container.lookup('adapter:login');
 
     this.setProperties({
       loginFailed: false,
@@ -21,16 +19,35 @@ actions : {
     namespace = this.store.adapterFor('login').namespace,
     postUrl = [ host, namespace ].join('/');
 
-    /*
-    adapter.ajax(response, 'GET').then(function() {
-      _this.set("isProcessing", false);
+    $.ajax({
+      url: postUrl,
+      headers: {
+          'Authorization':App.token,
+          'Access-Control-Allow-Origin': '*'
+      },
+      crossDomain: true,
+      method: 'GET',
+      dataType: 'json',
+      data: data,
+      xhrFields: {withCredentials: true},
+      success: function(data){
+        console.log('succes: '+data);
+      }
+    });
+
+    $.ajax({
+      url: postUrl,
+      headers:{"Authorization":App.token}
+    });/*.then(function() {
+      this.set("isProcessing", false);
       document.location = "/welcome";
     }.bind(this), function() {
-      _this.set("isProcessing", false);
-      _this.set("loginFailed", true);
-    }.bind(this));
-    */
+      this.set("isProcessing", false);
+      this.set("loginFailed", true);
+    }.bind(this));*/
 
+
+/*
     return new Ember.RSVP.Promise((resolve, reject) => {
         Ember.$.ajax({
             crossOrigin: true,
@@ -50,11 +67,9 @@ actions : {
             });
         });
     });
+*/
 
   },
-  completeTaskUrl: function(adapter) {
-  return adapter.buildURL('task', this.content.get('id')) + '/complete'
-},
   dismiss: function(){
     $('#token').focus();
     $('#id_alert_wrongtoken > button').click();
