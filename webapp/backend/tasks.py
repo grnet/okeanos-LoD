@@ -1,11 +1,14 @@
 import json
+
+from os import remove
+
 from celery import shared_task
 
 from kamaki.clients import ClientError
 
 from fokia import utils
 
-from .models import LambdaInstance
+from .models import LambdaInstance, Application
 from fokia import lambda_instance_manager
 from . import events
 
@@ -193,6 +196,55 @@ def create_lambda_instance(auth_token=None, instance_name='Lambda Instance',
     else:
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.FLINK_INSTALLED)
+
+
+@shared_task
+def upload_application_to_pithos(auth_url, auth_token, container_name, file_descriptor,
+                                 application_uuid):
+    """
+    Uploads an application to Pithos.
+    :param auth_url: The authentication url for ~okeanos API.
+    :param auth_token: The authentication token of the user.
+    :param container_name: The name of the Pithos container where the file will be uploaded.
+    :param file_descriptor: A file descriptor of the file saved of the local file system.
+    :param application_uuid: The uuid of the application to be uploaded.
+    """
+
+    try:
+        utils.upload_file_to_pithos(auth_url, auth_token, container_name, file_descriptor)
+
+        events.set_application_status.delay(application_uuid=application_uuid,
+                                            status=Application.UPLOADED)
+    except ClientError as exception:
+        events.set_application_status.delay(application_uuid, Application.FAILED,
+                                            exception.message)
+
+    # Release file descriptor resources.
+    file_descriptor.close()
+
+    # Remove the file from local file system.
+    remove(file_descriptor.name)
+
+
+@shared_task
+def delete_application_from_pithos(auth_url, auth_token, container_name, filename,
+                                   application_uuid):
+    """
+    Deletes an application from Pithos.
+    :param auth_url: The authentication url for ~okeanos API.
+    :param auth_token: The authentication token of the user.
+    :param container_name: The name of the Pithos container where the file will be uploaded.
+    :param filename: The name of the application to be deleted.
+    :param application_uuid: The uuid of the application to be deleted.
+    """
+
+    try:
+        utils.delete_file_from_pithos(auth_url, auth_token, container_name, filename)
+
+        events.delete_application.delay(application_uuid)
+    except ClientError as exception:
+        events.set_application_status.delay(application_uuid, Application.FAILED,
+                                            exception.message)
 
 
 def on_failure(exc, task_id, args, kwargs, einfo):

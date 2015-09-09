@@ -24,9 +24,6 @@ from .models import Application, LambdaInstance
 from .serializers import ApplicationSerializer, LambdaInstanceSerializer
 from .authenticate_user import KamakiTokenAuthentication
 
-from kamaki.clients.astakos import AstakosClient
-from kamaki.clients.pithos import PithosClient
-
 
 def authenticate(request):
     """
@@ -55,6 +52,7 @@ class Application(generics.GenericAPIView):
     permission_classes = IsAuthenticated,
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
+    pithos_container = "lambda_instances"
 
     # Get method is used to get a list of all the uploaded applications.
     def get(self, request, format=None):
@@ -75,69 +73,60 @@ class Application(generics.GenericAPIView):
         # Get the description provided with the request.
         description = request.data.get('description', '')
 
+        # Get the name of the project provided.
+        project_name = request.data.get('project_name', '')
+
         # Store uploaded file to local file system before sending it to Pithos.
         if not path.exists(settings.TEMPORARY_FILE_STORAGE):
             mkdir(settings.TEMPORARY_FILE_STORAGE)
 
-        new_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, uploaded_file.name)
+        local_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, uploaded_file.name)
 
-        local_file = open(new_file_path, 'wb+')
+        local_file = open(local_file_path, 'wb+')
         # Djnago suggest to always save the uploaded file using chunks. That will avoiding reading the whole
         # file into memory and possibly overwhelming it.
         for chunk in uploaded_file.chunks():
             local_file.write(chunk)
-
-        # Upload file from local file system to Pithos.
-        authentication_url = 'https://accounts.okeanos.grnet.gr/identity/v2.0'
-        authentication_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
-        astakos = AstakosClient(authentication_url, authentication_token)
-        pithos_url = astakos.get_endpoint_url(PithosClient.service_type)
-        pithos = PithosClient(pithos_url, authentication_token)
-        pithos.account = astakos.user_info['id']
-
-        if(not any(container['name'] == "lambda_applications" for container in pithos.list_containers())):
-            pithos.create_container("lambda_applications", project_id="6ff62e8e-0ce9-41f7-ad99-13a18ecada5f")
-
-        pithos.container = "lambda_applications"
-        pithos.upload_object(uploaded_file.name, local_file)
         local_file.close()
 
-        # Remove the file from the local file system.
-        remove(new_file_path)
+        # Generate a uuid for the uploaded application.
+        application_uuid = uuid.uuid4()
 
         # Create an event to insert a new entry on the database.
-        file_uuid = uuid.uuid4()
-        events.create_new_application.delay(file_uuid, uploaded_file.name, "lambda_applications",
-                                            description, request.user)
+        events.create_new_application.delay(application_uuid, uploaded_file.name,
+                                            "lambda_applications", description, request.user)
 
-        return Response({"uuid": file_uuid}, status=201)
+        # Create a task to upload the application from the local file system to Pithos.
+        local_file = open(local_file_path, 'r')
+
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+        auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+
+        tasks.upload_application_to_pithos.delay(auth_url, auth_token, self.pithos_container,
+                                                 project_name, local_file, application_uuid)
+
+        return Response({"uuid": application_uuid}, status=201)
 
     # Delete method is used to delete a specified application.
     def delete(self, request, format=None):
         # Get the provided uuid.
-        uuid = request.data.get('uuid')
-        if not uuid:
+        application_uuid = request.data.get('uuid')
+        if not application_uuid:
             return Response({"errors": [{"message": "missing id header"}]},
                             status=422)
 
         # Check if the specified application exists.
-        serializer = ApplicationSerializer(get_object_or_404(self.get_queryset(), uuid=uuid))
+        serializer = ApplicationSerializer(get_object_or_404(self.get_queryset(),
+                                                             uuid=application_uuid))
 
-        authentication_url = 'https://accounts.okeanos.grnet.gr/identity/v2.0'
-        authentication_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
-        astakos = AstakosClient(authentication_url, authentication_token)
-        pithos_url = astakos.get_endpoint_url(PithosClient.service_type)
-        pithos = PithosClient(pithos_url, authentication_token)
-        pithos.account = astakos.user_info['id']
-        pithos.container = "lambda_applications"
+        # Create task to delete the specified application from Pithos.
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+        auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
-        # Delete the application from Pithos.
-        pithos.delete_object(serializer.data['name'])
+        tasks.delete_application_from_pithos.delay(auth_url, auth_token, self.pithos_container,
+                                                   serializer.data.name, application_uuid)
 
-        # Create an event to remove the application from the database.
-        events.delete_application(uuid)
-
-        return Response({"result": "success"}, status=200)
+        return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
 
 
 class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):

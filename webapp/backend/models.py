@@ -64,11 +64,11 @@ class Application(models.Model):
 
     UPLOADED = "0"
     UPLOADING = "1"
-    FAILED_TO_UPLOAD = "2"
+    FAILED = "2"
     status_choices = (
         (UPLOADED, 'UPLOADED'),
         (UPLOADING, 'UPLOADING'),
-        (FAILED_TO_UPLOAD, 'FAILED_TO_UPLOAD'),
+        (FAILED, 'FAILED'),
     )
     status = models.CharField(max_length=10, choices=status_choices, default=UPLOADING,
                               help_text="The status of this application.")

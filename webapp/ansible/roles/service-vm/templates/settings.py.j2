@@ -131,13 +131,21 @@ CELERY_ROUTES = {
         'queue': 'tasks_queue',
         'routing_key': 'task_key',
     },
-    'backend.events.set_lambda_instance_status': {
-        'queue': 'events_queue',
-        'routing_key': 'event_key',
-    },
     'backend.tasks.create_lambda_instance': {
         'queue': 'tasks_queue',
         'routing_key': 'task_key',
+    },
+    'backend.tasks.upload_application_to_pithos': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.tasks.delete_application_from_pithos': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.events.set_lambda_instance_status': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
     },
     'backend.events.create_new_lambda_instance': {
         'queue': 'events_queue',
