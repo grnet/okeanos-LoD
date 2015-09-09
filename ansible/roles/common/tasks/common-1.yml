@@ -1,4 +1,9 @@
 ---
+  - name: Fix locale problem.
+    command: update-locale LANGUAGE="en_US.UTF-8" LC_ALL="en_US.UTF-8"
+
+  - name: Copy sources list.
+    copy: src=sources.list dest=/etc/apt/sources.list owner=root group=root mode=0640
 
   - name: Set hostname
     hostname: name={{ inventory_hostname | replace(".vm.okeanos.grnet.gr",".local") }}
@@ -30,3 +35,15 @@
 
   - name: Add kafka user to sudo group.
     user: name=kafka group=sudo
+
+  - name: Install supervisord with apt.
+    apt: name=supervisor state=latest
+    environment: proxy_env
+
+  - name: Configure supervisord for master.
+    template: src=supervisord-master.conf.j2 dest=/etc/supervisor/supervisord.conf owner=root group=root mode=0600
+    when: "'master' in group_names"
+
+  - name: Configure supervisord for slaves.
+    template: src=supervisord-slaves.conf.j2 dest=/etc/supervisor/supervisord.conf owner=root group=root mode=0600
+    when: "'slaves' in group_names"

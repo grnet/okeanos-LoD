@@ -18,7 +18,7 @@
 
 <configuration>
   <property>
-    <name>fs.default.name</name>
+    <name>fs.defaultFS</name>
     <value>hdfs://{{ groups.master | replace("[","") | replace("'","") | replace("]","") | replace(".vm.okeanos.grnet.gr",".local") }}:9000</value>
   </property>
   <property>

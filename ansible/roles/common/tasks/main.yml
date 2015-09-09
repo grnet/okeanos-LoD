@@ -5,7 +5,12 @@
     tags:
       - master
 
-  - name: Include tasks for all nodes.
-    include: all.yml
-    tags:
-      - all
+  - name: Create users for each application.
+    include: users.yml
+    when: "'slaves' in group_names"
+
+  - name: Include common tasks.
+    include: common-1.yml
+
+  - name: Include more common tasks.
+    include: common-2.yml

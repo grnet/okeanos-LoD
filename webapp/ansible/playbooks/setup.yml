@@ -2,4 +2,7 @@
 - hosts: service-vms
   user: root
   roles:
-    - roles/service-vm
+    - common
+    - service-vm
+    - rabbitmq
+    - celery

@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,7 +25,7 @@ SECRET_KEY = '-ay^f7=9e!@jr94v7!v&tl@4zm5=0g8&8d9(a*ffzqywg#@6iy'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*',]
 
 
 # Application definition
@@ -38,6 +38,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'backend',
+    'rest_framework',
+    'rest_framework.authtoken'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -56,7 +58,9 @@ ROOT_URLCONF = 'webapp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+                'webapp/templates'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -105,3 +109,54 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+##### Celery configuration #####
+from kombu import Queue
+
+CELERY_QUEUES = (
+    Queue('events_queue', routing_key='event_key'),
+    Queue('tasks_queue', routing_key='task_key'),
+)
+
+CELERY_ROUTES = {
+    'backend.tasks.lambda_instance_start': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.tasks.lambda_instance_stop': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.tasks.lambda_instance_destroy': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.events.set_lambda_instance_status': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+    'backend.tasks.create_lambda_instance': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.events.create_new_lambda_instance': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+    'backend.events.insert_cluster_info': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+
+}
+
+FILE_STORAGE = os.path.join(BASE_DIR,'uploaded_files')
+
+REST_FRAMEWORK = {
+  'DEFAULT_RENDERER_CLASSES': (
+    'rest_framework.renderers.JSONRenderer',
+    'rest_framework.renderers.BrowsableAPIRenderer',
+    'rest_framework_xml.renderers.XMLRenderer',
+  )
+}
+

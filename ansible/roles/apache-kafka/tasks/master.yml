@@ -11,7 +11,7 @@
       - configure-kafka
 
   - name: Start Apache Zookeeper server.
-    shell: /etc/init.d/zookeeper-init start > /dev/null &
+    shell: /etc/init.d/zookeeper-init start > /dev/null
     tags:
       - start-zookeeper
 
@@ -21,7 +21,7 @@
       - start-zookeeper
 
   - name: Start Apache Kafka server.
-    shell: /etc/init.d/kafka-init start > /dev/null &
+    shell: /etc/init.d/kafka-init start > /dev/null
     tags:
       - start-kafka
 

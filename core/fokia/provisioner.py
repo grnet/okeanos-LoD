@@ -2,59 +2,44 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 import logging
 import re
-import argparse
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 from kamaki.clients import astakos, cyclades
 from kamaki.clients import ClientError
-from kamaki.clients.utils import https
 from kamaki.cli.config import Config as KamakiConfig
-from kamaki import defaults
+from fokia.utils import patch_certs
 from fokia.cluster_error_constants import *
 from Crypto.PublicKey import RSA
 from base64 import b64encode
 
 storage_templates = ['drdb', 'ext_vlmc']
 
-
 class Provisioner:
     """
         provisions virtual machines on ~okeanos
     """
 
-    def __init__(self, cloud_name):
+    def __init__(self, auth_token, cloud_name=None):
 
-        # Load .kamakirc configuration
-        logger.info("Retrieving .kamakirc configuration")
-        self.config = KamakiConfig()
-        if not defaults.CACERTS_DEFAULT_PATH:
-            ca_certs = self.config.get('global', 'ca_certs')
-            if ca_certs:
-                https.patch_with_certs(ca_certs)
-            else:
-                try:
-                    from ssl import get_default_verify_paths
-                    ca_certs = get_default_verify_paths().cafile or get_default_verify_paths().openssl_cafile
-                except:
-                    pass
+        if auth_token is None and cloud_name is not None:
 
-                if ca_certs:
-                    https.patch_with_certs(ca_certs)
-                else:
-                    logger.warn("COULD NOT FIND ANY CERTIFICATES, PLEASE SET THEM IN YOUR "
-                                ".kamakirc global section, option ca_certs")
-                    https.patch_ignore_ssl()
+            # Load .kamakirc configuration
+            logger.info("Retrieving .kamakirc configuration")
+            self.config = KamakiConfig()
+            patch_certs(self.config.get('global', 'ca_certs'))
+            cloud_section = self.config._sections['cloud'].get(cloud_name)
+            if not cloud_section:
+                message = "Cloud '%s' was not found in you .kamakirc configuration file. " \
+                          "Currently you have availablie in your configuration these clouds: %s"
+                raise KeyError(message % (cloud_name, self.config._sections['cloud'].keys()))
 
-        cloud_section = self.config._sections['cloud'].get(cloud_name)
-        if not cloud_section:
-            message = "Cloud '%s' was not found in you .kamakirc configuration file. " \
-                      "Currently you have availablie in your configuration these clouds: %s"
-            raise KeyError(message % (cloud_name, self.config._sections['cloud'].keys()))
+            # Get the authentication url and token
+            auth_url, auth_token = cloud_section['url'], cloud_section['token']
 
-        # Get the authentication url and token
-        auth_url, auth_token = cloud_section['url'], cloud_section['token']
+        else:
+            auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
         logger.info("Initiating Astakos Client")
         self.astakos = astakos.AstakosClient(auth_url, auth_token)
@@ -71,8 +56,8 @@ class Provisioner:
         self.network_client = cyclades.CycladesNetworkClient(networkURL, auth_token)
 
         # Constants
-        self.Bytes_to_GB = 1024*1024*1024
-        self.Bytes_to_MB = 1024*1024
+        self.Bytes_to_GB = 1024 * 1024 * 1024
+        self.Bytes_to_MB = 1024 * 1024
 
         self.master = None
         self.ips = None
@@ -85,6 +70,7 @@ class Provisioner:
     """
     FIND RESOURCES
     """
+
     def find_flavor(self, **kwargs):
         """
 
@@ -96,9 +82,10 @@ class Provisioner:
         kwargs.setdefault("vcpus", 1)
         kwargs.setdefault("ram", 1024)
         kwargs.setdefault("disk", 40)
+        kwargs.setdefault("SNF:allow_create", True)
         logger.info("Retrieving flavor")
         for flavor in self.cyclades.list_flavors(detail=True):
-            if all([kwargs[key] == flavor[key] \
+            if all([kwargs[key] == flavor[key]
                     for key in set(flavor.keys()).intersection(kwargs.keys())]):
                 return flavor
         return None
@@ -123,10 +110,10 @@ class Provisioner:
         :return: first project_id that matches the project name
         """
         filter = {
-            'name': kwargs.get("project_name"),
+            'name':  kwargs.get("project_name"),
             'state': kwargs.get("project_state"),
             'owner': kwargs.get("project_owner"),
-            'mode': kwargs.get("project_mode"),
+            'mode':  kwargs.get("project_mode"),
         }
         logger.info("Retrieving project")
         return self.astakos.get_projects(**filter)[0]
@@ -135,7 +122,7 @@ class Provisioner:
     CREATE RESOURCES
     """
 
-    def create_lambda_cluster(self, vm_name, **kwargs):
+    def create_lambda_cluster(self, vm_name, wait=True, **kwargs):
         """
         :param vm_name: hostname of the master
         :param kwargs: contains specifications of the vms.
@@ -148,14 +135,29 @@ class Provisioner:
         project_id = self.find_project_id(**kwargs)['id']
         cluster_size = kwargs['slaves'] + 1
         response = self.check_all_resources(quotas, cluster_size=cluster_size,
-                                              vcpus=vcpus,
-                                              ram=ram,
-                                              disk=disk,
-                                              ip_request=kwargs['ip_request'],
-                                              network_request=kwargs['network_request'],
-                                              project_name=kwargs['project_name'])
+                                            vcpus=vcpus,
+                                            ram=ram,
+                                            disk=disk,
+                                            ip_allocation=kwargs['ip_allocation'],
+                                            network_request=kwargs['network_request'],
+                                            project_name=kwargs['project_name'])
 
         if response:
+            # Check flavors for master and slaves
+            master_flavor = self.find_flavor(vcpus=kwargs['vcpus_master'],
+                                             ram=kwargs['ram_master'],
+                                             disk=kwargs['disk_master'])
+            if not master_flavor:
+                msg = 'This flavor does not allow create.'
+                raise ClientError(msg, error_flavor_list)
+
+            slave_flavor = self.find_flavor(vcpus=kwargs['vcpus_slave'],
+                                            ram=kwargs['ram_slave'],
+                                            disk=kwargs['disk_slave'])
+            if not slave_flavor:
+                msg = 'This flavor does not allow create.'
+                raise ClientError(msg, error_flavor_list)
+
             # Get ssh keys
             key = RSA.generate(2048)
             self.private_key = key.exportKey('PEM')
@@ -164,79 +166,72 @@ class Provisioner:
                           path='/root/.ssh/id_rsa.pub',
                           owner='root', group='root', mode=0600)
             authorized = dict(contents=b64encode(pub_key),
-                          path='/root/.ssh/authorized_keys',
-                          owner='root', group='root', mode=0600)
+                              path='/root/.ssh/authorized_keys',
+                              owner='root', group='root', mode=0600)
             private = dict(contents=b64encode(self.private_key),
-                          path='/root/.ssh/id_rsa',
-                          owner='root', group='root', mode=0600)
+                           path='/root/.ssh/id_rsa',
+                           owner='root', group='root', mode=0600)
 
-            master_personality = []
-            master_personality.append(authorized)
-            master_personality.append(public)
-            master_personality.append(private)
-            slave_personality = []
-            slave_personality.append(authorized)
+            master_personality = [authorized, public, private]
+            slave_personality = [authorized]
 
             # Create private network for cluster
             self.vpn = self.create_vpn('lambda-vpn', project_id=project_id)
             vpn_id = self.vpn['id']
             self.create_private_subnet(vpn_id)
 
-            #reserve ip
-            ip_request=kwargs['ip_request']
-            self.ips = list()
-            for i in range(ip_request):
-                ip = self.reserve_ip(project_id=project_id)
-                self.ips.append(ip)
+            master_ip = None
+            slave_ips = [None] * kwargs['slaves']
+            # reserve ip
+            if kwargs['ip_allocation'] in ["master", "all"]:
+                master_ip = self.reserve_ip(project_id=project_id)
 
-            ip = None
-            # Create master
-            if len(self.ips) > 0:
-                ip = self.ips[0]
-            self.master = self.create_vm(vm_name=vm_name, ip=ip,
+                if kwargs['ip_allocation'] == "all":
+                    slave_ips = [self.reserve_ip(project_id=project_id)
+                                 for i in range(kwargs['slaves'])]
+
+            self.ips = [ip for ip in [master_ip] + slave_ips if ip]
+
+            self.master = self.create_vm(vm_name=vm_name, ip=master_ip,
                                          net_id=vpn_id,
-                                         vcpus=kwargs['vcpus_master'],
-                                         ram=kwargs['ram_master'],
-                                         disk=kwargs['disk_master'],
+                                         flavor=master_flavor,
                                          personality=master_personality,
                                          **kwargs)
 
             # Create slaves
             self.slaves = list()
             for i in range(kwargs['slaves']):
-                ip = None
-                if len(self.ips) > i+1:
-                    ip = self.ips[i+1]
-                slave_name = 'lambda-node' + str(i+1)
+                slave_name = 'lambda-node' + str(i + 1)
                 slave = self.create_vm(vm_name=slave_name,
-                                       ip=ip,
+                                       ip=slave_ips[i],
                                        net_id=vpn_id,
-                                       vcpus=kwargs['vcpus_slave'],
-                                       ram=kwargs['ram_slave'],
-                                       disk=kwargs['disk_slave'],
+                                       flavor=slave_flavor,
                                        personality=slave_personality,
                                        **kwargs)
                 self.slaves.append(slave)
 
             # Wait for VMs to complete being built
-            self.cyclades.wait_server(server_id=self.master['id'])
-            for slave in self.slaves:
-                self.cyclades.wait_server(slave['id'])
+            if wait:
+                self.cyclades.wait_server(server_id=self.master['id'])
+                for slave in self.slaves:
+                    self.cyclades.wait_server(slave['id'])
 
             # Create cluster dictionary object
-            inventory = dict()
-            inventory["master"] = self.master
-            inventory["slaves"] = self.slaves
+            inventory = {
+                "master": self.master,
+                "slaves": self.slaves
+            }
             return inventory
 
-    def create_vm(self, vm_name=None, image_id=None, ip=None, personality=None, **kwargs):
+    def create_vm(self, vm_name=None, image_id=None,
+                  ip=None, personality=None, flavor=None, **kwargs):
         """
         :param vm_name: Name of the virtual machine to create
         :param image_id: image id if you want another image than the default
         :param kwargs: passed to the functions called for detail options
         :return:
         """
-        flavor_id = self.find_flavor(**kwargs)['id']
+        flavor_id = flavor['id']
         # Get image
         if image_id == None:
             image_id = self.image_id
@@ -244,7 +239,7 @@ class Provisioner:
             image_id = self.find_image(**kwargs)['id']
         project_id = self.find_project_id(**kwargs)['id']
         networks = list()
-        if ip != None:
+        if ip:
             ip_obj = dict()
             ip_obj['uuid'] = ip['floating_network_id']
             ip_obj['fixed_ip'] = ip['floating_ip_address']
@@ -253,10 +248,12 @@ class Provisioner:
         if personality == None:
             personality = []
         try:
-            okeanos_response = self.cyclades.create_server(name=vm_name, flavor_id=flavor_id,
+            okeanos_response = self.cyclades.create_server(name=vm_name,
+                                                           flavor_id=flavor_id,
                                                            image_id=image_id,
                                                            project_id=project_id,
-                                                           networks=networks, personality=personality)
+                                                           networks=networks,
+                                                           personality=personality)
         except ClientError as ex:
             raise ex
         return okeanos_response
@@ -270,29 +267,27 @@ class Provisioner:
         try:
             # Create vpn with custom type and the name given as argument
             vpn = self.network_client.create_network(
-                        type=self.network_client.network_types[1],
-                        name=network_name,
-                        project_id=project_id)
+                type=self.network_client.network_types[1],
+                name=network_name,
+                project_id=project_id)
             return vpn
         except ClientError as ex:
             raise ex
-        return okeanos_response
 
-    def reserve_ip(self,project_id):
+    def reserve_ip(self, project_id):
         """
         Reserve ip
         :return: the ip object if successfull
         """
-        list_float_ips = self.network_client.list_floatingips()
-        for ip in list_float_ips:
-            if ip['instance_id'] is None and ip['port_id'] is None:
-                return ip
+        # list_float_ips = self.network_client.list_floatingips()
+        # for ip in list_float_ips:
+        #     if ip['instance_id'] is None and ip['port_id'] is None and ip not in ips:
+        #         return ip
         try:
             ip = self.network_client.create_floatingip(project_id=project_id)
             return ip
         except ClientError as ex:
             raise ex
-        return okeanos_response
 
     def create_private_subnet(self, net_id, cidr='192.168.0.0/24', gateway_ip='192.168.0.1'):
         """
@@ -308,8 +303,6 @@ class Provisioner:
             return subnet['id']
         except ClientError as ex:
             raise ex
-        return okeanos_response
-
 
     def connect_vm(self, vm_id, net_id):
         """
@@ -324,7 +317,6 @@ class Provisioner:
             return True
         except ClientError as ex:
             raise ex
-        return okeanos_response
 
     def attach_authorized_ip(self, ip, vm_id):
         """
@@ -336,11 +328,11 @@ class Provisioner:
         try:
             port = self.network_client.create_port(network_id=ip['floating_network_id'],
                                                    device_id=vm_id,
-                                                   fixed_ips=[dict(ip_address=ip['floating_ip_address']), ])
+                                                   fixed_ips=[dict(
+                                                       ip_address=ip['floating_ip_address']), ])
             return True
         except ClientError as ex:
             raise ex
-        return okeanos_response
 
     """
     DELETE RESOURCES
@@ -352,11 +344,11 @@ class Provisioner:
         :param details: details of the cluster we want to delete
         :return: True if successfull
         """
-        self.cyclades.get_server_details
+
         # Delete every node
         nodes = details['nodes']
         for node in nodes:
-            if(not self.delete_vm(node)):
+            if (not self.delete_vm(node)):
                 msg = 'Error deleting node with id ', node
                 raise ClientError(msg, error_fatal)
 
@@ -370,8 +362,6 @@ class Provisioner:
             msg = 'Error deleting node with id ', node
             raise ClientError(msg, error_fatal)
 
-
-
     def delete_vm(self, vm_id):
         """
         Delete a vm
@@ -383,7 +373,6 @@ class Provisioner:
             return True
         except ClientError as ex:
             raise ex
-        return False
 
     def delete_vpn(self, net_id):
         """
@@ -396,7 +385,6 @@ class Provisioner:
             return True
         except ClientError as ex:
             raise ex
-        return False
 
     """
     GET RESOURCES
@@ -470,7 +458,7 @@ class Provisioner:
         :param server_id: id of the server
         :returns: the authorized ip of the server if it has one,else None
         """
-        addresses =  self.get_server_info(server_id=server_id)['addresses']
+        addresses = self.get_server_info(server_id=server_id)['addresses']
         for key in list(addresses.keys()):
             ip = addresses[key][0]['addr']
             if '192.168.0' not in ip and not re.search('[a-zA-Z]', ip):
@@ -482,7 +470,7 @@ class Provisioner:
         :param server_id: id of the server
         :returns: the private ip of the server if it has one,else None
         """
-        addresses =  self.get_server_info(server_id=server_id)['addresses']
+        addresses = self.get_server_info(server_id=server_id)['addresses']
         for key in list(addresses.keys()):
             ip = addresses[key][0]['addr']
             if '192.168.0' in ip:
@@ -492,6 +480,7 @@ class Provisioner:
     """
     CHECK RESOURCES
     """
+
     def check_all_resources(self, quotas, **kwargs):
         """
         Checks user's quota for every requested resource.
@@ -499,12 +488,6 @@ class Provisioner:
         :param **kwargs: arguments
         """
         project_id = self.find_project_id(**kwargs)['id']
-        flavor = self.find_flavor(**kwargs)
-        #check flavor
-        if not flavor['SNF:allow_create']:
-            msg = 'This flavor does not allow create.'
-            raise ClientError(msg, error_flavor_list)
-            return False
         # Check for VMs
         pending_vm = quotas[project_id]['cyclades.vm']['project_pending']
         limit_vm = quotas[project_id]['cyclades.vm']['project_limit']
@@ -513,7 +496,6 @@ class Provisioner:
         if available_vm < kwargs['cluster_size']:
             msg = 'Cyclades VMs out of limit'
             raise ClientError(msg, error_quotas_cluster_size)
-            return False
         # Check for CPUs
         pending_cpu = quotas[project_id]['cyclades.cpu']['project_pending']
         limit_cpu = quotas[project_id]['cyclades.cpu']['project_limit']
@@ -522,7 +504,6 @@ class Provisioner:
         if available_cpu < kwargs['vcpus']:
             msg = 'Cyclades cpu out of limit'
             raise ClientError(msg, error_quotas_cpu)
-            return False
         # Check for RAM
         pending_ram = quotas[project_id]['cyclades.ram']['project_pending']
         limit_ram = quotas[project_id]['cyclades.ram']['project_limit']
@@ -531,7 +512,6 @@ class Provisioner:
         if available_ram < kwargs['ram']:
             msg = 'Cyclades ram out of limit'
             raise ClientError(msg, error_quotas_ram)
-            return False
         # Check for Disk space
         pending_cd = quotas[project_id]['cyclades.ram']['project_pending']
         limit_cd = quotas[project_id]['cyclades.disk']['project_limit']
@@ -540,20 +520,20 @@ class Provisioner:
         if available_cyclades_disk_GB < kwargs['disk']:
             msg = 'Cyclades disk out of limit'
             raise ClientError(msg, error_quotas_cyclades_disk)
-            return False
         # Check for authorized IPs
         list_float_ips = self.network_client.list_floatingips()
         pending_ips = quotas[project_id]['cyclades.floating_ip']['project_pending']
         limit_ips = quotas[project_id]['cyclades.floating_ip']['project_limit']
         usage_ips = quotas[project_id]['cyclades.floating_ip']['project_usage']
         available_ips = limit_ips - usage_ips - pending_ips
-        for d in list_float_ips:
-            if d['instance_id'] is None and d['port_id'] is None:
-                available_ips += 1
-        if available_ips < kwargs['ip_request']:
+        # TODO: figure out how to handle unassigned floating ips
+        # for d in list_float_ips:
+        #     if d['instance_id'] is None and d['port_id'] is None:
+        #         available_ips += 1
+        if (kwargs['ip_allocation'] == "master" and available_ips < 1) or \
+                (kwargs['ip_allocation'] == "all" and available_ips < kwargs['cluster_size']):
             msg = 'authorized IPs out of limit'
             raise ClientError(msg, error_get_ip)
-            return False
         # Check for networks
         pending_net = quotas[project_id]['cyclades.network.private']['project_pending']
         limit_net = quotas[project_id]['cyclades.network.private']['project_limit']
@@ -562,5 +542,4 @@ class Provisioner:
         if available_networks < kwargs['network_request']:
             msg = 'Private Network out of limit'
             raise ClientError(msg, error_get_network_quota)
-            return False
         return True

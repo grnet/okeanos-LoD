@@ -1,14 +1,7 @@
 ---
-  - name: Fix locale problem.
-    command: update-locale LANGUAGE="en_US.UTF-8" LC_ALL="en_US.UTF-8"
-
-  - name: Upgrade packages.
-    apt: upgrade=dist update_cache=yes
-
-  - name: Install python-pip, python-dev, sudo and git packages.
+  - name: Install python-dev, sudo and git packages.
     apt: name={{ item }} state=latest
     with_items:
-      - python-pip
       - python-dev
       - sudo
       - git
@@ -19,15 +12,20 @@
   - name: Include postgresql-install tasks.
     include: postgresql-install.yml
 
-  - name: Install Django using Pip.
-    pip: name=Django
-
   - name: Download Django code from Github.
-    git: repo=https://github.com/gouzouni625/okeanos-LoD.git dest={{ repository_download_path }}/okeanos-LoD version=LAM-53-Django # version can be used to select a branch. See ansible git module documentation.
-                                                                                                                                   # The repository should be changed when the pull request gets merged.
+    git: repo={{ repository_url }}  dest={{ repository_download_path }}/okeanos-LoD update=yes version={{ repository_branch }}
 
   - name: Change repository permissions.
-    file: path={{ repository_download_path }} owner=root group=root recurse=yes
+    file: path={{ repository_download_path }} owner=celery group=celery recurse=yes
+
+  - name: Install Fokia requirements.
+    pip: requirements={{ repository_download_path }}/okeanos-LoD/core/requirements.txt
+
+  - name: Install Webapp requirements.
+    pip: requirements={{ repository_download_path }}/okeanos-LoD/webapp/requirements.txt
+
+  - name: Install Fokia.
+    command: python setup.py install chdir="{{ repository_download_path }}/okeanos-LoD/core/"
 
   - name: Setup Django database configuration.
     template: src=settings.py.j2 dest={{ repository_download_path}}/okeanos-LoD/webapp/webapp/settings.py

@@ -1,0 +1,39 @@
+{% if cluster %}
+    <ul>
+        <h2>Lambda instance {{ cluster.id }}</h2>
+        {% if servers_list %}
+            <ul>
+            {% for server in servers_list %}
+                <li>
+                    <h3>{{ server.hostname }}</h3>
+                    <span><ul>
+                        <li>ID         : {{ server.id }}</li>
+                        <li>CPUs       : {{ server.cpus }}</li>
+                        <li>RAM        : {{ server.ram }}</li>
+                        <li>Disk       : {{ server.disk }}</li>
+                        <li>Public ip  : {{ server.pub_ip }}</li>
+                        <li>Private ip : {{ server.priv_ip }}</li>
+                    </ul></span>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No servers.</p>
+        {% endif %}
+        {% if private_net %}
+            <ul>
+                <li>
+                    <h3>Private Network {{ private_net.id }}</h3>
+                    <span><ul>
+                        <li>Subnet     : {{ private_net.subnet }}</li>
+                        <li>Gateway    : {{ private_net.gateway }}</li>
+                    </ul></span>
+                </li>
+            </ul>
+        {% else %}
+            <p>No private network.</p>
+        {% endif %}
+    </ul>
+{% else %}
+<p>No clusters.</p>
+{% endif %}
