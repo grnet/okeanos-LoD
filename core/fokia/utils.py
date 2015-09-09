@@ -125,7 +125,7 @@ def lambda_instance_stop(auth_url, auth_token, master_id, slave_ids):
         cyclades_compute_client.wait_server(slave_id, current_status="ACTIVE")
 
 
-def upload_file_to_pithos(auth_url, auth_token, container_name, file_descriptor):
+def upload_file_to_pithos(auth_url, auth_token, container_name, project_name, local_file):
     """
     Uploads a given file to a specified container, under a specified name on Pithos.
     :param auth_url: The authentication url for ~okeanos API.
@@ -138,19 +138,25 @@ def upload_file_to_pithos(auth_url, auth_token, container_name, file_descriptor)
     astakos_client = AstakosClient(auth_url, auth_token)
 
     # Create Pithos client.
-    pithos_url = astakos_client.astakos.get_endpoint_url(PithosClient.service_type)
+    pithos_url = astakos_client.get_endpoint_url(PithosClient.service_type)
     pithos_client = PithosClient(pithos_url, auth_token)
     pithos_client.account = astakos_client.user_info['id']
+
+    # Get the project id.
+    if project_name != "":
+        project_id = astakos_client.get_projects(**{'name': project_name})[0]['id']
+    else:
+        project_id = astakos_client.get_projects()[0]['id']
 
     # Choose the container on Pithos that is used to store application. If the container doesn't
     # exist, create it.
     containers = pithos_client.list_containers()
     if not any(container['name'] == container_name for container in containers):
-        pithos_client.create_container(container_name)
+        pithos_client.create_container(container_name, project_id=project_id)
     pithos_client.container = container_name
 
     # Upload file to Pithos.
-    pithos_client.upload_object(os.path.basename(file_descriptor.name), file_descriptor)
+    pithos_client.upload_object(os.path.basename(local_file.name), local_file)
 
 
 def delete_file_from_pithos(auth_url, auth_token, container_name, filename):
@@ -166,7 +172,7 @@ def delete_file_from_pithos(auth_url, auth_token, container_name, filename):
     astakos_client = AstakosClient(auth_url, auth_token)
 
     # Create Pithos client.
-    pithos_url = astakos_client.astakos.get_endpoint_url(PithosClient.service_type)
+    pithos_url = astakos_client.get_endpoint_url(PithosClient.service_type)
     pithos_client = PithosClient(pithos_url, auth_token)
     pithos_client.account = astakos_client.user_info['id']
     pithos_client.container = container_name

@@ -1,9 +1,6 @@
 import json
 import uuid
 
-from os import path, mkdir, remove
-
-from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
@@ -52,7 +49,7 @@ class Application(generics.GenericAPIView):
     permission_classes = IsAuthenticated,
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
-    pithos_container = "lambda_instances"
+    pithos_container = "lambda_applications"
 
     # Get method is used to get a list of all the uploaded applications.
     def get(self, request, format=None):
@@ -76,19 +73,6 @@ class Application(generics.GenericAPIView):
         # Get the name of the project provided.
         project_name = request.data.get('project_name', '')
 
-        # Store uploaded file to local file system before sending it to Pithos.
-        if not path.exists(settings.TEMPORARY_FILE_STORAGE):
-            mkdir(settings.TEMPORARY_FILE_STORAGE)
-
-        local_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, uploaded_file.name)
-
-        local_file = open(local_file_path, 'wb+')
-        # Djnago suggest to always save the uploaded file using chunks. That will avoiding reading the whole
-        # file into memory and possibly overwhelming it.
-        for chunk in uploaded_file.chunks():
-            local_file.write(chunk)
-        local_file.close()
-
         # Generate a uuid for the uploaded application.
         application_uuid = uuid.uuid4()
 
@@ -97,13 +81,11 @@ class Application(generics.GenericAPIView):
                                             "lambda_applications", description, request.user)
 
         # Create a task to upload the application from the local file system to Pithos.
-        local_file = open(local_file_path, 'r')
-
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
         tasks.upload_application_to_pithos.delay(auth_url, auth_token, self.pithos_container,
-                                                 project_name, local_file, application_uuid)
+                                                 project_name, uploaded_file, application_uuid)
 
         return Response({"uuid": application_uuid}, status=201)
 
@@ -124,7 +106,7 @@ class Application(generics.GenericAPIView):
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
         tasks.delete_application_from_pithos.delay(auth_url, auth_token, self.pithos_container,
-                                                   serializer.data.name, application_uuid)
+                                                   serializer.data['name'], application_uuid)
 
         return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
 

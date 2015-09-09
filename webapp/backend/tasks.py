@@ -1,8 +1,9 @@
 import json
 
-from os import remove
+from os import path, mkdir, remove
 
 from celery import shared_task
+from django.conf import settings
 
 from kamaki.clients import ClientError
 
@@ -199,19 +200,34 @@ def create_lambda_instance(auth_token=None, instance_name='Lambda Instance',
 
 
 @shared_task
-def upload_application_to_pithos(auth_url, auth_token, container_name, file_descriptor,
-                                 application_uuid):
+def upload_application_to_pithos(auth_url, auth_token, container_name, project_name,
+                                 uploaded_file, application_uuid):
     """
     Uploads an application to Pithos.
     :param auth_url: The authentication url for ~okeanos API.
     :param auth_token: The authentication token of the user.
     :param container_name: The name of the Pithos container where the file will be uploaded.
-    :param file_descriptor: A file descriptor of the file saved of the local file system.
+    :param uploaded_file: The path on the local file system of the file to be uploaded.
     :param application_uuid: The uuid of the application to be uploaded.
     """
 
+    # Save the uploaded file on the local file system.
+    if not path.exists(settings.TEMPORARY_FILE_STORAGE):
+        mkdir(settings.TEMPORARY_FILE_STORAGE)
+
+    local_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, uploaded_file.name)
+    local_file = open(local_file_path, 'wb+')
+
+    # Djnago suggest to always save the uploaded file using chunks. That will avoiding reading the whole
+    # file into memory and possibly overwhelming it.
+    for chunk in uploaded_file.chunks():
+        local_file.write(chunk)
+    local_file.close()
+
+    local_file = open(local_file_path, 'r')
+
     try:
-        utils.upload_file_to_pithos(auth_url, auth_token, container_name, file_descriptor)
+        utils.upload_file_to_pithos(auth_url, auth_token, container_name, project_name, local_file)
 
         events.set_application_status.delay(application_uuid=application_uuid,
                                             status=Application.UPLOADED)
@@ -219,11 +235,11 @@ def upload_application_to_pithos(auth_url, auth_token, container_name, file_desc
         events.set_application_status.delay(application_uuid, Application.FAILED,
                                             exception.message)
 
-    # Release file descriptor resources.
-    file_descriptor.close()
+    # Release local file system resources.
+    local_file.close()
 
-    # Remove the file from local file system.
-    remove(file_descriptor.name)
+    # Remove the file saved on the local file system.
+    remove(local_file_path)
 
 
 @shared_task
