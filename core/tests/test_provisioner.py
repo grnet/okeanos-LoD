@@ -170,13 +170,16 @@ test_vm = {u'addresses': {}, u'links': [
      u'rel': u'bookmark'}], u'image':
     {u'id': u'0e399015-8723-4c78-8198-75bdf693cdde', u'links': [
         {
-            u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/images/0e399015-8723-4c78-8198-75bdf693cdde',
+            u'href': u'https://cyclades.okeanos.grnet.gr/compute/'
+                     u'v2.0/images/0e399015-8723-4c78-8198-75bdf693cdde',
             u'rel': u'self'},
         {
-            u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/images/0e399015-8723-4c78-8198-75bdf693cdde',
+            u'href': u'https://cyclades.okeanos.grnet.gr/compute/'
+                     u'v2.0/images/0e399015-8723-4c78-8198-75bdf693cdde',
             u'rel': u'bookmark'},
         {
-            u'href': u'https://cyclades.okeanos.grnet.gr/image/v1.0/images/0e399015-8723-4c78-8198-75bdf693cdde',
+            u'href': u'https://cyclades.okeanos.grnet.gr/image/'
+                     u'v1.0/images/0e399015-8723-4c78-8198-75bdf693cdde',
             u'rel': u'alternate'}]},
     u'suspended': False, u'flavor': {u'id': 3, u'links': [
         {u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/3',
@@ -196,9 +199,9 @@ test_vm = {u'addresses': {}, u'links': [
 
 
 def test_find_flavor():
-    with mock.patch('fokia.provisioner.astakos'), \
-            mock.patch('fokia.provisioner.KamakiConfig'), \
-            mock.patch('fokia.provisioner.cyclades'):
+    with mock.patch('fokia.provisioner_base.astakos'), \
+            mock.patch('fokia.provisioner_base.KamakiConfig'), \
+            mock.patch('fokia.provisioner_base.cyclades'):
         provisioner = Provisioner(None, "lambda")
         provisioner.astakos.get_projects.return_value = test_projects
         provisioner.cyclades.list_images.return_value = test_images
@@ -217,9 +220,9 @@ def test_find_flavor():
 
 
 def test_check_all_resources():
-    with mock.patch('fokia.provisioner.astakos'), \
-            mock.patch('fokia.provisioner.KamakiConfig'), \
-            mock.patch('fokia.provisioner.cyclades'):
+    with mock.patch('fokia.provisioner_base.astakos'), \
+            mock.patch('fokia.provisioner_base.KamakiConfig'), \
+            mock.patch('fokia.provisioner_base.cyclades'):
         provisioner = Provisioner(None, "lambda")
         provisioner.astakos.get_projects.return_value = test_projects
         provisioner.astakos.get_quotas.return_value = test_quotas
@@ -235,26 +238,26 @@ def test_check_all_resources():
 
 
 def test_create_vpn():
-    with mock.patch('fokia.provisioner.astakos'), \
-            mock.patch('fokia.provisioner.KamakiConfig'), \
-            mock.patch('fokia.provisioner.cyclades'):
+    with mock.patch('fokia.provisioner_base.astakos'), \
+            mock.patch('fokia.provisioner_base.KamakiConfig'), \
+            mock.patch('fokia.provisioner_base.cyclades'):
         provisioner = Provisioner(None, "lambda")
         provisioner.network_client.create_network = test_ip
         provisioner.reserve_ip('6ff62e8e-0ce9-41f7-ad99-13a18ecada5f')
 
 
 def test_create_vm():
-    with mock.patch('fokia.provisioner.astakos'), \
-            mock.patch('fokia.provisioner.KamakiConfig'), \
-            mock.patch('fokia.provisioner.cyclades'):
+    with mock.patch('fokia.provisioner_base.astakos'), \
+            mock.patch('fokia.provisioner_base.KamakiConfig'), \
+            mock.patch('fokia.provisioner_base.cyclades'):
         provisioner = Provisioner(None, "lambda")
         provisioner.cyclades.create_server = test_vm
 
 
 def test_connect_vm():
-    with mock.patch('fokia.provisioner.astakos'), \
-            mock.patch('fokia.provisioner.KamakiConfig'), \
-            mock.patch('fokia.provisioner.cyclades'):
+    with mock.patch('fokia.provisioner_base.astakos'), \
+            mock.patch('fokia.provisioner_base.KamakiConfig'), \
+            mock.patch('fokia.provisioner_base.cyclades'):
         provisioner = Provisioner(None, "lambda")
         provisioner.network_client.create_port = True
 
