@@ -74,7 +74,6 @@ To create a lambda instance, one must run `python lambda_instance_manager.py` fr
 
 **Note:** The intended use described above is **only** for when run from the service vm.
 For development purposes, uncomment the `script_path` commented out and import `os` and `inspect` libs.
-Also, create the directory ~/.ssh/lambda_instances, for the ssh keys to work correctly.
 
 
 ## Testing
