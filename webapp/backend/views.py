@@ -138,32 +138,30 @@ class ApplicationViewSet(viewsets.ReadOnlyModelViewSet):
 
         lambda_instance = get_object_or_404(LambdaInstance.objects.all(),
                                             uuid=lambda_instance_uuid)
-        applications = LambdaInstanceApplicationConnection.objects.\
+        connections = LambdaInstanceApplicationConnection.objects.\
             filter(lambda_instance=lambda_instance)
+        applications = [connection.application for connection in connections]
 
         serializer = ApplicationSerializer(applications, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @detail_route(methods=['post'])
-    def withdraw(self, request, format=None):
+    def withdraw(self, request, uuid, format=None):
+        application_uuid = uuid
+
         lambda_instance_uuid = request.data.get('lambda_instance_id')
         if not lambda_instance_uuid:
-            return Response({"errors": [{"message": "missing id header"}]},
-                            status=422)
-
-        application_uuid = request.data.get('application_uuid')
-        if not application_uuid:
             return Response({"errors": [{"message": "missing id header"}]},
                             status=422)
 
         lambda_instance = get_object_or_404(LambdaInstance.objects.all(),
                                             uuid=lambda_instance_uuid)
         application = get_object_or_404(Application.objects.all(),
-                                            uuid=lambda_instance_uuid)
+                                            uuid=application_uuid)
 
-        if not LambdaInstanceApplicationConnection.objects.get(lambda_instance=lambda_instance,
-                                                               application=application).exists():
+        if not LambdaInstanceApplicationConnection.objects.\
+                filter(lambda_instance=lambda_instance, application=application).exists():
             return Response("Not deployed", status=status.HTTP_200_OK)
 
         # Create a task to withdraw the application.

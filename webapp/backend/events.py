@@ -24,7 +24,7 @@ def create_new_lambda_instance(instance_uuid, instance_name, specs='{}'):
 @shared_task
 def set_lambda_instance_status(instance_uuid, status, failure_message=""):
     """
-    Sets the status of a specified lambda instance to the specified status.
+    Sets the status of a specified lambda instance to the specified value.
     The existence of the lambda instance should have been previously checked.
     instance_uuid: The uuid of the lambda instance.
     status: The integer that specifies the new status of the specified lambda instance.
@@ -100,11 +100,11 @@ def delete_application(uuid):
 @shared_task
 def set_application_status(application_uuid, status, failure_message=""):
     """
-
-    :param application_uuid:
-    :param status:
+    Sets the status of a specified application to the specified value.
+    The existence of the application should have been previously checked.
+    :param application_uuid: The uuid of the specified application.
+    :param status: The value for the status of the application.
     :param failure_message:
-    :return:
     """
 
     application = Application.objects.get(uuid=application_uuid)
@@ -124,7 +124,7 @@ def create_lambda_instance_application_connection(lambda_instance_uuid, applicat
     """
 
     lambda_instance = LambdaInstance.objects.get(uuid=lambda_instance_uuid)
-    application = Application.objcets.get(uuid=application_uuid)
+    application = Application.objects.get(uuid=application_uuid)
     LambdaInstanceApplicationConnection.objects.create(lambda_instance=lambda_instance,
                                                        application=application)
 

@@ -280,8 +280,6 @@ def deploy_application(auth_url, auth_token, container_name, lambda_instance_uui
     :return:
     """
 
-
-
     # Get the name of the application.
     application_name = Application.objects.get(uuid=application_uuid).name
 
@@ -324,7 +322,7 @@ def withdraw_application(lambda_instance_uuid, application_uuid):
     """
 
     # Get the name of the application.
-    application_name = Application.objects.get(uuid=application_uuid)['name']
+    application_name = Application.objects.get(uuid=application_uuid).name
 
     # Get the hostname of the master node of the specified lambda instance.
     master_node_hostname = get_master_node_hostname(lambda_instance_uuid)
