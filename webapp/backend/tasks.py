@@ -297,6 +297,9 @@ def deploy_application(auth_url, auth_token, container_name, lambda_instance_uui
     system("scp {path} root@{hostname}:/home/flink/".format(path=local_file_path,
                                                             hostname=master_node_hostname))
 
+    # Delete the application from the local file system.
+    remove(local_file_path)
+
     # Create a new entry on the database.
     events.create_lambda_instance_application_connection.delay(lambda_instance_uuid,
                                                                application_uuid)
