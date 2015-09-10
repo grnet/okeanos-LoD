@@ -5,17 +5,24 @@ from . import views
 
 
 # Create a router for lambda instances. This router will generate all the needed urls based on
-# LambdaInstancesViewSet. Format suffixes are explicitly removed from the router. They will be
+# LambdaInstanceViewSet. Format suffixes is explicitly removed from the router. It will be
 # added later to all urls.
 lambda_instances_router = DefaultRouter()
 lambda_instances_router.register(r'lambda-instances', views.LambdaInstanceViewSet)
 lambda_instances_router.include_format_suffixes = False
 
+# Create a router for applications. This router will generate all the needed urls based on
+# ApplicationViewSet. Format suffixes is explicitly removed from the router. It will be added
+# later to all urls.
+application_router = DefaultRouter()
+application_router.register(r'apps', views.ApplicationViewSet)
+application_router.include_format_suffixes = False
+
 urlpatterns = [
     url(r'^authenticate/?$', views.authenticate),
-    url(r'^apps/?$', views.Application.as_view()),
     url(r'^create_lambda_instance/?$', views.CreateLambdaInstance.as_view(),
         name='create_lambda_instance'),
+    url(r'^', include(application_router.urls)),
     url(r'^', include(lambda_instances_router.urls))
 ]
 

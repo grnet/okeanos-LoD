@@ -1,6 +1,6 @@
 import json
 
-from os import path, mkdir, remove
+from os import path, mkdir, remove, system
 
 from celery import shared_task
 from django.conf import settings
@@ -8,10 +8,11 @@ from django.conf import settings
 from kamaki.clients import ClientError
 
 from fokia import utils
-
-from .models import LambdaInstance, Application
 from fokia import lambda_instance_manager
+
 from . import events
+from .models import LambdaInstance, Application
+from .serializers import LambdaInstanceSerializer
 
 
 @shared_task
@@ -263,6 +264,69 @@ def delete_application_from_pithos(auth_url, auth_token, container_name, filenam
                                             exception.message)
 
 
+@shared_task
+def deploy_application(auth_url, auth_token, container_name, lambda_instance_uuid, application_uuid):
+    """
+
+    :param auth_url:
+    :param auth_token:
+    :param container_name:
+    :param lambda_instance_uuid:
+    :param application_uuid:
+    :return:
+    """
+
+    # Get the name of the application.
+    application_name = Application.objects.get(uuid=application_uuid)['name']
+
+    # Dowload application from Pithos.
+    local_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, application_name)
+    local_file = open(local_file_path, 'r')
+
+    try:
+        utils.download_file_from_pithos(auth_url, auth_token, container_name, application_name,
+                                        local_file)
+    except ClientError as exception:
+        events.set_application_status.delay(application_uuid, Application.FAILED,
+                                            exception.message)
+
+    # Get the hostname of the master node of the specified lambda instance.
+    master_node_hostname = get_master_node_hostname(lambda_instance_uuid)
+
+    # Move the application on the specified master node using scp.
+    system("scp {path} root@{hostname}:/home/flink/".format(path=local_file_path,
+                                                            hostname=master_node_hostname))
+
+    # Create a new entry on the database.
+    events.create_lambda_instance_application_connection.delay(lambda_instance_uuid,
+                                                               application_uuid)
+
+
+@shared_task
+def withdraw_application(lambda_instance_uuid, application_uuid):
+    """
+
+    :param lambda_instance_uuid:
+    :param application_uuid:
+    :return:
+    """
+
+    # Get the name of the application.
+    application_name = Application.objects.get(uuid=application_uuid)['name']
+
+    # Get the hostname of the master node of the specified lambda instance.
+    master_node_hostname = get_master_node_hostname(lambda_instance_uuid)
+
+    # Delete the application from the master node.
+    system("ssh -l root {hostname} rm /home/flink/{filename}".format(hostname=master_node_hostname,
+                                                                     filename=application_name))
+
+    # Create an event to remove the connection between the lambda instance and the application
+    # on the database.
+    events.delete_lambda_instance_application_connection.delay(lambda_instance_uuid,
+                                                               application_uuid)
+
+
 def on_failure(exc, task_id, args, kwargs, einfo):
     events.set_lambda_instance_status.delay(instance_uuid=task_id,
                                             status=LambdaInstance.FAILED,
@@ -279,3 +343,24 @@ def check_ansible_result(ansible_result):
         if value['failures'] != 0:
             return 'Ansible task failed'
     return 'Ansible successful'
+
+
+def get_master_node_hostname(lambda_instance_uuid):
+    """
+
+    :param lambda_instance_uuid:
+    :return:
+    """
+
+    lambda_instance_data = LambdaInstanceSerializer(LambdaInstance.objects.
+                                                    get(uuid=lambda_instance_uuid)).data
+    master_node_id = None
+    for server in lambda_instance_data['servers']:
+        if server['pub_id']:
+            master_node_id = server['id']
+            break
+
+    master_node_hostname = "snf-{master_node_id}.vm.okeanos.grnet.gr".\
+        format(master_node_id=master_node_id)
+
+    return master_node_hostname

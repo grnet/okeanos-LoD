@@ -143,6 +143,14 @@ CELERY_ROUTES = {
         'queue': 'tasks_queue',
         'routing_key': 'task_key',
     },
+    'backend.tasks.deploy_application': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.tasks.withdraw_application': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
     'backend.events.set_lambda_instance_status': {
         'queue': 'events_queue',
         'routing_key': 'event_key',

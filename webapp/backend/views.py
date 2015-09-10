@@ -4,7 +4,7 @@ import uuid
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
-from rest_framework import viewsets, status, generics
+from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
@@ -17,7 +17,7 @@ from rest_framework_xml.renderers import XMLRenderer
 from fokia.utils import check_auth_token
 
 from . import tasks, events
-from .models import Application, LambdaInstance
+from .models import Application, LambdaInstance, LambdaInstanceApplicationConnection
 from .serializers import ApplicationSerializer, LambdaInstanceSerializer
 from .authenticate_user import KamakiTokenAuthentication
 
@@ -40,7 +40,7 @@ def authenticate(request):
         return JsonResponse({"errors": [error_info]}, status=401)
 
 
-class Application(generics.GenericAPIView):
+class ApplicationViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Implements the calls to upload, list or delete applications.
     """
@@ -50,14 +50,15 @@ class Application(generics.GenericAPIView):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
     pithos_container = "lambda_applications"
+    lookup_field = LambdaInstance.uuid
 
-    # Get method is used to get a list of all the uploaded applications.
-    def get(self, request, format=None):
+    # List method is used to get a list of all the uploaded applications.
+    def list(self, request, format=None):
         serializer = ApplicationSerializer(self.get_queryset(), many=True)
         return Response(serializer.data, status=200, content_type=format)
 
-    # Post method is used to upload an application.
-    def post(self, request, format=None):
+    # Create method is used to upload an application.
+    def create(self, request, format=None):
         # Check if a file was sent with the request.
         uploaded_file = request.FILES.get('file')
         if not uploaded_file:
@@ -89,8 +90,8 @@ class Application(generics.GenericAPIView):
 
         return Response({"uuid": application_uuid}, status=201)
 
-    # Delete method is used to delete a specified application.
-    def delete(self, request, format=None):
+    # Destroy method is used to delete a specified application.
+    def destroy(self, request, format=None):
         # Get the provided uuid.
         application_uuid = request.data.get('uuid')
         if not application_uuid:
@@ -109,6 +110,67 @@ class Application(generics.GenericAPIView):
                                                    serializer.data['name'], application_uuid)
 
         return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
+
+    @detail_route(methods=['post'])
+    def deploy(self, request, format=None):
+        lambda_instance_uuid = request.data.get('lambda_instance_id')
+        if not lambda_instance_uuid:
+            return Response({"errors": [{"message": "missing id header"}]},
+                            status=422)
+
+        application_uuid = request.data.get('application_uuid')
+        if not application_uuid:
+            return Response({"errors": [{"message": "missing id header"}]},
+                            status=422)
+
+        lambda_instance = get_object_or_404(LambdaInstance.objects.all(),
+                                            uuid=lambda_instance_uuid)
+        application = get_object_or_404(Application.objects.all(),
+                                            uuid=lambda_instance_uuid)
+
+        if LambdaInstanceApplicationConnection.objects.get(lambda_instance=lambda_instance,
+                                                           application=application).exists():
+            return Response("Already deployed", status=status.HTTP_200_OK)
+
+        tasks.deploy_application.delay(lambda_instance_uuid, application_uuid)
+
+        return Response("Accepted", status=status.HTTP_202_ACCEPTED)
+
+    @detail_route(methods=['get'])
+    def list_deployed(self, request, lambda_instance_uuid, format=None):
+        lambda_instance = get_object_or_404(LambdaInstance.objects.all(),
+                                            uuid=lambda_instance_uuid)
+        applications = LambdaInstanceApplicationConnection.objects.\
+            filter(lambda_instance=lambda_instance)
+
+        serializer = ApplicationSerializer(applications, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @detail_route(methods=['post'])
+    def withdraw(self, request, format=None):
+        lambda_instance_uuid = request.data.get('lambda_instance_id')
+        if not lambda_instance_uuid:
+            return Response({"errors": [{"message": "missing id header"}]},
+                            status=422)
+
+        application_uuid = request.data.get('application_uuid')
+        if not application_uuid:
+            return Response({"errors": [{"message": "missing id header"}]},
+                            status=422)
+
+        lambda_instance = get_object_or_404(LambdaInstance.objects.all(),
+                                            uuid=lambda_instance_uuid)
+        application = get_object_or_404(Application.objects.all(),
+                                            uuid=lambda_instance_uuid)
+
+        if not LambdaInstanceApplicationConnection.objects.get(lambda_instance=lambda_instance,
+                                                               application=application).exists():
+            return Response("Not deployed", status=status.HTTP_200_OK)
+
+        tasks.withdraw_application.delay(lambda_instance_uuid, application_uuid)
+
+        return Response("Accepted", status=status.HTTP_202_ACCEPTED)
 
 
 class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):

@@ -177,6 +177,28 @@ def delete_file_from_pithos(auth_url, auth_token, container_name, filename):
     pithos_client.account = astakos_client.user_info['id']
     pithos_client.container = container_name
 
-    # Delete the application from Pithos.
+    # Delete the file from Pithos.
     pithos_client.delete_object(filename)
 
+
+def download_file_from_pithos(auth_url, auth_token, container_name, filename, destination):
+    """
+    Downloads a specified file from Pithos.
+    :param auth_url: The authentication url for ~okeanos API.
+    :param auth_token: The authentication token of the user.
+    :param container_name: The name of the Pithos container to be used.
+    :param filename: The name of the file to be downloaded.
+    :param destination: The place where the downloaded file will be saved.
+    """
+
+    # Create Astakos client.
+    astakos_client = AstakosClient(auth_url, auth_token)
+
+    # Create Pithos client.
+    pithos_url = astakos_client.get_endpoint_url(PithosClient.service_type)
+    pithos_client = PithosClient(pithos_url, auth_token)
+    pithos_client.account = astakos_client.user_info['id']
+    pithos_client.container = container_name
+
+    # Download the file from Pithos.
+    pithos_client.download_object(filename, destination)
