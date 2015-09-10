@@ -280,12 +280,16 @@ def deploy_application(auth_url, auth_token, container_name, lambda_instance_uui
     :return:
     """
 
+
+
     # Get the name of the application.
-    application_name = Application.objects.get(uuid=application_uuid)['name']
+    application_name = Application.objects.get(uuid=application_uuid).name
 
     # Dowload application from Pithos.
+    if not path.exists(settings.TEMPORARY_FILE_STORAGE):
+        mkdir(settings.TEMPORARY_FILE_STORAGE)
     local_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, application_name)
-    local_file = open(local_file_path, 'r')
+    local_file = open(local_file_path, 'w+')
 
     try:
         utils.download_file_from_pithos(auth_url, auth_token, container_name, application_name,
@@ -293,6 +297,7 @@ def deploy_application(auth_url, auth_token, container_name, lambda_instance_uui
     except ClientError as exception:
         events.set_application_status.delay(application_uuid, Application.FAILED,
                                             exception.message)
+    local_file.close()
 
     # Get the hostname of the master node of the specified lambda instance.
     master_node_hostname = get_master_node_hostname(lambda_instance_uuid)
@@ -363,7 +368,7 @@ def get_master_node_hostname(lambda_instance_uuid):
                                                     get(uuid=lambda_instance_uuid)).data
     master_node_id = None
     for server in lambda_instance_data['servers']:
-        if server['pub_id']:
+        if server['pub_ip']:
             master_node_id = server['id']
             break
 

@@ -119,16 +119,23 @@ class ApplicationViewSet(viewsets.ReadOnlyModelViewSet):
         application = get_object_or_404(Application.objects.all(),
                                             uuid=application_uuid)
 
-        if LambdaInstanceApplicationConnection.objects.get(lambda_instance=lambda_instance,
-                                                           application=application).exists():
+        if LambdaInstanceApplicationConnection.objects.filter(lambda_instance=lambda_instance,
+                                                              application=application).exists():
             return Response("Already deployed", status=status.HTTP_200_OK)
 
-        tasks.deploy_application.delay(lambda_instance_uuid, application_uuid)
+        # Create a task to deploy the application.
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+        auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+
+        tasks.deploy_application.delay(auth_url, auth_token, self.pithos_container,
+                                       lambda_instance_uuid, application_uuid)
 
         return Response("Accepted", status=status.HTTP_202_ACCEPTED)
 
     @detail_route(methods=['get'])
-    def list_deployed(self, request, lambda_instance_uuid, format=None):
+    def list_deployed(self, request, uuid, format=None):
+        lambda_instance_uuid = uuid
+
         lambda_instance = get_object_or_404(LambdaInstance.objects.all(),
                                             uuid=lambda_instance_uuid)
         applications = LambdaInstanceApplicationConnection.objects.\
@@ -159,6 +166,7 @@ class ApplicationViewSet(viewsets.ReadOnlyModelViewSet):
                                                                application=application).exists():
             return Response("Not deployed", status=status.HTTP_200_OK)
 
+        # Create a task to withdraw the application.
         tasks.withdraw_application.delay(lambda_instance_uuid, application_uuid)
 
         return Response("Accepted", status=status.HTTP_202_ACCEPTED)
