@@ -4,7 +4,7 @@ import uuid
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
@@ -40,7 +40,7 @@ def authenticate(request):
         return JsonResponse({"errors": [error_info]}, status=401)
 
 
-class ApplicationViewSet(viewsets.ReadOnlyModelViewSet):
+class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     Implements the calls to upload, list or delete applications.
     """
@@ -49,13 +49,14 @@ class ApplicationViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = IsAuthenticated,
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
-    pithos_container = "lambda_applications"
     lookup_field = 'uuid'
 
+    pithos_container = "lambda_applications"
+
     # List method is used to get a list of all the uploaded applications.
-    def list(self, request, format=None):
-        serializer = ApplicationSerializer(self.get_queryset(), many=True)
-        return Response(serializer.data, status=200, content_type=format)
+    #def list(self, request, format=None):
+    #    serializer = ApplicationSerializer(self.get_queryset(), many=True)
+    #    return Response(serializer.data, status=200, content_type=format)
 
     # Create method is used to upload an application.
     def create(self, request, format=None):
@@ -170,7 +171,7 @@ class ApplicationViewSet(viewsets.ReadOnlyModelViewSet):
         return Response("Accepted", status=status.HTTP_202_ACCEPTED)
 
 
-class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
+class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     authentication_classes = KamakiTokenAuthentication,
     permission_classes = IsAuthenticated,
@@ -180,44 +181,59 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
     # used to parse the urls.
     lookup_field = 'uuid'
 
-    def list(self, request, format=None):
-        # Calculate pagination parameters and use them to retrieve the requested lambda instances.
-        if 'limit' in request.query_params and 'page' in request.query_params:
-            try:
-                limit = int(request.query_params.get("limit"))
-                page = int(request.query_params.get("page"))
-            except (TypeError, ValueError):
-                return Response({"errors": [{"message": "Bad parameter"}]},
-                                status=status.HTTP_400_BAD_REQUEST)
+    # Answers only to GET requests on the url: r'^{prefix}{trailing_slash}$' (by default router).
+    #def list(self, request, format=None):
+    #    # Calculate pagination parameters and use them to retrieve the requested lambda instances.
+    #    if 'limit' in request.query_params and 'page' in request.query_params:
+    #        try:
+    #            limit = int(request.query_params.get("limit"))
+    #            page = int(request.query_params.get("page"))
+    #        except (TypeError, ValueError):
+    #            return Response({"errors": [{"message": "Bad parameter"}]},
+    #                            status=status.HTTP_400_BAD_REQUEST)
+    #
+    #        if limit <= 0 or page <= 0:
+    #            return Response({"errors":
+    #                                 [{"message": "Zero or negative indexing not supported"}]},
+    #                            status=status.HTTP_400_BAD_REQUEST)
+    #        else:
+    #            first_to_retrieve = (page - 1) * limit
+    #            last_to_retrieve = page * limit
+    #            serializer = LambdaInstanceSerializer(
+    #                self.get_queryset()[first_to_retrieve:last_to_retrieve], many=True)
+    #    elif 'limit' in request.query_params or 'page' in request.query_params:
+    #            return Response({"errors": [{"message": "Missing parameter"}]},
+    #                            status=status.HTTP_400_BAD_REQUEST)
+    #    else:
+    #            serializer = LambdaInstanceSerializer(self.get_queryset(), many=True)
+    #
+    #    wanted_fields = ['id', 'uuid', 'name']
+    #    unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
+    #
+    #    lambda_instances_list = []
+    #    # Remove unwanted fields from lambda instances information.
+    #    for lambda_instance in serializer.data:
+    #        for unwanted_field in unwanted_fields:
+    #            del lambda_instance[unwanted_field]
+    #        lambda_instances_list.append(lambda_instance)
+    #
+    #    return Response(lambda_instances_list, status=status.HTTP_200_OK)
 
-            if limit <= 0 or page <= 0:
-                return Response({"errors":
-                                     [{"message": "Zero or negative indexing not supported"}]},
-                                status=status.HTTP_400_BAD_REQUEST)
-            else:
-                first_to_retrieve = (page - 1) * limit
-                last_to_retrieve = page * limit
-                serializer = LambdaInstanceSerializer(
-                    self.get_queryset()[first_to_retrieve:last_to_retrieve], many=True)
-        elif 'limit' in request.query_params or 'page' in request.query_params:
-                return Response({"errors": [{"message": "Missing parameter"}]},
-                                status=status.HTTP_400_BAD_REQUEST)
-        else:
-                serializer = LambdaInstanceSerializer(self.get_queryset(), many=True)
-
-        wanted_fields = ['id', 'uuid', 'name']
-        unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
-
-        lambda_instances_list = []
-        # Remove unwanted fields from lambda instances information.
-        for lambda_instance in serializer.data:
-            for unwanted_field in unwanted_fields:
-                del lambda_instance[unwanted_field]
-            lambda_instances_list.append(lambda_instance)
-
-        return Response(lambda_instances_list, status=status.HTTP_200_OK)
-
+    # Answers only to get requests on the url: r'^{prefix}/{lookup}{trailing_slash}$'
+    # (by default router).
     def retrieve(self, request, uuid, format=None):
+        filter = request.query_params.get('filter', '')
+
+        if filter == "status":
+            return self.status(request, uuid)
+        elif filter == "info":
+            return self.details(request, uuid)
+        elif filter == "":
+            return Response("todo", status=200)
+        else:
+            return Response("Bad Request", status=status.HTTP_400_BAD_REQUEST)
+
+    def details(self, request, uuid, format=None):
         serializer = LambdaInstanceSerializer(get_object_or_404(self.get_queryset(), uuid=uuid))
 
         wanted_fields = ['id', 'uuid', 'name', 'instance_info']
@@ -233,7 +249,6 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response(lambda_instance, status=status.HTTP_200_OK)
 
-    @detail_route(methods=['get'])
     def status(self, request, uuid, format=None):
         serializer = LambdaInstanceSerializer(get_object_or_404(self.get_queryset(), uuid=uuid))
 
@@ -247,7 +262,16 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response(lambda_instance, status=status.HTTP_200_OK)
 
-    @detail_route(methods=['post'])
+    def action(self, request, uuid, format=None):
+        action_parameter = request.data.get('action', '')
+
+        if action_parameter == "start":
+            return self.start(request, uuid)
+        elif action_parameter == "stop":
+            return self.stop(request, uuid)
+        else:
+            return Response("Bad Request", status=status.HTTP_400_BAD_REQUEST)
+
     def start(self, request, uuid, format=None):
         serializer = LambdaInstanceSerializer(get_object_or_404(self.get_queryset(), uuid=uuid))
         data = serializer.data
@@ -285,7 +309,6 @@ class LambdaInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
 
-    @detail_route(methods=['post'])
     def stop(self, request, uuid, format=None):
         serializer = LambdaInstanceSerializer(get_object_or_404(self.get_queryset(), uuid=uuid))
         data = serializer.data
