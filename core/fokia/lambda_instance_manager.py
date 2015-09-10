@@ -7,7 +7,10 @@ from kamaki.clients.cyclades import CycladesComputeClient, CycladesNetworkClient
 import os
 from os.path import join, expanduser
 import inspect
+
 script_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+
+
 # script_path = '/var/www/okeanos-LoD/core/fokia'
 
 
@@ -165,10 +168,12 @@ if __name__ == "__main__":
     # args = parser.parse_args()
 
     import uuid
+
     keys_folder = expanduser('~/.ssh/lambda_instances/')
     if not os.path.exists(keys_folder):
         choice = raw_input("{} was not found. "
-                       "Do you want to have it created for you? (Y/n)?".format(keys_folder))
+                           "Do you want to have it created for you?"
+                           " (Y/n)?".format(keys_folder))
         if choice.lower() in ["", "y", "yes"]:
             os.mkdir(keys_folder, 0o755)
     ansible_manager, provisioner_response = create_cluster(cluster_id=uuid.uuid4())
