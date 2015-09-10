@@ -32,7 +32,10 @@ script:
  - tox -e $TOXENV_CORE
 
 
- - cd ../webapp
+ - cd ../
+ - python render_django_settings.py
+
+ - cd webapp
  - pip install -r requirements.txt
 # - cd ansible
 # - echo -e "[service-vms]\nlocalhost ansible_ssh_user=travis" > hosts
