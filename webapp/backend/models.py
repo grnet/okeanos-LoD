@@ -284,5 +284,5 @@ class LambdaInstanceApplicationConnection(models.Model):
     application: models.Application
     """
 
-    lambdaInstance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False)
+    lambda_instance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False)
     application = models.ForeignKey(Application, null=False, blank=False, unique=False)

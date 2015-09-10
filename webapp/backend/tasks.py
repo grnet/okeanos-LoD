@@ -199,6 +199,10 @@ def create_lambda_instance(auth_token=None, instance_name='Lambda Instance',
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.FLINK_INSTALLED)
 
+    # Set lambda instance status to started.
+    events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                            status=LambdaInstance.STARTED)
+
 
 @shared_task
 def upload_application_to_pithos(auth_url, auth_token, container_name, project_name,

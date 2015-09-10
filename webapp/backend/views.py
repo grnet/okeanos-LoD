@@ -50,7 +50,7 @@ class ApplicationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
     pithos_container = "lambda_applications"
-    lookup_field = LambdaInstance.uuid
+    lookup_field = 'uuid'
 
     # List method is used to get a list of all the uploaded applications.
     def list(self, request, format=None):
@@ -91,42 +91,33 @@ class ApplicationViewSet(viewsets.ReadOnlyModelViewSet):
         return Response({"uuid": application_uuid}, status=201)
 
     # Destroy method is used to delete a specified application.
-    def destroy(self, request, format=None):
-        # Get the provided uuid.
-        application_uuid = request.data.get('uuid')
-        if not application_uuid:
-            return Response({"errors": [{"message": "missing id header"}]},
-                            status=422)
-
+    def destroy(self, request, uuid, format=None):
         # Check if the specified application exists.
         serializer = ApplicationSerializer(get_object_or_404(self.get_queryset(),
-                                                             uuid=application_uuid))
+                                                             uuid=uuid))
 
         # Create task to delete the specified application from Pithos.
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
         tasks.delete_application_from_pithos.delay(auth_url, auth_token, self.pithos_container,
-                                                   serializer.data['name'], application_uuid)
+                                                   serializer.data['name'], uuid)
 
         return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
 
     @detail_route(methods=['post'])
-    def deploy(self, request, format=None):
+    def deploy(self, request, uuid, format=None):
+        application_uuid = uuid
+
         lambda_instance_uuid = request.data.get('lambda_instance_id')
         if not lambda_instance_uuid:
-            return Response({"errors": [{"message": "missing id header"}]},
-                            status=422)
-
-        application_uuid = request.data.get('application_uuid')
-        if not application_uuid:
             return Response({"errors": [{"message": "missing id header"}]},
                             status=422)
 
         lambda_instance = get_object_or_404(LambdaInstance.objects.all(),
                                             uuid=lambda_instance_uuid)
         application = get_object_or_404(Application.objects.all(),
-                                            uuid=lambda_instance_uuid)
+                                            uuid=application_uuid)
 
         if LambdaInstanceApplicationConnection.objects.get(lambda_instance=lambda_instance,
                                                            application=application).exists():
