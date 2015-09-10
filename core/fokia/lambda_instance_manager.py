@@ -4,61 +4,10 @@ from fokia.provisioner import Provisioner
 from fokia.ansible_manager import Manager
 from kamaki.clients.astakos import AstakosClient
 from kamaki.clients.cyclades import CycladesComputeClient, CycladesNetworkClient
-import time
 import os
 # import inspect
 # script_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 script_path = '/var/www/okeanos-LoD/core/fokia'
-
-
-# Deprecated
-def create_lambda_instance(auth_token=None, master_name='lambda-master',
-                           slaves=1, vcpus_master=4, vcpus_slave=4,
-                           ram_master=4096, ram_slave=4096, disk_master=40, disk_slave=40,
-                           ip_allocation='master', network_request=1,
-                           project_name='lambda.grnet.gr'):
-    start_time = time.time()
-
-    provisioner = Provisioner(auth_token=auth_token)
-    provisioner.create_lambda_cluster(vm_name=master_name,
-                                      slaves=slaves,
-                                      vcpus_master=vcpus_master,
-                                      vcpus_slave=vcpus_slave,
-                                      ram_master=ram_master,
-                                      ram_slave=ram_slave,
-                                      disk_master=disk_master,
-                                      disk_slave=disk_slave,
-                                      ip_allocation=ip_allocation,
-                                      network_request=network_request,
-                                      project_name=project_name)
-
-    provisioner_response = provisioner.get_cluster_details()
-    master_id = provisioner_response['nodes']['master']['id']
-    master_ip = provisioner.get_server_private_ip(master_id)
-    provisioner_response['nodes']['master']['internal_ip'] = master_ip
-    # slave_ids = [slave['id'] for slave in provisioner_response['nodes']['slaves']]
-    for i, slave in enumerate(provisioner_response['nodes']['slaves']):
-        slave_ip = provisioner.get_server_private_ip(slave['id'])
-        provisioner_response['nodes']['slaves'][i]['internal_ip'] = slave_ip
-    provisioner_response['pk'] = provisioner.get_private_key()
-
-    print 'response =', provisioner_response
-    provisioner_time = time.time()
-
-    ansible_manager = Manager(provisioner_response)
-    ansible_manager.create_inventory()
-
-    ansible_result = ansible_manager.run_playbook(
-        playbook_file=script_path + "/../../ansible/playbooks/cluster-install.yml")
-
-    provisioner_duration = provisioner_time - start_time
-    ansible_duration = time.time() - provisioner_time
-
-    print 'VM provisioning took', round(provisioner_duration), 'seconds'
-    print 'Ansible playbooks took', round(ansible_duration), 'seconds'
-    print 'Ansible result', ansible_result
-
-    return ansible_result
 
 
 def create_cluster(cluster_id, auth_token=None, master_name='lambda-master',
@@ -214,4 +163,10 @@ if __name__ == "__main__":
     #
     # args = parser.parse_args()
 
-    create_lambda_instance()
+    import uuid
+    ansible_manager, provisioner_response = create_cluster(cluster_id=uuid.uuid4())
+    run_playbook(ansible_manager, 'initialize.yml')
+    run_playbook(ansible_manager, 'common-install.yml')
+    run_playbook(ansible_manager, 'hadoop-install.yml')
+    run_playbook(ansible_manager, 'kafka-install.yml')
+    run_playbook(ansible_manager, 'flink-install.yml')
