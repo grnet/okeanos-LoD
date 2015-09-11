@@ -5,13 +5,18 @@ from fokia.ansible_manager import Manager
 from kamaki.clients.astakos import AstakosClient
 from kamaki.clients.cyclades import CycladesComputeClient, CycladesNetworkClient
 import os
-from os.path import join, expanduser
+from os.path import join, expanduser, exists
 import inspect
 
-script_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+check_folders = ['/var/www/okeanos-LoD/ansible', 'okeanos-LoD/ansible', 'ansible', '../ansible',
+                 '../../ansible']
 
-
-# script_path = '/var/www/okeanos-LoD/core/fokia'
+ansible_path = os.environ.get('LAMBDA_ANSIBLE_PATH', None)
+if not ansible_path:
+    for folder in check_folders:
+        if exists(folder):
+            ansible_path = folder
+            break
 
 
 def create_cluster(cluster_id, auth_token=None, master_name='lambda-master',
@@ -84,7 +89,7 @@ def delete_private_key(cluster_id, master_id, slave_ids):
 
 def run_playbook(ansible_manager, playbook):
     ansible_result = ansible_manager.run_playbook(
-        playbook_file=script_path + "/../../ansible/playbooks/" + playbook)
+        playbook_file=join(ansible_path, "playbooks", playbook))
     return ansible_result
 
 
