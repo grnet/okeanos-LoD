@@ -489,8 +489,8 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             if lambda_instance_data['status'] != LambdaInstance.STOPPED and \
                    lambda_instance_data['status'] != LambdaInstance.FAILED:
                 raise CustomCantDoError("Cannot start lambda instance while current status is " +
-                                        LambdaInstance.status_choices[int(lambda_instance_data[
-                                                                              'status'])][1] + ".")
+                                        LambdaInstance.status_choices[
+                                            int(lambda_instance_data['status'])][1] + ".")
         elif action_parameter == "stop":
             if lambda_instance_data['status'] == LambdaInstance.STOPPED:
                 raise CustomAlreadyDoneError("The specified lambda instance is already stopped.")
@@ -556,8 +556,8 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             lambda_instance_data['status'] != LambdaInstance.STOPPED and \
                 lambda_instance_data['status'] != LambdaInstance.FAILED:
             raise CustomCantDoError("Cannot destroy lambda instance while current status is " +
-                                        LambdaInstance.status_choices[int(lambda_instance_data[
-                                                                              'status'])][1] + ".")
+                                        LambdaInstance.status_choices[
+                                            int(lambda_instance_data['status'])][1] + ".")
 
         # Get the id of the master node and the ids of the slave nodes.
         master_id = None
