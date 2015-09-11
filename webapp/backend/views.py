@@ -66,6 +66,7 @@ def _paginate_response(view, request, default_response):
 
     return default_response
 
+
 def _parse_default_pagination_response(default_response):
     """
     This method is used to refactor the default response of the Django Rest Framework default
@@ -250,8 +251,8 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # Check the status of the specified lambda instance.
         if lambda_instance.status != LambdaInstance.STARTED:
             raise CustomCantDoError("Cannot deploy an application on a lambda instance with " +
-                                    "status " + LambdaInstance.status_choices[int(
-                                                                 lambda_instance.status)][1] + ".")
+                                    "status " + LambdaInstance.status_choices[
+                                        int(lambda_instance.status)][1] + ".")
 
         # Check if the specified application is already deployed on the specified lambda instance.
         if LambdaInstanceApplicationConnection.objects.filter(lambda_instance=lambda_instance,
@@ -320,7 +321,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         if lambda_instance.status != LambdaInstance.STARTED:
             raise CustomCantDoError("Cannot withdraw an application on a lambda instance with " +
                                     "status " + LambdaInstance.status_choices[int(
-                                                                 lambda_instance.status)][1] + ".")
+                                        lambda_instance.status)][1] + ".")
 
         # Check if the specified application is already not deployed on the specified lambda
         # instance.
@@ -486,7 +487,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             if lambda_instance_data['status'] == LambdaInstance.STARTED:
                 raise CustomAlreadyDoneError("The specified lambda instance is already started.")
             if lambda_instance_data['status'] != LambdaInstance.STOPPED and \
-                lambda_instance_data['status'] != LambdaInstance.FAILED:
+                   lambda_instance_data['status'] != LambdaInstance.FAILED:
                 raise CustomCantDoError("Cannot start lambda instance while current status is " +
                                         LambdaInstance.status_choices[int(lambda_instance_data[
                                                                               'status'])][1] + ".")
@@ -494,10 +495,10 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             if lambda_instance_data['status'] == LambdaInstance.STOPPED:
                 raise CustomAlreadyDoneError("The specified lambda instance is already stopped.")
             if lambda_instance_data['status'] != LambdaInstance.STARTED and \
-                lambda_instance_data['status'] != LambdaInstance.FAILED:
+                   lambda_instance_data['status'] != LambdaInstance.FAILED:
                 raise CustomCantDoError("Cannot stop lambda instance while current status is " +
-                                        LambdaInstance.status_choices[int(lambda_instance_data[
-                                                                              'status'])][1] + ".")
+                                        LambdaInstance.status_choices[
+                                            int(lambda_instance_data['status'])][1] + ".")
         else:
             raise CustomParseError("action POST parameter can be used with start or stop value.")
 
@@ -575,12 +576,13 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
-        tasks.lambda_instance_destroy.delay(lambda_instance_data['uuid'], auth_url, auth_token, master_id,
-                                            slave_ids, public_ip_id,
+        tasks.lambda_instance_destroy.delay(lambda_instance_data['uuid'], auth_url, auth_token,
+                                            master_id, slave_ids, public_ip_id,
                                             lambda_instance_data['private_network'][0]['id'])
 
         # Create event to update the database.
-        events.set_lambda_instance_status.delay(lambda_instance_data['uuid'], LambdaInstance.DESTROYING)
+        events.set_lambda_instance_status.delay(lambda_instance_data['uuid'],
+                                                LambdaInstance.DESTROYING)
 
         return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
 

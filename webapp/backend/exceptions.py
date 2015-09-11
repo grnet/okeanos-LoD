@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import exception_handler
 from rest_framework.exceptions import APIException
 
+
 class CustomAuthenticationFailed(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
     default_detail = "Unauthorized. Request failed because user provided an invalid token."
@@ -36,6 +37,7 @@ class CustomCantDoError(APIException):
 custom_exceptions = (CustomAuthenticationFailed, CustomParseError, CustomValidationError,
                      CustomNotFoundError, CustomAlreadyDoneError, CustomCantDoError)
 
+
 def parse_custom_exception(default_response):
     response = {}
 
@@ -45,6 +47,7 @@ def parse_custom_exception(default_response):
 
     response_status = default_response.status_code
     return Response({"errors": [response]}, response_status)
+
 
 def custom_exception_handler(exc, context):
 

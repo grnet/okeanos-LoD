@@ -223,8 +223,8 @@ def upload_application_to_pithos(auth_url, auth_token, container_name, project_n
     local_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, uploaded_file.name)
     local_file = open(local_file_path, 'wb+')
 
-    # Djnago suggest to always save the uploaded file using chunks. That will avoiding reading the whole
-    # file into memory and possibly overwhelming it.
+    # Djnago suggest to always save the uploaded file using chunks. That will avoiding reading the
+    # whole file into memory and possibly overwhelming it.
     for chunk in uploaded_file.chunks():
         local_file.write(chunk)
     local_file.close()
@@ -269,15 +269,15 @@ def delete_application_from_pithos(auth_url, auth_token, container_name, filenam
 
 
 @shared_task
-def deploy_application(auth_url, auth_token, container_name, lambda_instance_uuid, application_uuid):
+def deploy_application(auth_url, auth_token, container_name, lambda_instance_uuid,
+                       application_uuid):
     """
-
-    :param auth_url:
-    :param auth_token:
-    :param container_name:
-    :param lambda_instance_uuid:
-    :param application_uuid:
-    :return:
+    Deployes an application from Pithos to a specified lambda instance.
+    :param auth_url: The authentication url for ~okeanos API.
+    :param auth_token: The authentication token of the user.
+    :param container_name: The name of the Pithos container where the file will be uploaded.
+    :param lambda_instance_uuid: The uuid of the lambda instance.
+    :param application_uuid: The uuid of the applcation.
     """
 
     # Get the name of the application.
@@ -315,10 +315,9 @@ def deploy_application(auth_url, auth_token, container_name, lambda_instance_uui
 @shared_task
 def withdraw_application(lambda_instance_uuid, application_uuid):
     """
-
-    :param lambda_instance_uuid:
-    :param application_uuid:
-    :return:
+    Withdraws an application from a specified lambda instance.
+    :param lambda_instance_uuid: The uuid of the lambda instance.
+    :param application_uuid: The uuid of the application.
     """
 
     # Get the name of the application.
@@ -357,9 +356,9 @@ def check_ansible_result(ansible_result):
 
 def get_master_node_hostname(lambda_instance_uuid):
     """
-
-    :param lambda_instance_uuid:
-    :return:
+    Returns the full hostname of the master node of a specified lambda instance.
+    :param lambda_instance_uuid: The uuid of the lambda instance.
+    :return: The full hostname of the master node of the specified lambda instance.
     """
 
     lambda_instance_data = LambdaInstanceSerializer(LambdaInstance.objects.
