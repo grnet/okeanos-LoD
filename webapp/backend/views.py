@@ -2,6 +2,7 @@ import json
 import uuid
 
 from django.shortcuts import get_object_or_404
+from django.core.urlresolvers import resolve
 
 from rest_framework import viewsets, status, mixins
 from rest_framework.views import APIView
@@ -30,15 +31,21 @@ def authenticate(request):
     Use authenticate_user.KamakiTokenAuthentication
 
     """
+
     # request.META contains all the headers of the request
     auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
     status, info = check_auth_token(auth_token)
     if status:
-        return Response({"data": [{"result": "success"}]}, status=status.HTTP_200_OK)
+        status_code = status.HTTP_200_OK
+        return Response({"data": [{"status": status_code,
+                                   "result": "success"}]}, status=status_code)
     else:
         error_info = json.loads(info)['unauthorized']
         error_info['details'] = error_info.get('details') + 'unauthorized'
-        return Response({"errors": [error_info]}, status=status.HTTP_401_UNAUTHORIZED)
+
+        status_code = status.HTTP_401_UNAUTHORIZED
+        error_info['status'] = status_code
+        return Response({"errors": [error_info]}, status=status_code)
 
 
 class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -54,12 +61,40 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     lookup_field = 'uuid'
 
+    # The Pithos container on which user's applications are saved.
     pithos_container = "lambda_applications"
 
-    # List method is used to get a list of all the uploaded applications.
-    #def list(self, request, format=None):
-    #    serializer = ApplicationSerializer(self.get_queryset(), many=True)
-    #    return Response(serializer.data, status=200, content_type=format)
+    def get_queryset(self):
+        """
+        Overrides the default get_queryset method.
+        """
+
+        # If the requested url directs to list-deployed view, then, change the query set to
+        # the applications deployed on the specified lambda instance.
+        if resolve(self.request.path_info).view_name == "application-list-deployed":
+            lambda_instance_uuid = self.kwargs['uuid']
+
+            # Check if the specified lambda instance exists.
+            lambda_instance = LambdaInstance.objects.filter(uuid=lambda_instance_uuid)
+            if not lambda_instance.exists():
+                raise CustomNotFoundError("The specified lambda instance does not exist.")
+
+            # Get the applications that are deployed on the specified lambda instance.
+            connections = LambdaInstanceApplicationConnection.objects.\
+                filter(lambda_instance=lambda_instance)
+            applications = [connection.application for connection in connections]
+
+            return applications
+        else:
+            return Application.objects.all()
+
+    def list(self, request, format=None):
+        """
+        This method is used to get a list of all the uploaded applications. Responds to GET
+        requests on url r'^{prefix}{trailing_slash}$'
+        """
+
+        return self._paginate_response(request)
 
     def create(self, request, format=None):
         """
@@ -97,9 +132,10 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                                  project_name, uploaded_file, application_uuid)
 
         # Return an appropriate response.
-        status_code = status.HTTP_201_CREATED
+        status_code = status.HTTP_202_ACCEPTED
         return Response({"data": [{"status": status_code,
-                                   "uuid": application_uuid}]}, status=status_code)
+                                   "uuid": application_uuid,
+                                   "result": "Accepted"}]}, status=status_code)
 
     def destroy(self, request, uuid, format=None):
         """
@@ -131,6 +167,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         This method is used to deploy an application to a specified lambda instance. Responds to
         POST requests on url r'^{prefix}/{lookup}/{methodname}{trailing_slash}$'
         """
+
         application_uuid = uuid
 
         # Check if the lambda instance id was provided with the request.
@@ -153,6 +190,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                                               application=application).exists():
             raise CustomAlreadyDoneError("The specified application has already been deployed"
                                          " on the specified lambda instance.")
+
         # Create a task to deploy the application.
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
@@ -165,42 +203,105 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({"data": [{"status": status_code,
                                    "result": "Accepted"}]}, status=status_code)
 
-    @detail_route(methods=['get'])
+    @detail_route(methods=['get'], url_path="list-deployed")
     def list_deployed(self, request, uuid, format=None):
+        """
+        This method is used to list the deployed applications on a specified lambda instance.
+        Responds to GET requests on url r'^{prefix}/{lookup}/{methodname}{trailing_slash}$
+        """
+
         lambda_instance_uuid = uuid
 
-        lambda_instance = get_object_or_404(LambdaInstance.objects.all(),
-                                            uuid=lambda_instance_uuid)
-        connections = LambdaInstanceApplicationConnection.objects.\
-            filter(lambda_instance=lambda_instance)
-        applications = [connection.application for connection in connections]
+        # Check if the specified lambda instance exists.
+        lambda_instance = LambdaInstance.objects.filter(uuid=lambda_instance_uuid)
+        if not lambda_instance.exists():
+            raise CustomNotFoundError("The specified lambda instance does not exist.")
 
-        serializer = ApplicationSerializer(applications, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return self._paginate_response(request)
 
     @detail_route(methods=['post'])
     def withdraw(self, request, uuid, format=None):
+        """
+        This method is used to withdraw an application from a specified lambda instance. Responds
+        to POST requests on url r'^{prefix}/{lookup}/{methodname}{trailing_slash}$'
+        """
+
         application_uuid = uuid
 
+        # Check if the lambda instance id was provided with the request.
         lambda_instance_uuid = request.data.get('lambda_instance_id')
         if not lambda_instance_uuid:
-            return Response({"errors": [{"message": "missing id header"}]},
-                            status=422)
+            raise CustomParseError("No lambda instance id provided.")
 
-        lambda_instance = get_object_or_404(LambdaInstance.objects.all(),
-                                            uuid=lambda_instance_uuid)
-        application = get_object_or_404(Application.objects.all(),
-                                            uuid=application_uuid)
+        # Check if the specified lambda instance exists.
+        lambda_instance = LambdaInstance.objects.filter(uuid=lambda_instance_uuid)
+        if not lambda_instance.exists():
+            raise CustomNotFoundError("The specified lambda instance does not exist.")
 
+        # Check if the specified application exists.
+        application = self.get_queryset().filter(uuid=application_uuid)
+        if not application.exists():
+            raise CustomNotFoundError("The specified application does not exist.")
+
+        # Check if the specified application is already not deployed on the specified lambda
+        # instance.
         if not LambdaInstanceApplicationConnection.objects.\
                 filter(lambda_instance=lambda_instance, application=application).exists():
-            return Response("Not deployed", status=status.HTTP_200_OK)
+            raise CustomAlreadyDoneError("The specified application is already not deployed"
+                                         " on the specified lambda instance.")
 
         # Create a task to withdraw the application.
         tasks.withdraw_application.delay(lambda_instance_uuid, application_uuid)
 
-        return Response("Accepted", status=status.HTTP_202_ACCEPTED)
+        # Return an appropriate response.
+        status_code = status.HTTP_202_ACCEPTED
+        return Response({"data": [{"status": status_code,
+                                   "result": "Accepted"}]}, status=status_code)
+
+    def _paginate_response(self, request):
+        """
+        This method is used to paginate a list response. The pagination method used is the default
+        Django Rest Framework pagination.
+        :param request: The request given to the calling view.
+        :return: Returns the paginated response.
+        """
+
+        default_response = super(ApplicationViewSet, self).list(request)
+
+        # Check if pagination was requested.
+        if 'limit' in request.query_params:
+
+            # Check if limit parameter is a positive integer.
+            limit = request.query_params.get('limit')
+            try:
+                limit = int(limit)
+
+                # Check if limit parameter is not a negative integer.
+                if limit >= 0:
+                    return self._parse_default_pagination_response(default_response)
+                else:
+                    raise CustomParseError("limit value should be a not negative integer.")
+            except ValueError:
+                raise CustomParseError("limit value should be a not negative integer.")
+        else:
+            return default_response
+
+    def _parse_default_pagination_response(self, default_response):
+        """
+        This method is used to refactor the default response of the Django Rest Framework default
+        pagination.
+        :param default_response: The response that the default pagination returned.
+        :return: The refactored response.
+        """
+
+        # Change the name or 'result' field to 'data'
+        default_response.data['data'] = default_response.data['results']
+        del default_response.data['results']
+
+        # Add status field in response data.
+        default_response.data['status'] = default_response.status_code
+
+        return default_response
 
 
 class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -254,6 +355,11 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     # Answers only to get requests on the url: r'^{prefix}/{lookup}{trailing_slash}$'
     # (by default router).
     def retrieve(self, request, uuid, format=None):
+        """
+        This method is used to get information about a specified lambda instance. Responds to GET
+        requests on url r'^{prefix}/{lookup}{trailing_slash}$'
+        """
+
         filter = request.query_params.get('filter', '')
 
         if filter == "status":
@@ -263,10 +369,19 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         elif filter == "":
             return Response("todo", status=200)
         else:
-            return Response("Bad Request", status=status.HTTP_400_BAD_REQUEST)
+            raise CustomParseError("The input provided is invalid.")
 
     def details(self, request, uuid, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.get_queryset(), uuid=uuid))
+        """
+        This method is used by retrieve method to get the details about a specified lambda
+        instance.
+        """
+
+        # Check if the specified lambda instance exists.
+        lambda_instance = LambdaInstance.objects.filter(uuid=uuid)
+        if not lambda_instance.exists():
+            raise CustomNotFoundError("The specified lambda instance does not exist.")
+        serializer = LambdaInstanceSerializer(lambda_instance)
 
         wanted_fields = ['id', 'uuid', 'name', 'instance_info']
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
