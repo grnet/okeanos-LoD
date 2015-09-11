@@ -185,14 +185,15 @@ CELERY_ROUTES = {
     },
 }
 
-##### Rest Framework configuration #####
+# Rest Framework configuration #
 REST_FRAMEWORK = {
   'DEFAULT_RENDERER_CLASSES': (
     'rest_framework.renderers.JSONRenderer',
     'rest_framework.renderers.BrowsableAPIRenderer',
     'rest_framework_xml.renderers.XMLRenderer',
   ),
-  'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
+  'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+  'EXCEPTION_HANDLER': 'backend.exceptions.custom_exception_handler'
 }
 
 TEMPORARY_FILE_STORAGE = os.path.abspath("/tmp/lambda_applications")

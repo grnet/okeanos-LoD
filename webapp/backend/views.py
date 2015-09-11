@@ -1,7 +1,6 @@
 import json
 import uuid
 
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets, status, mixins
@@ -18,6 +17,8 @@ from fokia.utils import check_auth_token
 
 from . import tasks, events
 from .models import Application, LambdaInstance, LambdaInstanceApplicationConnection
+from .exceptions import CustomParseError, CustomValidationError, CustomNotFoundError,\
+    CustomAlreadyDoneError
 from .serializers import ApplicationSerializer, LambdaInstanceSerializer
 from .authenticate_user import KamakiTokenAuthentication
 
@@ -33,22 +34,24 @@ def authenticate(request):
     auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
     status, info = check_auth_token(auth_token)
     if status:
-        return JsonResponse({"result": "success"}, status=200)
+        return Response({"data": [{"result": "success"}]}, status=status.HTTP_200_OK)
     else:
         error_info = json.loads(info)['unauthorized']
         error_info['details'] = error_info.get('details') + 'unauthorized'
-        return JsonResponse({"errors": [error_info]}, status=401)
+        return Response({"errors": [error_info]}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
-    Implements the calls to upload, list or delete applications.
+    Implements the API calls relevant to application.
     """
 
     authentication_classes = KamakiTokenAuthentication,
     permission_classes = IsAuthenticated,
+
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
+
     lookup_field = 'uuid'
 
     pithos_container = "lambda_applications"
@@ -58,16 +61,20 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     #    serializer = ApplicationSerializer(self.get_queryset(), many=True)
     #    return Response(serializer.data, status=200, content_type=format)
 
-    # Create method is used to upload an application.
     def create(self, request, format=None):
+        """
+        This method is used to upload an application to Pithos. Responds to POST requests on url
+        r'^{prefix}{trailing_slash}$'
+        """
+
         # Check if a file was sent with the request.
         uploaded_file = request.FILES.get('file')
         if not uploaded_file:
-            return Response({"errors": [{"message": "No file uploaded", "code": 422}]}, status=422)
+            raise CustomParseError("No file uploaded.")
 
         # Check if another file with same name already exists.
         if self.get_queryset().filter(name=uploaded_file.name).count() > 0:
-            return Response({"errors": [{"message": "File name already exists"}]}, status=400)
+            raise CustomValidationError("File name already exists.")
 
         # Get the description provided with the request.
         description = request.data.get('description', '')
@@ -80,7 +87,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Create an event to insert a new entry on the database.
         events.create_new_application.delay(application_uuid, uploaded_file.name,
-                                            "lambda_applications", description, request.user)
+                                            self.pithos_container, description, request.user)
 
         # Create a task to upload the application from the local file system to Pithos.
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
@@ -89,13 +96,22 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         tasks.upload_application_to_pithos.delay(auth_url, auth_token, self.pithos_container,
                                                  project_name, uploaded_file, application_uuid)
 
-        return Response({"uuid": application_uuid}, status=201)
+        # Return an appropriate response.
+        status_code = status.HTTP_201_CREATED
+        return Response({"data": [{"status": status_code,
+                                   "uuid": application_uuid}]}, status=status_code)
 
-    # Destroy method is used to delete a specified application.
     def destroy(self, request, uuid, format=None):
+        """
+        This method is used to delete an application from Pithos. Responds to DELETE requests on
+        url r'^{prefix}/{lookup}{trailing_slash}$'
+        """
+
         # Check if the specified application exists.
-        serializer = ApplicationSerializer(get_object_or_404(self.get_queryset(),
-                                                             uuid=uuid))
+        application = self.get_queryset().filter(uuid=uuid)
+        if not application.exists():
+            raise CustomNotFoundError("The specified application does not exist.")
+        serializer = ApplicationSerializer(application)
 
         # Create task to delete the specified application from Pithos.
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
@@ -104,26 +120,39 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         tasks.delete_application_from_pithos.delay(auth_url, auth_token, self.pithos_container,
                                                    serializer.data['name'], uuid)
 
-        return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
+        # Return an appropriate response.
+        status_code = status.HTTP_202_ACCEPTED
+        return Response({"data": [{"status": status_code,
+                                   "result": "Accepted"}]}, status=status_code)
 
     @detail_route(methods=['post'])
     def deploy(self, request, uuid, format=None):
+        """
+        This method is used to deploy an application to a specified lambda instance. Responds to
+        POST requests on url r'^{prefix}/{lookup}/{methodname}{trailing_slash}$'
+        """
         application_uuid = uuid
 
+        # Check if the lambda instance id was provided with the request.
         lambda_instance_uuid = request.data.get('lambda_instance_id')
         if not lambda_instance_uuid:
-            return Response({"errors": [{"message": "missing id header"}]},
-                            status=422)
+            raise CustomParseError("No lambda instance id provided.")
 
-        lambda_instance = get_object_or_404(LambdaInstance.objects.all(),
-                                            uuid=lambda_instance_uuid)
-        application = get_object_or_404(Application.objects.all(),
-                                            uuid=application_uuid)
+        # Check if the specified lambda instance exists.
+        lambda_instance = LambdaInstance.objects.filter(uuid=lambda_instance_uuid)
+        if not lambda_instance.exists():
+            raise CustomNotFoundError("The specified lambda instance does not exist.")
 
+        # Check if the specified application exists.
+        application = self.get_queryset().filter(uuid=application_uuid)
+        if not application.exists():
+            raise CustomNotFoundError("The specified application does not exist.")
+
+        # Check if the specified application is already deployed on the specified lambda instance.
         if LambdaInstanceApplicationConnection.objects.filter(lambda_instance=lambda_instance,
                                                               application=application).exists():
-            return Response("Already deployed", status=status.HTTP_200_OK)
-
+            raise CustomAlreadyDoneError("The specified application has already been deployed"
+                                         " on the specified lambda instance.")
         # Create a task to deploy the application.
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
@@ -131,7 +160,10 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         tasks.deploy_application.delay(auth_url, auth_token, self.pithos_container,
                                        lambda_instance_uuid, application_uuid)
 
-        return Response("Accepted", status=status.HTTP_202_ACCEPTED)
+        # Return an appropriate response.
+        status_code = status.HTTP_202_ACCEPTED
+        return Response({"data": [{"status": status_code,
+                                   "result": "Accepted"}]}, status=status_code)
 
     @detail_route(methods=['get'])
     def list_deployed(self, request, uuid, format=None):
