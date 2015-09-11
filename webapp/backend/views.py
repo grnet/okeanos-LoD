@@ -1,7 +1,6 @@
 import json
 import uuid
 
-from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import resolve
 
 from rest_framework import viewsets, status, mixins
@@ -248,6 +247,12 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             raise CustomNotFoundError("The specified application does not exist.")
         application = applications[0]
 
+        # Check the status of the specified lambda instance.
+        if lambda_instance.status != LambdaInstance.STARTED:
+            raise CustomCantDoError("Cannot deploy an application on a lambda instance with " +
+                                    "status " + LambdaInstance.status_choices[int(
+                                                                 lambda_instance.status)][1] + ".")
+
         # Check if the specified application is already deployed on the specified lambda instance.
         if LambdaInstanceApplicationConnection.objects.filter(lambda_instance=lambda_instance,
                                                               application=application).exists():
@@ -310,6 +315,12 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         if not applications.exists():
             raise CustomNotFoundError("The specified application does not exist.")
         application = applications[0]
+
+        # Check the status of the specified lambda instance.
+        if lambda_instance.status != LambdaInstance.STARTED:
+            raise CustomCantDoError("Cannot withdraw an application on a lambda instance with " +
+                                    "status " + LambdaInstance.status_choices[int(
+                                                                 lambda_instance.status)][1] + ".")
 
         # Check if the specified application is already not deployed on the specified lambda
         # instance.
@@ -478,7 +489,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 lambda_instance_data['status'] != LambdaInstance.FAILED:
                 raise CustomCantDoError("Cannot start lambda instance while current status is " +
                                         LambdaInstance.status_choices[int(lambda_instance_data[
-                                                                              'status'])][1])
+                                                                              'status'])][1] + ".")
         elif action_parameter == "stop":
             if lambda_instance_data['status'] == LambdaInstance.STOPPED:
                 raise CustomAlreadyDoneError("The specified lambda instance is already stopped.")
@@ -486,7 +497,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 lambda_instance_data['status'] != LambdaInstance.FAILED:
                 raise CustomCantDoError("Cannot stop lambda instance while current status is " +
                                         LambdaInstance.status_choices[int(lambda_instance_data[
-                                                                              'status'])][1])
+                                                                              'status'])][1] + ".")
         else:
             raise CustomParseError("action POST parameter can be used with start or stop value.")
 
@@ -494,7 +505,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         master_id = None
         slave_ids = []
 
-        servers = data['servers']
+        servers = lambda_instance_data['servers']
         for server in servers:
             if server['pub_ip']:
                 master_id = server['id']
@@ -534,26 +545,25 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         lambda_instances = LambdaInstance.objects.filter(uuid=uuid)
         if not lambda_instances.exists():
             raise CustomNotFoundError("The specified lambda instance does not exist.")
-        data = LambdaInstanceSerializer(lambda_instances[0]).data
+        lambda_instance_data = LambdaInstanceSerializer(lambda_instances[0]).data
 
         # Check the current status of the lambda instance.
-        if data['status'] == LambdaInstance.DESTROYED:
-            return Response({"detail": "The specified lambda instance is already destroyed"},
-                            status=status.HTTP_400_BAD_REQUEST)
+        if lambda_instance_data['status'] == LambdaInstance.DESTROYED:
+            raise CustomAlreadyDoneError("The specified lambda instance is already destroyed.")
 
-        if data['status'] != LambdaInstance.STARTED and \
-            data['status'] != LambdaInstance.STOPPED and \
-                data['status'] != LambdaInstance.FAILED:
-            return Response({"detail": "Cannot destroy lambda instance while current status " +
-                             "is " + data['status']},
-                            status=status.HTTP_400_BAD_REQUEST)
+        if lambda_instance_data['status'] != LambdaInstance.STARTED and \
+            lambda_instance_data['status'] != LambdaInstance.STOPPED and \
+                lambda_instance_data['status'] != LambdaInstance.FAILED:
+            raise CustomCantDoError("Cannot destroy lambda instance while current status is " +
+                                        LambdaInstance.status_choices[int(lambda_instance_data[
+                                                                              'status'])][1] + ".")
 
         # Get the id of the master node and the ids of the slave nodes.
         master_id = None
         public_ip_id = None
         slave_ids = []
 
-        servers = data['servers']
+        servers = lambda_instance_data['servers']
         for server in servers:
             if server['pub_ip']:
                 master_id = server['id']
@@ -565,12 +575,12 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
-        tasks.lambda_instance_destroy.delay(data['uuid'], auth_url, auth_token, master_id,
+        tasks.lambda_instance_destroy.delay(lambda_instance_data['uuid'], auth_url, auth_token, master_id,
                                             slave_ids, public_ip_id,
-                                            data['private_network'][0]['id'])
+                                            lambda_instance_data['private_network'][0]['id'])
 
         # Create event to update the database.
-        events.set_lambda_instance_status.delay(data['uuid'], LambdaInstance.DESTROYING)
+        events.set_lambda_instance_status.delay(lambda_instance_data['uuid'], LambdaInstance.DESTROYING)
 
         return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
 
