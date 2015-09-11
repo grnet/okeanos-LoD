@@ -28,8 +28,13 @@ class CustomAlreadyDoneError(APIException):
     default_detail = "Already Done."
 
 
+class CustomCantDoError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = "Can't do."
+
+
 custom_exceptions = (CustomAuthenticationFailed, CustomParseError, CustomValidationError,
-                     CustomNotFoundError, CustomAlreadyDoneError)
+                     CustomNotFoundError, CustomAlreadyDoneError, CustomCantDoError)
 
 def parse_custom_exception(default_response):
     response = {}
