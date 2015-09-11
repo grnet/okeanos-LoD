@@ -41,4 +41,4 @@
     command: update-rc.d lambda-init defaults
 
   - name: Set PATH environment variable
-    copy: src=path.sh dest=/etc/profile.d/path.sh owner=root group=root mode=0644
+    template: src=path.sh.j2 dest=/etc/profile.d/path.sh owner=root group=root mode=0644
