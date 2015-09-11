@@ -24,12 +24,69 @@ from .serializers import ApplicationSerializer, LambdaInstanceSerializer
 from .authenticate_user import KamakiTokenAuthentication
 
 
+def _paginate_response(view, request, default_response):
+    """
+    This method is used to paginate a list response. The pagination method used is the default
+    Django Rest Framework pagination.
+    :param request: The request given to the calling view.
+    :param view: The view object calling this method.
+    :return: Returns the paginated response.
+    :rtype : object
+    """
+
+    # Check if pagination was requested.
+    if 'limit' in request.query_params:
+
+        # Check if limit parameter is a positive integer.
+        limit = request.query_params.get('limit')
+        try:
+            limit = int(limit)
+
+            # Check if limit parameter is not a negative integer.
+            if limit >= 0:
+                default_response = _parse_default_pagination_response(default_response)
+            else:
+                raise CustomParseError("limit value should be a not negative integer.")
+        except ValueError:
+            raise CustomParseError("limit value should be a not negative integer.")
+    else:
+        # Add 'data' as the root element.
+        default_response.data = {"data": default_response.data}
+
+    # Remove any fields that the serializer adds but are not wanted on a list call.
+    default_response.data = view.parse_list_response(default_response.data)
+
+    # Add status field in response data.
+    default_response.data['status'] = default_response.status_code
+
+    # Change uuid name to id
+    for item in default_response.data['data']:
+        if 'uuid' in item:
+            item['id'] = item['uuid']
+            del item['uuid']
+
+    return default_response
+
+def _parse_default_pagination_response(default_response):
+    """
+    This method is used to refactor the default response of the Django Rest Framework default
+    pagination.
+    :param default_response: The response that the default pagination returned.
+    :return: The refactored response.
+    :rtype : object
+    """
+
+    # Change the name or 'result' field to 'data'
+    default_response.data['data'] = default_response.data['results']
+    del default_response.data['results']
+
+    return default_response
+
 def authenticate(request):
     """
     Checks the validity of the authentication token of the user
     .. deprecated::
     Use authenticate_user.KamakiTokenAuthentication
-
     """
 
     # request.META contains all the headers of the request
@@ -50,7 +107,7 @@ def authenticate(request):
 
 class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
-    Implements the API calls relevant to application.
+    Implements the API calls relevant to applications.
     """
 
     authentication_classes = KamakiTokenAuthentication,
@@ -75,9 +132,10 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             lambda_instance_uuid = self.kwargs['uuid']
 
             # Check if the specified lambda instance exists.
-            lambda_instance = LambdaInstance.objects.filter(uuid=lambda_instance_uuid)
-            if not lambda_instance.exists():
+            lambda_instances = LambdaInstance.objects.filter(uuid=lambda_instance_uuid)
+            if not lambda_instances.exists():
                 raise CustomNotFoundError("The specified lambda instance does not exist.")
+            lambda_instance = lambda_instances[0]
 
             # Get the applications that are deployed on the specified lambda instance.
             connections = LambdaInstanceApplicationConnection.objects.\
@@ -94,7 +152,10 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         requests on url r'^{prefix}{trailing_slash}$'
         """
 
-        return self._paginate_response(request)
+        # Get the default Django Rest Framework pagination response.
+        default_response = super(ApplicationViewSet, self).list(request)
+
+        return _paginate_response(self, request, default_response)
 
     def create(self, request, format=None):
         """
@@ -217,7 +278,10 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         if not lambda_instance.exists():
             raise CustomNotFoundError("The specified lambda instance does not exist.")
 
-        return self._paginate_response(request)
+        # Get the default Django Rest Framework pagination response.
+        default_response = super(ApplicationViewSet, self).list(request)
+
+        return _paginate_response(self, request, default_response)
 
     @detail_route(methods=['post'])
     def withdraw(self, request, uuid, format=None):
@@ -258,156 +322,135 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({"data": [{"status": status_code,
                                    "result": "Accepted"}]}, status=status_code)
 
-    def _paginate_response(self, request):
+    def parse_list_response(self, response):
         """
-        This method is used to paginate a list response. The pagination method used is the default
-        Django Rest Framework pagination.
-        :param request: The request given to the calling view.
-        :return: Returns the paginated response.
+        This method is used to remove from a list response any fields that the serializer adds
+        but are not wanted in a list response
         """
 
-        default_response = super(ApplicationViewSet, self).list(request)
+        for application in response['data']:
+            # Remove failure message if it is empty.
+            if application['failure_message'] == '':
+                del application['failure_message']
 
-        # Check if pagination was requested.
-        if 'limit' in request.query_params:
+            # Add code field that holds the status code as defined in modesls.
+            application['code'] = application['status']
 
-            # Check if limit parameter is a positive integer.
-            limit = request.query_params.get('limit')
-            try:
-                limit = int(limit)
+            # Change status field to a human readable format.
+            application['status'] = Application.status_choices[int(application['status'])][1]
 
-                # Check if limit parameter is not a negative integer.
-                if limit >= 0:
-                    return self._parse_default_pagination_response(default_response)
-                else:
-                    raise CustomParseError("limit value should be a not negative integer.")
-            except ValueError:
-                raise CustomParseError("limit value should be a not negative integer.")
-        else:
-            return default_response
-
-    def _parse_default_pagination_response(self, default_response):
-        """
-        This method is used to refactor the default response of the Django Rest Framework default
-        pagination.
-        :param default_response: The response that the default pagination returned.
-        :return: The refactored response.
-        """
-
-        # Change the name or 'result' field to 'data'
-        default_response.data['data'] = default_response.data['results']
-        del default_response.data['results']
-
-        # Add status field in response data.
-        default_response.data['status'] = default_response.status_code
-
-        return default_response
+        return response
 
 
 class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    Implements the API calls relevant to interacting with lambda instances.
+    """
 
     authentication_classes = KamakiTokenAuthentication,
     permission_classes = IsAuthenticated,
+
     queryset = LambdaInstance.objects.all()
     serializer_class = LambdaInstanceSerializer
-    # Check the model field of uuid in models.py and define the regular expression that will be
-    # used to parse the urls.
+
     lookup_field = 'uuid'
 
-    # Answers only to GET requests on the url: r'^{prefix}{trailing_slash}$' (by default router).
-    #def list(self, request, format=None):
-    #    # Calculate pagination parameters and use them to retrieve the requested lambda instances.
-    #    if 'limit' in request.query_params and 'page' in request.query_params:
-    #        try:
-    #            limit = int(request.query_params.get("limit"))
-    #            page = int(request.query_params.get("page"))
-    #        except (TypeError, ValueError):
-    #            return Response({"errors": [{"message": "Bad parameter"}]},
-    #                            status=status.HTTP_400_BAD_REQUEST)
-    #
-    #        if limit <= 0 or page <= 0:
-    #            return Response({"errors":
-    #                                 [{"message": "Zero or negative indexing not supported"}]},
-    #                            status=status.HTTP_400_BAD_REQUEST)
-    #        else:
-    #            first_to_retrieve = (page - 1) * limit
-    #            last_to_retrieve = page * limit
-    #            serializer = LambdaInstanceSerializer(
-    #                self.get_queryset()[first_to_retrieve:last_to_retrieve], many=True)
-    #    elif 'limit' in request.query_params or 'page' in request.query_params:
-    #            return Response({"errors": [{"message": "Missing parameter"}]},
-    #                            status=status.HTTP_400_BAD_REQUEST)
-    #    else:
-    #            serializer = LambdaInstanceSerializer(self.get_queryset(), many=True)
-    #
-    #    wanted_fields = ['id', 'uuid', 'name']
-    #    unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
-    #
-    #    lambda_instances_list = []
-    #    # Remove unwanted fields from lambda instances information.
-    #    for lambda_instance in serializer.data:
-    #        for unwanted_field in unwanted_fields:
-    #            del lambda_instance[unwanted_field]
-    #        lambda_instances_list.append(lambda_instance)
-    #
-    #    return Response(lambda_instances_list, status=status.HTTP_200_OK)
+    def list(self, request, format=None):
+        """
+        This method is used to get a list of all lambda instances. Responds to GET
+        requests on url r'^{prefix}{trailing_slash}$'
+        """
 
-    # Answers only to get requests on the url: r'^{prefix}/{lookup}{trailing_slash}$'
-    # (by default router).
+        # Get the default Django Rest Framework pagination response.
+        default_response = super(LambdaInstanceViewSet, self).list(request)
+
+        return _paginate_response(self, request, default_response)
+
     def retrieve(self, request, uuid, format=None):
         """
         This method is used to get information about a specified lambda instance. Responds to GET
         requests on url r'^{prefix}/{lookup}{trailing_slash}$'
         """
 
+        # Check if the specified lambda instance exists.
+        lambda_instances = LambdaInstance.objects.filter(uuid=uuid)
+        if not lambda_instances.exists():
+            raise CustomNotFoundError("The specified lambda instance does not exist.")
+        lambda_instance = lambda_instances[0]
+        serializer = LambdaInstanceSerializer(lambda_instance)
+
         filter = request.query_params.get('filter', '')
 
         if filter == "status":
-            return self.status(request, uuid)
+            wanted_fields = ['uuid', 'name', 'status', 'failure_message']
         elif filter == "info":
-            return self.details(request, uuid)
+            wanted_fields = ['uuid', 'name', 'instance_info']
         elif filter == "":
-            return Response("todo", status=200)
+            wanted_fields = ['uuid', 'name', 'instance_info', 'status', 'failure_message']
         else:
-            raise CustomParseError("The input provided is invalid.")
+            raise CustomParseError("filter GET parameter can be used with values status or info.")
 
-    def details(self, request, uuid, format=None):
-        """
-        This method is used by retrieve method to get the details about a specified lambda
-        instance.
-        """
-
-        # Check if the specified lambda instance exists.
-        lambda_instance = LambdaInstance.objects.filter(uuid=uuid)
-        if not lambda_instance.exists():
-            raise CustomNotFoundError("The specified lambda instance does not exist.")
-        serializer = LambdaInstanceSerializer(lambda_instance)
-
-        wanted_fields = ['id', 'uuid', 'name', 'instance_info']
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
 
-        lambda_instance = serializer.data
+        lambda_instance_all = serializer.data
         # Remove unwanted fields from lambda instance information.
         for unwanted_field in unwanted_fields:
-            del lambda_instance[unwanted_field]
+            del lambda_instance_all[unwanted_field]
 
-        # Parse the instance info field.
-        lambda_instance['instance_info'] = json.loads(lambda_instance['instance_info'])
+        # Change the name of uuid field to id.
+        lambda_instance_all['id'] = lambda_instance_all['uuid']
+        del lambda_instance_all['uuid']
 
-        return Response(lambda_instance, status=status.HTTP_200_OK)
+        # Parse instance info field.
+        if 'instance_info' in lambda_instance_all:
+            lambda_instance_all['instance_info'] = json.loads(
+                lambda_instance_all['instance_info'])
 
-    def status(self, request, uuid, format=None):
-        serializer = LambdaInstanceSerializer(get_object_or_404(self.get_queryset(), uuid=uuid))
+        # If failure message exists and is empty, remove it.
+        if 'failure_message' in lambda_instance_all:
+            if lambda_instance_all['failure_message'] == "":
+                del lambda_instance_all['failure_message']
 
-        wanted_fields = ['id', 'uuid', 'name', 'status', 'failure_message']
-        unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
+        # If status exists, create a code field and change status to a human readable format.
+        if 'status' in lambda_instance_all:
+            lambda_instance_all['code'] = lambda_instance_all['status']
+            lambda_instance_all['status'] = LambdaInstance.status_choices[
+                int(lambda_instance_all['status'])][1]
 
-        lambda_instance = serializer.data
-        # Remove unwanted fields from lambda instance information.
-        for unwanted_field in unwanted_fields:
-            del lambda_instance[unwanted_field]
-
-        return Response(lambda_instance, status=status.HTTP_200_OK)
+        # Return an appropriate response.
+        status_code = status.HTTP_200_OK
+        if filter == "status":
+            return Response({"status": status_code,
+                             "data": [{
+                                 "status": {
+                                     "code": lambda_instance_all['code'],
+                                     "status": lambda_instance_all['status']
+                                 },
+                                 "id": lambda_instance_all['id'],
+                                 "name": lambda_instance_all['name']
+                             }]}, status=status_code)
+        elif filter == "info":
+            return Response({"status": status_code,
+                             "data": [{
+                                 "info": {
+                                     "id": lambda_instance_all['id'],
+                                     "name": lambda_instance_all['name'],
+                                     "instance_info": lambda_instance_all['instance_info']
+                                 },
+                             }]}, status=status_code)
+        else:
+            return Response({"status": status_code,
+                             "data": [{
+                                 "info": {
+                                     "id": lambda_instance_all['id'],
+                                     "name": lambda_instance_all['name'],
+                                     "instance_info": lambda_instance_all['instance_info']
+                                 },
+                                 "status": {
+                                     "code": lambda_instance_all['code'],
+                                     "status": lambda_instance_all['status']
+                                 },
+                             }]}, status=status_code)
 
     def action(self, request, uuid, format=None):
         action_parameter = request.data.get('action', '')
@@ -535,6 +578,21 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
 
+    def parse_list_response(self, response):
+        """
+        This method is used to remove from a list response any fields that the serializer adds
+        but are not wanted in a list response
+        """
+
+        wanted_fields = ['uuid', 'name']
+        unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
+
+        for lambda_instance in response['data']:
+            for unwanted_field in unwanted_fields:
+                del lambda_instance[unwanted_field]
+
+        return response
+
 
 class CreateLambdaInstance(APIView):
     """
@@ -580,4 +638,7 @@ class CreateLambdaInstance(APIView):
                                                     project_name=project_name)
         instance_uuid = create.id
 
-        return Response({"uuid": instance_uuid}, status=202)
+        status_code = status.HTTP_202_ACCEPTED
+        return Response({"data": [{"status": status_code,
+                                   "uuid": instance_uuid,
+                                   "result": "Accepted"}]}, status=status_code)
