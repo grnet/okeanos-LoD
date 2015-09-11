@@ -1,4 +1,5 @@
 ---
+
   - name: Create users for each application.
     include: users.yml
 
@@ -38,3 +39,6 @@
 
   - name: Put lambda init script on boot and shutdown sequence.
     command: update-rc.d lambda-init defaults
+
+  - name: Set PATH environment variable
+    copy: src=path.sh dest=/etc/profile.d/path.sh owner=root group=root mode=0644
