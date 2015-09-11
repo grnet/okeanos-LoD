@@ -6,7 +6,6 @@ from kamaki.clients.astakos import AstakosClient
 from kamaki.clients.cyclades import CycladesComputeClient, CycladesNetworkClient
 import os
 from os.path import join, expanduser, exists
-import inspect
 
 check_folders = ['/var/www/okeanos-LoD/ansible', 'okeanos-LoD/ansible', 'ansible', '../ansible',
                  '../../ansible']

@@ -25,7 +25,7 @@ SECRET_KEY = '-ay^f7=9e!@jr94v7!v&tl@4zm5=0g8&8d9(a*ffzqywg#@6iy'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', ]
+ALLOWED_HOSTS = ['*',]
 
 
 # Application definition
@@ -59,7 +59,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'webapp/templates'
+                'webapp/templates'
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -110,7 +110,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Celery configuration #
+##### Celery configuration #####
 from kombu import Queue
 
 CELERY_QUEUES = (
@@ -135,14 +135,28 @@ CELERY_ROUTES = {
         'queue': 'events_queue',
         'routing_key': 'event_key',
     },
+    'backend.tasks.create_lambda_instance': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.events.create_new_lambda_instance': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+    'backend.events.insert_cluster_info': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+
 }
 
-FILE_STORAGE = os.path.join(BASE_DIR, 'uploaded_files')
+FILE_STORAGE = os.path.join(BASE_DIR,'uploaded_files')
 
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework_xml.renderers.XMLRenderer',
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-    )
+  'DEFAULT_RENDERER_CLASSES': (
+    'rest_framework.renderers.JSONRenderer',
+    'rest_framework.renderers.BrowsableAPIRenderer',
+    'rest_framework_xml.renderers.XMLRenderer',
+  )
 }
+
