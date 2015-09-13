@@ -5,20 +5,19 @@ description: Destroys a specified lambda instance
 
 # API - lambda instance destroy - Description
 
-[A descriptive paragraph about the call]
-Lambda instance destroy call, given an authentication token through the header x-api-key,
+Lambda instance destroy call, given an authentication token through the header Authentication,
 will firstly check te validity of the token. If the token is invalid, the API wil reply with
-a "401 Unauthorized" code. If the token is valid, the API will destroy all the VMs of the
-specified lambda instance along with the corresponding public ip and the private network and
-will also return a "202 ACCEPTED" code.
+a "401 Unauthorized" code. If the token is valid, the API will reply with a "202 ACCEPTED" code
+and will start destroying all the VMs of the specified lambda instance along with the corresponding
+public ip and private network.
 
 ## Basic Parameters
 
 |Type            | Description
 |----------------|--------------------------
 | **Description** | lambda instance destroy
-| **URL**         | backend/lambda-instances/[uuid]/destroy
-| **HTTP Method** | POST
+| **URL**         | api/lambda-instances/[lambda-instance-id]/
+| **HTTP Method** | DELETE
 | **Security**    | Basic Authentication
 
 
@@ -33,27 +32,28 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 
 Name | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
-uuid  | The uuid of the specified lambda instance. For more information see [List Lambda instances page](LambdaInstanceList.md). |`Yes` |None| 3
+lambda-instance-id  | The id of the specified lambda instance. For more information see [List Lambda instances page](LambdaInstanceList.md). |`Yes` |None| 3
 
 
 ## Example
 
-In this example we are going to destroy the lambda instance with uuid 3
+In this example we are going to destroy the lambda instance with id 9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c
 
 The request in curl
 
 ```
-curl -X DELETE -H "Authentication: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<url>/backend/lambda-instances/3/'
+curl -X DELETE -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/lambda-instances/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/'
 ```
 
 
 ### Response body
 
-If the authentication is correct the response will be
+If the authentication token is correct the response will be
 
 ```
 {
-  "result": "Success"
+  "status": 202,
+  "result": "Accepted"
 }
 ```
 
@@ -65,3 +65,4 @@ The main response messages are:
 
 - HTTP/1.1 202 ACCEPTED : (Success)
 - HTTP/1.1 401 UNAUTHORIZED : (Fail)
+- HTTP/1.1 404 NOT FOUND : (Fail)

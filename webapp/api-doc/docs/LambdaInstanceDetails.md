@@ -5,14 +5,21 @@ description: Returns the details of a specified lambda instance
 
 # API - lambda instance details - Description
 
-Lambda instance details call, given an authentication token through the header x-api-key, will firstly check the validity of the token. If the token is invalid, the API will reply with a "401 Unauthorized" code. If the token is valid, the API will search for the specified lambda instance. If the specified lambda instance does not exist, the API will reply with a "404 Not Found" code. If the specified lambda instance exists, the API will reply with the details of it along with a "200 OK" code.
+Lambda instance details call, given an authentication token through the header authentication,
+will firstly check the validity of the token. If the token is invalid, the API will reply with a
+"401 Unauthorized" code. If the token is valid, the API will search for the specified lambda
+instance. If the specified lambda instance does not exist, the API will reply with a
+"404 Not Found" code. If the specified lambda instance exists, the API will reply with the details
+of it along with a "200 OK" code. It is possible to only get the status relevant details or the
+information relevant details of the lambda instance. This can be done by using the "filter" GET
+parameter with the request. The values that this parameter should have are "info" or "status".
 
 ## Basic Parameters
 
 Type   | Description
 -------|-----------------
 **Description** | lambda instance details
-**URL**         | /backend/lambda-instances/[uuid]
+**URL**         | /api/lambda-instances/[lambda-instance-id]
 **HTTP Method** | GET
 **Security**    | Basic Authentication
 
@@ -28,24 +35,18 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 
 Name  | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
-uuid  | The uuid of the specified lambda instance. For more information see [List Lambda instances page](LambdaInstanceList.md) . |`Yes` |None| 3
+lambda-instance-id  | The id of the specified lambda instance. For more information see [List Lambda instances page](LambdaInstanceList.md) . |`Yes` |None| 3
+filter | Specifies which details to return | None | info
 
-### Keywords in response
-
-Name | Description | Default value
-------|------------|---------------
-name | The name of the lambda instance | Lambda Instance
-uuid | Unique integer identifying a lambda instance | None
-id   | Unique integer used to enumerate lambda instances | Auto Increment
 
 ## Example
 
-In this example we are going to get the details of the lambda instance with uuid 3
+In this example we are going to get the details of the lambda instance with id 9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c
 
 The request in curl
 
 ```
-curl -X GET -H "Authentication: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<url>/backend/lambda-instances/3/'
+curl -X GET -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/lambda-instances/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/'
 ```
 
 
@@ -55,38 +56,63 @@ If the authentication token is correct, a sample response is
 
 ```
 {
-  "data": {
-    "details": {
-      "cluster": {
-        "number_of_slaves": 12,
-        "cpus_per_machine": 8,
-        "ram_per_machine": 4094,
-        "disk_per_machine": 40,
-        "master_ip": "81.82.83.84"
-      },
-      "hdfs": {
-        "replication_factor": 12
-      },
-      "flink": {
-        "number_of_task_managers": 12,
-        "cpus_per_task_manager": 8,
-        "ram_per_task_manager": 1024,
-        "cpus_batch": 4,
-        "cpus_stream": 4
-      },
-      "kafka": {
-        "number_of_kafka_topics": 3,
-        "topics": [
-          {"name": "input_batch_topic"},
-          {"name": "input_stream_topic"},
-          {"name": "output_topic"}
-        ]
+  {
+    "status": 200,
+    "data": [
+      {
+        "info": {
+          "instance_info": {
+            "project_name": "lambda.grnet.gr",
+            "master_name": "lambda-master-2",
+            "vcpus_master": 4,
+            "network_request": 1,
+            "disk_slave": 20,
+            "slaves": 2,
+            "ram_slave": 4096,
+            "ram_master": 4096,
+            "vcpus_slave": 4,
+            "ip_allocation": "master",
+            "disk_master": 20
+          },
+          "id": "9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c",
+          "name": "My first Lambda Instance"
+        },
+        "status": {
+          "status": "STARTED",
+          "code": "0"
+        }
       }
-    },
-    "uuid": 1,
-    "name": "Lambda Instance 2",
-    "id": 14
+    ]
   }
+}
+```
+
+In this example we are going to get only the status details of the lambda instance with id 9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c
+
+The request in curl
+
+```
+curl -X GET -H "Authentication: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/lambda-instances/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/?filter=status'
+```
+
+
+### Response body
+
+If the authentication token is correct, a sample response is
+
+```
+{
+  "status": 200,
+  "data": [
+    {
+      "status": {
+        "status": "STARTED",
+        "code": "0"
+      },
+      "id": "9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c",
+      "name": "My first Lambda Instance"
+    }
+  ]
 }
 ```
 
