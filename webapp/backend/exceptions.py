@@ -42,11 +42,12 @@ def parse_custom_exception(default_response):
     response = {}
 
     response['status'] = default_response.status_code
-    # response['code'] =
-    response['detail'] = default_response.data['detail']
+    response['errors'] = [{}]
+    # response['errors][0]['code'] =
+    response['errors'][0]['detail'] = default_response.data['detail']
 
     response_status = default_response.status_code
-    return Response({"errors": [response]}, response_status)
+    return Response(response, response_status)
 
 
 def custom_exception_handler(exc, context):
