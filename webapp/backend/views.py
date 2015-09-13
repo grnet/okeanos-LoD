@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, api_view
 from rest_framework.permissions import IsAuthenticated
 
 from rest_framework_xml.renderers import XMLRenderer
@@ -82,6 +82,8 @@ def _parse_default_pagination_response(default_response):
 
     return default_response
 
+
+@api_view(['GET'])
 def authenticate(request):
     """
     Checks the validity of the authentication token of the user
@@ -91,8 +93,8 @@ def authenticate(request):
 
     # request.META contains all the headers of the request
     auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
-    status, info = check_auth_token(auth_token)
-    if status:
+    check_status, info = check_auth_token(auth_token)
+    if check_status:
         status_code = status.HTTP_200_OK
         return Response({"data": [{"status": status_code,
                                    "result": "success"}]}, status=status_code)
