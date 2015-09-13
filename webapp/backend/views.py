@@ -96,8 +96,8 @@ def authenticate(request):
     check_status, info = check_auth_token(auth_token)
     if check_status:
         status_code = status.HTTP_200_OK
-        return Response({"data": [{"status": status_code,
-                                   "result": "Success"}]}, status=status_code)
+        return Response({"status": status_code,
+                         "result": "Success"}, status=status_code)
     else:
         error_info = json.loads(info)['unauthorized']
         error_info['details'] = error_info.get('details') + 'unauthorized'
@@ -195,9 +195,11 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
-        return Response({"data": [{"status": status_code,
-                                   "uuid": application_uuid,
-                                   "result": "Accepted"}]}, status=status_code)
+        return Response({"status": status_code,
+                         "result": "Accepted",
+                         "data": [{
+                             "uuid": application_uuid
+                         }]}, status=status_code)
 
     def destroy(self, request, uuid, format=None):
         """
@@ -220,8 +222,8 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
-        return Response({"data": [{"status": status_code,
-                                   "result": "Accepted"}]}, status=status_code)
+        return Response({"status": status_code,
+                         "result": "Accepted"}, status=status_code)
 
     @detail_route(methods=['post'])
     def deploy(self, request, uuid, format=None):
@@ -270,8 +272,8 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
-        return Response({"data": [{"status": status_code,
-                                   "result": "Accepted"}]}, status=status_code)
+        return Response({"status": status_code,
+                         "result": "Accepted"}, status=status_code)
 
     @detail_route(methods=['get'], url_path="list-deployed")
     def list_deployed(self, request, uuid, format=None):
@@ -336,8 +338,8 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
-        return Response({"data": [{"status": status_code,
-                                   "result": "Accepted"}]}, status=status_code)
+        return Response({"status": status_code,
+                         "result": "Accepted"}, status=status_code)
 
     def parse_list_response(self, response):
         """
@@ -534,8 +536,8 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
-        return Response({"data": [{"status": status_code,
-                                   "result": "Accepted"}]}, status=status_code)
+        return Response({"status": status_code,
+                         "result": "Accepted"}, status=status_code)
 
     def destroy(self, request, uuid, format=None):
         """
@@ -585,7 +587,10 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         events.set_lambda_instance_status.delay(lambda_instance_data['uuid'],
                                                 LambdaInstance.DESTROYING)
 
-        return Response({"result": "Accepted"}, status=status.HTTP_202_ACCEPTED)
+        # Return an appropriate response.
+        status_code = status.HTTP_202_ACCEPTED
+        return Response({"status": status_code,
+                         "result": "Accepted"}, status=status_code)
 
     def parse_list_response(self, response):
         """
@@ -648,6 +653,8 @@ class CreateLambdaInstance(APIView):
         instance_uuid = create.id
 
         status_code = status.HTTP_202_ACCEPTED
-        return Response({"data": [{"status": status_code,
-                                   "uuid": instance_uuid,
-                                   "result": "Accepted"}]}, status=status_code)
+        return Response({"status": status_code,
+                         "result": "Accepted",
+                         "data": [{
+                             "uuid": instance_uuid
+                         }]}, status=status_code)
