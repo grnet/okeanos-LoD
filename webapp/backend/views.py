@@ -97,13 +97,12 @@ def authenticate(request):
     if check_status:
         status_code = status.HTTP_200_OK
         return Response({"data": [{"status": status_code,
-                                   "result": "success"}]}, status=status_code)
+                                   "result": "Success"}]}, status=status_code)
     else:
         error_info = json.loads(info)['unauthorized']
         error_info['details'] = error_info.get('details') + 'unauthorized'
 
         status_code = status.HTTP_401_UNAUTHORIZED
-        error_info['status'] = status_code
         return Response({"errors": [error_info]}, status=status_code)
 
 
