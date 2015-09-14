@@ -1,0 +1,19 @@
+- model: backend.lambdaapplication
+  pk: 0
+  fields:
+    description: "Some description here."
+
+- model: backend.lambdaapplication
+  pk: 1
+  fields:
+    description: "Some description here."
+
+- model: backend.lambdaapplication
+  pk: 2
+  fields:
+    description: "Some description here."
+
+- model: backend.lambdaapplication
+  pk: 3
+  fields:
+    description: "Some description here."

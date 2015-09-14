@@ -63,3 +63,6 @@ MANIFEST
 old_kamaki
 *.idea
 coverage.xml
+
+# SQLite 3 database
+db.sqlite3

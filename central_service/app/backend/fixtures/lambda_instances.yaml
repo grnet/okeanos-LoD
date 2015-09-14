@@ -1,0 +1,40 @@
+- model: backend.lambdainstance
+  pk: 0
+  fields:
+    instance_info: "{data: 'some json'}"
+    name: li1
+    owner: 0
+    status: 3
+
+- model: backend.lambdainstance
+  pk: 1
+  fields:
+    instance_info: "{data: 'some json'}"
+    name: li2
+    owner: 1
+    status: 0
+
+- model: backend.lambdainstance
+  pk: 2
+  fields:
+    instance_info: "{data: 'some json'}"
+    name: li3
+    uuid: 60e3bcbff6c1464b8aed5be0fce86052
+    owner: 2
+    status: 0
+
+- model: backend.lambdainstance
+  pk: 3
+  fields:
+    instance_info: "{data: 'some json'}"
+    owner: 3
+    failure_message: failed
+    status: 9
+
+- model: backend.lambdainstance
+  pk: 4
+  fields:
+    instance_info: "{data: 'some json'}"
+    owner: 4
+    failure_message: flink has failed
+    status: 21

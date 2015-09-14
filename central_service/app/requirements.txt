@@ -1,5 +1,5 @@
 celery
-psycopg2
+#psycopg2 # for production
 django
 djangorestframework
 djangorestframework-xml
