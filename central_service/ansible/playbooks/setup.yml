@@ -1,0 +1,8 @@
+---
+- hosts: service-vms
+  user: root
+  roles:
+    - common
+    - service-vm
+    - rabbitmq
+    - celery

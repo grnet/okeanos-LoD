@@ -1,0 +1,5 @@
+---
+- name: Install RabbitMQ server.
+  apt: name=rabbitmq-server install_recommends=no force=yes
+  tags:
+      - celery-install

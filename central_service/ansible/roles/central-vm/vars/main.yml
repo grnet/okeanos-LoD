@@ -1,0 +1,7 @@
+---
+database_username: lambda
+database_name: lambda_db
+database_user_password: change_me
+repository_download_path: /var/www
+repository_url: https://github.com/grnet/okeanos-LoD.git
+repository_branch: devel

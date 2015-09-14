@@ -1,0 +1,5 @@
+---
+- name: Install Celery.
+  pip: name=celery
+  tags:
+      - celery-install
