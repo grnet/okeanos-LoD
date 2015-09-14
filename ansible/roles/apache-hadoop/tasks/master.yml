@@ -40,3 +40,12 @@
     tags:
       - create-dirs
 
+  - name: Create Apache HDFS user/flink directory. 
+    command: "{{ installation_path }}/hadoop/bin/hdfs dfs -mkdir /user/flink"
+    tags:
+      - create-dirs
+
+  - name: Create Apache HDFS user/flink/input directory. 
+    command: "{{ installation_path }}/hadoop/bin/hdfs dfs -mkdir /user/flink/input"
+    tags:
+      - create-dirs
