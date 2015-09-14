@@ -40,5 +40,9 @@
   - name: Put lambda init script on boot and shutdown sequence.
     command: update-rc.d lambda-init defaults
 
-  - name: Set PATH environment variable
-    template: src=path.sh.j2 dest=/etc/profile.d/path.sh owner=root group=root mode=0644
+  - name: Set PATH environment variable for flink user
+    lineinfile: destfile="/home/flink/.bashrc"
+              regexp="^PATH"
+              value="PATH=$PATH:{{ flink_home }}/bin:{{ hadoop_home }}/bin"
+              state=present
+              insertafter=EOF
