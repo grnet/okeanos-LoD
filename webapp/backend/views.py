@@ -415,19 +415,10 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         for unwanted_field in unwanted_fields:
             del lambda_instance_all[unwanted_field]
 
-        # Change the name of uuid field to id.
-        lambda_instance_all['id'] = lambda_instance_all['uuid']
-        del lambda_instance_all['uuid']
-
         # Parse instance info field.
         if 'instance_info' in lambda_instance_all:
             lambda_instance_all['instance_info'] = json.loads(
                 lambda_instance_all['instance_info'])
-
-        # If failure message exists and is empty, remove it.
-        if 'failure_message' in lambda_instance_all:
-            if lambda_instance_all['failure_message'] == "":
-                del lambda_instance_all['failure_message']
 
         # If status exists, create a code field and change status to a human readable format.
         if 'status' in lambda_instance_all:
@@ -438,37 +429,50 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # Return an appropriate response.
         status_code = status.HTTP_200_OK
         if filter == "status":
-            return Response({"status": status_code,
-                             "data": [{
-                                 "status": {
-                                     "code": lambda_instance_all['code'],
-                                     "status": lambda_instance_all['status']
-                                 },
-                                 "id": lambda_instance_all['id'],
-                                 "name": lambda_instance_all['name']
-                             }]}, status=status_code)
+            data = [{
+                "status": {
+                    "code": lambda_instance_all['code'],
+                    "status": lambda_instance_all['status']
+                },
+                "id": lambda_instance_all['uuid'],
+                "name": lambda_instance_all['name']
+            }]
+
+            # Add failure message only if it is not empty.
+            if 'failure_message' in lambda_instance_all:
+                if lambda_instance_all['failure_message'] != "":
+                    data[0]['status']['failure_message'] = lambda_instance_all['failure_message']
+
+            return Response({"status": status_code, "data": data}, status=status_code)
         elif filter == "info":
             return Response({"status": status_code,
                              "data": [{
                                  "info": {
-                                     "id": lambda_instance_all['id'],
+                                     "id": lambda_instance_all['uuid'],
                                      "name": lambda_instance_all['name'],
                                      "instance_info": lambda_instance_all['instance_info']
                                  },
                              }]}, status=status_code)
         else:
-            return Response({"status": status_code,
-                             "data": [{
-                                 "info": {
-                                     "id": lambda_instance_all['id'],
-                                     "name": lambda_instance_all['name'],
-                                     "instance_info": lambda_instance_all['instance_info']
-                                 },
-                                 "status": {
-                                     "code": lambda_instance_all['code'],
-                                     "status": lambda_instance_all['status']
-                                 },
-                             }]}, status=status_code)
+
+            data = [{
+                "info": {
+                    "id": lambda_instance_all['uuid'],
+                    "name": lambda_instance_all['name'],
+                    "instance_info": lambda_instance_all['instance_info']
+                },
+                "status": {
+                    "code": lambda_instance_all['code'],
+                    "status": lambda_instance_all['status']
+                }
+            }]
+
+            # Add failure message only if it is not empty.
+            if 'failure_message' in lambda_instance_all:
+                if lambda_instance_all['failure_message'] != "":
+                    data[0]['status']['failure_message'] = lambda_instance_all['failure_message']
+
+            return Response({"status": status_code, "data": data}, status=status_code)
 
     def action(self, request, uuid, format=None):
         """
