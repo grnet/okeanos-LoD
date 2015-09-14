@@ -1,5 +1,4 @@
 from django.db import models
-from .validators import LambdaInfoValidator
 import uuid
 
 """
@@ -103,8 +102,7 @@ class LambdaInstance(models.Model):
     # json.dumps(dict) to create a string out of the given dictionary. To parse the info use
     # json.loads() method.
     instance_info = models.TextField('Instance info', blank=False, null=False, default='{}',
-                                     help_text="Instance information in json format.",
-                                     validators=[LambdaInfoValidator()])
+                                     help_text="Instance information in json format.")
 
     name = models.CharField(max_length=100, default="Lambda Instance",
                             help_text="A name given to the instance.")

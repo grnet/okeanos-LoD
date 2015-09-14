@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.decorators import detail_route, api_view
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import ValidationError
 
 from rest_framework_xml.renderers import XMLRenderer
 
@@ -742,33 +741,7 @@ class CreateLambdaInstance(APIView):
         lambda_info = LambdaInstanceInfo(data=request.data)
         lambda_info.is_valid(raise_exception=True)
 
-        # instance_name = cluster_specs['instance_name']
-        # master_name = cluster_specs['master_name']
-        # slaves = int(cluster_specs['slaves'])
-        # vcpus_master = int(cluster_specs['vcpus_master'])
-        # vcpus_slave = int(cluster_specs['vcpus_slave'])
-        # ram_master = int(cluster_specs['ram_master'])
-        # ram_slave = int(cluster_specs['ram_slave'])
-        # disk_master = int(cluster_specs['disk_master'])
-        # disk_slave = int(cluster_specs['disk_slave'])
-        # ip_allocation = cluster_specs['ip_allocation']
-        # network_request = int(cluster_specs['network_request'])
-        # project_name = cluster_specs['project_name']
-
-        create = tasks.create_lambda_instance.delay(lambda_info)
-                                                    # auth_token=auth_token,
-                                                    # instance_name=instance_name,
-                                                    # master_name=master_name,
-                                                    # slaves=slaves,
-                                                    # vcpus_master=vcpus_master,
-                                                    # vcpus_slave=vcpus_slave,
-                                                    # ram_master=ram_master,
-                                                    # ram_slave=ram_slave,
-                                                    # disk_master=disk_master,
-                                                    # disk_slave=disk_slave,
-                                                    # ip_allocation=ip_allocation,
-                                                    # network_request=network_request,
-                                                    # project_name=project_name)
+        create = tasks.create_lambda_instance.delay(lambda_info, auth_token)
         instance_uuid = create.id
 
         status_code = status.HTTP_202_ACCEPTED

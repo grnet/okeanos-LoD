@@ -68,32 +68,39 @@ class LambdaInstanceInfo(serializers.Serializer):
     def validate_vcpus_master(self, value):
         if value not in self.allowed['vcpus']:
             raise serializers.ValidationError("Wrong Number of master vcpus")
+        return value
 
     def validate_vcpus_slave(self, value):
         if value not in self.allowed['vcpus']:
             raise serializers.ValidationError("Wrong Number of slave vcpus")
+        return value
 
     def validate_ram_master(self, value):
         if value not in self.allowed['ram']:
             raise serializers.ValidationError("Wrong Amount of master ram")
+        return value
 
     def validate_ram_slave(self, value):
         if value not in self.allowed['ram']:
             raise serializers.ValidationError("Wrong Amount of slave ram")
+        return value
 
     def validate_disk_master(self, value):
         if value not in self.allowed['disks']:
             raise serializers.ValidationError("Wrong Size of master disk")
+        return value
 
     def validate_disk_slave(self, value):
         if value not in self.allowed['disks']:
             raise serializers.ValidationError("Wrong Size of slave disk")
+        return value
 
     def validate_ip_allocation(self, value):
         if value not in self.allowed['ip_allocation']:
             raise serializers. \
                 ValidationError("Wrong choise for ip_allocation, "
                                 "available choices {}".format(self.allowed['ip_allocation']))
+        return value
 
     def validate(self, data):
         return data

@@ -98,7 +98,7 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slav
 
 
 @shared_task
-def create_lambda_instance(lambda_info):
+def create_lambda_instance(lambda_info, auth_token):
     # auth_token=None, instance_name='Lambda Instance',
     # master_name='lambda-master',
     # slaves=1, vcpus_master=4, vcpus_slave=4,
@@ -115,13 +115,13 @@ def create_lambda_instance(lambda_info):
     specs_json = json.dumps(specs)
     instance_uuid = create_lambda_instance.request.id
     events.create_new_lambda_instance.delay(instance_uuid=instance_uuid,
-                                      instance_name=specs['project_name'],
-                                      specs=specs_json)
+                                            instance_name=specs['project_name'],
+                                            specs=specs_json)
 
     try:
         ansible_manager, provisioner_response = \
             lambda_instance_manager.create_cluster(cluster_id=instance_uuid,
-                                                   auth_token=specs['auth_token'],
+                                                   auth_token=auth_token,
                                                    master_name=specs['master_name'],
                                                    slaves=specs['slaves'],
                                                    vcpus_master=specs['vcpus_master'],
