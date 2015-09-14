@@ -82,14 +82,14 @@ def lambda_instance_start(auth_url, auth_token, master_id, slave_ids):
 
     # Wait until all slave nodes have been started.
     for slave_id in slave_ids:
-        cyclades_compute_client.wait_server(slave_id, current_status="STOPPED")
+        cyclades_compute_client.wait_server(slave_id, current_status="STOPPED", max_wait=600)
 
     # Start master node.
     if cyclades_compute_client.get_server_details(master_id)["status"] != "ACTIVE":
         cyclades_compute_client.start_server(master_id)
 
     # Wait until master node has been started.
-    cyclades_compute_client.wait_server(master_id, current_status="STOPPED")
+    cyclades_compute_client.wait_server(master_id, current_status="STOPPED", max_wait=600)
 
 
 def lambda_instance_stop(auth_url, auth_token, master_id, slave_ids):
@@ -113,7 +113,7 @@ def lambda_instance_stop(auth_url, auth_token, master_id, slave_ids):
         cyclades_compute_client.shutdown_server(master_id)
 
     # Wait until master node has been stopped.
-    cyclades_compute_client.wait_server(master_id, current_status="ACTIVE")
+    cyclades_compute_client.wait_server(master_id, current_status="ACTIVE", max_wait=600)
 
     # Stop all slave nodes.
     for slave_id in slave_ids:
@@ -122,7 +122,7 @@ def lambda_instance_stop(auth_url, auth_token, master_id, slave_ids):
 
     # Wait until all slave nodes have been stopped.
     for slave_id in slave_ids:
-        cyclades_compute_client.wait_server(slave_id, current_status="ACTIVE")
+        cyclades_compute_client.wait_server(slave_id, current_status="ACTIVE", max_wait=600)
 
 
 def upload_file_to_pithos(auth_url, auth_token, container_name, project_name, local_file):
