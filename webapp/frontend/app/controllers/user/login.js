@@ -5,6 +5,7 @@ window.App.LoginController = Ember.Controller.extend({
 
 actions : {
   login: function(options) {
+  var _this = this;
 
     this.setProperties({
       loginFailed: false,
@@ -22,53 +23,21 @@ actions : {
     $.ajax({
       url: postUrl,
       headers: {
-          'Authorization':App.token,
-          'Access-Control-Allow-Origin': '*'
+          'Authorization':App.token
       },
       crossDomain: true,
       method: 'GET',
       dataType: 'json',
       data: data,
       xhrFields: {withCredentials: true},
-      success: function(data){
+      success: function(data, textStatus, jqXHR){
         console.log('succes: '+data);
+      },
+      error: function(data){
+          _this.set("isProcessing", false);
+          _this.set("loginFailed", true);
       }
     });
-
-    $.ajax({
-      url: postUrl,
-      headers:{"Authorization":App.token}
-    });/*.then(function() {
-      this.set("isProcessing", false);
-      document.location = "/welcome";
-    }.bind(this), function() {
-      this.set("isProcessing", false);
-      this.set("loginFailed", true);
-    }.bind(this));*/
-
-
-/*
-    return new Ember.RSVP.Promise((resolve, reject) => {
-        Ember.$.ajax({
-            crossOrigin: true,
-            url: host,
-            type: 'GET',
-            headers:{'Authorization': App.token}
-        }).then(function(response) {
-            Ember.run(function() {
-                resolve({
-                    token: response.id_token
-                });
-            });
-        }, function(xhr, status, error) {
-            var response = xhr.responseText;
-            Ember.run(function() {
-                reject(response);
-            });
-        });
-    });
-*/
-
   },
   dismiss: function(){
     $('#token').focus();
