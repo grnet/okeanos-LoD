@@ -10,6 +10,8 @@ Router.map(function() {
   this.resource('user', function() {
 		// /user/login
 		this.route('login');
+    // /user/clusters
+    this.route('clusters');
 	});
 });
 

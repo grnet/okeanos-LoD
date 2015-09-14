@@ -1,7 +1,7 @@
 
 window.App.LoginController = Ember.Controller.extend({
   loginFailed: false,
-  isProcessing: false,
+  isProcessing: true,
 
 actions : {
   login: function(options) {
@@ -12,7 +12,6 @@ actions : {
       isProcessing: true
     });
 
-    console.log(token.value);
     App.token = token.value;
 
     var data = this.store.adapterFor('login').get('headers'),
@@ -31,7 +30,9 @@ actions : {
       data: data,
       xhrFields: {withCredentials: true},
       success: function(data, textStatus, jqXHR){
-        console.log('succes: '+data);
+          _this.set("isProcessing", false);
+          _this.set("loginFailed", false);
+          _this.transitionToRoute('user.clusters');
       },
       error: function(data){
           _this.set("isProcessing", false);
