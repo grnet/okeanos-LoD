@@ -57,7 +57,7 @@ public class Hashtag_WordCount {
 
     public static void main(String[] args) throws Exception {
 
-        String inputDir = "hdfs:///user/root/input", outputDir = "hdfs:///user/root/output",
+        String inputDir = "hdfs:///user/flink/input", outputDir = "hdfs:///user/flink/output",
                 outputTopic = "batch-output", kafkaBroker = "localhost:9092";
 
         // set up the execution environment
@@ -86,7 +86,7 @@ public class Hashtag_WordCount {
 
         // emit result to hdfs
         counts.writeAsText(outputDir, FileSystem.WriteMode.OVERWRITE);
-        //timestamp.writeAsText("hdfs:///user/root/output", FileSystem.WriteMode.OVERWRITE);
+        //timestamp.writeAsText("hdfs:///user/flink/output", FileSystem.WriteMode.OVERWRITE);
 
         // execute program
         env.execute("Hashtag WordCount");

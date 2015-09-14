@@ -23,7 +23,7 @@ public class TagCount {
     public static void main(String[] args) throws Exception {
 
         String zookeeper= "snf-xxxxxx:2181", consGId = "consumer-stream", kafkaBroker = "snf-xxxxxx:9092", inputTopic = "input", outputTopic = "streaming-output",
-                outputFile = "/root/streaming_output";
+                outputFile = "/home/flink/streaming_output";
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
