@@ -1,7 +1,7 @@
 import json
 import uuid
 
-from django.core.urlresolvers import resolve
+from django.core.urlresolvers import resolve, reverse
 
 from rest_framework import viewsets, status, mixins
 from rest_framework.views import APIView
@@ -21,6 +21,7 @@ from .exceptions import CustomParseError, CustomValidationError, CustomNotFoundE
     CustomAlreadyDoneError, CustomCantDoError
 from .serializers import ApplicationSerializer, LambdaInstanceSerializer
 from .authenticate_user import KamakiTokenAuthentication
+from .response_messages import ResponseMessages
 
 
 def _paginate_response(view, request, default_response):
@@ -45,24 +46,19 @@ def _paginate_response(view, request, default_response):
             if limit >= 0:
                 default_response = _parse_default_pagination_response(default_response)
             else:
-                raise CustomParseError("limit value should be a not negative integer.")
+                raise CustomValidationError(CustomValidationError.messages['limit_value_error'])
         except ValueError:
-            raise CustomParseError("limit value should be a not negative integer.")
+            raise CustomValidationError(CustomValidationError.messages['limit_value_error'])
     else:
         # Add 'data' as the root element.
         default_response.data = {"data": default_response.data}
 
+    # Add status field in response data.
+    default_response.data['status'] = dict()
+    default_response.data['status']['code'] = default_response.status_code
+
     # Remove any fields that the serializer adds but are not wanted on a list call.
     default_response.data = view.parse_list_response(default_response.data)
-
-    # Add status field in response data.
-    default_response.data['status'] = default_response.status_code
-
-    # Change uuid name to id
-    for item in default_response.data['data']:
-        if 'uuid' in item:
-            item['id'] = item['uuid']
-            del item['uuid']
 
     return default_response
 
@@ -79,6 +75,15 @@ def _parse_default_pagination_response(default_response):
     # Change the name or 'result' field to 'data'
     default_response.data['data'] = default_response.data['results']
     del default_response.data['results']
+
+    # Add count, next and previous fields under pagination field.
+    default_response.data['pagination'] = dict()
+    default_response.data['pagination']['count'] = default_response.data['count']
+    del default_response.data['count']
+    default_response.data['pagination']['previous'] = default_response.data['previous']
+    del default_response.data['previous']
+    default_response.data['pagination']['next'] = default_response.data['next']
+    del default_response.data['next']
 
     return default_response
 
@@ -135,7 +140,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             # Check if the specified lambda instance exists.
             lambda_instances = LambdaInstance.objects.filter(uuid=lambda_instance_uuid)
             if not lambda_instances.exists():
-                raise CustomNotFoundError("The specified lambda instance does not exist.")
+                raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
             lambda_instance = lambda_instances[0]
 
             # Get the applications that are deployed on the specified lambda instance.
@@ -167,11 +172,11 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # Check if a file was sent with the request.
         uploaded_file = request.FILES.get('file')
         if not uploaded_file:
-            raise CustomParseError("No file uploaded.")
+            raise CustomParseError(CustomParseError.messages['no_file_error'])
 
         # Check if another file with same name already exists.
         if self.get_queryset().filter(name=uploaded_file.name).count() > 0:
-            raise CustomValidationError("File name already exists.")
+            raise CustomValidationError(CustomValidationError.messages['filename_already_exists_error'])
 
         # Get the description provided with the request.
         description = request.data.get('description', '')
@@ -195,11 +200,59 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
-        return Response({"status": status_code,
-                         "result": "Accepted",
+        return Response({"status": {"code": status_code, "short_description":
+                                                         ResponseMessages.short_descriptions[
+                                                             'application_upload']
+                                    },
                          "data": [{
-                             "uuid": application_uuid
+                             "id": application_uuid,
+                             "links": {
+                                 "self": request.build_absolute_uri() +
+                                 "{id}".format(id=application_uuid)
+                             }
                          }]}, status=status_code)
+
+    def retrieve(self, request, uuid, format=None):
+        """
+        This method is used to get information about a specified application. Responds to GET
+        requests on url r'^{prefix}/{lookup}{trailing_slash}$'
+        """
+
+        # Check if the specified application exists.
+        applications = Application.objects.filter(uuid=uuid)
+        if not applications.exists():
+            raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
+        serializer = LambdaInstanceSerializer(applications[0])
+        data = serializer.data
+
+        # Rename uuid to id.
+        data['id'] = data['uuid']
+        del data['uuid']
+
+        # Create status field.
+        data['status'] = {'message': Application.status_choices[int(data['status'])][1],
+                          'code': data['status'],
+                           'details': ""}
+
+        # Show failure message only if it is not empty.
+        if 'failure_message' in data:
+            if data['failure_message'] == "":
+                del data['failure_message']
+            else:
+                data['status']['failure_message'] = data['failure_message']
+                del data['failure_message']
+
+        # Return an appropriate response.
+        status_code = status.HTTP_200_OK
+        response = dict({"status": {"code": status_code,
+                               "short_description": ResponseMessages.
+                                   short_descriptions['application_details']
+                               },
+                    "data": None
+                    })
+
+        response['data'] = data
+        return Response(response, status=status_code)
 
     def destroy(self, request, uuid, format=None):
         """
@@ -210,7 +263,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # Check if the specified application exists.
         applications = self.get_queryset().filter(uuid=uuid)
         if not applications.exists():
-            raise CustomNotFoundError("The specified application does not exist.")
+            raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
         serializer = ApplicationSerializer(applications[0])
 
         # Create task to delete the specified application from Pithos.
@@ -222,8 +275,11 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
-        return Response({"status": status_code,
-                         "result": "Accepted"}, status=status_code)
+        return Response({
+            "status": {
+                'code': status_code,
+                'short-description': ResponseMessages.short_descriptions['application_delete']
+            }}, status=status_code)
 
     @detail_route(methods=['post'])
     def deploy(self, request, uuid, format=None):
@@ -237,31 +293,32 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # Check if the lambda instance id was provided with the request.
         lambda_instance_uuid = request.data.get('lambda_instance_id')
         if not lambda_instance_uuid:
-            raise CustomParseError("No lambda instance id provided.")
+            raise CustomParseError(CustomParseError.messages['no_lambda_instance_id_error'])
 
         # Check if the specified lambda instance exists.
         lambda_instances = LambdaInstance.objects.filter(uuid=lambda_instance_uuid)
         if not lambda_instances.exists():
-            raise CustomNotFoundError("The specified lambda instance does not exist.")
+            raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
         lambda_instance = lambda_instances[0]
 
         # Check if the specified application exists.
         applications = self.get_queryset().filter(uuid=application_uuid)
         if not applications.exists():
-            raise CustomNotFoundError("The specified application does not exist.")
+            raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
         application = applications[0]
 
         # Check the status of the specified lambda instance.
         if lambda_instance.status != LambdaInstance.STARTED:
-            raise CustomCantDoError("Cannot deploy an application on a lambda instance with " +
-                                    "status " + LambdaInstance.status_choices[
-                                        int(lambda_instance.status)][1] + ".")
+            raise CustomCantDoError(CustomCantDoError.messages['cant_do'].
+                                    format(action="deploy", object="an application",
+                                           status=LambdaInstance.status_choices[
+                                               int(lambda_instance.status)][1]))
 
         # Check if the specified application is already deployed on the specified lambda instance.
         if LambdaInstanceApplicationConnection.objects.filter(lambda_instance=lambda_instance,
                                                               application=application).exists():
-            raise CustomAlreadyDoneError("The specified application has already been deployed"
-                                         " on the specified lambda instance.")
+            raise CustomAlreadyDoneError(CustomAlreadyDoneError.
+                                         messages['application_already_deployed'])
 
         # Create a task to deploy the application.
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
@@ -272,8 +329,11 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
-        return Response({"status": status_code,
-                         "result": "Accepted"}, status=status_code)
+        return Response({
+            "status": {
+                'code': status_code,
+                'short-description': ResponseMessages.short_descriptions['application_deploy']
+            }}, status=status_code)
 
     @detail_route(methods=['get'], url_path="list-deployed")
     def list_deployed(self, request, uuid, format=None):
@@ -287,7 +347,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # Check if the specified lambda instance exists.
         lambda_instance = LambdaInstance.objects.filter(uuid=lambda_instance_uuid)
         if not lambda_instance.exists():
-            raise CustomNotFoundError("The specified lambda instance does not exist.")
+            raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
 
         # Get the default Django Rest Framework pagination response.
         default_response = super(ApplicationViewSet, self).list(request)
@@ -306,40 +366,44 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # Check if the lambda instance id was provided with the request.
         lambda_instance_uuid = request.data.get('lambda_instance_id')
         if not lambda_instance_uuid:
-            raise CustomParseError("No lambda instance id provided.")
+            raise CustomParseError(CustomParseError.messages['no_lambda_instance_id_error'])
 
         # Check if the specified lambda instance exists.
         lambda_instances = LambdaInstance.objects.filter(uuid=lambda_instance_uuid)
         if not lambda_instances.exists():
-            raise CustomNotFoundError("The specified lambda instance does not exist.")
+            raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
         lambda_instance = lambda_instances[0]
 
         # Check if the specified application exists.
         applications = self.get_queryset().filter(uuid=application_uuid)
         if not applications.exists():
-            raise CustomNotFoundError("The specified application does not exist.")
+            raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
         application = applications[0]
 
         # Check the status of the specified lambda instance.
         if lambda_instance.status != LambdaInstance.STARTED:
-            raise CustomCantDoError("Cannot withdraw an application on a lambda instance with " +
-                                    "status " + LambdaInstance.status_choices[int(
-                                        lambda_instance.status)][1] + ".")
+            raise CustomCantDoError(CustomCantDoError.messages['cant_do'].
+                                    format(action="withdraw", object="an application",
+                                           status=LambdaInstance.status_choices[
+                                               int(lambda_instance.status)][1]))
 
         # Check if the specified application is already not deployed on the specified lambda
         # instance.
         if not LambdaInstanceApplicationConnection.objects.\
                 filter(lambda_instance=lambda_instance, application=application).exists():
-            raise CustomAlreadyDoneError("The specified application is already not deployed"
-                                         " on the specified lambda instance.")
+            raise CustomAlreadyDoneError(CustomAlreadyDoneError.
+                                         messages['application_not_deployed'])
 
         # Create a task to withdraw the application.
         tasks.withdraw_application.delay(lambda_instance_uuid, application_uuid)
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
-        return Response({"status": status_code,
-                         "result": "Accepted"}, status=status_code)
+        return Response({
+            "status": {
+                'code': status_code,
+                'short-description': ResponseMessages.short_descriptions['application_withdraw']
+            }}, status=status_code)
 
     def parse_list_response(self, response):
         """
@@ -347,16 +411,21 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         but are not wanted in a list response
         """
 
+        wanted_fields = ['uuid', 'name']
+        unwanted_fields = set(ApplicationSerializer.Meta.fields) - set(wanted_fields)
+
         for application in response['data']:
-            # Remove failure message if it is empty.
-            if application['failure_message'] == '':
-                del application['failure_message']
+            for unwanted_field in unwanted_fields:
+                del application[unwanted_field]
 
-            # Add code field that holds the status code as defined in modesls.
-            application['code'] = application['status']
+        response['status']['short_description'] = ResponseMessages.short_descriptions[
+            'applications_list']
 
-            # Change status field to a human readable format.
-            application['status'] = Application.status_choices[int(application['status'])][1]
+        # Change uuid name to id
+        for item in response['data']:
+            if 'uuid' in item:
+                item['id'] = item['uuid']
+                del item['uuid']
 
         return response
 
@@ -394,7 +463,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # Check if the specified lambda instance exists.
         lambda_instances = LambdaInstance.objects.filter(uuid=uuid)
         if not lambda_instances.exists():
-            raise CustomNotFoundError("The specified lambda instance does not exist.")
+            raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
         serializer = LambdaInstanceSerializer(lambda_instances[0])
 
         filter = request.query_params.get('filter', '')
@@ -406,7 +475,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         elif filter == "":
             wanted_fields = ['uuid', 'name', 'instance_info', 'status', 'failure_message']
         else:
-            raise CustomParseError("filter GET parameter can be used with values status or info.")
+            raise CustomValidationError(CustomValidationError.messages['filter_value_error'])
 
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
 
@@ -428,11 +497,17 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Return an appropriate response.
         status_code = status.HTTP_200_OK
+        response = {"status": {"code": status_code,
+                               "short_description": ResponseMessages.
+                                   short_descriptions['lambda_instance_details']
+                               },
+                    "data": None
+                    }
         if filter == "status":
             data = [{
                 "status": {
                     "code": lambda_instance_all['code'],
-                    "status": lambda_instance_all['status']
+                    "message": lambda_instance_all['status']
                 },
                 "id": lambda_instance_all['uuid'],
                 "name": lambda_instance_all['name']
@@ -443,18 +518,19 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 if lambda_instance_all['failure_message'] != "":
                     data[0]['status']['failure_message'] = lambda_instance_all['failure_message']
 
-            return Response({"status": status_code, "data": data}, status=status_code)
+            response['data'] = data
+            return Response(response, status=status_code)
         elif filter == "info":
-            return Response({"status": status_code,
-                             "data": [{
-                                 "info": {
-                                     "id": lambda_instance_all['uuid'],
-                                     "name": lambda_instance_all['name'],
-                                     "instance_info": lambda_instance_all['instance_info']
-                                 },
-                             }]}, status=status_code)
-        else:
+            data = [{
+                "info": {
+                    "id": lambda_instance_all['uuid'],
+                    "name": lambda_instance_all['name'],
+                    "instance_info": lambda_instance_all['instance_info']
+                }}]
 
+            response['data'] = data
+            return Response(response, status=status_code)
+        else:
             data = [{
                 "info": {
                     "id": lambda_instance_all['uuid'],
@@ -463,7 +539,8 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 },
                 "status": {
                     "code": lambda_instance_all['code'],
-                    "status": lambda_instance_all['status']
+                    "message": lambda_instance_all['status'],
+                    "details": ""
                 }
             }]
 
@@ -472,7 +549,8 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 if lambda_instance_all['failure_message'] != "":
                     data[0]['status']['failure_message'] = lambda_instance_all['failure_message']
 
-            return Response({"status": status_code, "data": data}, status=status_code)
+            response['data'] = data
+            return Response(response, status=status_code)
 
     def action(self, request, uuid, format=None):
         """
@@ -484,7 +562,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # Check if the specified lambda instance exists.
         lambda_instances = LambdaInstance.objects.filter(uuid=lambda_instance_uuid)
         if not lambda_instances.exists():
-            raise CustomNotFoundError("The specified lambda instance does not exist.")
+            raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
         lambda_instance_data = LambdaInstanceSerializer(lambda_instances[0]).data
 
         action_parameter = request.data.get('action', '')
@@ -492,22 +570,30 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # Check the current status of the lambda instance.
         if action_parameter == "start":
             if lambda_instance_data['status'] == LambdaInstance.STARTED:
-                raise CustomAlreadyDoneError("The specified lambda instance is already started.")
+                raise CustomAlreadyDoneError(CustomAlreadyDoneError
+                                             .messages['lambda_instance_already']
+                                             .format(state="started"))
+
             if lambda_instance_data['status'] != LambdaInstance.STOPPED and \
                    lambda_instance_data['status'] != LambdaInstance.FAILED:
-                raise CustomCantDoError("Cannot start lambda instance while current status is " +
-                                        LambdaInstance.status_choices[
-                                            int(lambda_instance_data['status'])][1] + ".")
+                raise CustomCantDoError(CustomCantDoError.messages['cant_do'].
+                                        format(action="start", object="a lambda instance",
+                                               status=LambdaInstance.status_choices[
+                                                   int(lambda_instance_data['status'])][1]))
         elif action_parameter == "stop":
             if lambda_instance_data['status'] == LambdaInstance.STOPPED:
-                raise CustomAlreadyDoneError("The specified lambda instance is already stopped.")
+                raise CustomAlreadyDoneError(CustomAlreadyDoneError
+                                             .messages['lambda_instance_already']
+                                             .format(state="stopped"))
+
             if lambda_instance_data['status'] != LambdaInstance.STARTED and \
                    lambda_instance_data['status'] != LambdaInstance.FAILED:
-                raise CustomCantDoError("Cannot stop lambda instance while current status is " +
-                                        LambdaInstance.status_choices[
-                                            int(lambda_instance_data['status'])][1] + ".")
+                raise CustomCantDoError(CustomCantDoError.messages['cant_do'].
+                                        format(action="stop", object="a lambda instance",
+                                               status=LambdaInstance.status_choices[
+                                                   int(lambda_instance_data['status'])][1]))
         else:
-            raise CustomParseError("action POST parameter can be used with start or stop value.")
+            raise CustomValidationError(CustomValidationError.messages['action_value_error'])
 
         # Get the id of the master node and the ids of the slave nodes.
         master_id = None
@@ -540,8 +626,11 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
-        return Response({"status": status_code,
-                         "result": "Accepted"}, status=status_code)
+        return Response({
+            "status": {
+                'code': status_code,
+                'short-description': ResponseMessages.short_descriptions['lambda_instance_action']
+            }}, status=status_code)
 
     def destroy(self, request, uuid, format=None):
         """
@@ -552,19 +641,22 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # Check if the specified lambda instance exists.
         lambda_instances = LambdaInstance.objects.filter(uuid=uuid)
         if not lambda_instances.exists():
-            raise CustomNotFoundError("The specified lambda instance does not exist.")
+            raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
         lambda_instance_data = LambdaInstanceSerializer(lambda_instances[0]).data
 
         # Check the current status of the lambda instance.
         if lambda_instance_data['status'] == LambdaInstance.DESTROYED:
-            raise CustomAlreadyDoneError("The specified lambda instance is already destroyed.")
+            raise CustomAlreadyDoneError(CustomAlreadyDoneError
+                                             .messages['lambda_instance_already']
+                                             .format(state="destroyed"))
 
         if lambda_instance_data['status'] != LambdaInstance.STARTED and \
             lambda_instance_data['status'] != LambdaInstance.STOPPED and \
                 lambda_instance_data['status'] != LambdaInstance.FAILED:
-            raise CustomCantDoError("Cannot destroy lambda instance while current status is " +
-                                        LambdaInstance.status_choices[
-                                            int(lambda_instance_data['status'])][1] + ".")
+            raise CustomCantDoError(CustomCantDoError.messages['cant_do'].
+                                        format(action="destroy", object="a lambda instance",
+                                               status=LambdaInstance.status_choices[
+                                                   int(lambda_instance_data['status'])][1]))
 
         # Get the id of the master node and the ids of the slave nodes.
         master_id = None
@@ -593,8 +685,11 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
-        return Response({"status": status_code,
-                         "result": "Accepted"}, status=status_code)
+        return Response({
+            "status": {
+                'code': status_code,
+                'short-description': ResponseMessages.short_descriptions['lambda_instance_destroy']
+            }}, status=status_code)
 
     def parse_list_response(self, response):
         """
@@ -608,6 +703,15 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         for lambda_instance in response['data']:
             for unwanted_field in unwanted_fields:
                 del lambda_instance[unwanted_field]
+
+        response['status']['short_description'] = ResponseMessages.short_descriptions[
+            'lambda_instances_list']
+
+        # Change uuid name to id
+        for item in response['data']:
+            if 'uuid' in item:
+                item['id'] = item['uuid']
+                del item['uuid']
 
         return response
 
@@ -657,8 +761,14 @@ class CreateLambdaInstance(APIView):
         instance_uuid = create.id
 
         status_code = status.HTTP_202_ACCEPTED
-        return Response({"status": status_code,
-                         "result": "Accepted",
+        return Response({"status": {"code": status_code, "short_description":
+                                                         ResponseMessages.short_descriptions[
+                                                             'lambda_instance_create']
+                                    },
                          "data": [{
-                             "uuid": instance_uuid
+                             "id": instance_uuid,
+                             "links": {
+                                 "self": request.build_absolute_uri() +
+                                 "{id}".format(id=instance_uuid)
+                             }
                          }]}, status=status_code)
