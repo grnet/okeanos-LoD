@@ -1,6 +1,6 @@
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import exceptions
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
 
 from fokia.utils import check_auth_token
@@ -16,9 +16,17 @@ class KamakiTokenAuthentication(TokenAuthentication):
     model = Token
 
     def authenticate_credentials(self, key):
-        hashed_token_key = key
+        hashed_token_key = make_password(key)
         try:
-            token = self.model.objects.get(key=hashed_token_key)
+            # token = self.model.objects.get(key=hashed_token_key)
+            token = None
+            # TODO: As an enhancement, search if you can search with custom method.
+            for rec in self.model.objects.all():
+                if check_password(key, rec.key):
+                    token = rec
+                    break
+            if token is None:
+                raise self.model.DoesNotExist
             if timezone.now() > token.creation_date + timezone.timedelta(days=5):
                 raise OldTokenException
         except (self.model.DoesNotExist, OldTokenException):

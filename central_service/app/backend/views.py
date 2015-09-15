@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from rest_framework import viewsets, status
 from rest_framework import generics, mixins
+from rest_framework.views import APIView
 from .models import LambdaInstance, LambdaApplication, User, Token
-from .serializers import UserSerializer, LambdaInstanceSerializer
+from .serializers import UserSerializer, LambdaInstanceSerializer, LambdaApplicationSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
@@ -53,11 +54,11 @@ class LambdaInstanceView(mixins.CreateModelMixin,
         """
         data = request.data
         user_auth = request.auth
-        user = request.user
+        user = request.user # this is the authenticated user.
 
         user_headers = request.META['HTTP_AUTHORIZATION'].split()[-1]
 
-        response = Response({"token":user_headers}, status=201)
+        response = Response({"user": str(user)}, status=201)
         return response
 
     def create(self, request, *args, **kwargs):
@@ -75,6 +76,10 @@ class LambdaInstanceView(mixins.CreateModelMixin,
         instance_info = data['instance_info']
         failure_message = data['failure_message']
         status = data['status']
+
+        # TODO: Create celery task to write to the database
+        raise NotImplementedError
+
         # owner = user
         #
         # li = LambdaInstance(uuid = uuid, name = instance_name,
@@ -84,3 +89,53 @@ class LambdaInstanceView(mixins.CreateModelMixin,
         # li.save()
 
         return Response()
+
+class LambdaInstanceCounterView(APIView):
+
+    authentication_classes = KamakiTokenAuthentication,
+    permission_classes = IsAuthenticated,
+    renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
+
+    def get(self, request, format=None):
+        return Response({"count": str(LambdaInstance.objects.count())},
+                        status=200)
+
+class LambdaApplicationView(mixins.CreateModelMixin,
+                            mixins.UpdateModelMixin,
+                            mixins.DestroyModelMixin,
+                            mixins.ListModelMixin, # debugging
+                            viewsets.GenericViewSet):
+
+    queryset = LambdaApplication.objects.all()
+    serializer_class = LambdaApplicationSerializer
+    authentication_classes = KamakiTokenAuthentication,
+    permission_classes = IsAuthenticated,
+    renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Create api call for lambda_application.
+        :param request: The HTTP POST request making the call.
+        :param args:
+        :param kwargs:
+        :return: A response object according to the outcome of the call.
+        """
+        data = request.data
+
+        lambda_app_description = data['description']
+        lambda_instance_uuid = data['lambda_instance_uuid']
+
+        # TODO: Create celery task to write to the database
+        raise NotImplementedError
+
+        return Response()
+
+class LambdaApplicationCounterView(APIView):
+
+    authentication_classes = KamakiTokenAuthentication,
+    permission_classes = IsAuthenticated,
+    renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
+
+    def get(self, request, format=None):
+        return Response({"count": str(LambdaApplication.objects.count())},
+                        status=200)
