@@ -11,6 +11,7 @@ from kamaki.clients import ClientError
 from fokia import utils
 
 from fokia import lambda_instance_manager
+from fokia.ansible_manager import Manager, create_master_inventory
 from . import events
 from .models import LambdaInstance, Application
 from .serializers import LambdaInstanceSerializer
@@ -141,7 +142,7 @@ def create_lambda_instance(lambda_info, auth_token):
                                      provisioner_response=provisioner_response)
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'initialize.yml')
-    check = check_ansible_result(ansible_result)
+    check = __check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.INIT_FAILED,
@@ -152,7 +153,7 @@ def create_lambda_instance(lambda_info, auth_token):
                                                 status=LambdaInstance.INIT_DONE)
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'common-install.yml')
-    check = check_ansible_result(ansible_result)
+    check = __check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.COMMONS_FAILED,
@@ -163,7 +164,7 @@ def create_lambda_instance(lambda_info, auth_token):
                                                 status=LambdaInstance.COMMONS_INSTALLED)
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'hadoop-install.yml')
-    check = check_ansible_result(ansible_result)
+    check = __check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.HADOOP_FAILED,
@@ -174,7 +175,7 @@ def create_lambda_instance(lambda_info, auth_token):
                                                 status=LambdaInstance.HADOOP_INSTALLED)
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'kafka-install.yml')
-    check = check_ansible_result(ansible_result)
+    check = __check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.KAFKA_FAILED,
@@ -185,7 +186,7 @@ def create_lambda_instance(lambda_info, auth_token):
                                                 status=LambdaInstance.KAFKA_INSTALLED)
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'flink-install.yml')
-    check = check_ansible_result(ansible_result)
+    check = __check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.FLINK_FAILED,
@@ -346,13 +347,23 @@ def on_failure(exc, task_id, args, kwargs, einfo):
 setattr(create_lambda_instance, 'on_failure', on_failure)
 
 
-def check_ansible_result(ansible_result):
+def __check_ansible_result(ansible_result):
     for _, value in ansible_result.iteritems():
         if value['unreachable'] != 0:
             return 'Host unreachable'
         if value['failures'] != 0:
             return 'Ansible task failed'
     return 'Ansible successful'
+
+
+@shared_task
+def start_stop_flink_app(master_id, app_action, app_type, jar_filename):
+    response = {'nodes': {'master': {'id': master_id}}}
+    ansible_manager = Manager(response)
+    ansible_manager.create_master_inventory(app_action=app_action, app_type=app_type,
+                                            jar_filename=jar_filename)
+    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'flink-apps.yml')
+    check = __check_ansible_result(ansible_result)
 
 
 def get_master_node_hostname(lambda_instance_uuid):

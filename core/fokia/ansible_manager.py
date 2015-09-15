@@ -14,12 +14,14 @@ class Manager:
         self.inventory['master'] = {
             'name': 'snf-' + str(provisioner_response['nodes']['master']['id']),
             'ip': provisioner_response['nodes']['master']['internal_ip']}
-        self.inventory['slaves'] = []
-        for response in provisioner_response['nodes']['slaves']:
-            self.inventory['slaves'].append(
-                {'name': 'snf-' + str(response['id']),
-                 'ip': response['internal_ip']})
-        self.cidr = provisioner_response['subnet']['cidr']
+        if 'slaves' in provisioner_response['nodes']:
+            self.inventory['slaves'] = []
+            for response in provisioner_response['nodes']['slaves']:
+                self.inventory['slaves'].append(
+                    {'name': 'snf-' + str(response['id']),
+                     'ip': response['internal_ip']})
+        if 'subnet' in provisioner_response:
+            self.cidr = provisioner_response['subnet']['cidr']
 
         # with tempfile.NamedTemporaryFile(mode='w', delete=False) as kf:
         #     kf.write(provisioner_response['pk'])
@@ -44,10 +46,10 @@ class Manager:
 
         host = self.inventory['master']
         all_hosts.append(host['name'] + '.vm.okeanos.grnet.gr')
-        ansible_host = ansible.inventory.host.Host(name=all_hosts[-1])
+        # ansible_host = ansible.inventory.host.Host(name=all_hosts[-1])
         for host in self.inventory['slaves']:
             all_hosts.append(host['name'] + '.local')
-            ansible_host = ansible.inventory.host.Host(name=all_hosts[-1])
+            # ansible_host = ansible.inventory.host.Host(name=all_hosts[-1])
         self.ansible_inventory = ansible.inventory.Inventory(host_list=all_hosts)
 
         all_group = self.ansible_inventory.get_group('all')
@@ -92,6 +94,24 @@ class Manager:
                       runner_callbacks=runner_cb, only_tags=tags)
         playbook_result = pb.run()
         return playbook_result
+
+    def create_master_inventory(self, app_action=None, app_type=None, jar_filename=None):
+        master_hostname = self.inventory['master']['name'] + '.vm.okeanos.grnet.gr'
+        self.ansible_inventory = ansible.inventory.Inventory(host_list=[master_hostname])
+        all_group = self.ansible_inventory.get_group('all')
+        master_host = all_group.get_hosts()[0]
+
+        if app_action is not None:
+            master_host.set_variable('app_action', app_action)
+            master_host.set_variable('app_type', app_type)
+            if jar_filename is not None:
+                master_host.set_variable('jar_filename', jar_filename)
+
+        master_group = ansible.inventory.group.Group(name='master')
+        master_group.add_host(master_host)
+        self.ansible_inventory.add_group(master_group)
+        all_group.add_child_group(master_group)
+        return self.ansible_inventory
 
 
 if __name__ == "__main__":

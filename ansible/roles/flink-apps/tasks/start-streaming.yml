@@ -1,0 +1,11 @@
+---
+
+  - name: Set jar file path for streaming job
+    lineinfile: destfile="/home/flink/run_streaming_job.sh"
+              regexp="^export"
+              value="export JARFILE={{ jarfile }}"
+              state=present
+              insertafter="^export"
+
+  - name: Start streaming job using supervisord
+    supervisorctl: name='flink_streaming_job:' state=started

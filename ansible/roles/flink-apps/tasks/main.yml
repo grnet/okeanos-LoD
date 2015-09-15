@@ -1,0 +1,17 @@
+---
+
+  - name: Start batch job
+    include:start-batch.yml
+    when: app_action == "start" and app_type == "batch"
+
+  - name: Start streaming job
+    include:start-streaming.yml
+    when: app_action == "start" and app_type == "streaming"
+
+  - name: Stop batch job
+    include:stop-batch.yml
+    when: app_action == "stop" and app_type == "batch"
+
+  - name: Stop streaming job
+    include:stop-streaming.yml
+    when: app_action == "stop" and app_type == "streaming"

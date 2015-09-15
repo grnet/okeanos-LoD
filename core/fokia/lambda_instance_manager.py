@@ -48,7 +48,7 @@ def create_cluster(cluster_id, auth_token=None, master_name='lambda-master',
         provisioner_response['nodes']['slaves'][i]['internal_ip'] = slave_ip
     provisioner_response['pk'] = provisioner.get_private_key()
 
-    add_private_key(cluster_id, provisioner_response)
+    __add_private_key(cluster_id, provisioner_response)
 
     ansible_manager = Manager(provisioner_response)
     ansible_manager.create_inventory()
@@ -56,7 +56,7 @@ def create_cluster(cluster_id, auth_token=None, master_name='lambda-master',
     return ansible_manager, provisioner_response
 
 
-def add_private_key(cluster_id, provisioner_response):
+def __add_private_key(cluster_id, provisioner_response):
     kf_path = join(expanduser('~/.ssh/lambda_instances/'), str(cluster_id))
     with open(kf_path, 'w') as kf:
         kf.write(provisioner_response['pk'])
@@ -78,7 +78,7 @@ def add_private_key(cluster_id, provisioner_response):
     sconfig.write_to_ssh_config()
 
 
-def delete_private_key(cluster_id, master_id, slave_ids):
+def __delete_private_key(cluster_id, master_id, slave_ids):
     sconfig = Storm(expanduser('~/.ssh/config'))
     name = 'snf-' + str(master_id) + '.vm.okeanos.grnet.gr'
     sconfig.delete_entry(name)
@@ -148,7 +148,7 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token,
     cyclades_network_client.delete_network(private_network_id)
 
     # Delete the private key
-    delete_private_key(instance_uuid, master_id, slave_ids)
+    __delete_private_key(instance_uuid, master_id, slave_ids)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 ---
+
   - name: Download Apache Flink, Yarn version.
     get_url: url="{{ mirror_url }}/flink-{{ version }}/flink-{{ version }}-{{ version_for }}.tgz" dest="{{ download_path }}/flink-{{ version }}-{{ version_for }}.tgz"
     environment: proxy_env 
@@ -20,6 +21,16 @@
     tags:
       - configure
 
+  - name: Copy run_batch_job script
+    copy: src=run_flink_job.sh dest="/home/flink/run_batch_job.sh" owner=flink group=flink mode=0744
+    tags:
+      - configure
+
+  - name: Copy run_streaming_job script
+    copy: src=run_flink_job.sh dest="/home/flink/run_streaming_job.sh" owner=flink group=flink mode=0744
+    tags:
+      - configure
+
   - name: Copy Apache Flink init script.
     template: src=flink-init.j2 dest=/etc/init.d/flink-init owner=flink group=lambda mode=0740
 
@@ -27,4 +38,3 @@
     shell: /etc/init.d/flink-init start > /dev/null
     tags:
       - start
-
