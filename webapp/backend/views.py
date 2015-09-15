@@ -770,7 +770,8 @@ class CreateLambdaInstance(APIView):
                          "data": [{
                              "id": instance_uuid,
                              "links": {
-                                 "self": request.build_absolute_uri() +
-                                 "{id}".format(id=instance_uuid)
+                                 "self": (request.build_absolute_uri() +
+                                          "{id}".format(id=instance_uuid)).replace("instance",
+                                                                                   "instances")
                              }
                          }]}, status=status_code)
