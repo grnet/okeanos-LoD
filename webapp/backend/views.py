@@ -1,7 +1,7 @@
 import json
 import uuid
 
-from django.core.urlresolvers import resolve, reverse
+from django.core.urlresolvers import resolve
 
 from rest_framework import viewsets, status, mixins
 from rest_framework.views import APIView
@@ -176,7 +176,8 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Check if another file with same name already exists.
         if self.get_queryset().filter(name=uploaded_file.name).count() > 0:
-            raise CustomValidationError(CustomValidationError.messages['filename_already_exists_error'])
+            raise CustomValidationError(CustomValidationError
+                                        .messages['filename_already_exists_error'])
 
         # Get the description provided with the request.
         description = request.data.get('description', '')
@@ -244,12 +245,13 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Return an appropriate response.
         status_code = status.HTTP_200_OK
-        response = dict({"status": {"code": status_code,
-                               "short_description": ResponseMessages.
+        response = dict({"status":
+                             {"code": status_code,
+                              "short_description": ResponseMessages.
                                    short_descriptions['application_details']
-                               },
-                    "data": None
-                    })
+                              },
+                         "data": None
+                         })
 
         response['data'] = data
         return Response(response, status=status_code)
