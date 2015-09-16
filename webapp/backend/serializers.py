@@ -39,6 +39,7 @@ class LambdaInstanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = LambdaInstance
         fields = ('id', 'uuid', 'name', 'instance_info', 'status', 'failure_message', 'servers',
+                  'private_network', 'master_node')
                   'private_network')
 
 

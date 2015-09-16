@@ -163,6 +163,9 @@ class LambdaInstance(models.Model):
     status = models.CharField(max_length=10, choices=status_choices, default=PENDING,
                               help_text="The status of this instance.")
 
+    master_node = models.ForeignKey(Server, null=True, unique=True,
+                                    default=None, on_delete=models.CASCADE)
+
     def __unicode__(self):
         info = "Instance id: " + str(self.id) + "\n" + \
                "Instance info: " + str(self.instance_info)

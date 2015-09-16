@@ -319,7 +319,7 @@ def deploy_application(auth_url, auth_token, container_name, lambda_instance_uui
     local_file.close()
 
     # Get the hostname of the master node of the specified lambda instance.
-    master_node_hostname = get_master_node_hostname(lambda_instance_uuid)
+    master_node_hostname = get_master_node_info(lambda_instance_uuid)[1]
 
     # Move the application on the specified master node using scp.
     system("scp {path} root@{hostname}:/home/flink/".format(path=local_file_path,
@@ -345,7 +345,7 @@ def withdraw_application(lambda_instance_uuid, application_uuid):
     application_name = Application.objects.get(uuid=application_uuid).name
 
     # Get the hostname of the master node of the specified lambda instance.
-    master_node_hostname = get_master_node_hostname(lambda_instance_uuid)
+    master_node_hostname = get_master_node_info(lambda_instance_uuid)[1]
 
     # Delete the application from the master node.
     system("ssh -l root {hostname} rm /home/flink/{filename}".format(hostname=master_node_hostname,
@@ -357,12 +357,10 @@ def withdraw_application(lambda_instance_uuid, application_uuid):
                                                                application_uuid)
 
 
-
-
-
 @shared_task
-def start_stop_flink_app(master_id, app_action, app_type, jar_filename):
-    response = {'nodes': {'master': {'id': master_id, 'internal_ip': None}}}
+def start_stop_application(lambda_instance_uuid, app_action, app_type, jar_filename):
+    master_node_id = get_master_node_info(lambda_instance_uuid)[0]
+    response = {'nodes': {'master': {'id': master_node_id, 'internal_ip': None}}}
     ansible_manager = Manager(response)
     ansible_manager.create_master_inventory(app_action=app_action, app_type=app_type,
                                             jar_filename=jar_filename)
@@ -370,22 +368,16 @@ def start_stop_flink_app(master_id, app_action, app_type, jar_filename):
     check = __check_ansible_result(ansible_result)
 
 
-def get_master_node_hostname(lambda_instance_uuid):
+def get_master_node_info(lambda_instance_uuid):
     """
     Returns the full hostname of the master node of a specified lambda instance.
     :param lambda_instance_uuid: The uuid of the lambda instance.
     :return: The full hostname of the master node of the specified lambda instance.
     """
 
-    lambda_instance_data = LambdaInstanceSerializer(LambdaInstance.objects.
-                                                    get(uuid=lambda_instance_uuid)).data
-    master_node_id = None
-    for server in lambda_instance_data['servers']:
-        if server['pub_ip']:
-            master_node_id = server['id']
-            break
+    master_node_id = LambdaInstance.objects.get(uuid=lambda_instance_uuid).master_node.id
 
     master_node_hostname = "snf-{master_node_id}.vm.okeanos.grnet.gr".\
         format(master_node_id=master_node_id)
 
-    return master_node_hostname
+    return master_node_id, master_node_hostname,

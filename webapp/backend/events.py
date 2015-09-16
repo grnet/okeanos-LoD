@@ -48,7 +48,7 @@ def insert_cluster_info(instance_uuid, specs, provisioner_response):
 
     lambda_instance = LambdaInstance.objects.get(uuid=instance_uuid)
     master = provisioner_response['nodes']['master']
-    Server.objects.create(id=master['id'],
+    server = Server.objects.create(id=master['id'],
                           lambda_instance=lambda_instance,
                           cpus=specs['vcpus_master'],
                           ram=specs['ram_master'],
@@ -56,6 +56,8 @@ def insert_cluster_info(instance_uuid, specs, provisioner_response):
                           priv_ip=master['internal_ip'],
                           pub_ip=provisioner_response['ips'][0]['floating_ip_address'],
                           pub_ip_id=provisioner_response['ips'][0]['id'])
+    lambda_instance.master_node = lambda_instance
+    lambda_instance.save()
 
     for slave in provisioner_response['nodes']['slaves']:
         Server.objects.create(id=slave['id'],
