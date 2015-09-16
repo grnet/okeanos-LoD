@@ -1,8 +1,7 @@
 from celery import shared_task
 
-from .models import LambdaInstance
-from .models import Server
-from .models import PrivateNetwork
+from .models import LambdaInstance, Server, PrivateNetwork, Application,\
+    LambdaInstanceApplicationConnection
 
 
 @shared_task
@@ -25,7 +24,7 @@ def create_new_lambda_instance(instance_uuid, instance_name, specs='{}'):
 @shared_task
 def set_lambda_instance_status(instance_uuid, status, failure_message=""):
     """
-    Sets the status of a specified lambda instance to the specified status.
+    Sets the status of a specified lambda instance to the specified value.
     The existence of the lambda instance should have been previously checked.
     instance_uuid: The uuid of the lambda instance.
     status: The integer that specifies the new status of the specified lambda instance.
@@ -70,3 +69,76 @@ def insert_cluster_info(instance_uuid, specs, provisioner_response):
                                   lambda_instance=lambda_instance,
                                   subnet=provisioner_response['subnet']['cidr'],
                                   gateway=provisioner_response['subnet']['gateway_ip'])
+
+
+@shared_task
+def create_new_application(uuid, name, path, description, owner):
+    """
+    Creates a new entry of an application on the database.
+    :param uuid: The uuid of the new application.
+    :param name: The name of the new application.
+    :param path: The path where the new application is stored on Pithos.
+    :param description: The provided description of the new application.
+    :param owner: The owner of the new application.
+    """
+
+    Application.objects.create(uuid=uuid, name=name, path=path, description=description,
+                               owner=owner)
+
+
+@shared_task
+def delete_application(uuid):
+    """
+    Deletes a specified application from the database. The existence of the application should
+    have been previously checked.
+    :param uuid: The uuid of the application to be deleted.
+    """
+
+    Application.objects.get(uuid=uuid).delete()
+
+
+@shared_task
+def set_application_status(application_uuid, status, failure_message=""):
+    """
+    Sets the status of a specified application to the specified value.
+    The existence of the application should have been previously checked.
+    :param application_uuid: The uuid of the specified application.
+    :param status: The value for the status of the application.
+    :param failure_message:
+    """
+
+    application = Application.objects.get(uuid=application_uuid)
+    application.status = status
+    application.failure_message = failure_message
+    application.save()
+
+
+@shared_task
+def create_lambda_instance_application_connection(lambda_instance_uuid, application_uuid):
+    """
+    Creates a new entry of a connection between a lambda instance and an application on the
+    database. The existence of the lambda instance and the application should have been
+    previously checked.
+    :param lambda_instance_uuid: The uuid of the lambda instance.
+    :param application_uuid: The uuid of the application
+    """
+
+    lambda_instance = LambdaInstance.objects.get(uuid=lambda_instance_uuid)
+    application = Application.objects.get(uuid=application_uuid)
+    LambdaInstanceApplicationConnection.objects.create(lambda_instance=lambda_instance,
+                                                       application=application)
+
+
+@shared_task
+def delete_lambda_instance_application_connection(lambda_instance_uuid, application_uuid):
+    """
+    Deletes an entry of a connection between a lambda instance an an application on the database.
+    The existence of the lambda instance and the application should have been previously checked.
+    :param lambda_instance_uuid: The uuid of the lambda instance.
+    :param application_uuid: The uuid of the application.
+    """
+
+    lambda_instance = LambdaInstance.objects.get(uuid=lambda_instance_uuid)
+    application = Application.objects.get(uuid=application_uuid)
+    LambdaInstanceApplicationConnection.objects.get(lambda_instance=lambda_instance,
+                                                    application=application).delete()

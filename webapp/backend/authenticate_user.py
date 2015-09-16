@@ -6,6 +6,7 @@ from django.utils import timezone
 from fokia.utils import check_auth_token
 
 from .models import Token, User
+from .exceptions import CustomAuthenticationFailed
 
 
 class OldTokenException(Exception):
@@ -38,5 +39,5 @@ class KamakiTokenAuthentication(TokenAuthentication):
                     token.key = hashed_token_key
                     token.save()
             else:
-                raise exceptions.AuthenticationFailed('Invalid token')
+                raise CustomAuthenticationFailed()
         return token.user, token

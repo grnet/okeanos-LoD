@@ -131,13 +131,29 @@ CELERY_ROUTES = {
         'queue': 'tasks_queue',
         'routing_key': 'task_key',
     },
-    'backend.events.set_lambda_instance_status': {
-        'queue': 'events_queue',
-        'routing_key': 'event_key',
-    },
     'backend.tasks.create_lambda_instance': {
         'queue': 'tasks_queue',
         'routing_key': 'task_key',
+    },
+    'backend.tasks.upload_application_to_pithos': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.tasks.delete_application_from_pithos': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.tasks.deploy_application': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.tasks.withdraw_application': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.events.set_lambda_instance_status': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
     },
     'backend.events.create_new_lambda_instance': {
         'queue': 'events_queue',
@@ -147,15 +163,38 @@ CELERY_ROUTES = {
         'queue': 'events_queue',
         'routing_key': 'event_key',
     },
-
+    'backend.events.create_new_application': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+    'backend.events.delete_application': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+    'backend.events.set_application_status': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+    'backend.events.create_lambda_instance_application_connection': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+    'backend.events.delete_lambda_instance_application_connection': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
 }
 
-FILE_STORAGE = os.path.join(BASE_DIR, 'uploaded_files')
-
+# Rest Framework configuration #
 REST_FRAMEWORK = {
   'DEFAULT_RENDERER_CLASSES': (
     'rest_framework.renderers.JSONRenderer',
     'rest_framework.renderers.BrowsableAPIRenderer',
     'rest_framework_xml.renderers.XMLRenderer',
-  )
+  ),
+  'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+  'EXCEPTION_HANDLER': 'backend.exceptions.custom_exception_handler'
 }
+
+TEMPORARY_FILE_STORAGE = os.path.abspath("/tmp/lambda_applications")
+

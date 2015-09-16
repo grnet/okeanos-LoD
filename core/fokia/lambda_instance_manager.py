@@ -135,9 +135,9 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token,
 
     # Wait for all the VMs to be destroyed before destroyed the public ip and the
     # private network.
-    cyclades_compute_client.wait_server(master_id, current_status=master_status)
+    cyclades_compute_client.wait_server(master_id, current_status=master_status, max_wait=600)
     for i, slave_id in enumerate(slave_ids):
-        cyclades_compute_client.wait_server(slave_id, current_status=slaves_status[i])
+        cyclades_compute_client.wait_server(slave_id, current_status=slaves_status[i], max_wait=600)
 
     # Destroy the public ip.
     cyclades_network_client.delete_floatingip(public_ip_id)
