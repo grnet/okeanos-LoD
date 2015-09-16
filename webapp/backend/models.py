@@ -73,6 +73,15 @@ class Application(models.Model):
     status = models.CharField(max_length=10, choices=status_choices, default=UPLOADING,
                               help_text="The status of this application.")
 
+    BATCH = "1"
+    STREAMING = "2"
+    type_choices = (
+        (BATCH, 'BATCH'),
+        (STREAMING, 'STREAMING')
+    )
+    type = models.CharField(max_length=10, choices=type_choices, default=BATCH,
+                            help_text="The type of this application.")
+
     class Meta:
         verbose_name = "ProjectFile"
         app_label = "backend"
@@ -95,6 +104,7 @@ class LambdaInstance(models.Model):
     uuid: A unique id asigned to every Lambda Instance. This key will be used by the API
           to reference a specific Lambda Instance.
     failure_message: Message that denotes the reason of failure of the lambda instance.
+    :model: models.Server
     """
     id = models.AutoField("Instance ID", primary_key=True, null=False,
                           help_text="Auto-increment instance id.")
@@ -165,6 +175,11 @@ class LambdaInstance(models.Model):
 
     master_node = models.ForeignKey(Server, null=True, unique=True,
                                     default=None, on_delete=models.CASCADE)
+
+    started_batch = models.BooleanField(default=False,
+                                        help_text="True, if batch job is started")
+    started_streaming = models.BooleanField(default=False,
+                                            help_text="True, if streaming job is started")
 
     def __unicode__(self):
         info = "Instance id: " + str(self.id) + "\n" + \
@@ -289,3 +304,5 @@ class LambdaInstanceApplicationConnection(models.Model):
 
     lambda_instance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False)
     application = models.ForeignKey(Application, null=False, blank=False, unique=False)
+    started = models.BooleanField(default=False,
+                                  help_text="True, if application is started")

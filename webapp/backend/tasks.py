@@ -217,6 +217,7 @@ def on_failure(exc, task_id, args, kwargs, einfo):
                                             status=LambdaInstance.FAILED,
                                             failure_message=exc.message)
 
+
 setattr(create_lambda_instance, 'on_failure', on_failure)
 
 
@@ -358,7 +359,8 @@ def withdraw_application(lambda_instance_uuid, application_uuid):
 
 
 @shared_task
-def start_stop_application(lambda_instance_uuid, app_action, app_type, jar_filename):
+def start_stop_application(lambda_instance_uuid, app_uuid,
+                           app_action, app_type, jar_filename=None):
     master_node_id = get_master_node_info(lambda_instance_uuid)[0]
     response = {'nodes': {'master': {'id': master_node_id, 'internal_ip': None}}}
     ansible_manager = Manager(response)
@@ -366,6 +368,10 @@ def start_stop_application(lambda_instance_uuid, app_action, app_type, jar_filen
                                             jar_filename=jar_filename)
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'flink-apps.yml')
     check = __check_ansible_result(ansible_result)
+    if check == 'Ansible successful':
+        events.start_stop_application(lambda_instance_uuid=lambda_instance_uuid,
+                                      application_uuid=app_uuid,
+                                      action=app_action, app_type=app_type)
 
 
 def get_master_node_info(lambda_instance_uuid):
@@ -377,7 +383,7 @@ def get_master_node_info(lambda_instance_uuid):
 
     master_node_id = LambdaInstance.objects.get(uuid=lambda_instance_uuid).master_node.id
 
-    master_node_hostname = "snf-{master_node_id}.vm.okeanos.grnet.gr".\
+    master_node_hostname = "snf-{master_node_id}.vm.okeanos.grnet.gr". \
         format(master_node_id=master_node_id)
 
-    return master_node_id, master_node_hostname,
+    return master_node_id, master_node_hostname
