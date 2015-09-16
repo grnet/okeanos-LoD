@@ -1,3 +1,8 @@
+"""
+This file includes all the custom made exceptions. These exceptions are thrown by the API and
+used to override the structure of the response messages.
+"""
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler

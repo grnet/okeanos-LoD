@@ -1,4 +1,8 @@
 class ResponseMessages:
+    """
+    Class that holds all the API response messages.
+    """
+
     def __init__(self):
         pass
 
@@ -15,7 +19,8 @@ class ResponseMessages:
         'application_upload': "Your request to upload the specified application has been accepted.",
         'application_delete': "Your request to delete the specified application has been accepted.",
         'application_deploy': "Your request to deploy the specified application has been accepted.",
-        'application_withdraw': "Your request to withdraw the specified application has been accepted."
+        'application_withdraw': "Your request to withdraw the specified application has been"
+                                " accepted."
     }
 
     lambda_instance_status_details = {
