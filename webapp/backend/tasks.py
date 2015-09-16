@@ -1,13 +1,18 @@
 import json
+
+from os import path, mkdir, remove, system
+
 from celery import shared_task
+from django.conf import settings
 
 from kamaki.clients import ClientError
 
 from fokia import utils
-
-from .models import LambdaInstance
 from fokia import lambda_instance_manager
+
 from . import events
+from .models import LambdaInstance, Application
+from .serializers import LambdaInstanceSerializer
 
 
 @shared_task
@@ -194,6 +199,142 @@ def create_lambda_instance(auth_token=None, instance_name='Lambda Instance',
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.FLINK_INSTALLED)
 
+    # Set lambda instance status to started.
+    events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                            status=LambdaInstance.STARTED)
+
+
+@shared_task
+def upload_application_to_pithos(auth_url, auth_token, container_name, project_name,
+                                 uploaded_file, application_uuid):
+    """
+    Uploads an application to Pithos.
+    :param auth_url: The authentication url for ~okeanos API.
+    :param auth_token: The authentication token of the user.
+    :param container_name: The name of the Pithos container where the file will be uploaded.
+    :param uploaded_file: The path on the local file system of the file to be uploaded.
+    :param application_uuid: The uuid of the application to be uploaded.
+    """
+
+    # Save the uploaded file on the local file system.
+    if not path.exists(settings.TEMPORARY_FILE_STORAGE):
+        mkdir(settings.TEMPORARY_FILE_STORAGE)
+
+    local_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, uploaded_file.name)
+    local_file = open(local_file_path, 'wb+')
+
+    # Djnago suggest to always save the uploaded file using chunks. That will avoiding reading the
+    # whole file into memory and possibly overwhelming it.
+    for chunk in uploaded_file.chunks():
+        local_file.write(chunk)
+    local_file.close()
+
+    local_file = open(local_file_path, 'r')
+
+    try:
+        utils.upload_file_to_pithos(auth_url, auth_token, container_name, project_name, local_file)
+
+        events.set_application_status.delay(application_uuid=application_uuid,
+                                            status=Application.UPLOADED)
+    except ClientError as exception:
+        events.set_application_status.delay(application_uuid, Application.FAILED,
+                                            exception.message)
+
+    # Release local file system resources.
+    local_file.close()
+
+    # Remove the file saved on the local file system.
+    remove(local_file_path)
+
+
+@shared_task
+def delete_application_from_pithos(auth_url, auth_token, container_name, filename,
+                                   application_uuid):
+    """
+    Deletes an application from Pithos.
+    :param auth_url: The authentication url for ~okeanos API.
+    :param auth_token: The authentication token of the user.
+    :param container_name: The name of the Pithos container where the file will be uploaded.
+    :param filename: The name of the application to be deleted.
+    :param application_uuid: The uuid of the application to be deleted.
+    """
+
+    try:
+        utils.delete_file_from_pithos(auth_url, auth_token, container_name, filename)
+
+        events.delete_application.delay(application_uuid)
+    except ClientError as exception:
+        events.set_application_status.delay(application_uuid, Application.FAILED,
+                                            exception.message)
+
+
+@shared_task
+def deploy_application(auth_url, auth_token, container_name, lambda_instance_uuid,
+                       application_uuid):
+    """
+    Deployes an application from Pithos to a specified lambda instance.
+    :param auth_url: The authentication url for ~okeanos API.
+    :param auth_token: The authentication token of the user.
+    :param container_name: The name of the Pithos container where the file will be uploaded.
+    :param lambda_instance_uuid: The uuid of the lambda instance.
+    :param application_uuid: The uuid of the applcation.
+    """
+
+    # Get the name of the application.
+    application_name = Application.objects.get(uuid=application_uuid).name
+
+    # Dowload application from Pithos.
+    if not path.exists(settings.TEMPORARY_FILE_STORAGE):
+        mkdir(settings.TEMPORARY_FILE_STORAGE)
+    local_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, application_name)
+    local_file = open(local_file_path, 'w+')
+
+    try:
+        utils.download_file_from_pithos(auth_url, auth_token, container_name, application_name,
+                                        local_file)
+    except ClientError as exception:
+        events.set_application_status.delay(application_uuid, Application.FAILED,
+                                            exception.message)
+    local_file.close()
+
+    # Get the hostname of the master node of the specified lambda instance.
+    master_node_hostname = get_master_node_hostname(lambda_instance_uuid)
+
+    # Move the application on the specified master node using scp.
+    system("scp {path} root@{hostname}:/home/flink/".format(path=local_file_path,
+                                                            hostname=master_node_hostname))
+
+    # Delete the application from the local file system.
+    remove(local_file_path)
+
+    # Create a new entry on the database.
+    events.create_lambda_instance_application_connection.delay(lambda_instance_uuid,
+                                                               application_uuid)
+
+
+@shared_task
+def withdraw_application(lambda_instance_uuid, application_uuid):
+    """
+    Withdraws an application from a specified lambda instance.
+    :param lambda_instance_uuid: The uuid of the lambda instance.
+    :param application_uuid: The uuid of the application.
+    """
+
+    # Get the name of the application.
+    application_name = Application.objects.get(uuid=application_uuid).name
+
+    # Get the hostname of the master node of the specified lambda instance.
+    master_node_hostname = get_master_node_hostname(lambda_instance_uuid)
+
+    # Delete the application from the master node.
+    system("ssh -l root {hostname} rm /home/flink/{filename}".format(hostname=master_node_hostname,
+                                                                     filename=application_name))
+
+    # Create an event to remove the connection between the lambda instance and the application
+    # on the database.
+    events.delete_lambda_instance_application_connection.delay(lambda_instance_uuid,
+                                                               application_uuid)
+
 
 def on_failure(exc, task_id, args, kwargs, einfo):
     events.set_lambda_instance_status.delay(instance_uuid=task_id,
@@ -211,3 +352,24 @@ def check_ansible_result(ansible_result):
         if value['failures'] != 0:
             return 'Ansible task failed'
     return 'Ansible successful'
+
+
+def get_master_node_hostname(lambda_instance_uuid):
+    """
+    Returns the full hostname of the master node of a specified lambda instance.
+    :param lambda_instance_uuid: The uuid of the lambda instance.
+    :return: The full hostname of the master node of the specified lambda instance.
+    """
+
+    lambda_instance_data = LambdaInstanceSerializer(LambdaInstance.objects.
+                                                    get(uuid=lambda_instance_uuid)).data
+    master_node_id = None
+    for server in lambda_instance_data['servers']:
+        if server['pub_ip']:
+            master_node_id = server['id']
+            break
+
+    master_node_hostname = "snf-{master_node_id}.vm.okeanos.grnet.gr".\
+        format(master_node_id=master_node_id)
+
+    return master_node_hostname

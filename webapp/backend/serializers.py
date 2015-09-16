@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from .models import ProjectFile, LambdaInstance, Server, PrivateNetwork
+from .models import Application, LambdaInstance, Server, PrivateNetwork
 
 
-class ProjectFileSerializer(serializers.ModelSerializer):
+class ApplicationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ProjectFile
-        fields = ('uuid', 'name', 'description')
+        model = Application
+        fields = ('uuid', 'name', 'path', 'description', 'failure_message', 'status')
 
 
 class ServerSerializer(serializers.ModelSerializer):
