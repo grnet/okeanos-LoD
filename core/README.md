@@ -58,8 +58,14 @@ token = your-okeanos-token
 ```
 Note that you may retrieve your ~okeanos API token, after logging into the service, by visiting [this page][api_link].
 
-- Install required packages. Within the `core` directory execute `sudo pip install -r requirements.txt`.
-- Install package using `sudo python setup.py install`
+1. Install required packages. Within the `core` directory execute
+
+       $ sudo pip install -r requirements.txt
+
+1. Install fokia library locally using 
+
+       $ sudo python setup.py install
+
 
 ## Usage
 

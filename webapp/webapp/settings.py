@@ -135,14 +135,27 @@ CELERY_ROUTES = {
         'queue': 'events_queue',
         'routing_key': 'event_key',
     },
+    'backend.tasks.create_lambda_instance': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
+    'backend.events.create_new_lambda_instance': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+    'backend.events.insert_cluster_info': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+
 }
 
 FILE_STORAGE = os.path.join(BASE_DIR, 'uploaded_files')
 
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework_xml.renderers.XMLRenderer',
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-    )
+  'DEFAULT_RENDERER_CLASSES': (
+    'rest_framework.renderers.JSONRenderer',
+    'rest_framework.renderers.BrowsableAPIRenderer',
+    'rest_framework_xml.renderers.XMLRenderer',
+  )
 }
