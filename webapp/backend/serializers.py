@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from .models import ProjectFile, LambdaInstance, Server, PrivateNetwork
 from .models import Application, LambdaInstance, Server, PrivateNetwork
 
 class ApplicationSerializer(serializers.ModelSerializer):
@@ -44,6 +43,12 @@ class LambdaInstanceSerializer(serializers.ModelSerializer):
 
 
 class LambdaInstanceInfo(serializers.Serializer):
+    """
+    Serializer to parse Lambda Instance specs and validate them
+    Each of the declared function in this class acts as a validator for the field it refers to in
+    its name validator_<field_name>()
+    """
+
     instance_name = serializers.CharField()
     master_name = serializers.CharField()
     project_name = serializers.CharField()
@@ -57,6 +62,7 @@ class LambdaInstanceInfo(serializers.Serializer):
     disk_slave = serializers.IntegerField()
     network_request = serializers.IntegerField()
 
+    # Allowed values for fields
     allowed = {
         "vcpus":         {8, 1, 2, 4},
         "disks":         {100, 5, 40, 10, 80, 20, 60},

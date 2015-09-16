@@ -10,18 +10,17 @@ from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.decorators import detail_route, api_view
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
 
 from rest_framework_xml.renderers import XMLRenderer
 
 from fokia.utils import check_auth_token
 
 from . import tasks, events
-from .models import ProjectFile, LambdaInstance
-from .serializers import ProjectFileSerializer, LambdaInstanceSerializer, LambdaInstanceInfo
 from .models import Application, LambdaInstance, LambdaInstanceApplicationConnection
 from .exceptions import CustomParseError, CustomValidationError, CustomNotFoundError,\
     CustomAlreadyDoneError, CustomCantDoError
-from .serializers import ApplicationSerializer, LambdaInstanceSerializer
+from .serializers import ApplicationSerializer, LambdaInstanceSerializer, LambdaInstanceInfo
 from .authenticate_user import KamakiTokenAuthentication
 from .response_messages import ResponseMessages
 
@@ -90,7 +89,7 @@ def _parse_default_pagination_response(default_response):
     return default_response
 
 
-@api_view(['GET'])
+@api_view(['GET', 'OPTION'])
 def authenticate(request):
     """
     Checks the validity of the authentication token of the user
@@ -737,11 +736,21 @@ class CreateLambdaInstance(APIView):
 
     def post(self, request, format=None):
 
+        # Get okeanos authentication token
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
-        lambda_info = LambdaInstanceInfo(data=request.data)
-        lambda_info.is_valid(raise_exception=True)
 
+        # Parse request json into a custom serializer
+        lambda_info = LambdaInstanceInfo(data=request.data)
+        try:
+            # Check Instance info validity
+            lambda_info.is_valid(raise_exception=True)
+        except ValidationError:
+            raise
+
+        # Create the task that will handle the cluster creation
         create = tasks.create_lambda_instance.delay(lambda_info, auth_token)
+
+        # Use the task uuid as the cluster uuid
         instance_uuid = create.id
 
         status_code = status.HTTP_202_ACCEPTED

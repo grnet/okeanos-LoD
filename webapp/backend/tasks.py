@@ -5,7 +5,6 @@ from os import path, mkdir, remove, system
 from celery import shared_task
 from django.conf import settings
 
-from celery import shared_task
 from kamaki.clients import ClientError
 from fokia import utils
 
@@ -99,18 +98,6 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slav
 
 @shared_task
 def create_lambda_instance(lambda_info, auth_token):
-    # auth_token=None, instance_name='Lambda Instance',
-    # master_name='lambda-master',
-    # slaves=1, vcpus_master=4, vcpus_slave=4,
-    # ram_master=4096, ram_slave=4096,
-    # disk_master=40, disk_slave=40, ip_allocation='master',
-    # network_request=1, project_name='lambda.grnet.gr'):
-    # specs_dict = {'master_name': master_name, 'slaves': slaves,
-    #               'vcpus_master': vcpus_master, 'vcpus_slave': vcpus_slave,
-    #               'ram_master': ram_master, 'ram_slave': ram_slave,
-    #               'disk_master': disk_master, 'disk_slave': disk_slave,
-    #               'ip_allocation': ip_allocation, 'network_request': network_request,
-    #               'project_name': project_name}
     specs = lambda_info.data
     specs_json = json.dumps(specs)
     instance_uuid = create_lambda_instance.request.id
