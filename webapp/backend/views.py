@@ -231,9 +231,10 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         del data['uuid']
 
         # Create status field.
-        data['status'] = {'message': Application.status_choices[int(data['status'])][1],
+        message = Application.status_choices[int(data['status'])][1]
+        data['status'] = {'message': message,
                           'code': data['status'],
-                           'details': ""}
+                           'details': ResponseMessages.application_status_details[message]}
 
         # Show failure message only if it is not empty.
         if 'failure_message' in data:
@@ -496,6 +497,8 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             lambda_instance_all['code'] = lambda_instance_all['status']
             lambda_instance_all['status'] = LambdaInstance.status_choices[
                 int(lambda_instance_all['status'])][1]
+            lambda_instance_all['details'] = ResponseMessages.lambda_instance_status_details[
+                lambda_instance_all['status']]
 
         # Return an appropriate response.
         status_code = status.HTTP_200_OK
@@ -509,7 +512,8 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             data = [{
                 "status": {
                     "code": lambda_instance_all['code'],
-                    "message": lambda_instance_all['status']
+                    "message": lambda_instance_all['status'],
+                    "details": lambda_instance_all['details']
                 },
                 "id": lambda_instance_all['uuid'],
                 "name": lambda_instance_all['name']
@@ -542,7 +546,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 "status": {
                     "code": lambda_instance_all['code'],
                     "message": lambda_instance_all['status'],
-                    "details": ""
+                    "details": lambda_instance_all['details']
                 }
             }]
 
