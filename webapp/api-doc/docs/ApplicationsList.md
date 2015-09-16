@@ -104,7 +104,8 @@ If the authentication token is correct, a sample response is
       "id": "6fb97497-8d2c-45ed-bb7d-207e16b97c48"
     }
   ]
-}```
+}
+```
 
 For the case where the authentication token is not correct, refer to [Authentication page](Authentication.md).
 

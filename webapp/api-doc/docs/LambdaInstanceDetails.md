@@ -36,7 +36,7 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 Name  | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
 lambda-instance-id  | The id of the specified lambda instance. For more information see [List Lambda instances page](LambdaInstanceList.md) . |`Yes` |None| 3f763964-d519-4fd2-916d-b5cfbe3b878b
-filter | Specifies which details to return | None | info
+filter | Specifies which details to return | `No` | None | info
 
 
 ## Example
