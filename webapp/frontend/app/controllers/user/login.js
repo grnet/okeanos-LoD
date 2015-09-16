@@ -18,6 +18,7 @@ actions : {
     host = this.store.adapterFor('login').get('host'),
     namespace = this.store.adapterFor('login').namespace,
     postUrl = [ host, namespace ].join('/');
+    
 
     $.ajax({
       url: postUrl,
@@ -32,6 +33,7 @@ actions : {
       success: function(data, textStatus, jqXHR){
           _this.set("isProcessing", false);
           _this.set("loginFailed", false);
+
           _this.transitionToRoute('user.clusters');
       },
       error: function(data){

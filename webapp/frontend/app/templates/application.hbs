@@ -5,7 +5,16 @@
       <a href='#' class='navbar-brand'><img src='https://okeanos.grnet.gr/static/medialibrary/2013/06/logo.png' alt='logo' height='50' width='224' /></a>
       <ul class='nav navbar-nav navbar-right'>
         <li>{{#link-to 'index'}}Home{{/link-to}}</li>
-          <li >{{#link-to 'user.login'}}Login{{/link-to}}</li>
+          <li>
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="user-menu" data-toggle="dropdown">User
+                <span class="caret"></span></button>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="user-menu">
+                  <li role="presentation">{{#link-to 'user.login'}}Login{{/link-to}}</li>
+                  <li role="presentation">{{#link-to 'user.logout'}}Logout{{/link-to}}</li>
+                </ul>
+            </div>
+        </li>
       </ul>
     </div>
 </div>

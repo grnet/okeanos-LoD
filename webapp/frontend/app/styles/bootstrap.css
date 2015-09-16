@@ -3061,7 +3061,7 @@ fieldset[disabled] a.btn {
   pointer-events: none;
 }
 .btn-default {
-  color: #333;
+  color: #777;
   background-color: #fff;
   border-color: #ccc;
 }
@@ -3571,6 +3571,9 @@ tbody.collapse.in {
 .dropup,
 .dropdown {
   position: relative;
+  padding-top: 7px;
+  padding-bottom: 8px;
+  padding-right: 15px;
 }
 .dropdown-toggle:focus {
   outline: 0;
@@ -3583,7 +3586,8 @@ tbody.collapse.in {
   display: none;
   float: left;
   min-width: 160px;
-  padding: 5px 0;
+  padding-top: 15px;
+  padding-bottom: 15px;
   margin: 2px 0 0;
   font-size: 14px;
   text-align: left;
