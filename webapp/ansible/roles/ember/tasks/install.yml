@@ -1,0 +1,40 @@
+---
+
+  - name: Install curl.
+    apt: name=curl state=latest
+    tags:
+      - ember-install
+
+  - name: Fetch url for nodejs.
+    shell: "curl --silent --location https://deb.nodesource.com/setup_0.12 | bash -"
+    tags:
+      - ember-install
+
+  - name: Install nodejs.
+    apt: name=nodejs force=yes
+    tags:
+      - ember-install
+
+  - name: Install Ember globally.
+    npm: name=ember-cli global=yes
+    tags:
+      - ember-install
+
+  - name: Install Ember Application dependencies
+    shell: "npm install"
+    args:
+      chdir: /root/okeanos-LoD/webapp/frontend/app
+    tags:
+      - ember-install
+
+  - name: Install Bower globally.
+    npm: name=bower global=yes
+    tags:
+      - ember-install
+
+  - name: Install Ember Application dependencies for bower
+    shell: "bower install --allow-root"
+    args:
+      chdir: /root/okeanos-LoD/webapp/frontend/
+    tags:
+      - ember-install
