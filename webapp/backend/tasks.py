@@ -203,6 +203,23 @@ def create_lambda_instance(lambda_info, auth_token):
                                             status=LambdaInstance.STARTED)
 
 
+def __check_ansible_result(ansible_result):
+    for _, value in ansible_result.iteritems():
+        if value['unreachable'] != 0:
+            return 'Host unreachable'
+        if value['failures'] != 0:
+            return 'Ansible task failed'
+    return 'Ansible successful'
+
+
+def on_failure(exc, task_id, args, kwargs, einfo):
+    events.set_lambda_instance_status.delay(instance_uuid=task_id,
+                                            status=LambdaInstance.FAILED,
+                                            failure_message=exc.message)
+
+setattr(create_lambda_instance, 'on_failure', on_failure)
+
+
 @shared_task
 def upload_application_to_pithos(auth_url, auth_token, container_name, project_name,
                                  uploaded_file, application_uuid):
@@ -340,22 +357,7 @@ def withdraw_application(lambda_instance_uuid, application_uuid):
                                                                application_uuid)
 
 
-def on_failure(exc, task_id, args, kwargs, einfo):
-    events.set_lambda_instance_status.delay(instance_uuid=task_id,
-                                            status=LambdaInstance.FAILED,
-                                            failure_message=exc.message)
 
-
-setattr(create_lambda_instance, 'on_failure', on_failure)
-
-
-def __check_ansible_result(ansible_result):
-    for _, value in ansible_result.iteritems():
-        if value['unreachable'] != 0:
-            return 'Host unreachable'
-        if value['failures'] != 0:
-            return 'Ansible task failed'
-    return 'Ansible successful'
 
 
 @shared_task
