@@ -69,7 +69,10 @@ If the authentication token is correct, a sample response is
 
 ```
 {
-  "status": 200,
+  "status": {
+    "short_description": "Lambda instances.",
+    "code": 200
+  },
   "data": [
     {
       "name": "My first Lambda Instance",
@@ -109,14 +112,19 @@ If the authentication token is correct, a sample response is
 
 ```
 {
-  "count":5,
-  "next":null,
-  "previous":"http://83.212.118.182/api/lambda-instances/?limit=2&offset=1",
+  "pagination": {
+    "count":5,
+    "next":null,
+    "previous":"http://<hostname>/api/lambda-instances/?limit=2&offset=1",
+  },
   "data":[
     {"name":"Lambda Instance 3","id":"8d8b574b-742e-4b90-9926-3c034dc40516"},
     {"name":"Lambda Instance 4","id":"bbe29514-4f21-4960-89b3-becd82515ef3"}
   ],
-  "status":200
+  "status": {
+    "short_description": "Lambda instances.",
+    "code": 200
+  }
 }
 ```
 

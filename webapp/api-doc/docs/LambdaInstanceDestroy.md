@@ -52,8 +52,10 @@ If the authentication token is correct the response will be
 
 ```
 {
-  "status": 202,
-  "result": "Accepted"
+  "status": {
+    "code": 202,
+    "short-description": "Your request to destroy the specified lambda instance has been accepted."
+  }
 }
 ```
 

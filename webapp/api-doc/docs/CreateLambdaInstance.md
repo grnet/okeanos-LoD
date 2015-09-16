@@ -66,11 +66,18 @@ If the authentication token and url is correct, and all the headers are given co
 
 ```
 {
-  "status": 202,
+  "status": {
+    "short_description": "Your request to create a new lambda instance has been accepted.",
+    "code": 202
+  },
   "data": [
-    "id": "35380a49-aae4-4935-9844-dfd6737b8c51"
-  ],
-  "result": "Accepted"
+    {
+      "id": "dd0c8d65-0c52-4338-bcc1-6f82e57f2d37",
+      "links": {
+        "self": "http://<hostname>/api/lambda-instances/dd0c8d65-0c52-4338-bcc1-6f82e57f2d37"
+      }
+    }
+  ]
 }
 ```
 

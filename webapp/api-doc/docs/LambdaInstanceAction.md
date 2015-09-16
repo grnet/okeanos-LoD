@@ -54,8 +54,10 @@ If the authentication is correct the response will be
 
 ```
 {
-  "status": 202,
-  "result": "Accepted"
+  "status": {
+    "code": 202,
+    "short-description": "Your request has been accepted."
+  }
 }
 ```
 
