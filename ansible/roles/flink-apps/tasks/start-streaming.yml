@@ -8,4 +8,4 @@
               insertafter="^export"
 
   - name: Start streaming job using supervisord
-    supervisorctl: name='flink_streaming_job:' state=started
+    supervisorctl: name='flink_streaming_job' state=started

@@ -105,7 +105,7 @@ class Manager:
             master_host.set_variable('app_action', app_action)
             master_host.set_variable('app_type', app_type)
             if jar_filename is not None:
-                master_host.set_variable('jar_filename', jar_filename)
+                master_host.set_variable('jarfile', jar_filename)
 
         master_group = ansible.inventory.group.Group(name='master')
         master_group.add_host(master_host)

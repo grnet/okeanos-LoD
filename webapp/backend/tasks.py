@@ -9,6 +9,8 @@ from rest_framework import status
 
 from kamaki.clients import ClientError
 from fokia import utils
+from fokia import lambda_instance_manager
+from fokia.ansible_manager import Manager
 
 from fokia import lambda_instance_manager
 from fokia.ansible_manager import Manager, create_master_inventory
@@ -358,7 +360,7 @@ def __check_ansible_result(ansible_result):
 
 @shared_task
 def start_stop_flink_app(master_id, app_action, app_type, jar_filename):
-    response = {'nodes': {'master': {'id': master_id}}}
+    response = {'nodes': {'master': {'id': master_id, 'internal_ip': None}}}
     ansible_manager = Manager(response)
     ansible_manager.create_master_inventory(app_action=app_action, app_type=app_type,
                                             jar_filename=jar_filename)
