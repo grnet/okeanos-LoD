@@ -19,7 +19,7 @@ parameter with the request. The values that this parameter should have are "info
 Type   | Description
 -------|-----------------
 **Description** | lambda instance details
-**URL**         | /api/lambda-instances/[lambda-instance-id]
+**URL**         | /api/lambda-instances/[lambda-instance-id]/
 **HTTP Method** | GET
 **Security**    | Basic Authentication
 
@@ -35,7 +35,7 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 
 Name  | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
-lambda-instance-id  | The id of the specified lambda instance. For more information see [List Lambda instances page](LambdaInstanceList.md) . |`Yes` |None| 3
+lambda-instance-id  | The id of the specified lambda instance. For more information see [List Lambda instances page](LambdaInstanceList.md) . |`Yes` |None| 3f763964-d519-4fd2-916d-b5cfbe3b878b
 filter | Specifies which details to return | None | info
 
 

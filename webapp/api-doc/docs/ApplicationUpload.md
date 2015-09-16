@@ -54,13 +54,18 @@ If the authentication token is correct, a sample response would be
 
 ```
 {
-  "status": 202,
+  "status": {
+    "short_description": "Your request to upload the specified application has been accepted.",
+    "code": 202
+  },
   "data": [
     {
-      "uuid": "c628152d-707f-4fdf-a95c-fcf805c6cf0e"
+      "id": "84dfb596-3abb-401e-99fc-c6f0057dedab",
+      "links": {
+        "self": "http://<hostname>/api/apps/84dfb596-3abb-401e-99fc-c6f0057dedab"
+      }
     }
-  ],
-  "result": "Accepted"
+  ]
 }
 ```
 

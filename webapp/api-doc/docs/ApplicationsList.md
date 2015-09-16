@@ -70,67 +70,41 @@ If the authentication token is correct, a sample response is
 
 ```
 {
-  "status": 200,
+  "status": {
+    "short_description": "Applications.",
+    "code": 200
+  },
   "data": [
     {
-      "name": "test_big",
-      "path": "lambda_applications",
-      "description": "My first application.",
-      "status": "UPLOADED",
-      "code": "0",
-      "id": "7186be3f-22ca-4e59-8e5f-fc381e92a67c"
+      "name": "project.jar",
+      "id": "68e836e2-2ea4-4bb8-8b46-dcef869b3f08"
     },
     {
       "name": "test_file",
-      "path": "lambda_applications",
-      "description": "My first application.",
-      "status": "UPLOADED",
-      "code": "0",
-      "id": "7c177dc2-4196-4b6e-ad43-4e316273ec39"
-    },
-    {
-      "name": "test_file_1",
-      "path": "lambda_applications",
-      "description": "My first application.",
-      "status": "UPLOADED",
-      "code": "0",
-      "id": "4abe753e-84b8-43f5-9f1e-b97b120609f8"
+      "id": "1b9f7773-f19d-426d-bc29-5434844e4537"
     },
     {
       "name": "test_file_2",
-      "path": "lambda_applications",
-      "description": "My first application.",
-      "status": "UPLOADED",
-      "code": "0",
-      "id": "99bb434c-e50e-4ca8-9f5e-0825fef09c92"
+      "id": "dddb18ae-5dab-4e9e-8914-3062b8853e24"
     },
     {
       "name": "test_file_3",
-      "path": "lambda_applications",
-      "description": "My first application.",
-      "status": "UPLOADED",
-      "code": "0",
-      "id": "a1e21dec-475d-4e56-9763-3e42e2c61935"
+      "id": "b3e5d867-c882-4f5e-a5c2-75193866f44e"
     },
     {
       "name": "test_file_4",
-      "path": "lambda_applications",
-      "description": "My first application.",
-      "status": "UPLOADED",
-      "code": "0",
-      "id": "56bfd480-e5a3-44b0-b111-e4a6be6c93cf"
+      "id": "a5623a2e-7742-4299-8ca4-c05e811d2262"
     },
     {
-      "name": "test_file_5",
-      "path": "lambda_applications",
-      "description": "My first application.",
-      "status": "UPLOADED",
-      "code": "0",
-      "id": "d2e00532-d643-434c-9717-cd923a77f331"
+      "name": "project1.jar",
+      "id": "5bda8e92-6397-493d-9aeb-a2fcf67b19a4"
+    },
+    {
+      "name": "application.jar",
+      "id": "6fb97497-8d2c-45ed-bb7d-207e16b97c48"
     }
   ]
-}
-```
+}```
 
 For the case where the authentication token is not correct, refer to [Authentication page](Authentication.md).
 
@@ -147,28 +121,25 @@ If the authentication token is correct, a sample response is
 
 ```
 {
-  "count": 7,
-  "next": "http://83.212.118.182/api/apps/?limit=2&offset=5",
-  "previous": "http://83.212.118.182/api/apps/?limit=2&offset=1",
   "data": [
     {
-      "name": "test_file_2",
-      "path": "lambda_applications",
-      "description": "My first application.",
-      "status": "UPLOADED",
-      "code": "0",
-      "id": "99bb434c-e50e-4ca8-9f5e-0825fef09c92"
+      "name": "test_file_3",
+      "id": "b3e5d867-c882-4f5e-a5c2-75193866f44e"
     },
     {
-      "name": "test_file_3",
-      "path": "lambda_applications",
-      "description": "My first application.",
-      "status": "UPLOADED",
-      "code": "0",
-      "id": "a1e21dec-475d-4e56-9763-3e42e2c61935"
+      "name": "test_file_4",
+      "id": "a5623a2e-7742-4299-8ca4-c05e811d2262"
     }
   ],
-  "status": 200
+  "pagination": {
+    "count": 7,
+    "next": "http://<hostname>/api/apps/?limit=2&offset=5",
+    "previous": "http://<hostname>/api/apps/?limit=2&offset=1"
+  },
+  "status": {
+    "short_description": "Applications.",
+    "code": 200
+  }
 }
 ```
 

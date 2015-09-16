@@ -53,8 +53,10 @@ If the authentication token is correct, the response will be
 
 ```
 {
-  "status": 202,
-  "result": "Accepted"
+  "status": {
+    "short-description": "Your request to withdraw the specified application has been accepted.",
+    "code": 202
+  }
 }
 ```
 

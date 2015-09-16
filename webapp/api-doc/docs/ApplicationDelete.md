@@ -38,12 +38,12 @@ application-id  | The id of the specified application. For more information see 
 
 ## Example
 
-In this example we are going to delete the application with id c628152d-707f-4fdf-a95c-fcf805c6cf0e
+In this example we are going to delete the application with id 84dfb596-3abb-401e-99fc-c6f0057dedab
 
 The request in curl
 
 ```
-curl -X DELETE -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/apps/c628152d-707f-4fdf-a95c-fcf805c6cf0e/'
+curl -X DELETE -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/apps/84dfb596-3abb-401e-99fc-c6f0057dedab/'
 ```
 
 
@@ -51,8 +51,10 @@ curl -X DELETE -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKc
 
 ```
 {
-  "status": 202,
-  "result": "Accepted"
+  "status": {
+    "short-description": "Your request to delete the specified application has been accepted.",
+    "code": 202
+  }
 }
 ```
 

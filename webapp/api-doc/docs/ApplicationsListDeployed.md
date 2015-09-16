@@ -52,38 +52,25 @@ If the authentication token is correct, a sample response would be
 
 ```
 {
-  "status": 200,
+  "status": {
+    "short_description": "Applications.",
+    "code": 200
+  },
   "data": [
     {
       "name": "test_file_5",
-      "path": "lambda_applications",
-      "description": "My first application.",
-      "status": "UPLOADED",
-      "code": "0",
       "id": "d2e00532-d643-434c-9717-cd923a77f331"
     },
     {
       "name": "test_big",
-      "path": "lambda_applications",
-      "description": "My first application.",
-      "status": "UPLOADED",
-      "code": "0",
       "id": "7186be3f-22ca-4e59-8e5f-fc381e92a67c"
     },
     {
       "name": "test_file",
-      "path": "lambda_applications",
-      "description": "My first application.",
-      "status": "UPLOADED",
-      "code": "0",
       "id": "7c177dc2-4196-4b6e-ad43-4e316273ec39"
     },
     {
       "name": "test_file_1",
-      "path": "lambda_applications",
-      "description": "My first application.",
-      "status": "UPLOADED",
-      "code": "0",
       "id": "4abe753e-84b8-43f5-9f1e-b97b120609f8"
     }
   ]
@@ -105,20 +92,21 @@ If the authentication token is correect, a sample response would be
 
 ```
 {
-  "count": 4,
-  "next": null,
-  "previous": "http://83.212.118.182/api/apps/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/list-deployed/?limit=2&offset=1",
+  "pagination": {
+    "count": 4,
+    "next": null,
+    "previous": "http://<hostname>/api/apps/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/list-deployed/?limit=2&offset=1",
+  },
   "data": [
     {
       "name": "test_file_1",
-      "path": "lambda_applications",
-      "description": "My first application.",
-      "status": "UPLOADED",
-      "code": "0",
       "id": "4abe753e-84b8-43f5-9f1e-b97b120609f8"
     }
   ],
-  "status": 200
+  "status": {
+    "short_description": "Applications.",
+    "code": 200
+  }
 }
 ```
 
