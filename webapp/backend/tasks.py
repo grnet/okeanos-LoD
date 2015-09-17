@@ -11,9 +11,6 @@ from kamaki.clients import ClientError
 from fokia import utils
 from fokia import lambda_instance_manager
 from fokia.ansible_manager import Manager
-
-from fokia import lambda_instance_manager
-from fokia.ansible_manager import Manager, create_master_inventory
 from . import events
 from .models import LambdaInstance, Application
 from .serializers import LambdaInstanceSerializer
