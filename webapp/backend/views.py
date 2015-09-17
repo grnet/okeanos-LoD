@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework.decorators import detail_route, api_view
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
 
 from rest_framework_xml.renderers import XMLRenderer
 
@@ -19,7 +20,7 @@ from . import tasks, events
 from .models import Application, LambdaInstance, LambdaInstanceApplicationConnection
 from .exceptions import CustomParseError, CustomValidationError, CustomNotFoundError,\
     CustomAlreadyDoneError, CustomCantDoError
-from .serializers import ApplicationSerializer, LambdaInstanceSerializer
+from .serializers import ApplicationSerializer, LambdaInstanceSerializer, LambdaInstanceInfo
 from .authenticate_user import KamakiTokenAuthentication
 from .response_messages import ResponseMessages
 
@@ -88,7 +89,7 @@ def _parse_default_pagination_response(default_response):
     return default_response
 
 
-@api_view(['GET'])
+@api_view(['GET', 'OPTION'])
 def authenticate(request):
     """
     Checks the validity of the authentication token of the user
@@ -734,36 +735,22 @@ class CreateLambdaInstance(APIView):
     parser_classes = (JSONParser,)
 
     def post(self, request, format=None):
-        cluster_specs = request.data
 
+        # Get okeanos authentication token
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
 
-        instance_name = cluster_specs['instance_name']
-        master_name = cluster_specs['master_name']
-        slaves = int(cluster_specs['slaves'])
-        vcpus_master = int(cluster_specs['vcpus_master'])
-        vcpus_slave = int(cluster_specs['vcpus_slave'])
-        ram_master = int(cluster_specs['ram_master'])
-        ram_slave = int(cluster_specs['ram_slave'])
-        disk_master = int(cluster_specs['disk_master'])
-        disk_slave = int(cluster_specs['disk_slave'])
-        ip_allocation = cluster_specs['ip_allocation']
-        network_request = int(cluster_specs['network_request'])
-        project_name = cluster_specs['project_name']
+        # Parse request json into a custom serializer
+        lambda_info = LambdaInstanceInfo(data=request.data)
+        try:
+            # Check Instance info validity
+            lambda_info.is_valid(raise_exception=True)
+        except ValidationError as exception:
+            raise CustomValidationError(exception.detail)
 
-        create = tasks.create_lambda_instance.delay(auth_token=auth_token,
-                                                    instance_name=instance_name,
-                                                    master_name=master_name,
-                                                    slaves=slaves,
-                                                    vcpus_master=vcpus_master,
-                                                    vcpus_slave=vcpus_slave,
-                                                    ram_master=ram_master,
-                                                    ram_slave=ram_slave,
-                                                    disk_master=disk_master,
-                                                    disk_slave=disk_slave,
-                                                    ip_allocation=ip_allocation,
-                                                    network_request=network_request,
-                                                    project_name=project_name)
+        # Create the task that will handle the cluster creation
+        create = tasks.create_lambda_instance.delay(lambda_info, auth_token)
+
+        # Use the task uuid as the cluster uuid
         instance_uuid = create.id
 
         status_code = status.HTTP_202_ACCEPTED
