@@ -171,3 +171,5 @@ def start_stop_application(lambda_instance_uuid, application_uuid, action, app_t
             lambda_instance.started_batch = False
         else:
             lambda_instance.started_streaming = False
+    instanceapplication.save()
+    lambda_instance.save()
