@@ -7,6 +7,8 @@ from fokia.utils import check_auth_token
 
 from .models import Token, User
 
+from django.conf import settings
+
 
 class OldTokenException(Exception):
     pass
@@ -16,17 +18,9 @@ class KamakiTokenAuthentication(TokenAuthentication):
     model = Token
 
     def authenticate_credentials(self, key):
-        hashed_token_key = make_password(key)
+        hashed_token_key = make_password(key, salt=settings.STATIC_SALT)
         try:
-            # token = self.model.objects.get(key=hashed_token_key)
-            token = None
-            # TODO: As an enhancement, search if you can search with custom method.
-            for rec in self.model.objects.all():
-                if check_password(key, rec.key):
-                    token = rec
-                    break
-            if token is None:
-                raise self.model.DoesNotExist
+            token = self.model.objects.get(key=hashed_token_key)
             if timezone.now() > token.creation_date + timezone.timedelta(days=5):
                 raise OldTokenException
         except (self.model.DoesNotExist, OldTokenException):
