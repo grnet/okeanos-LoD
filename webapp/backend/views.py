@@ -555,11 +555,12 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Check if the specified application is already not deployed on the specified lambda
         # instance.
-        instanceapplication = LambdaInstanceApplicationConnection.objects.\
-            get(lambda_instance=lambda_instance, application=application)
-        if not instanceapplication.exists():
+        instanceapplications = LambdaInstanceApplicationConnection.objects.\
+            filter(lambda_instance=lambda_instance, application=application)
+        if not instanceapplications.exists():
             raise CustomAlreadyDoneError(CustomAlreadyDoneError.
                                          messages['application_not_deployed'])
+        instanceapplication = instanceapplications[0]
 
         return application, lambda_instance, instanceapplication
 

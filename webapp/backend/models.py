@@ -173,8 +173,8 @@ class LambdaInstance(models.Model):
     status = models.CharField(max_length=10, choices=status_choices, default=PENDING,
                               help_text="The status of this instance.")
 
-    master_node = models.ForeignKey('Server', null=True, unique=True,
-                                    default=None, on_delete=models.CASCADE)
+    master_node = models.OneToOneField('Server', null=True, default=None,
+                                       on_delete=models.CASCADE)
 
     started_batch = models.BooleanField(default=False,
                                         help_text="True, if batch job is started")
