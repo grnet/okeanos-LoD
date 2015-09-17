@@ -102,7 +102,7 @@ def create_lambda_instance(lambda_info, auth_token):
     specs_json = json.dumps(specs)
     instance_uuid = create_lambda_instance.request.id
     events.create_new_lambda_instance.delay(instance_uuid=instance_uuid,
-                                            instance_name=specs['project_name'],
+                                            instance_name=specs['instance_name'],
                                             specs=specs_json)
 
     pub_keys = None

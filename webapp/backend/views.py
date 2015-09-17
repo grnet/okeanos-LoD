@@ -88,6 +88,7 @@ def _parse_default_pagination_response(default_response):
 
     return default_response
 
+
 @api_view(['GET'])
 def user_public_keys(request):
     """
@@ -102,7 +103,7 @@ def user_public_keys(request):
         status_code = status.HTTP_401_UNAUTHORIZED
         return Response({"errors": [error_info]}, status=status_code)
     public_keys = get_public_key(auth_token)
-    return Response({"keys": public_keys})
+    return Response({"result": "success", "status": 200, "data": {"keys": public_keys}})
 
 
 @api_view(['GET', 'OPTION'])
