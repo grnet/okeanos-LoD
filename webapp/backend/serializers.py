@@ -39,8 +39,7 @@ class LambdaInstanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = LambdaInstance
         fields = ('id', 'uuid', 'name', 'instance_info', 'status', 'failure_message', 'servers',
-                  'private_network', 'master_node')
-                  'private_network')
+                  'private_network', 'master_node, started_batch, started_streaming')
 
 
 class LambdaInstanceInfo(serializers.Serializer):
@@ -113,3 +112,4 @@ class LambdaInstanceInfo(serializers.Serializer):
 
     def validate(self, data):
         return data
+                  'private_network', 'master_node, started_batch, started_streaming')

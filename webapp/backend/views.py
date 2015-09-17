@@ -462,10 +462,12 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         lambda_instance_uuid = lambda_instance.uuid
         app_action = 'start'
+        filename = application.name
 
         # Create a task to start the application.
         tasks.start_stop_application.delay(lambda_instance_uuid=lambda_instance_uuid,
-                                           app_uuid=uuid, app_action=app_action, app_type=app_type)
+                                           app_uuid=uuid, app_action=app_action,
+                                           app_type=app_type, jar_filename=filename)
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED

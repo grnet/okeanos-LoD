@@ -48,14 +48,15 @@ def insert_cluster_info(instance_uuid, specs, provisioner_response):
 
     lambda_instance = LambdaInstance.objects.get(uuid=instance_uuid)
     master = provisioner_response['nodes']['master']
-    master_node = Server.objects.create(id=master['id'],
-                          lambda_instance=lambda_instance,
-                          cpus=specs['vcpus_master'],
-                          ram=specs['ram_master'],
-                          disk=specs['disk_master'],
-                          priv_ip=master['internal_ip'],
-                          pub_ip=provisioner_response['ips'][0]['floating_ip_address'],
-                          pub_ip_id=provisioner_response['ips'][0]['id'])
+    master_node = Server.objects.\
+        create(id=master['id'],
+               lambda_instance=lambda_instance,
+               cpus=specs['vcpus_master'],
+               ram=specs['ram_master'],
+               disk=specs['disk_master'],
+               priv_ip=master['internal_ip'],
+               pub_ip=provisioner_response['ips'][0]['floating_ip_address'],
+               pub_ip_id=provisioner_response['ips'][0]['id'])
     lambda_instance.master_node = master_node
     lambda_instance.save()
 
@@ -82,10 +83,16 @@ def create_new_application(uuid, name, path, description, app_type, owner):
     :param path: The path where the new application is stored on Pithos.
     :param description: The provided description of the new application.
     :param owner: The owner of the new application.
+    :param type: The type of the new application
     """
 
+    if app_type == 'batch':
+        app_type = Application.BATCH
+    elif app_type == 'streaming':
+        app_type = Application.STREAMING
+
     Application.objects.create(uuid=uuid, name=name, path=path, description=description,
-                               owner=owner)
+                               owner=owner, type=app_type)
 
 
 @shared_task

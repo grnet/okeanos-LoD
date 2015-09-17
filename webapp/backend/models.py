@@ -79,7 +79,7 @@ class Application(models.Model):
         (BATCH, 'BATCH'),
         (STREAMING, 'STREAMING')
     )
-    type = models.CharField(max_length=10, choices=type_choices, default=BATCH,
+    type = models.CharField(max_length=10, null=False, choices=type_choices, default=None,
                             help_text="The type of this application.")
 
     class Meta:
@@ -173,7 +173,7 @@ class LambdaInstance(models.Model):
     status = models.CharField(max_length=10, choices=status_choices, default=PENDING,
                               help_text="The status of this instance.")
 
-    master_node = models.ForeignKey(Server, null=True, unique=True,
+    master_node = models.ForeignKey('Server', null=True, unique=True,
                                     default=None, on_delete=models.CASCADE)
 
     started_batch = models.BooleanField(default=False,
