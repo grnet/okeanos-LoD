@@ -744,8 +744,8 @@ class CreateLambdaInstance(APIView):
         try:
             # Check Instance info validity
             lambda_info.is_valid(raise_exception=True)
-        except ValidationError:
-            raise
+        except ValidationError as exception:
+            raise CustomValidationError(exception.detail)
 
         # Create the task that will handle the cluster creation
         create = tasks.create_lambda_instance.delay(lambda_info, auth_token)
