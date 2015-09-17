@@ -45,6 +45,9 @@ class Provisioner(ProvisionerBase):
         disk = kwargs['slaves'] * kwargs['disk_slave'] + kwargs['disk_master']
         project_id = self.find_project_id(**kwargs)['id']
         cluster_size = kwargs['slaves'] + 1
+        extra_pub_keys = kwargs.get('extra_pub_keys') or []
+        if not hasattr(extra_pub_keys, '__iter__'):
+            extra_pub_keys = [extra_pub_keys]
         response = self.check_all_resources(quotas, cluster_size=cluster_size,
                                             vcpus=vcpus,
                                             ram=ram,
@@ -73,10 +76,12 @@ class Provisioner(ProvisionerBase):
             key = RSA.generate(2048)
             self.private_key = key.exportKey('PEM')
             pub_key = key.publickey().exportKey('OpenSSH') + ' root'
+            extra_pub_keys.append(pub_key)
+            pub_keys = '\n'.join(extra_pub_keys)
             public = dict(contents=b64encode(pub_key),
                           path='/root/.ssh/id_rsa.pub',
                           owner='root', group='root', mode=0600)
-            authorized = dict(contents=b64encode(pub_key),
+            authorized = dict(contents=b64encode(pub_keys),
                               path='/root/.ssh/authorized_keys',
                               owner='root', group='root', mode=0600)
             private = dict(contents=b64encode(self.private_key),

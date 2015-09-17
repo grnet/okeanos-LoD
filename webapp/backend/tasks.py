@@ -12,7 +12,7 @@ from fokia import lambda_instance_manager
 from . import events
 from .models import LambdaInstance, Application
 from .serializers import LambdaInstanceSerializer
-
+from .authenticate_user import get_public_key
 
 @shared_task
 def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_ids):
@@ -105,6 +105,11 @@ def create_lambda_instance(lambda_info, auth_token):
                                             instance_name=specs['project_name'],
                                             specs=specs_json)
 
+    pub_keys = None
+    if specs.get('public_key_name'):
+        all_pub_keys = get_public_key(auth_token)
+        pub_keys = all_pub_keys.get(specs['public_key_name'])
+
     try:
         ansible_manager, provisioner_response = \
             lambda_instance_manager.create_cluster(cluster_id=instance_uuid,
@@ -119,7 +124,8 @@ def create_lambda_instance(lambda_info, auth_token):
                                                    disk_slave=specs['disk_slave'],
                                                    ip_allocation=specs['ip_allocation'],
                                                    network_request=specs['network_request'],
-                                                   project_name=specs['project_name'])
+                                                   project_name=specs['project_name'],
+                                                   pub_keys=pub_keys)
     except ClientError as exception:
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.CLUSTER_FAILED,
