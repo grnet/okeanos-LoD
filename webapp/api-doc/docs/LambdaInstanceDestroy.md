@@ -6,7 +6,7 @@ description: Destroys a specified lambda instance
 # API - lambda instance destroy - Description
 
 Lambda instance destroy call, given an authentication token through the header Authentication,
-will firstly check te validity of the token. If the token is invalid, the API wil reply with
+will firstly check the validity of the token. If the token is invalid, the API will reply with
 a "401 Unauthorized" code. If the token is valid, the API will reply with a "202 ACCEPTED" code
 and will start destroying all the VMs of the specified lambda instance along with the corresponding
 public ip and private network.

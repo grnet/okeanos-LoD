@@ -88,7 +88,7 @@ The request in curl
 curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/apps/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/list-deployed/?limit=2&offset=3'
 ```
 
-If the authentication token is correect, a sample response would be
+If the authentication token is correct, a sample response would be
 
 ```
 {

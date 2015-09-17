@@ -5,8 +5,8 @@ description: Delete an uploaded application
 
 # API - application delete - Description
 
-Application delete call, given an authentication oken through the header authentication,
-will firstly check te validity of the token. If the token is invalid, the API wil reply with
+Application delete call, given an authentication token through the header authentication,
+will firstly check the validity of the token. If the token is invalid, the API will reply with
 a "401 Unauthorized" code. If the token is valid, the API will search for the specified
 application. If the specified application does not exist, the API will reply with a
 "404 Not Found" code. If the specified application exists, the API will reply with a

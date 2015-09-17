@@ -10,7 +10,7 @@ and the instance specifications through other HTTP headers,
 it will firstly check the validity of the token. If the token is invalid, the API will reply with a
 "401 Unauthorized" code. If the token is valid, the API will start creating a new lambda instance
 using the instance specifications provided via the HTTP headers. For creating the cluster,
-the fokia library will be used. This library firstly uses kamaki to create the desired cluster of
+the Fokia library will be used. This library firstly uses kamaki to create the desired cluster of
 VMs, then runs ansible on the VMs to build a complete lambda instance. After starting the lambda
 instance creation, the API will reply with the details of the cluster in creation, along with a
 "200 Success" code.

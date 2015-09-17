@@ -5,8 +5,8 @@ description: Upload an application
 
 # API - application upload - Description
 
-Application upload call, given an authentication oken through the header authentication,
-will firstly check te validity of the token. If the token is invalid, the API wil reply with
+Application upload call, given an authentication token through the header authentication,
+will firstly check the validity of the token. If the token is invalid, the API will reply with
 a "401 Unauthorized" code. If the token is valid, the API will reply with a "202 ACCEPTED" code
 and will start uploading the provided application to Pithos.
 
