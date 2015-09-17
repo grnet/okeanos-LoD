@@ -450,15 +450,17 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                          messages['application_already_started'])
 
         if application.type == application.BATCH:
+            app_type = 'batch'
             if lambda_instance.started_batch:
                 raise CustomAlreadyDoneError(CustomAlreadyDoneError.
-                                             messages['batch_job_already_started'])
-            app_type = 'batch'
+                                             messages['job_already_started']
+                                             .format(type=app_type))
         else:
+            app_type = 'streaming'
             if lambda_instance.started_streaming:
                 raise CustomAlreadyDoneError(CustomAlreadyDoneError.
-                                             messages['streaming_job_already_started'])
-            app_type = 'streaming'
+                                             messages['job_already_started']
+                                             .format(type=app_type))
 
         lambda_instance_uuid = lambda_instance.uuid
         app_action = 'start'
@@ -492,15 +494,17 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                          messages['application_already_stopped'])
 
         if application.type == application.BATCH:
+            app_type = 'batch'
             if not lambda_instance.started_batch:
                 raise CustomAlreadyDoneError(CustomAlreadyDoneError.
-                                             messages['batch_job_already_stopped'])
-            app_type = 'batch'
+                                             messages['job_already_stopped']
+                                             .format(type=app_type))
         else:
+            app_type = 'streaming'
             if not lambda_instance.started_streaming:
                 raise CustomAlreadyDoneError(CustomAlreadyDoneError.
-                                             messages['streaming_job_already_stopped'])
-            app_type = 'streaming'
+                                             messages['job_already_stopped']
+                                             .format(type=app_type))
 
         lambda_instance_uuid = lambda_instance.uuid
         app_action = 'stop'
@@ -519,8 +523,8 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_application_instance_connection(self, request, uuid):
         """
-        This method is used to withdraw an application from a specified lambda instance. Responds
-        to POST requests on url r'^{prefix}/{lookup}/{methodname}{trailing_slash}$'
+        Return the application and lambda instance connection object. The lambda instance uuid
+        is contained into the request, while the application uuid is given as an argument.
         """
 
         application_uuid = uuid

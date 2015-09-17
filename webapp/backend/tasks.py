@@ -376,9 +376,9 @@ def start_stop_application(lambda_instance_uuid, app_uuid,
 
 def get_master_node_info(lambda_instance_uuid):
     """
-    Returns the full hostname of the master node of a specified lambda instance.
+    Returns the id and the full hostname of the master node of a specified lambda instance.
     :param lambda_instance_uuid: The uuid of the lambda instance.
-    :return: The full hostname of the master node of the specified lambda instance.
+    :return: The id and the full hostname of the master node of the specified lambda instance.
     """
 
     master_node_id = LambdaInstance.objects.get(uuid=lambda_instance_uuid).master_node.id
