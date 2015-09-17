@@ -77,17 +77,17 @@ environment=JAVA_HOME="/usr",HADOOP_HOME="/usr/local/hadoop",HADOOP_CONF_DIR="/u
 
 [program:flink_batch_job]
 directory=/home/flink
-command=./run_batch_job.sh
+command=bash run_batch_job.sh
 autostart=false
 user=flink
-stdout_logfile = /home/flink/supervisord_flink_batch_logs.log
+stdout_logfile=/home/flink/supervisord_flink_batch_logs.log
 
 [program:flink_streaming_job]
 directory=/home/flink
-command=./run_streaming_job.sh
+command=bash run_streaming_job.sh
 autostart=false
 user=flink
-stdout_logfile = /home/flink/supervisord_flink_streaming_logs.log
+stdout_logfile=/home/flink/supervisord_flink_streaming_logs.log
 
 ;[program:theprogramname]
 ;command=/bin/cat              ; the program (relative uses PATH, can take args)

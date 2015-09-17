@@ -206,7 +206,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         description = request.data.get('description', '')
 
         # Get the type of the uploaded application
-        app_type = request.data.get('type', '')
+        app_type = request.data.get('type', '').lower()
 
         # Get the name of the project provided.
         project_name = request.data.get('project_name', '')
@@ -553,17 +553,15 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                            status=LambdaInstance.status_choices[
                                                int(lambda_instance.status)][1]))
 
-        # Check if the specified application is already not deployed on the specified lambda
-        # instance.
+        # Check if the specified application is deployed on the specified lambda instance
         instanceapplications = LambdaInstanceApplicationConnection.objects.\
             filter(lambda_instance=lambda_instance, application=application)
         if not instanceapplications.exists():
-            raise CustomAlreadyDoneError(CustomAlreadyDoneError.
-                                         messages['application_not_deployed'])
+            raise CustomNotFoundError(CustomNotFoundError.
+                                      messages['application_not_deployed_on_instance'])
         instanceapplication = instanceapplications[0]
 
         return application, lambda_instance, instanceapplication
-
 
     def parse_list_response(self, response):
         """

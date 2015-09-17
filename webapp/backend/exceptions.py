@@ -39,7 +39,9 @@ class CustomNotFoundError(APIException):
 
     messages = {
         'lambda_instance_not_found': "The specified lambda instance doesn't exist.",
-        'application_not_found': "The specified application doesn't exist."
+        'application_not_found': "The specified application doesn't exist.",
+        'application_not_deployed_on_instance': "The specified application is not deployed on "
+                                                "the specified lambda instance."
     }
 
 
