@@ -58,7 +58,7 @@ class CustomAlreadyDoneError(APIException):
         'application_already_started': "The specified application on the specified lambda instance "
                                        "has already been started.",
         'application_already_stopped': "The specified application on the specified lambda instance "
-                                       "has already been started.",
+                                       "has already been stopped.",
         'job_already_started': "The {type} job on the specified lambda instance "
                                "has already been started.",
         'job_already_stopped': "The {type} job on the specified lambda instance "
