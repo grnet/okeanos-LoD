@@ -657,9 +657,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                              .messages['lambda_instance_already']
                                              .format(state="destroyed"))
 
-        if lambda_instance_data['status'] != LambdaInstance.STARTED and \
-            lambda_instance_data['status'] != LambdaInstance.STOPPED and \
-                lambda_instance_data['status'] != LambdaInstance.FAILED:
+        if lambda_instance_data['status'] == LambdaInstance.CLUSTER_FAILED:
             raise CustomCantDoError(CustomCantDoError.messages['cant_do'].
                                         format(action="destroy", object="a lambda instance",
                                                status=LambdaInstance.status_choices[
