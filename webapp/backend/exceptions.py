@@ -20,20 +20,17 @@ class CustomParseError(APIException):
 
     messages = {
         'no_file_error': "No file uploaded.",
-        'no_lambda_instance_id_error': "No lambda instance id provided."
+        'no_lambda_instance_id_error': "No lambda instance id provided.",
+        'limit_value_error': "limit value should be an integer greater or equal to zero.",
+        'filename_already_exists_error': "The specified file name already exists.",
+        'filter_value_error': "filter GET parameter can be used with values status or info.",
+        'action_value_error': "action POST parameter can be used with start or stop value."
     }
 
 
 class CustomValidationError(ValidationError):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = "Validation Error."
-
-    messages = {
-        'limit_value_error': "limit value should be an integer greater or equal to zero.",
-        'filename_already_exists_error': "The specified file name already exists.",
-        'filter_value_error': "filter GET parameter can be used with values status or info.",
-        'action_value_error': "action POST parameter can be used with start or stop value."
-    }
 
 
 class CustomNotFoundError(APIException):
