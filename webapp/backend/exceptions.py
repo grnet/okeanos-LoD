@@ -70,12 +70,21 @@ custom_exceptions = (CustomAuthenticationFailed, CustomParseError, CustomValidat
                      CustomNotFoundError, CustomAlreadyDoneError, CustomCantDoError)
 
 
-def parse_custom_exception(default_response):
+def parse_custom_exception(exception, default_response):
     response = dict({'errors': []})
 
-    for key, value in default_response.data.items():
-        response['errors'].append({'status': default_response.status_code,
-                                   'detail': value})
+    if isinstance(exception, CustomValidationError):
+        for key, values in default_response.data.items():
+            detail = []
+            for value in values:
+                detail.append("{key}: {value}".format(key=key, value=value))
+
+            response['errors'].append({'status': default_response.status_code,
+                                       'detail': detail})
+    else:
+        for key, value in default_response.data.items():
+            response['errors'].append({'status': default_response.status_code,
+                                       'detail': value})
 
     response_status = default_response.status_code
     return Response(response, response_status)
@@ -86,6 +95,6 @@ def custom_exception_handler(exc, context):
     default_response = exception_handler(exc, context)
 
     if isinstance(exc, custom_exceptions):
-        return parse_custom_exception(default_response)
+        return parse_custom_exception(exc, default_response)
 
     return default_response
