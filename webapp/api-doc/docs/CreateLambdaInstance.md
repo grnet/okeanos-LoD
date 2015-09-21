@@ -48,7 +48,7 @@ disk_slave | Amount of HDD space of each slave node in GB | `Yes` | None | 40
 ip_allocation | Allocation of public ips. Choose between none, master, all | `Yes` | None | master
 network_request | Number of private networks | `Yes` | None | 1
 project_name | Name of the project | `Yes` | None | lambda.grnet.gr
-
+public_key_name | Name of public key to use for lambda instance | `No`| None | `my public key`
 
 ## Example
 

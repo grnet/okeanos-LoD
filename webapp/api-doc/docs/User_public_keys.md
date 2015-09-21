@@ -14,7 +14,7 @@ an "401 Unauthorized" error along with details regarding the error.
 |Type             | Description
 |-----------------|--------------------------
 | **Description** | authentication token validation
-| **URL**         | /api/user_public_keys/
+| **URL**         | /api/user-public-keys/
 | **HTTP Method** | GET
 | **Security**    | Basic Authentication
 
@@ -28,7 +28,7 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 Example of simple validation of an API token
 
 ```
-curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/user_public_keys/'
+curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/user-publickeys/'
 ```
 
 ### Response body

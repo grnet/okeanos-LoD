@@ -20,7 +20,9 @@ class ResponseMessages:
         'application_delete': "Your request to delete the specified application has been accepted.",
         'application_deploy': "Your request to deploy the specified application has been accepted.",
         'application_withdraw': "Your request to withdraw the specified application has been"
-                                " accepted."
+                                " accepted.",
+
+        'user_public_keys': 'Public keys uploaded to ~okeanos.',
     }
 
     lambda_instance_status_details = {

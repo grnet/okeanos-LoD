@@ -52,6 +52,14 @@ def get_public_key(auth_token):
                "X-Auth-Token": auth_token}
     req = requests.get(url="https://cyclades.okeanos.grnet.gr/userdata/keys",
                        headers=headers)
-    user_keys = {content.get('name'): content.get('content')
-                 for content in json.loads(req.content)}
+    user_keys = json.loads(req.content)
     return user_keys
+
+
+def get_named_keys(auth_token, names=[]):
+    user_keys = get_public_key(auth_token=auth_token)
+    keys = []
+    for key in user_keys:
+        if key['name'] in names:
+            keys.append(key['content'])
+    return keys

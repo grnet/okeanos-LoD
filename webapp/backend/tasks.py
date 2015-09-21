@@ -12,7 +12,7 @@ from fokia import lambda_instance_manager
 from . import events
 from .models import LambdaInstance, Application
 from .serializers import LambdaInstanceSerializer
-from .authenticate_user import get_public_key
+from .authenticate_user import get_named_keys
 
 @shared_task
 def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_ids):
@@ -105,10 +105,9 @@ def create_lambda_instance(lambda_info, auth_token):
                                             instance_name=specs['instance_name'],
                                             specs=specs_json)
 
-    pub_keys = None
+    pub_keys = []
     if specs.get('public_key_name'):
-        all_pub_keys = get_public_key(auth_token)
-        pub_keys = all_pub_keys.get(specs['public_key_name'])
+        pub_keys = get_named_keys(auth_token, names=specs['public_key_name'])
 
     try:
         ansible_manager, provisioner_response = \

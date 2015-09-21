@@ -61,7 +61,8 @@ class LambdaInstanceInfo(serializers.Serializer):
     disk_master = serializers.IntegerField()
     disk_slave = serializers.IntegerField()
     network_request = serializers.IntegerField(default=1)
-    public_key_name = serializers.CharField(required=False, default=None)
+    public_key_name = serializers.ListField(required=False, default=None)
+
 
     # Allowed values for fields
     allowed = {

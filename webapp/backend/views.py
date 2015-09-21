@@ -103,7 +103,13 @@ def user_public_keys(request):
         status_code = status.HTTP_401_UNAUTHORIZED
         return Response({"errors": [error_info]}, status=status_code)
     public_keys = get_public_key(auth_token)
-    return Response({"result": "success", "status": 200, "data": {"keys": public_keys}})
+    return Response({
+        "status": {
+            "short_description": ResponseMessages.short_descriptions['user_public_keys'],
+            "code":              200
+        },
+        "data":   public_keys
+    })
 
 
 @api_view(['GET', 'OPTION'])
