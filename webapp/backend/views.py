@@ -47,9 +47,9 @@ def _paginate_response(view, request, default_response):
             if limit >= 0:
                 default_response = _parse_default_pagination_response(default_response)
             else:
-                raise CustomValidationError(CustomValidationError.messages['limit_value_error'])
+                raise CustomParseError(CustomParseError.messages['limit_value_error'])
         except ValueError:
-            raise CustomValidationError(CustomValidationError.messages['limit_value_error'])
+            raise CustomParseError(CustomParseError.messages['limit_value_error'])
     else:
         # Add 'data' as the root element.
         default_response.data = {"data": default_response.data}
@@ -177,7 +177,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Check if another file with same name already exists.
         if self.get_queryset().filter(name=uploaded_file.name).count() > 0:
-            raise CustomValidationError(CustomValidationError
+            raise CustomParseError(CustomParseError
                                         .messages['filename_already_exists_error'])
 
         # Get the description provided with the request.
@@ -479,7 +479,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         elif filter == "":
             wanted_fields = ['uuid', 'name', 'instance_info', 'status', 'failure_message']
         else:
-            raise CustomValidationError(CustomValidationError.messages['filter_value_error'])
+            raise CustomParseError(CustomParseError.messages['filter_value_error'])
 
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
 
@@ -600,7 +600,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                                status=LambdaInstance.status_choices[
                                                    int(lambda_instance_data['status'])][1]))
         else:
-            raise CustomValidationError(CustomValidationError.messages['action_value_error'])
+            raise CustomParseError(CustomParseError.messages['action_value_error'])
 
         # Get the id of the master node and the ids of the slave nodes.
         master_id = None
@@ -657,9 +657,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                              .messages['lambda_instance_already']
                                              .format(state="destroyed"))
 
-        if lambda_instance_data['status'] != LambdaInstance.STARTED and \
-            lambda_instance_data['status'] != LambdaInstance.STOPPED and \
-                lambda_instance_data['status'] != LambdaInstance.FAILED:
+        if lambda_instance_data['status'] == LambdaInstance.CLUSTER_FAILED:
             raise CustomCantDoError(CustomCantDoError.messages['cant_do'].
                                         format(action="destroy", object="a lambda instance",
                                                status=LambdaInstance.status_choices[

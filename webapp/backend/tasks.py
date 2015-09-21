@@ -5,6 +5,8 @@ from os import path, mkdir, remove, system
 from celery import shared_task
 from django.conf import settings
 
+from rest_framework import status
+
 from kamaki.clients import ClientError
 from fokia import utils
 
@@ -253,8 +255,13 @@ def delete_application_from_pithos(auth_url, auth_token, container_name, filenam
 
         events.delete_application.delay(application_uuid)
     except ClientError as exception:
-        events.set_application_status.delay(application_uuid, Application.FAILED,
-                                            exception.message)
+        # If the file is not found on Pithos, the entry on the database should be still
+        # deleted.
+        if exception.status == status.HTTP_404_NOT_FOUND:
+            events.delete_application.delay(application_uuid)
+        else:
+            events.set_application_status.delay(application_uuid, Application.FAILED,
+                                                exception.message)
 
 
 @shared_task
