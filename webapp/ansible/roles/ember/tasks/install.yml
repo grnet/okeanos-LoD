@@ -38,3 +38,8 @@
       chdir: /root/okeanos-LoD/webapp/frontend/
     tags:
       - ember-install
+
+  - name: Setup Ember configuration environemt.
+    template: src=environment.js dest=/root/okeanos-LoD/webapp/frontend/config/environment.js
+    notify:
+      - django_dbs_migrate
