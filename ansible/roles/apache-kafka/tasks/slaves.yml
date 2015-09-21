@@ -8,7 +8,7 @@
       - configure-kafka
 
   - name: Start Apache Kafka server.
-    shell: /etc/init.d/kafka-init start > /dev/null &
+    command: supervisorctl start apache_kafka
     tags:
       - start-kafka
 
