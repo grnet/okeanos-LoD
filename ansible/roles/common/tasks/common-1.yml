@@ -5,6 +5,7 @@
 
   - name: Copy sources list.
     copy: src=sources.list dest=/etc/apt/sources.list owner=root group=root mode=0640
+    when: "'slaves' in group_names"
 
   - name: Set hostname
     hostname: name={{ inventory_hostname | replace(".vm.okeanos.grnet.gr",".local") }}
