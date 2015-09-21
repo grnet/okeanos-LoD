@@ -21,7 +21,7 @@ from .models import Application, LambdaInstance, LambdaInstanceApplicationConnec
 from .exceptions import CustomParseError, CustomValidationError, CustomNotFoundError,\
     CustomAlreadyDoneError, CustomCantDoError
 from .serializers import ApplicationSerializer, LambdaInstanceSerializer, LambdaInstanceInfo
-from .authenticate_user import KamakiTokenAuthentication
+from .authenticate_user import KamakiTokenAuthentication, get_public_key
 from .response_messages import ResponseMessages
 
 
@@ -89,11 +89,33 @@ def _parse_default_pagination_response(default_response):
     return default_response
 
 
+@api_view(['GET'])
+def user_public_keys(request):
+    """
+    Retrieves all the saved public keys from a user's account in okeanos
+    """
+    auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+    check_status, info = check_auth_token(auth_token)
+    if not check_status:
+        error_info = json.loads(info)['unauthorized']
+        error_info['details'] = error_info.get('details') + 'unauthorized'
+
+        status_code = status.HTTP_401_UNAUTHORIZED
+        return Response({"errors": [error_info]}, status=status_code)
+    public_keys = get_public_key(auth_token)
+    return Response({
+        "status": {
+            "short_description": ResponseMessages.short_descriptions['user_public_keys'],
+            "code":              200
+        },
+        "data":   public_keys
+    })
+
+
 @api_view(['GET', 'OPTION'])
 def authenticate(request):
     """
     Checks the validity of the authentication token of the user
-    .. deprecated::
     Use authenticate_user.KamakiTokenAuthentication
     """
 
