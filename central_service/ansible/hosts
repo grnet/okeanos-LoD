@@ -1,5 +1,4 @@
-[service-vms]
+[central-vm]
 # TODO: Add a hostname that is appended in the /etc/hosts file and [...]
 # referenced as such inside the inventory.
 # example: service.vm
-snf-673795.vm.okeanos.grnet.gr

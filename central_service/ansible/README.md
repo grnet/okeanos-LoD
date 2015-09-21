@@ -13,7 +13,7 @@ To use this code you need:
 3. Python should be installed on the vm.
 
 ## Tasks
-;TODO: to be written, when the ansible playbook is completed.
+<!-- ;TODO: to be written, when the ansible playbook is completed. -->
 
 ## Usage
 To use this code, run
@@ -22,4 +22,4 @@ To use this code, run
 
 ## Results
 
-;TODO: to be written, when the ansible playbook is completed.
+<!-- ;TODO: to be written, when the ansible playbook is completed. -->
