@@ -9,7 +9,9 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webapp.settings')
 
 from django.conf import settings
 
-app = Celery('webapp', broker='amqp://', backend='amqp://')
+rabbitmq = 'amqp://lambda:change_me@localhost:5672'
+
+app = Celery('webapp', broker=rabbitmq, backend=rabbitmq)
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.
