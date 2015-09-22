@@ -252,7 +252,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         applications = Application.objects.filter(uuid=uuid)
         if not applications.exists():
             raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
-        serializer = LambdaInstanceSerializer(applications[0])
+        serializer = ApplicationSerializer(applications[0])
         data = serializer.data
 
         # Rename uuid to id.

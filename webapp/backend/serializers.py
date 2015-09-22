@@ -5,7 +5,7 @@ from .models import Application, LambdaInstance, Server, PrivateNetwork
 class ApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Application
-        fields = ('uuid', 'name', 'path', 'description', 'failure_message', 'status')
+        fields = ('uuid', 'name', 'path', 'type', 'description', 'failure_message', 'status')
 
 
 class ServerSerializer(serializers.ModelSerializer):

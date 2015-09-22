@@ -22,8 +22,7 @@ class ResponseMessages:
         'application_withdraw': "Your request to withdraw the specified application has been"
                                 " accepted.",
         'application_start': "Your request to start the specified application has been accepted.",
-        'application_stop': "Your request to stop the specified application has been accepted."
-                                " accepted.",
+        'application_stop': "Your request to stop the specified application has been accepted.",
         'user_public_keys': 'Public keys uploaded to ~okeanos.',
     }
 
