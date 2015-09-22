@@ -19,6 +19,9 @@
   - name: Remove default sites-enabled.
     file: name=/etc/apache2/sites-enabled/000-default.conf state=absent
 
+  - name: Activate special headers in apache configuration.
+    shell: "a2enmod rewrite && a2enmod headers"
+
   - name: Configure Apache.
     lineinfile: dest=/etc/apache2/apache2.conf line="WSGIPythonPath {{ repository_download_path }}/okeanos-LoD/webapp" state=present insertafter=EOF
     notify:
