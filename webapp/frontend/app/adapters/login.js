@@ -1,9 +1,10 @@
 import ApplicationAdapter from './application';
+import config from '../config/environment';
 
 export default ApplicationAdapter.extend({
-  host: 'http://localhost:80',
-  namespace: 'backend/authenticate',
+  host: config.host + ':80',
+  namespace: 'api/authenticate',
   headers: {
-  'Authorization': App.token
+  'Authorization': "Token " + App.token
   }
 });

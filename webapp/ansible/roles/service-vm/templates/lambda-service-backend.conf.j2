@@ -15,7 +15,7 @@
 	WSGIScriptAlias / {{ repository_download_path }}/okeanos-LoD/webapp/webapp/wsgi.py
 	WSGIPassAuthorization On
 
-	Header always set Access-Control-Allow-Origin: "{{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr:4200"
+	Header always set Access-Control-Allow-Origin: "http://{{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr:4200"
 	Header always set Access-Control-Allow-Credentials: true
 	Header always set Access-Control-Allow-Methods: "GET, POST, OPTIONS"
 	Header always set Access-Control-Allow-Headers "authorization"

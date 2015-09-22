@@ -19,10 +19,6 @@ module.exports = function(environment) {
     }
   };
 
-  ENV.contentSecurityPolicy = {
-    'connect-src': "'self' http://localhost:4200 http://localhost:80 http://localhost/backend/authenticate"
-  }
-
   if (environment === 'development') {
     // ENV.APP.LOG_RESOLVER = true;
     // ENV.APP.LOG_ACTIVE_GENERATION = true;
