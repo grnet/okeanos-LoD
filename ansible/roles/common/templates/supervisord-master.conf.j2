@@ -72,7 +72,9 @@ stdout_logfile=/home/kafka/supervisord_kafka_logs.log
 command={{ flink_home }}/bin/yarn-session.sh -n {{ flink_number_of_task_managers }} -tm {{ flink_ram_per_task_manager }}
 autostart=false
 user=flink
-stdout_logfile = /home/flink/supervisord_flink_logs.log
+stopsignal=INT
+stopasgroup=true
+stdout_logfile=/home/flink/supervisord_flink_logs.log
 environment=JAVA_HOME="/usr",HADOOP_HOME="/usr/local/hadoop",HADOOP_CONF_DIR="/usr/local/hadoop/etc/hadoop/"
 
 [program:flink_batch_job]
