@@ -18,7 +18,7 @@
   - name: Install Ember Application dependencies
     shell: "npm install"
     args:
-      chdir: /root/okeanos-LoD/webapp/frontend/app
+      chdir: {{ install_dir }}/app
     tags:
       - ember-install
 
@@ -30,11 +30,11 @@
   - name: Install Ember Application dependencies for bower
     shell: "bower install --allow-root"
     args:
-      chdir: /root/okeanos-LoD/webapp/frontend/
+      chdir: {{ install_dir }}
     tags:
       - ember-install
 
   - name: Setup Ember configuration environemt.
-    template: src=environment.js dest=/root/okeanos-LoD/webapp/frontend/config/environment.js
+    template: src=environment.js dest={{ install_dir }}/config/environment.js
     notify:
       - django_dbs_migrate
