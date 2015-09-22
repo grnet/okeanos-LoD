@@ -1,10 +1,5 @@
 ---
 
-  - name: Install curl.
-    apt: name=curl state=latest
-    tags:
-      - ember-install
-
   - name: Fetch url for nodejs.
     shell: "curl --silent --location https://deb.nodesource.com/setup_0.12 | bash -"
     tags:

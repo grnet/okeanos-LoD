@@ -19,10 +19,10 @@ module.exports = function(environment) {
     }
   };
 
-  ENV.host = "http://{{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace(''', "") | replace("]", "") }}.vm.okeanos.grnet.gr"
+  ENV.host = "http://{{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr"
 
   ENV.contentSecurityPolicy = {
-    'connect-src': "'self' http://{{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace(''', "") | replace("]", "") }}.vm.okeanos.grnet.gr:80"
+    'connect-src': "'self' http://{{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr:80"
   }
 
   if (environment === 'development') {
