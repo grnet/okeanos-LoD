@@ -1,0 +1,25 @@
+---
+  - name: Install apache2, apache2-dev and libapache2-mod-wsgi packages.
+    apt: name={{ item }} state=latest
+    with_items:
+      - apache2
+      - apache2-dev
+      - libapache2-mod-wsgi
+
+  - name: Get the hostname of the vm.
+    command: hostname
+    register: hostname
+
+  - name: Copy Lambda sites-available configuration.
+    template: src=central-service-backend.conf.j2 dest=/etc/apache2/sites-available/central-service-backend.conf
+
+  - name: Add central-service-backend to sites-enabled.
+    file: src=/etc/apache2/sites-available/central-service-backend.conf dest=/etc/apache2/sites-enabled/central-service-backend.conf state=link
+
+  - name: Remove default sites-enabled.
+    file: name=/etc/apache2/sites-enabled/000-default.conf state=absent
+
+  - name: Configure Apache.
+    lineinfile: dest=/etc/apache2/apache2.conf line="WSGIPythonPath {{ repository_download_path }}/okeanos-LoD/webapp" state=present insertafter=EOF
+    notify:
+      - restart_apache2

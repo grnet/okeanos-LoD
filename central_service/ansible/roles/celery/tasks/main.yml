@@ -1,0 +1,8 @@
+---
+  - name: Include tasks for celery.
+    include: install.yml
+    tags:
+      - celery-install
+
+  - name: Include tasks for supervisord.
+    include: supervisord.yml

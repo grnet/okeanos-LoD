@@ -1,0 +1,18 @@
+---
+  - name: django_dbs_migrate
+    django_manage: command=migrate app_path={{ repository_download_path }}/okeanos-LoD/webapp/
+    changed_when: True
+    notify:
+      - makemigrations_backend_app
+
+  - name: makemigrations_backend_app
+    django_manage: command="makemigrations --noinput backend" app_path={{ repository_download_path }}/okeanos-LoD/webapp/
+    changed_when: True
+    notify:
+      - migrate_backend_app
+
+  - name: migrate_backend_app
+    django_manage: command=migrate app_path={{ repository_download_path }}/okeanos-LoD/webapp/ apps=backend
+
+  - name: restart_apache2
+    service: name=apache2 state=restarted
