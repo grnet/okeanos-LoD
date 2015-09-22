@@ -24,7 +24,9 @@ class CustomParseError(APIException):
         'limit_value_error': "limit value should be an integer greater or equal to zero.",
         'filename_already_exists_error': "The specified file name already exists.",
         'filter_value_error': "filter GET parameter can be used with values status or info.",
-        'action_value_error': "action POST parameter can be used with start or stop value."
+        'action_value_error': "action POST parameter can be used with start or stop value.",
+        'no_type_error': "Wrong or no application type specified "
+                         "(correct choices: batch/streaming)."
     }
 
 

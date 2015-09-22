@@ -207,6 +207,8 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Get the type of the uploaded application
         app_type = request.data.get('type', '').lower()
+        if app_type != 'batch' and app_type != 'streaming':
+            raise CustomParseError(CustomParseError.messages['no_type_error'])
 
         # Get the name of the project provided.
         project_name = request.data.get('project_name', '')
