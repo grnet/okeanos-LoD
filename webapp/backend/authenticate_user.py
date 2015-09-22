@@ -1,10 +1,12 @@
+import json
+
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.views import exceptions
 from django.contrib.auth.hashers import make_password
+
 from django.utils import timezone
+import requests
 
 from fokia.utils import check_auth_token
-
 from .models import Token, User
 from .exceptions import CustomAuthenticationFailed
 
@@ -37,7 +39,27 @@ class KamakiTokenAuthentication(TokenAuthentication):
                 else:
                     token = Token.objects.get(user=user)
                     token.key = hashed_token_key
+                    token.creation_date = timezone.now()
                     token.save()
             else:
                 raise CustomAuthenticationFailed()
         return token.user, token
+
+
+def get_public_key(auth_token):
+    headers = {"Content-Type": "application/json",
+               "Accept":       "application/json",
+               "X-Auth-Token": auth_token}
+    req = requests.get(url="https://cyclades.okeanos.grnet.gr/userdata/keys",
+                       headers=headers)
+    user_keys = json.loads(req.content)
+    return user_keys
+
+
+def get_named_keys(auth_token, names=[]):
+    user_keys = get_public_key(auth_token=auth_token)
+    keys = []
+    for key in user_keys:
+        if key['name'] in names:
+            keys.append(key['content'])
+    return keys

@@ -21,7 +21,8 @@ if not ansible_path:
 def create_cluster(cluster_id, auth_token=None, master_name='lambda-master',
                    slaves=1, vcpus_master=4, vcpus_slave=4,
                    ram_master=4096, ram_slave=4096, disk_master=40, disk_slave=40,
-                   ip_allocation='master', network_request=1, project_name='lambda.grnet.gr'):
+                   ip_allocation='master', network_request=1, project_name='lambda.grnet.gr',
+                   pub_keys=None):
     provisioner = Provisioner(auth_token=auth_token)
     provisioner.create_lambda_cluster(vm_name=master_name,
                                       slaves=slaves,
@@ -33,7 +34,8 @@ def create_cluster(cluster_id, auth_token=None, master_name='lambda-master',
                                       disk_slave=disk_slave,
                                       ip_allocation=ip_allocation,
                                       network_request=network_request,
-                                      project_name=project_name)
+                                      project_name=project_name,
+                                      extra_pub_keys=pub_keys)
 
     provisioner_response = provisioner.get_cluster_details()
 

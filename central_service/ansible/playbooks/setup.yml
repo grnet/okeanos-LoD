@@ -1,0 +1,8 @@
+---
+- hosts: central-vm
+  user: root
+  roles:
+    - common
+    - central-vm
+    - rabbitmq
+    - celery

@@ -21,7 +21,7 @@ from .models import Application, LambdaInstance, LambdaInstanceApplicationConnec
 from .exceptions import CustomParseError, CustomValidationError, CustomNotFoundError,\
     CustomAlreadyDoneError, CustomCantDoError
 from .serializers import ApplicationSerializer, LambdaInstanceSerializer, LambdaInstanceInfo
-from .authenticate_user import KamakiTokenAuthentication
+from .authenticate_user import KamakiTokenAuthentication, get_public_key
 from .response_messages import ResponseMessages
 
 
@@ -47,9 +47,9 @@ def _paginate_response(view, request, default_response):
             if limit >= 0:
                 default_response = _parse_default_pagination_response(default_response)
             else:
-                raise CustomValidationError(CustomValidationError.messages['limit_value_error'])
+                raise CustomParseError(CustomParseError.messages['limit_value_error'])
         except ValueError:
-            raise CustomValidationError(CustomValidationError.messages['limit_value_error'])
+            raise CustomParseError(CustomParseError.messages['limit_value_error'])
     else:
         # Add 'data' as the root element.
         default_response.data = {"data": default_response.data}
@@ -89,11 +89,33 @@ def _parse_default_pagination_response(default_response):
     return default_response
 
 
+@api_view(['GET'])
+def user_public_keys(request):
+    """
+    Retrieves all the saved public keys from a user's account in okeanos
+    """
+    auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+    check_status, info = check_auth_token(auth_token)
+    if not check_status:
+        error_info = json.loads(info)['unauthorized']
+        error_info['details'] = error_info.get('details') + 'unauthorized'
+
+        status_code = status.HTTP_401_UNAUTHORIZED
+        return Response({"errors": [error_info]}, status=status_code)
+    public_keys = get_public_key(auth_token)
+    return Response({
+        "status": {
+            "short_description": ResponseMessages.short_descriptions['user_public_keys'],
+            "code":              200
+        },
+        "data":   public_keys
+    })
+
+
 @api_view(['GET', 'OPTION'])
 def authenticate(request):
     """
     Checks the validity of the authentication token of the user
-    .. deprecated::
     Use authenticate_user.KamakiTokenAuthentication
     """
 
@@ -177,7 +199,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Check if another file with same name already exists.
         if self.get_queryset().filter(name=uploaded_file.name).count() > 0:
-            raise CustomValidationError(CustomValidationError
+            raise CustomParseError(CustomParseError
                                         .messages['filename_already_exists_error'])
 
         # Get the description provided with the request.
@@ -479,7 +501,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         elif filter == "":
             wanted_fields = ['uuid', 'name', 'instance_info', 'status', 'failure_message']
         else:
-            raise CustomValidationError(CustomValidationError.messages['filter_value_error'])
+            raise CustomParseError(CustomParseError.messages['filter_value_error'])
 
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
 
@@ -600,7 +622,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                                status=LambdaInstance.status_choices[
                                                    int(lambda_instance_data['status'])][1]))
         else:
-            raise CustomValidationError(CustomValidationError.messages['action_value_error'])
+            raise CustomParseError(CustomParseError.messages['action_value_error'])
 
         # Get the id of the master node and the ids of the slave nodes.
         master_id = None
@@ -657,9 +679,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                              .messages['lambda_instance_already']
                                              .format(state="destroyed"))
 
-        if lambda_instance_data['status'] != LambdaInstance.STARTED and \
-            lambda_instance_data['status'] != LambdaInstance.STOPPED and \
-                lambda_instance_data['status'] != LambdaInstance.FAILED:
+        if lambda_instance_data['status'] == LambdaInstance.CLUSTER_FAILED:
             raise CustomCantDoError(CustomCantDoError.messages['cant_do'].
                                         format(action="destroy", object="a lambda instance",
                                                status=LambdaInstance.status_choices[

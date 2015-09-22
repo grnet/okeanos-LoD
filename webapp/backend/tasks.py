@@ -5,6 +5,8 @@ from os import path, mkdir, remove, system
 from celery import shared_task
 from django.conf import settings
 
+from rest_framework import status
+
 from kamaki.clients import ClientError
 from fokia import utils
 
@@ -12,7 +14,7 @@ from fokia import lambda_instance_manager
 from . import events
 from .models import LambdaInstance, Application
 from .serializers import LambdaInstanceSerializer
-
+from .authenticate_user import get_named_keys
 
 @shared_task
 def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_ids):
@@ -102,8 +104,12 @@ def create_lambda_instance(lambda_info, auth_token):
     specs_json = json.dumps(specs)
     instance_uuid = create_lambda_instance.request.id
     events.create_new_lambda_instance.delay(instance_uuid=instance_uuid,
-                                            instance_name=specs['project_name'],
+                                            instance_name=specs['instance_name'],
                                             specs=specs_json)
+
+    pub_keys = []
+    if specs.get('public_key_name'):
+        pub_keys = get_named_keys(auth_token, names=specs['public_key_name'])
 
     try:
         ansible_manager, provisioner_response = \
@@ -119,7 +125,8 @@ def create_lambda_instance(lambda_info, auth_token):
                                                    disk_slave=specs['disk_slave'],
                                                    ip_allocation=specs['ip_allocation'],
                                                    network_request=specs['network_request'],
-                                                   project_name=specs['project_name'])
+                                                   project_name=specs['project_name'],
+                                                   pub_keys=pub_keys)
     except ClientError as exception:
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.CLUSTER_FAILED,
@@ -253,8 +260,13 @@ def delete_application_from_pithos(auth_url, auth_token, container_name, filenam
 
         events.delete_application.delay(application_uuid)
     except ClientError as exception:
-        events.set_application_status.delay(application_uuid, Application.FAILED,
-                                            exception.message)
+        # If the file is not found on Pithos, the entry on the database should be still
+        # deleted.
+        if exception.status == status.HTTP_404_NOT_FOUND:
+            events.delete_application.delay(application_uuid)
+        else:
+            events.set_application_status.delay(application_uuid, Application.FAILED,
+                                                exception.message)
 
 
 @shared_task

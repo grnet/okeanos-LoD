@@ -25,7 +25,7 @@ SECRET_KEY = '-ay^f7=9e!@jr94v7!v&tl@4zm5=0g8&8d9(a*ffzqywg#@6iy'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', ]
+ALLOWED_HOSTS = ['*',]
 
 
 # Application definition
@@ -59,7 +59,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'webapp/templates'
+                'webapp/templates'
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -110,90 +110,25 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Celery configuration #
+##### Celery configuration #####
 from kombu import Queue
 
 CELERY_QUEUES = (
     Queue('events_queue', routing_key='event_key'),
-    Queue('tasks_queue', routing_key='task_key'),
 )
 
 CELERY_ROUTES = {
-    'backend.tasks.lambda_instance_start': {
-        'queue': 'tasks_queue',
-        'routing_key': 'task_key',
-    },
-    'backend.tasks.lambda_instance_stop': {
-        'queue': 'tasks_queue',
-        'routing_key': 'task_key',
-    },
-    'backend.tasks.lambda_instance_destroy': {
-        'queue': 'tasks_queue',
-        'routing_key': 'task_key',
-    },
-    'backend.tasks.create_lambda_instance': {
-        'queue': 'tasks_queue',
-        'routing_key': 'task_key',
-    },
-    'backend.tasks.upload_application_to_pithos': {
-        'queue': 'tasks_queue',
-        'routing_key': 'task_key',
-    },
-    'backend.tasks.delete_application_from_pithos': {
-        'queue': 'tasks_queue',
-        'routing_key': 'task_key',
-    },
-    'backend.tasks.deploy_application': {
-        'queue': 'tasks_queue',
-        'routing_key': 'task_key',
-    },
-    'backend.tasks.withdraw_application': {
-        'queue': 'tasks_queue',
-        'routing_key': 'task_key',
-    },
-    'backend.events.set_lambda_instance_status': {
-        'queue': 'events_queue',
-        'routing_key': 'event_key',
-    },
-    'backend.events.create_new_lambda_instance': {
-        'queue': 'events_queue',
-        'routing_key': 'event_key',
-    },
-    'backend.events.insert_cluster_info': {
-        'queue': 'events_queue',
-        'routing_key': 'event_key',
-    },
-    'backend.events.create_new_application': {
-        'queue': 'events_queue',
-        'routing_key': 'event_key',
-    },
-    'backend.events.delete_application': {
-        'queue': 'events_queue',
-        'routing_key': 'event_key',
-    },
-    'backend.events.set_application_status': {
-        'queue': 'events_queue',
-        'routing_key': 'event_key',
-    },
-    'backend.events.create_lambda_instance_application_connection': {
-        'queue': 'events_queue',
-        'routing_key': 'event_key',
-    },
-    'backend.events.delete_lambda_instance_application_connection': {
-        'queue': 'events_queue',
-        'routing_key': 'event_key',
-    },
+    
+
 }
 
-# Rest Framework configuration #
+FILE_STORAGE = os.path.join(BASE_DIR,'uploaded_files')
+
 REST_FRAMEWORK = {
   'DEFAULT_RENDERER_CLASSES': (
     'rest_framework.renderers.JSONRenderer',
     'rest_framework.renderers.BrowsableAPIRenderer',
     'rest_framework_xml.renderers.XMLRenderer',
-  ),
-  'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-  'EXCEPTION_HANDLER': 'backend.exceptions.custom_exception_handler'
+  )
 }
 
-TEMPORARY_FILE_STORAGE = os.path.abspath("/tmp/lambda_applications")

@@ -52,7 +52,7 @@ class LambdaInstanceInfo(serializers.Serializer):
     instance_name = serializers.CharField()
     master_name = serializers.CharField()
     project_name = serializers.CharField()
-    ip_allocation = serializers.CharField()
+    ip_allocation = serializers.CharField(default='master')
     slaves = serializers.IntegerField()
     vcpus_master = serializers.IntegerField()
     vcpus_slave = serializers.IntegerField()
@@ -60,7 +60,9 @@ class LambdaInstanceInfo(serializers.Serializer):
     ram_slave = serializers.IntegerField()
     disk_master = serializers.IntegerField()
     disk_slave = serializers.IntegerField()
-    network_request = serializers.IntegerField()
+    network_request = serializers.IntegerField(default=1)
+    public_key_name = serializers.ListField(required=False, default=None)
+
 
     # Allowed values for fields
     allowed = {

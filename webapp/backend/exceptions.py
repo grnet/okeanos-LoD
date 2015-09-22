@@ -20,20 +20,17 @@ class CustomParseError(APIException):
 
     messages = {
         'no_file_error': "No file uploaded.",
-        'no_lambda_instance_id_error': "No lambda instance id provided."
+        'no_lambda_instance_id_error': "No lambda instance id provided.",
+        'limit_value_error': "limit value should be an integer greater or equal to zero.",
+        'filename_already_exists_error': "The specified file name already exists.",
+        'filter_value_error': "filter GET parameter can be used with values status or info.",
+        'action_value_error': "action POST parameter can be used with start or stop value."
     }
 
 
 class CustomValidationError(ValidationError):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = "Validation Error."
-
-    messages = {
-        'limit_value_error': "limit value should be an integer greater or equal to zero.",
-        'filename_already_exists_error': "The specified file name already exists.",
-        'filter_value_error': "filter GET parameter can be used with values status or info.",
-        'action_value_error': "action POST parameter can be used with start or stop value."
-    }
 
 
 class CustomNotFoundError(APIException):
@@ -73,12 +70,21 @@ custom_exceptions = (CustomAuthenticationFailed, CustomParseError, CustomValidat
                      CustomNotFoundError, CustomAlreadyDoneError, CustomCantDoError)
 
 
-def parse_custom_exception(default_response):
+def parse_custom_exception(exception, default_response):
     response = dict({'errors': []})
 
-    for key, value in default_response.data.items():
-        response['errors'].append({'status': default_response.status_code,
-                                   'detail': value})
+    if isinstance(exception, CustomValidationError):
+        for key, values in default_response.data.items():
+            detail = []
+            for value in values:
+                detail.append("{key}: {value}".format(key=key, value=value))
+
+            response['errors'].append({'status': default_response.status_code,
+                                       'detail': detail})
+    else:
+        for key, value in default_response.data.items():
+            response['errors'].append({'status': default_response.status_code,
+                                       'detail': value})
 
     response_status = default_response.status_code
     return Response(response, response_status)
@@ -89,6 +95,6 @@ def custom_exception_handler(exc, context):
     default_response = exception_handler(exc, context)
 
     if isinstance(exc, custom_exceptions):
-        return parse_custom_exception(default_response)
+        return parse_custom_exception(exc, default_response)
 
     return default_response
