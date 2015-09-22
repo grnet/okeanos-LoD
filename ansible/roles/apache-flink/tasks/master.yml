@@ -35,6 +35,6 @@
     template: src=flink-init.j2 dest=/etc/init.d/flink-init owner=flink group=lambda mode=0740
 
   - name: Start Apache Flink.
-    command: supervisorctl start apache_flink
+    supervisorctl: name=apache_flink state=started
     tags:
       - start
