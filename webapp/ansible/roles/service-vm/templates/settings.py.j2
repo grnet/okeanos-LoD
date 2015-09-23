@@ -151,6 +151,10 @@ CELERY_ROUTES = {
         'queue': 'tasks_queue',
         'routing_key': 'task_key',
     },
+    'backend.tasks.start_stop_application': {
+        'queue': 'tasks_queue',
+        'routing_key': 'task_key',
+    },
     'backend.events.set_lambda_instance_status': {
         'queue': 'events_queue',
         'routing_key': 'event_key',
@@ -183,6 +187,11 @@ CELERY_ROUTES = {
         'queue': 'events_queue',
         'routing_key': 'event_key',
     },
+    'backend.events.start_stop_application': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key',
+    },
+
 }
 
 # Rest Framework configuration #

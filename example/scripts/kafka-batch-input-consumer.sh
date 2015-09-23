@@ -10,7 +10,7 @@ timestamp=$(date +"%F_%H_%M_%S");
 head -n -12 temporary_input > temporary_input2;
 
 # Store the final file on HDFS.
-$(/usr/local/hadoop/bin/hdfs dfs -put temporary_input2 /user/root/input/tweets_$timestamp);
+$(/usr/local/hadoop/bin/hdfs dfs -put temporary_input2 /user/flink/input/tweets_$timestamp);
 
 # Remove all temporary files.
 rm temporary_input;
