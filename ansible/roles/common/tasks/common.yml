@@ -17,7 +17,6 @@
   - name: Upgrade packages.
     apt: upgrade=dist update_cache=yes
     environment: proxy_env
-    when: "'slaves' in group_names"
 
   - name: Install the latest Java 7.
     apt: name=openjdk-7-jdk state=latest install_recommends=no update_cache=yes
