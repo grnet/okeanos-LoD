@@ -3,7 +3,7 @@
     include: install.yml
 
   - name: Configure Apache kafka.
-    template: src=server.properties.j2 dest="{{ installation_path }}/kafka/config/server.properties" owner=kafka group=lambda mode=0644
+    template: src=slave-server.properties.j2 dest="{{ installation_path }}/kafka/config/server.properties" owner=kafka group=lambda mode=0644
     tags:
       - configure-kafka
 
