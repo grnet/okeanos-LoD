@@ -1,19 +1,33 @@
 - model: backend.lambdaapplication
   pk: 0
   fields:
+    status: 1
     description: "Some description here."
 
 - model: backend.lambdaapplication
   pk: 1
   fields:
+    uuid: f0a0a07f-2dca-4ef6-8ce5-400824d67dcc
+    name: word_count
+    owner: 0
+    status: 0
+    failure_message: ""
     description: "Some description here."
 
 - model: backend.lambdaapplication
   pk: 2
   fields:
+    name: tweet_emotions
+    owner: 1
+    status: 1
+    failure_message: ""
     description: "Some description here."
 
 - model: backend.lambdaapplication
   pk: 3
   fields:
+    name: facebook_hashtags
+    owner: 2
+    status: 2
+    failure_message: "Invalid input stream"
     description: "Some description here."

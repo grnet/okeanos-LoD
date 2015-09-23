@@ -45,7 +45,7 @@ class LambdaInstance(models.Model):
     """
     Stores every lambda instance created for the LoD service.
     id: a unique identifier the service creates for every Lambda Instance.
-    uuid: A unique id asigned to every Lambda Instance. This key will be used by the API
+    uuid: A unique id assigned to every Lambda Instance. This key will be used by the API
           to reference a specific Lambda Instance.
     failure_message: Message that denotes the reason of failure of the lambda instance.
     """
@@ -136,8 +136,24 @@ class LambdaApplication(models.Model):
     """
     id = models.AutoField("Lambda Application ID", primary_key=True, null=False,
                           help_text="Auto-increment instance id.")
+    uuid = models.UUIDField("uuid", unique=True, default=uuid.uuid4, help_text="Application uuid.")
+    name = models.CharField(max_length=100, default="")
     description = models.TextField(blank="True", help_text='The description of the lambda application running on'
                                                            'an instance')
+    owner = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, null=True)
+
+    UPLOADED = "0"
+    UPLOADING = "1"
+    FAILED = "2"
+    status_choices = (
+        (UPLOADED, 'UPLOADED'),
+        (UPLOADING, 'UPLOADING'),
+        (FAILED, 'FAILED'),
+    )
+    status = models.CharField(max_length=10, choices=status_choices, default="1",
+                              help_text="The status of this application.")
+    failure_message = models.TextField(default="",
+                                       help_text="Error message regarding this application.")
 
     def __unicode__(self):
         unicode_str = "Application id: " + str(self.id) + "\n" + \
