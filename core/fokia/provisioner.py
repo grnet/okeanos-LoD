@@ -5,10 +5,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-from kamaki.clients import astakos, cyclades
 from kamaki.clients import ClientError
-from kamaki.cli.config import Config as KamakiConfig
-from fokia.utils import patch_certs
 from fokia.cluster_error_constants import *
 from Crypto.PublicKey import RSA
 from base64 import b64encode
@@ -109,9 +106,9 @@ class Provisioner(ProvisionerBase):
             self.ips = [ip for ip in [master_ip] + slave_ips if ip]
 
             self.master = self.create_vm(vm_name=vm_name, ip=master_ip,
-                                         net_id=vpn_id,
                                          flavor=master_flavor,
                                          personality=master_personality,
+                                         net_id=vpn_id,
                                          **kwargs)
 
             # Create slaves
@@ -120,9 +117,9 @@ class Provisioner(ProvisionerBase):
                 slave_name = 'lambda-node' + str(i + 1)
                 slave = self.create_vm(vm_name=slave_name,
                                        ip=slave_ips[i],
-                                       net_id=vpn_id,
                                        flavor=slave_flavor,
                                        personality=slave_personality,
+                                       net_id=vpn_id,
                                        **kwargs)
                 self.slaves.append(slave)
 
