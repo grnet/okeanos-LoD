@@ -114,3 +114,39 @@ STATIC_URL = '/static/'
 
 ## Since we cannot have a salt for each account, we have one per application.
 STATIC_SALT = get_random_string()
+
+# Celery configuration #
+from kombu import Queue
+
+CELERY_QUEUES = (
+    Queue('events_queue', routing_key='event_key'),
+)
+
+CELERY_ROUTES = {
+    'backend.events.createLambdaInstance':{
+        'queue': 'events_queue',
+        'routing_key': 'event_key'
+    },
+    'backend.events.updateLambdaInstanceStatus':{
+        'queue': 'events_queue',
+        'routing_key': 'event_key'
+    },
+    'backend.events.deleteLambdaInstance':{
+        'queue': 'events_queue',
+        'routing_key': 'event_key'
+    },
+    'backend.events.updateLambdaApplicationStatus':{
+        'queue': 'events_queue',
+        'routing_key': 'event_key'
+    },
+    'backend.events.createLambdaApplication':{
+        'queue': 'events_queue',
+        'routing_key': 'event_key'
+    },
+    'backend.events.deleteLambdaApplication':{
+        'queue': 'events_queue',
+        'routing_key': 'event_key'
+    },
+}
+
+CELERY_IMPORTS = ('backend.events', )
