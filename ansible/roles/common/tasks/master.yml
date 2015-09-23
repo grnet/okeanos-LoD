@@ -16,7 +16,7 @@
     args:
       creates: /home/flink/.ssh/id_rsa.pub
 
-  - name: Fetch id_rsa.pub file from hduser.
+  - name: Fetch id_rsa.pub file from flink user.
     fetch: src=/home/flink/.ssh/id_rsa.pub dest=/tmp/fetched/flink_id_rsa.pub flat=yes
 
   - name: Set up ssh config for root user.

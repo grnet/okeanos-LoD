@@ -2,8 +2,10 @@
   - name: Install Apache kafka.
     include: install.yml
 
-  - name: Copy Apache Zookeeper init script.
-    template: src=zookeeper-init.j2 dest=/etc/init.d/zookeeper-init owner=kafka group=lambda mode=0740
+  - name: Configure Apache Zookeeper.
+    template: src=zookeeper.properties.j2 dest="{{ installation_path }}/kafka/config/zookeeper.properties" owner=kafka group=lambda mode=0644
+    tags:
+      - configure-kafka
 
   - name: Configure Apache kafka.
     copy: src=server.properties dest="{{ installation_path }}/kafka/config/server.properties" owner=kafka group=lambda mode=0644
@@ -11,7 +13,7 @@
       - configure-kafka
 
   - name: Start Apache Zookeeper server.
-    shell: /etc/init.d/zookeeper-init start > /dev/null
+    supervisorctl: name=apache_zookeeper state=started
     tags:
       - start-zookeeper
 
@@ -21,7 +23,7 @@
       - start-zookeeper
 
   - name: Start Apache Kafka server.
-    shell: /etc/init.d/kafka-init start > /dev/null
+    supervisorctl: name=apache_kafka state=started
     tags:
       - start-kafka
 
