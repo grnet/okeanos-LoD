@@ -24,7 +24,9 @@ class CustomParseError(APIException):
         'limit_value_error': "limit value should be an integer greater or equal to zero.",
         'filename_already_exists_error': "The specified file name already exists.",
         'filter_value_error': "filter GET parameter can be used with values status or info.",
-        'action_value_error': "action POST parameter can be used with start or stop value."
+        'action_value_error': "action POST parameter can be used with start or stop value.",
+        'no_type_error': "Wrong or no application type specified "
+                         "(correct choices: batch/streaming)."
     }
 
 
@@ -39,7 +41,9 @@ class CustomNotFoundError(APIException):
 
     messages = {
         'lambda_instance_not_found': "The specified lambda instance doesn't exist.",
-        'application_not_found': "The specified application doesn't exist."
+        'application_not_found': "The specified application doesn't exist.",
+        'application_not_deployed_on_instance': "The specified application is not deployed on "
+                                                "the specified lambda instance."
     }
 
 
@@ -52,7 +56,15 @@ class CustomAlreadyDoneError(APIException):
                                         " specified lambda instance.",
         'application_not_deployed': "The specified application has not been deployed on the "
                                     "specified lambda instance.",
-        'lambda_instance_already': "The specified lambda instance is already {state}."
+        'lambda_instance_already': "The specified lambda instance is already {state}.",
+        'application_already_started': "The specified application on the specified lambda instance "
+                                       "has already been started.",
+        'application_already_stopped': "The specified application on the specified lambda instance "
+                                       "has already been stopped.",
+        'job_already_started': "The {type} job on the specified lambda instance "
+                               "has already been started.",
+        'job_already_stopped': "The {type} job on the specified lambda instance "
+                               "has already been stopped."
 
     }
 

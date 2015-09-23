@@ -1,0 +1,4 @@
+---
+
+  - name: Stop batch job using supervisord
+    supervisorctl: name='flink_batch_job' state=stopped

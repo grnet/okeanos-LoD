@@ -205,6 +205,11 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # Get the description provided with the request.
         description = request.data.get('description', '')
 
+        # Get the type of the uploaded application
+        app_type = request.data.get('type', '').lower()
+        if app_type != 'batch' and app_type != 'streaming':
+            raise CustomParseError(CustomParseError.messages['no_type_error'])
+
         # Get the name of the project provided.
         project_name = request.data.get('project_name', '')
 
@@ -213,7 +218,8 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Create an event to insert a new entry on the database.
         events.create_new_application.delay(application_uuid, uploaded_file.name,
-                                            self.pithos_container, description, request.user)
+                                            self.pithos_container, description,
+                                            app_type, request.user)
 
         # Create a task to upload the application from the local file system to Pithos.
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
@@ -246,7 +252,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         applications = Application.objects.filter(uuid=uuid)
         if not applications.exists():
             raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
-        serializer = LambdaInstanceSerializer(applications[0])
+        serializer = ApplicationSerializer(applications[0])
         data = serializer.data
 
         # Rename uuid to id.
@@ -430,6 +436,134 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 'code': status_code,
                 'short-description': ResponseMessages.short_descriptions['application_withdraw']
             }}, status=status_code)
+
+    @detail_route(methods=['post'])
+    def start(self, request, uuid, format=None):
+        """
+        This method is used to start an application on a specified lambda instance. Responds
+        to POST requests on url r'^{prefix}/{lookup}/{methodname}{trailing_slash}$'
+        """
+
+        application, lambda_instance, instanceapplication = \
+            self.get_application_instance_connection(request, uuid)
+
+        if instanceapplication.started:
+            raise CustomAlreadyDoneError(CustomAlreadyDoneError.
+                                         messages['application_already_started'])
+
+        if application.type == application.BATCH:
+            app_type = 'batch'
+            if lambda_instance.started_batch:
+                raise CustomAlreadyDoneError(CustomAlreadyDoneError.
+                                             messages['job_already_started']
+                                             .format(type=app_type))
+        else:
+            app_type = 'streaming'
+            if lambda_instance.started_streaming:
+                raise CustomAlreadyDoneError(CustomAlreadyDoneError.
+                                             messages['job_already_started']
+                                             .format(type=app_type))
+
+        lambda_instance_uuid = lambda_instance.uuid
+        app_action = 'start'
+        filename = application.name
+
+        # Create a task to start the application.
+        tasks.start_stop_application.delay(lambda_instance_uuid=lambda_instance_uuid,
+                                           app_uuid=uuid, app_action=app_action,
+                                           app_type=app_type, jar_filename=filename)
+
+        # Return an appropriate response.
+        status_code = status.HTTP_202_ACCEPTED
+        return Response({
+            "status": {
+                'code': status_code,
+                'short-description': ResponseMessages.short_descriptions['application_start']
+            }}, status=status_code)
+
+    @detail_route(methods=['post'])
+    def stop(self, request, uuid, format=None):
+        """
+        This method is used to stop an application on a specified lambda instance. Responds
+        to POST requests on url r'^{prefix}/{lookup}/{methodname}{trailing_slash}$'
+        """
+
+        application, lambda_instance, instanceapplication = \
+            self.get_application_instance_connection(request, uuid)
+
+        if not instanceapplication.started:
+            raise CustomAlreadyDoneError(CustomAlreadyDoneError.
+                                         messages['application_already_stopped'])
+
+        if application.type == application.BATCH:
+            app_type = 'batch'
+            if not lambda_instance.started_batch:
+                raise CustomAlreadyDoneError(CustomAlreadyDoneError.
+                                             messages['job_already_stopped']
+                                             .format(type=app_type))
+        else:
+            app_type = 'streaming'
+            if not lambda_instance.started_streaming:
+                raise CustomAlreadyDoneError(CustomAlreadyDoneError.
+                                             messages['job_already_stopped']
+                                             .format(type=app_type))
+
+        lambda_instance_uuid = lambda_instance.uuid
+        app_action = 'stop'
+
+        # Create a task to stop the application.
+        tasks.start_stop_application.delay(lambda_instance_uuid=lambda_instance_uuid,
+                                           app_uuid=uuid, app_action=app_action, app_type=app_type)
+
+        # Return an appropriate response.
+        status_code = status.HTTP_202_ACCEPTED
+        return Response({
+            "status": {
+                'code': status_code,
+                'short-description': ResponseMessages.short_descriptions['application_stop']
+            }}, status=status_code)
+
+    def get_application_instance_connection(self, request, uuid):
+        """
+        Return the application and lambda instance connection object. The lambda instance uuid
+        is contained into the request, while the application uuid is given as an argument.
+        """
+
+        application_uuid = uuid
+
+        # Check if the lambda instance id was provided with the request.
+        lambda_instance_uuid = request.data.get('lambda_instance_id')
+        if not lambda_instance_uuid:
+            raise CustomParseError(CustomParseError.messages['no_lambda_instance_id_error'])
+
+        # Check if the specified lambda instance exists.
+        lambda_instances = LambdaInstance.objects.filter(uuid=lambda_instance_uuid)
+        if not lambda_instances.exists():
+            raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
+        lambda_instance = lambda_instances[0]
+
+        # Check if the specified application exists.
+        applications = self.get_queryset().filter(uuid=application_uuid)
+        if not applications.exists():
+            raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
+        application = applications[0]
+
+        # Check the status of the specified lambda instance.
+        if lambda_instance.status != LambdaInstance.STARTED:
+            raise CustomCantDoError(CustomCantDoError.messages['cant_do'].
+                                    format(action="start/stop", object="an application",
+                                           status=LambdaInstance.status_choices[
+                                               int(lambda_instance.status)][1]))
+
+        # Check if the specified application is deployed on the specified lambda instance
+        instanceapplications = LambdaInstanceApplicationConnection.objects.\
+            filter(lambda_instance=lambda_instance, application=application)
+        if not instanceapplications.exists():
+            raise CustomNotFoundError(CustomNotFoundError.
+                                      messages['application_not_deployed_on_instance'])
+        instanceapplication = instanceapplications[0]
+
+        return application, lambda_instance, instanceapplication
 
     def parse_list_response(self, response):
         """

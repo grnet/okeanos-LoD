@@ -31,9 +31,10 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 
 Name | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
-description  | A description of the application |`No` |None|
-file | The application file | 'Yes' | None
-project_name | The ~okeanos project name that has the needed quotas on Pithos | No | None
+description  | A description of the application | `No` |None|
+file | The application file | `Yes` | None
+type | The application type (batch/streaming) | `Yes` | None
+project_name | The ~okeanos project name that has the needed quotas on Pithos | `No` | None
 
 
 ## Example
@@ -44,7 +45,7 @@ name "test_project" and project name "lambda.grnet.gr".
 The request in curl
 
 ```
-    curl -X POST -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" -F "description=My application." -F "file=@test_project" -F "project_name=lambda.grnet.gr" 'http://<hostname>/api/apps/'
+    curl -X POST -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" -F "description=My application." -F "file=@test_project" -F "type=batch" -F "project_name=lambda.grnet.gr" 'http://<hostname>/api/apps/'
 ```
 
 

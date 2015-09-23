@@ -1,0 +1,4 @@
+---
+
+  - name: Stop streaming job using supervisord
+    supervisorctl: name='flink_streaming_job' state=stopped

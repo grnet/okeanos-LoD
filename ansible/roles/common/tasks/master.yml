@@ -1,4 +1,5 @@
 ---
+
   - name: Create users for each application.
     include: users.yml
 
@@ -38,3 +39,10 @@
 
   - name: Put lambda init script on boot and shutdown sequence.
     command: update-rc.d lambda-init defaults
+
+  - name: Set PATH environment variable for flink user
+    lineinfile: destfile="/home/flink/.bashrc"
+              regexp="^PATH"
+              value="PATH=$PATH:{{ flink_home }}/bin:{{ hadoop_home }}/bin"
+              state=present
+              insertafter=EOF
