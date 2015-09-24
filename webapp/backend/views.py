@@ -233,8 +233,8 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         local_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, uploaded_file.name)
         local_file = open(local_file_path, 'wb+')
 
-        # Django suggest to always save the uploaded file using chunks. That will avoiding reading the
-        # whole file into memory and possibly overwhelming it.
+        # Django suggest to always save the uploaded file using chunks. That will avoiding reading
+        # the whole file into memory and possibly overwhelming it.
         for chunk in uploaded_file.chunks():
             local_file.write(chunk)
         local_file.close()
