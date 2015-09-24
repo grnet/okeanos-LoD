@@ -9,7 +9,10 @@ class ResponseMessages:
     short_descriptions = {
         'lambda_instance_create': "Your request to create a new lambda instance has been accepted.",
         'lambda_instance_update': "Your request to update the status of the lambda instance has been accepted.",
-        'lambda_instance_destroy': "Your request to delete the specified lambda instance has been"
+        'lambda_instance_destroy': "Your request to delete the specified lambda instance has been accepted.",
+        'lambda_application_create': "Your request to create a new lambda application has been accepted.",
+        'lambda_application_update': "Your request to update the status of the lambda application has been accepted.",
+        'lambda_application_destroy': "Your request to delete the specified lambda application has been accepted.",
     }
 
     lambda_instance_status_details = {

@@ -41,7 +41,6 @@ class UsersViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserSerializer
 
 class LambdaInstanceView(mixins.RetrieveModelMixin,
-                         mixins.DestroyModelMixin,
                          mixins.ListModelMixin, # debugging
                          viewsets.GenericViewSet):
     """
@@ -156,6 +155,7 @@ class LambdaInstanceView(mixins.RetrieveModelMixin,
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
                                        'lambda_instance_destroy']},
+                "data": [{"id": uuid},],
                 "debug": destroy_event.status,
             }, status=status_code)
         else:
@@ -163,7 +163,7 @@ class LambdaInstanceView(mixins.RetrieveModelMixin,
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
                                        'lambda_instance_destroy']},
-                "data": [{"id": uuid}],
+                "data": [{"id": uuid},],
             }, status=status_code)
 
 
@@ -178,10 +178,8 @@ class LambdaInstanceCounterView(APIView):
         return Response({"count": str(LambdaInstance.objects.count())},
                         status=200)
 
-class LambdaApplicationView(mixins.CreateModelMixin,
-                            mixins.UpdateModelMixin,
-                            mixins.DestroyModelMixin,
-                            mixins.ListModelMixin, # debugging
+class LambdaApplicationView(mixins.ListModelMixin, # debugging
+                            mixins.RetrieveModelMixin,
                             viewsets.GenericViewSet):
 
     queryset = LambdaApplication.objects.all()
@@ -189,6 +187,8 @@ class LambdaApplicationView(mixins.CreateModelMixin,
     authentication_classes = KamakiTokenAuthentication,
     permission_classes = IsAuthenticated,
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
+
+    lookup_field = 'uuid'
 
     def create(self, request, *args, **kwargs):
         """
@@ -200,13 +200,84 @@ class LambdaApplicationView(mixins.CreateModelMixin,
         """
         data = request.data
 
-        lambda_app_description = data['description']
-        lambda_instance_uuid = data['lambda_instance_uuid']
+        name = data['name']
+        owner = request.user
+        uuid = data['uuid']
+        description = data['description']
+        status = data['status']
+        failure_message = data['failure_message']
 
-        # TODO: Create celery task to write to the database
-        raise NotImplementedError
+        create_event = events.createLambdaApplication.delay(
+            uuid, status=status, name=name, description=description,
+            owner=owner, failure_message=failure_message
+        )
 
-        return Response()
+        status_code = rest_status.HTTP_202_ACCEPTED
+
+        if settings.DEBUG:
+            return Response({
+                "status": {"code": status_code,
+                           "short_description": ResponseMessages.short_descriptions[
+                                       'lambda_application_create']},
+                "debug": create_event.status,
+                "data": [{"id": uuid},],
+            }, status=status_code)
+        else:
+            return Response({
+                "status": {"code": status_code,
+                           "short_description": ResponseMessages.short_descriptions[
+                                       'lambda_application_create']},
+                "data": [{"id": uuid},],
+            }, status=status_code)
+
+    @detail_route(methods=['post'], url_path="status")
+    def updateStatus(self, request, uuid, *args, **kwargs):
+        data = request.data
+        status = data['status']
+        failure_message = data['failure_message'] if 'failure_message' in data else None
+        update_event = events.updateLambdaApplicationStatus.delay(uuid, status, failure_message)
+
+        status_code = rest_status.HTTP_202_ACCEPTED
+
+
+        if settings.DEBUG:
+            return Response({
+                "status": {"code": status_code,
+                           "short_description": ResponseMessages.short_descriptions[
+                                       'lambda_application_update']},
+                "data": [{"id": uuid}],
+                "debug": update_event.status,
+            }, status=status_code)
+        else:
+            return Response({
+                "status": {"code": status_code,
+                           "short_description": ResponseMessages.short_descriptions[
+                                       'lambda_application_update']},
+                "data": [{"id": uuid}],
+            }, status=status_code)
+
+    def destroy(self, request, uuid, *args, **kwargs):
+        destroy_event = events.deleteLambdaApplication.delay(uuid)
+
+        status_code = rest_status.HTTP_202_ACCEPTED
+
+        if settings.DEBUG:
+            return Response({
+                "status": {"code": status_code,
+                           "short_description": ResponseMessages.short_descriptions[
+                                       'lambda_application_destroy']},
+                "data": [{"id": uuid},],
+                "debug": destroy_event.status,
+            }, status=status_code)
+        else:
+            return Response({
+                "status": {"code": status_code,
+                           "short_description": ResponseMessages.short_descriptions[
+                                       'lambda_application_destroy']},
+                "data": [{"id": uuid},],
+            }, status=status_code)
+
+
 
 class LambdaApplicationCounterView(APIView):
 
