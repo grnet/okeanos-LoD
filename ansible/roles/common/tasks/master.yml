@@ -40,6 +40,9 @@
   - name: Put lambda init script on boot and shutdown sequence.
     command: update-rc.d lambda-init defaults
 
+  - name: Make sure the init script is started.
+    service: name=lambda-init state=started
+
   - name: Set PATH environment variable for flink user
     lineinfile: destfile="/home/flink/.bashrc"
               regexp="^PATH"
