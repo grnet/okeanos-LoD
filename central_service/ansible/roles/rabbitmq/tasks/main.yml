@@ -1,5 +1,20 @@
 ---
-  - name: Include tasks for rabbitmq.
-    include: install.yml
-    tags:
+
+- name: Install RabbitMQ server
+  apt: name=rabbitmq-server install_recommends=no force=yes
+  tags:
+      - celery-install
+
+- name: Configure RabbitMQ user
+  rabbitmq_user: user={{ rabbitmq_user }} password={{ rabbitmq_password }}
+                 vhost=/
+                 configure_priv=.* read_priv=.* write_priv=.*
+                 state=present
+  tags:
+      - celery-install
+
+- name: Remove guest RabbitMQ user
+  rabbitmq_user: user=guest
+                 state=absent
+  tags:
       - celery-install

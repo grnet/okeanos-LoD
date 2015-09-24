@@ -21,13 +21,13 @@
   - name: Install Fokia requirements.
     pip: requirements={{ repository_download_path }}/okeanos-LoD/core/requirements.txt
 
-  - name: Install Webapp requirements.
-    pip: requirements={{ repository_download_path }}/okeanos-LoD/webapp/requirements.txt
+  - name: Install app requirements.
+    pip: requirements={{ repository_download_path }}/okeanos-LoD/central_service/app/requirements.txt
 
   - name: Install Fokia.
     command: python setup.py install chdir="{{ repository_download_path }}/okeanos-LoD/core/"
 
   - name: Setup Django database configuration.
-    template: src=settings.py.j2 dest={{ repository_download_path}}/okeanos-LoD/webapp/webapp/settings.py
+    template: src=settings.py.j2 dest={{ repository_download_path }}/okeanos-LoD/central_service/app/app/settings.py
     notify:
       - django_dbs_migrate

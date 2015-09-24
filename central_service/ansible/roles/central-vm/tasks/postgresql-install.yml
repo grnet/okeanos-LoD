@@ -12,6 +12,6 @@
     sudo_user: postgres
     postgresql_db: name={{ database_name }}
 
-  - name: Create PostgreSQL role for lambdaservice user.
+  - name: Create PostgreSQL role for central service user.
     sudo_user: postgres
     postgresql_user: db={{ database_name }} name={{ database_username }} password={{ database_user_password }}
