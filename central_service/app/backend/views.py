@@ -90,6 +90,12 @@ class LambdaInstanceView(mixins.RetrieveModelMixin,
         status = data['status']
         failure_message = data['failure_message']
 
+        matching_instances = LambdaInstance.objects.filter(uuid=uuid)
+        if matching_instances.exists():
+            raise CustomAlreadyDoneError(CustomAlreadyDoneError.messages[
+                'lambda_instance_already_exists'
+                                         ])
+
         # Parse request json into a custom serializer
         # lambda_info = LambdaInstanceInfo(data=request.data)
         # try:
@@ -121,10 +127,22 @@ class LambdaInstanceView(mixins.RetrieveModelMixin,
 
     @detail_route(methods=['post'], url_path="status")
     def updateStatus(self, request, uuid, *args, **kwargs):
+
+        matching_instances = LambdaInstance.objects.filter(uuid=uuid)
+        if not matching_instances.exists():
+            raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
+
         data = request.data
 
         status = data['status']
         failure_message = data['failure_message'] if 'failure_message' in data else None
+
+        matching_instance = LambdaInstanceSerializer(matching_instances[0]).data
+        if status == matching_instance['status']:
+            raise CustomAlreadyDoneError(CustomAlreadyDoneError
+                                         .messages['lambda_instance_already']
+                                         .format(state=status))
+
         update_event = events.updateLambdaInstanceStatus.delay(uuid, status, failure_message)
 
         status_code = rest_status.HTTP_202_ACCEPTED
@@ -146,6 +164,11 @@ class LambdaInstanceView(mixins.RetrieveModelMixin,
             }, status=status_code)
 
     def destroy(self, request, uuid, *args, **kwargs):
+
+        lambda_instances = LambdaInstance.objects.filter(uuid=uuid)
+        if not lambda_instances.exists():
+            raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
+
         destroy_event = events.deleteLambdaInstance.delay(uuid)
 
         status_code = rest_status.HTTP_202_ACCEPTED
@@ -207,6 +230,12 @@ class LambdaApplicationView(mixins.ListModelMixin, # debugging
         status = data['status']
         failure_message = data['failure_message']
 
+        matching_applications = LambdaInstance.objects.filter(uuid=uuid)
+        if matching_applications.exists():
+            raise CustomAlreadyDoneError(CustomAlreadyDoneError.messages[
+                'lambda_application_already_exists'
+                                         ])
+
         create_event = events.createLambdaApplication.delay(
             uuid, status=status, name=name, description=description,
             owner=owner, failure_message=failure_message
@@ -232,6 +261,11 @@ class LambdaApplicationView(mixins.ListModelMixin, # debugging
 
     @detail_route(methods=['post'], url_path="status")
     def updateStatus(self, request, uuid, *args, **kwargs):
+
+        matching_applications = self.get_queryset().filter(uuid=uuid)
+        if not matching_applications.exists():
+            raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
+
         data = request.data
         status = data['status']
         failure_message = data['failure_message'] if 'failure_message' in data else None
@@ -239,6 +273,11 @@ class LambdaApplicationView(mixins.ListModelMixin, # debugging
 
         status_code = rest_status.HTTP_202_ACCEPTED
 
+        matching_application = LambdaApplicationSerializer(matching_applications[0]).data
+        if status == matching_application['status']:
+            raise CustomAlreadyDoneError(CustomAlreadyDoneError
+                                         .messages['lambda_instance_already']
+                                         .format(state=status))
 
         if settings.DEBUG:
             return Response({
@@ -257,6 +296,11 @@ class LambdaApplicationView(mixins.ListModelMixin, # debugging
             }, status=status_code)
 
     def destroy(self, request, uuid, *args, **kwargs):
+
+        applications = self.get_queryset().filter(uuid=uuid)
+        if not applications.exists():
+            raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
+
         destroy_event = events.deleteLambdaApplication.delay(uuid)
 
         status_code = rest_status.HTTP_202_ACCEPTED

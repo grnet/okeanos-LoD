@@ -9,6 +9,8 @@ from .models import Token, User
 
 from django.conf import settings
 
+from .exceptions import CustomAuthenticationFailed
+
 
 class OldTokenException(Exception):
     pass
@@ -40,5 +42,5 @@ class KamakiTokenAuthentication(TokenAuthentication):
                     token.key = hashed_token_key
                     token.save()
             else:
-                raise exceptions.AuthenticationFailed('Invalid token')
+                raise CustomAuthenticationFailed()
         return token.user, token

@@ -14,12 +14,31 @@ class CustomAuthenticationFailed(APIException):
     default_detail = "Unauthorized. Request failed because user provided an invalid token."
 
 
+class CustomNotFoundError(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = "Not Found."
+
+    messages = {
+        'lambda_instance_not_found': "The specified lambda instance doesn't exist.",
+        'application_not_found': "The specified application doesn't exist."
+    }
+
+
+class CustomAlreadyDoneError(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = "Already Done."
+
+    messages = {
+        'lambda_instance_already_exists': "The specified lambda instance has already been created.",
+        'lambda_application_already_exists': "The specified lambda application has already been created.",
+        'lambda_instance_already': "The specified lambda instance is already {state}."
+    }
+
 class CustomParseError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = "Parse error."
 
     messages = {
-        'no_file_error': "No file uploaded.",
         'no_lambda_instance_id_error': "No lambda instance id provided."
     }
 
@@ -36,29 +55,6 @@ class CustomValidationError(ValidationError):
     }
 
 
-class CustomNotFoundError(APIException):
-    status_code = status.HTTP_404_NOT_FOUND
-    default_detail = "Not Found."
-
-    messages = {
-        'lambda_instance_not_found': "The specified lambda instance doesn't exist.",
-        'application_not_found': "The specified application doesn't exist."
-    }
-
-
-class CustomAlreadyDoneError(APIException):
-    status_code = status.HTTP_409_CONFLICT
-    default_detail = "Already Done."
-
-    messages = {
-        'application_already_deployed': "The specified application has already been deployed on the"
-                                        " specified lambda instance.",
-        'application_not_deployed': "The specified application has not been deployed on the "
-                                    "specified lambda instance.",
-        'lambda_instance_already': "The specified lambda instance is already {state}."
-
-    }
-
 
 class CustomCantDoError(APIException):
     status_code = status.HTTP_409_CONFLICT
@@ -73,12 +69,21 @@ custom_exceptions = (CustomAuthenticationFailed, CustomParseError, CustomValidat
                      CustomNotFoundError, CustomAlreadyDoneError, CustomCantDoError)
 
 
-def parse_custom_exception(default_response):
+def parse_custom_exception(exception, default_response):
     response = dict({'errors': []})
 
-    for key, value in default_response.data.items():
-        response['errors'].append({'status': default_response.status_code,
-                                   'detail': value})
+    if isinstance(exception, CustomValidationError):
+        for key, values in default_response.data.items():
+            detail = []
+            for value in values:
+                detail.append("{key}: {value}".format(key=key, value=value))
+
+            response['errors'].append({'status': default_response.status_code,
+                                       'detail': detail})
+    else:
+        for key, value in default_response.data.items():
+            response['errors'].append({'status': default_response.status_code,
+                                       'detail': value})
 
     response_status = default_response.status_code
     return Response(response, response_status)
