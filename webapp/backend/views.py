@@ -1,6 +1,10 @@
 import json
 import uuid
+import stat
 
+from os import path, mkdir, chmod
+
+from django.conf import settings
 from django.core.urlresolvers import resolve
 
 from rest_framework import viewsets, status, mixins
@@ -106,9 +110,9 @@ def user_public_keys(request):
     return Response({
         "status": {
             "short_description": ResponseMessages.short_descriptions['user_public_keys'],
-            "code":              200
+            "code": 200
         },
-        "data":   public_keys
+        "data": public_keys
     })
 
 
@@ -221,12 +225,26 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                             self.pithos_container, description,
                                             app_type, request.user)
 
+        # Save the uploaded file on the local file system.
+        if not path.exists(settings.TEMPORARY_FILE_STORAGE):
+            mkdir(settings.TEMPORARY_FILE_STORAGE)
+            chmod(settings.TEMPORARY_FILE_STORAGE, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
+
+        local_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, uploaded_file.name)
+        local_file = open(local_file_path, 'wb+')
+
+        # Django suggest to always save the uploaded file using chunks. That will avoiding reading the
+        # whole file into memory and possibly overwhelming it.
+        for chunk in uploaded_file.chunks():
+            local_file.write(chunk)
+        local_file.close()
+
         # Create a task to upload the application from the local file system to Pithos.
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
         tasks.upload_application_to_pithos.delay(auth_url, auth_token, self.pithos_container,
-                                                 project_name, uploaded_file, application_uuid)
+                                                 project_name, local_file_path, application_uuid)
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
