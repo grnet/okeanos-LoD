@@ -1,4 +1,11 @@
 ---
+
+- hosts: central-vm
+  user: root
+  gather_facts: no
+  roles:
+    - wait_for_ssh
+
 - hosts: central-vm
   user: root
   roles:

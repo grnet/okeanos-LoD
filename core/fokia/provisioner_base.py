@@ -148,7 +148,8 @@ class ProvisionerBase:
             ip_obj['uuid'] = ip['floating_network_id']
             ip_obj['fixed_ip'] = ip['floating_ip_address']
             networks.append(ip_obj)
-        networks.append({'uuid': kwargs['net_id']})
+        if kwargs.get('net_id'):
+            networks.append({'uuid': kwargs['net_id']})
         if personality is None:
             personality = []
         try:
