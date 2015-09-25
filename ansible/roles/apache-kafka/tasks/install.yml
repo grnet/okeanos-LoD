@@ -9,3 +9,6 @@
   - name: Create softlink for Apache Kafka.
     file: src="{{ installation_path }}/kafka_{{ scala_version }}-{{ version }}" dest="{{ installation_path }}/kafka" state=link
 
+  - name: Configure logging for Apache Kafka.
+    copy: src=log4j.properties dest="{{ installation_path }}/kafka/config/log4j.properties" owner=kafka group=lambda mode=0644
+

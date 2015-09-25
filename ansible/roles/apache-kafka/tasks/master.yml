@@ -8,7 +8,7 @@
       - configure-kafka
 
   - name: Configure Apache kafka.
-    copy: src=server.properties dest="{{ installation_path }}/kafka/config/server.properties" owner=kafka group=lambda mode=0644
+    template: src=master-server.properties.j2 dest="{{ installation_path }}/kafka/config/server.properties" owner=kafka group=lambda mode=0644
     tags:
       - configure-kafka
 
