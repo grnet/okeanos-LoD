@@ -1,6 +1,4 @@
-from kamaki.clients import ClientError, astakos, cyclades
-from kamaki.cli.config import Config as KamakiConfig
-from fokia.utils import patch_certs
+from kamaki.clients import ClientError
 from fokia.provisioner_base import ProvisionerBase
 from fokia.cluster_error_constants import *
 from base64 import b64encode
@@ -17,7 +15,7 @@ class VM_Manager(ProvisionerBase):
     def create_single_vm(self, vm_name, wait=True, **kwargs):
         """
         Creates a single VM
-        :return:
+        :return: vm id
         """
         quotas = self.get_quotas()
         project_id = self.find_project_id(**kwargs)['id']
@@ -123,11 +121,11 @@ class VM_Manager(ProvisionerBase):
         vm_status = self.cyclades.get_server_details(vm_id)["status"]
 
         # Destroy the VM
-        if self.cyclades.get_server_details(vm_id)["status"] != "DELETED":
+        if vm_status != "DELETED":
             self.cyclades.delete_server(vm_id)
 
         # Wait for the VM to be destroyed before destroying the public ip
-        self.cyclades.wait_server(vm_id, current_status=vm_status, max_wait=600)
+            self.cyclades.wait_server(vm_id, current_status=vm_status, max_wait=600)
 
         # Destroy the public ip, if it exists
         if public_ip_id is not None:
@@ -138,11 +136,11 @@ class VM_Manager(ProvisionerBase):
         Starts a single VM
         :return:
         """
-        raise NotImplementedError
+        self.cyclades.start_server(vm_id)
 
     def stop(self, vm_id):
         """
         Stops a single VM
         :return:
         """
-        raise NotImplementedError
+        self.cyclades.shutdown_server(vm_id)

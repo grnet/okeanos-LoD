@@ -854,7 +854,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Create task to destroy the lambda instance.
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
-        auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+        # auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
         tasks.lambda_instance_destroy.delay(lambda_instance_data['uuid'], auth_token,
                                             master_id, slave_ids, public_ip_id,
