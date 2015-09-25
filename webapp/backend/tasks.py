@@ -220,29 +220,17 @@ setattr(create_lambda_instance, 'on_failure', on_failure)
 
 @shared_task
 def upload_application_to_pithos(auth_url, auth_token, container_name, project_name,
-                                 uploaded_file, application_uuid):
+                                 local_file_path, application_uuid):
     """
     Uploads an application to Pithos.
     :param auth_url: The authentication url for ~okeanos API.
     :param auth_token: The authentication token of the user.
     :param container_name: The name of the Pithos container where the file will be uploaded.
-    :param uploaded_file: The path on the local file system of the file to be uploaded.
+    :param local_file_path: The path on the local file system of the file to be uploaded.
     :param application_uuid: The uuid of the application to be uploaded.
     """
 
-    # Save the uploaded file on the local file system.
-    if not path.exists(settings.TEMPORARY_FILE_STORAGE):
-        mkdir(settings.TEMPORARY_FILE_STORAGE)
-
-    local_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, uploaded_file.name)
-    local_file = open(local_file_path, 'wb+')
-
-    # Djnago suggest to always save the uploaded file using chunks. That will avoiding reading the
-    # whole file into memory and possibly overwhelming it.
-    for chunk in uploaded_file.chunks():
-        local_file.write(chunk)
-    local_file.close()
-
+    # Open file from the local file system.
     local_file = open(local_file_path, 'r')
 
     try:
