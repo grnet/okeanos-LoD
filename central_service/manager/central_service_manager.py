@@ -20,7 +20,7 @@ if not ansible_path:
             break
 
 
-class CentralServiceManager:
+class CentralServiceManager(object):
     """
     Class deploying the central service VM dynamically.
     It uses the kamaki API to create/destroy the actual VM, running on
@@ -28,14 +28,18 @@ class CentralServiceManager:
     the required packages and services.
     """
 
-    def central_service_create(self, auth_token, vcpus=4, ram=4096, disk=40,
+    def __init__(self, auth_token):
+        self.auth_token = auth_token
+
+    def central_service_create(self, vcpus=4, ram=4096, disk=40,
                                project_name='lambda.grnet.gr',
                                private_key_path=None, public_key_path=None):
         """
         Creates the central service vm and installs the relevant s/w.
         :return: ansible result
         """
-        provisioner = VM_Manager(auth_token=auth_token)
+
+        provisioner = VM_Manager(auth_token=self.auth_token)
         vm_name = 'central_service'
         vm_id = provisioner.create_single_vm(vm_name=vm_name,
                                              vcpus=vcpus, ram=ram, disk=disk,
@@ -48,29 +52,29 @@ class CentralServiceManager:
             playbook_file=os.path.join(ansible_path, 'playbooks', 'setup.yml'))
         return ansible_result
 
-    def central_service_destroy(self, auth_token, vm_id):
+    def central_service_destroy(self, vm_id):
         """
         Deletes the central service vm.
         :return:
         """
 
-        vmmanager = VM_Manager(auth_token=auth_token)
+        vmmanager = VM_Manager(auth_token=self.auth_token)
         vmmanager.destroy(vm_id=vm_id)
 
-    def central_service_start(self, auth_token, vm_id):
+    def central_service_start(self, vm_id):
         """
         Starts the central service vm if it's not running.
         :return:
         """
 
-        vmmanager = VM_Manager(auth_token=auth_token)
+        vmmanager = VM_Manager(auth_token=self.auth_token)
         vmmanager.start(vm_id=vm_id)
 
-    def central_service_stop(self, auth_token, vm_id):
+    def central_service_stop(self, vm_id):
         """
         Stops the central service vm if it's running.
         :return:
         """
 
-        vmmanager = VM_Manager(auth_token=auth_token)
+        vmmanager = VM_Manager(auth_token=self.auth_token)
         vmmanager.stop(vm_id=vm_id)
