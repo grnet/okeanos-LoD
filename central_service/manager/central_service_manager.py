@@ -1,5 +1,5 @@
 import logging
-from fokia.vm_provisioner import VM_Provisioner
+from fokia.vm_manager import VM_Manager
 from fokia.ansible_manager_minimal import Manager
 
 logging.basicConfig(level=logging.INFO)
@@ -18,7 +18,7 @@ class CentralServiceManager:
         Creates the central service vm and installs the relevant s/w.
         :return:
         """
-        provisioner = VM_Provisioner(auth_token=auth_token)
+        provisioner = VM_Manager(auth_token=auth_token)
         vm_name = 'central_service'
         vcpus = 4
         ram = 4096
@@ -34,23 +34,26 @@ class CentralServiceManager:
             playbook_file='../../central_service/ansible/playbooks/setup.yml')
         return ansible_result
 
-    def central_service_destroy(self):
+    def central_service_destroy(self, auth_token, vm_id, public_ip_id):
         """
         Deletes the central service vm.
         :return:
         """
-        raise NotImplementedError
+        vmmanager = VM_Manager(auth_token=auth_token)
+        vmmanager.destroy(vm_id=vm_id, public_ip_id=public_ip_id)
 
-    def central_service_start(self):
+    def central_service_start(self, auth_token, vm_id):
         """
         Starts the central service vm if it's not running.
         :return:
         """
-        raise NotImplementedError
+        vmmanager = VM_Manager(auth_token=auth_token)
+        vmmanager.start(vm_id=vm_id)
 
-    def central_service_stop(self):
+    def central_service_stop(self, auth_token, vm_id):
         """
         Stops the central service vm if it's running.
         :return:
         """
-        raise NotImplementedError
+        vmmanager = VM_Manager(auth_token=auth_token)
+        vmmanager.stop(vm_id=vm_id)

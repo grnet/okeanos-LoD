@@ -10,12 +10,15 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class VM_Provisioner(ProvisionerBase):
+class VM_Manager(ProvisionerBase):
     def __init__(self, auth_token, cloud_name=None):
-        super(VM_Provisioner, self).__init__(auth_token=auth_token, cloud_name=cloud_name)
+        super(VM_Manager, self).__init__(auth_token=auth_token, cloud_name=cloud_name)
 
     def create_single_vm(self, vm_name, wait=True, **kwargs):
-
+        """
+        Creates a single VM
+        :return:
+        """
         quotas = self.get_quotas()
         project_id = self.find_project_id(**kwargs)['id']
         response = self.check_all_resources(quotas,
@@ -111,11 +114,11 @@ class VM_Provisioner(ProvisionerBase):
             raise ClientError(msg, error_get_ip)
         return True
 
-class VM_start_stop_destroy():
-    def __init__(self, auth_token, cloud_name=None):
-        super(VM_Provisioner, self).__init__(auth_token=auth_token, cloud_name=cloud_name)
-
     def destroy(self, vm_id, public_ip_id=None):
+        """
+        Destroys a single VM
+        :return:
+        """
         # Get the current status of the VM
         vm_status = self.cyclades.get_server_details(vm_id)["status"]
 
@@ -129,3 +132,17 @@ class VM_start_stop_destroy():
         # Destroy the public ip, if it exists
         if public_ip_id is not None:
             self.network_client.delete_floatingip(public_ip_id)
+
+    def start(self, vm_id):
+        """
+        Starts a single VM
+        :return:
+        """
+        raise NotImplementedError
+
+    def stop(self, vm_id):
+        """
+        Stops a single VM
+        :return:
+        """
+        raise NotImplementedError
