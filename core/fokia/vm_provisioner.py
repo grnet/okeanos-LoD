@@ -1,12 +1,18 @@
-from base64 import b64encode
-from kamaki.clients import ClientError
+from kamaki.clients import ClientError, astakos, cyclades
+from kamaki.cli.config import Config as KamakiConfig
+from fokia.utils import patch_certs
 from fokia.provisioner_base import ProvisionerBase
 from fokia.cluster_error_constants import *
+from base64 import b64encode
+
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
-class VMProvisioner(ProvisionerBase):
+class VM_Provisioner(ProvisionerBase):
     def __init__(self, auth_token, cloud_name=None):
-        super(VMProvisioner, self).__init__(auth_token=auth_token, cloud_name=cloud_name)
+        super(VM_Provisioner, self).__init__(auth_token=auth_token, cloud_name=cloud_name)
 
     def create_single_vm(self, vm_name, wait=True, **kwargs):
 
@@ -104,3 +110,22 @@ class VMProvisioner(ProvisionerBase):
             msg = 'authorized IPs out of limit'
             raise ClientError(msg, error_get_ip)
         return True
+
+class VM_start_stop_destroy():
+    def __init__(self, auth_token, cloud_name=None):
+        super(VM_Provisioner, self).__init__(auth_token=auth_token, cloud_name=cloud_name)
+
+    def destroy(self, vm_id, public_ip_id=None):
+        # Get the current status of the VM
+        vm_status = self.cyclades.get_server_details(vm_id)["status"]
+
+        # Destroy the VM
+        if self.cyclades.get_server_details(vm_id)["status"] != "DELETED":
+            self.cyclades.delete_server(vm_id)
+
+        # Wait for the VM to be destroyed before destroying the public ip
+        self.cyclades.wait_server(vm_id, current_status=vm_status, max_wait=600)
+
+        # Destroy the public ip, if it exists
+        if public_ip_id is not None:
+            self.network_client.delete_floatingip(public_ip_id)

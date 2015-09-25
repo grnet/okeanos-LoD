@@ -63,7 +63,7 @@ def lambda_instance_stop(instance_uuid, auth_url, auth_token, master_id, slave_i
 
 
 @shared_task
-def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slave_ids,
+def lambda_instance_destroy(instance_uuid, auth_token, master_id, slave_ids,
                             public_ip_id, private_network_id):
     """
     Destroys the specified lambda instance. The VMs of the lambda instance, along with the public

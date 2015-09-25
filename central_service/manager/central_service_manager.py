@@ -1,5 +1,5 @@
 import logging
-from fokia.vmprovisioner import VMProvisioner
+from fokia.vm_provisioner import VM_Provisioner
 from fokia.ansible_manager_minimal import Manager
 
 logging.basicConfig(level=logging.INFO)
@@ -18,7 +18,7 @@ class CentralServiceManager:
         Creates the central service vm and installs the relevant s/w.
         :return:
         """
-        provisioner = VMProvisioner(auth_token=auth_token)
+        provisioner = VM_Provisioner(auth_token=auth_token)
         vm_name = 'central_service'
         vcpus = 4
         ram = 4096
