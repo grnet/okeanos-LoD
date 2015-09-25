@@ -1,9 +1,23 @@
 import logging
 from fokia.vm_manager import VM_Manager
 from fokia.ansible_manager_minimal import Manager
+import os
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+check_folders = ['/var/www/okeanos-LoD/central_service/ansible',
+                 'okeanos-LoD/central_service/ansible',
+                 'central_service/ansible',
+                 '../central_service/ansible',
+                 '../../central_service/ansible']
+
+ansible_path = os.environ.get('CENTRAL_ANSIBLE_PATH', None)
+if not ansible_path:
+    for folder in check_folders:
+        if os.path.exists(folder):
+            ansible_path = folder
+            break
 
 
 class CentralServiceManager:
@@ -13,34 +27,33 @@ class CentralServiceManager:
     the ~okeanos infrastructure.
     """
 
-    def central_service_create(self, auth_token):
+    def central_service_create(self, auth_token, vcpus=4, ram=4096, disk=40,
+                               project_name='lambda.grnet.gr',
+                               private_key_path=None, public_key_path=None):
         """
         Creates the central service vm and installs the relevant s/w.
         :return:
         """
         provisioner = VM_Manager(auth_token=auth_token)
         vm_name = 'central_service'
-        vcpus = 4
-        ram = 4096
-        disk = 40
-        project_name = 'lambda.grnet.gr'
         server_id = provisioner.create_single_vm(vm_name=vm_name,
                                                  vcpus=vcpus, ram=ram, disk=disk,
-                                                 project_name=project_name)
+                                                 project_name=project_name,
+                                                 public_key_path=public_key_path)
         hostname = 'snf-' + str(server_id) + '.vm.okeanos.grnet.gr'
         group = 'central-vm'
-        ansible_manager = Manager(hostname, group)
+        ansible_manager = Manager(hostname, group, private_key_path)
         ansible_result = ansible_manager.run_playbook(
-            playbook_file='../../central_service/ansible/playbooks/setup.yml')
+            playbook_file=os.path.join(ansible_path, 'playbooks', 'setup.yml'))
         return ansible_result
 
-    def central_service_destroy(self, auth_token, vm_id, public_ip_id):
+    def central_service_destroy(self, auth_token, vm_id):
         """
         Deletes the central service vm.
         :return:
         """
         vmmanager = VM_Manager(auth_token=auth_token)
-        vmmanager.destroy(vm_id=vm_id, public_ip_id=public_ip_id)
+        vmmanager.destroy(vm_id=vm_id)
 
     def central_service_start(self, auth_token, vm_id):
         """

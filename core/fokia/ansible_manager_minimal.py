@@ -6,10 +6,11 @@ from ansible import utils
 
 
 class Manager:
-    def __init__(self, host, group):
-        private_key_file = os.path.expanduser('~/.ssh/id_rsa')
+    def __init__(self, host, group, private_key_path=None):
+        if private_key_path is None:
+            private_key_path = os.path.expanduser('~/.ssh/id_rsa')
         ansible.constants.DEFAULT_TIMEOUT = 30
-        ansible.constants.DEFAULT_PRIVATE_KEY_FILE = private_key_file
+        ansible.constants.DEFAULT_PRIVATE_KEY_FILE = private_key_path
         ansible.constants.HOST_KEY_CHECKING = False
 
         self.ansible_inventory = ansible.inventory.Inventory(host_list=[host])

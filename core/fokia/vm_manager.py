@@ -12,7 +12,7 @@ class VM_Manager(ProvisionerBase):
     def __init__(self, auth_token, cloud_name=None):
         super(VM_Manager, self).__init__(auth_token=auth_token, cloud_name=cloud_name)
 
-    def create_single_vm(self, vm_name, wait=True, **kwargs):
+    def create_single_vm(self, vm_name, wait=True, public_key_path=None, **kwargs):
         """
         Creates a single VM
         :return: vm id
@@ -37,7 +37,9 @@ class VM_Manager(ProvisionerBase):
 
             public_ip = self.reserve_ip(project_id=project_id)
 
-            with open(os.path.expanduser('~/.ssh/id_rsa.pub'), 'r') as public_key_file:
+            if public_key_path is None:
+                public_key_path = os.path.expanduser('~/.ssh/id_rsa.pub')
+            with open(public_key_path, 'r') as public_key_file:
                 public_key = public_key_file.read()
             authorized = {'contents': b64encode(public_key),
                           'path': '/root/.ssh/authorized_keys',
@@ -112,13 +114,19 @@ class VM_Manager(ProvisionerBase):
             raise ClientError(msg, error_get_ip)
         return True
 
-    def destroy(self, vm_id, public_ip_id=None):
+    def destroy(self, vm_id):
         """
         Destroys a single VM
         :return:
         """
+        public_ip_id = None
+
         # Get the current status of the VM
-        vm_status = self.cyclades.get_server_details(vm_id)["status"]
+        vm_status = self.cyclades.get_server_details(vm_id)['status']
+        floating_ips = self.network_client.list_floatingips()
+        for ip in floating_ips:
+            if int(ip['instance_id']) == vm_id:
+                public_ip_id = int(ip['id'])
 
         # Destroy the VM
         if vm_status != "DELETED":
@@ -127,7 +135,7 @@ class VM_Manager(ProvisionerBase):
         # Wait for the VM to be destroyed before destroying the public ip
             self.cyclades.wait_server(vm_id, current_status=vm_status, max_wait=600)
 
-        # Destroy the public ip, if it exists
+        # Destroy the public ip that was attached to the VM
         if public_ip_id is not None:
             self.network_client.delete_floatingip(public_ip_id)
 
