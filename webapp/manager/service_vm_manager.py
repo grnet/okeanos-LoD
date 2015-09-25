@@ -6,13 +6,13 @@ import os
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-check_folders = ['/var/www/okeanos-LoD/central_service/ansible',
-                 'okeanos-LoD/central_service/ansible',
-                 'central_service/ansible',
-                 '../central_service/ansible',
-                 '../../central_service/ansible']
+check_folders = ['/var/www/okeanos-LoD/webapp/ansible',
+                 'okeanos-LoD/webapp/ansible',
+                 'webapp/ansible',
+                 '../webapp/ansible',
+                 '../../webapp/ansible']
 
-ansible_path = os.environ.get('CENTRAL_ANSIBLE_PATH', None)
+ansible_path = os.environ.get('SERVICE_ANSIBLE_PATH', None)
 if not ansible_path:
     for folder in check_folders:
         if os.path.exists(folder):
@@ -20,55 +20,55 @@ if not ansible_path:
             break
 
 
-class CentralServiceManager:
+class ServiceVMManager:
     """
-    Class deploying the central service VM dynamically.
+    Class deploying the service VM dynamically.
     It uses the kamaki API to create/destroy the actual VM, running on
     the ~okeanos infrastructure. It uses ansible to install and configure
     the required packages and services.
     """
 
-    def central_service_create(self, auth_token, vcpus=4, ram=4096, disk=40,
-                               project_name='lambda.grnet.gr',
-                               private_key_path=None, public_key_path=None):
+    def service_vm_create(self, auth_token, vcpus=4, ram=4096, disk=40,
+                          project_name='lambda.grnet.gr',
+                          private_key_path=None, public_key_path=None):
         """
-        Creates the central service vm and installs the relevant s/w.
+        Creates the service vm and installs the relevant s/w.
         :return: ansible result
         """
         provisioner = VM_Manager(auth_token=auth_token)
-        vm_name = 'central_service'
+        vm_name = 'Service VM'
         vm_id = provisioner.create_single_vm(vm_name=vm_name,
                                              vcpus=vcpus, ram=ram, disk=disk,
                                              project_name=project_name,
                                              public_key_path=public_key_path)
         hostname = 'snf-' + str(vm_id) + '.vm.okeanos.grnet.gr'
-        group = 'central-vm'
+        group = 'service-vms'
         ansible_manager = Manager(hostname, group, private_key_path)
         ansible_result = ansible_manager.run_playbook(
             playbook_file=os.path.join(ansible_path, 'playbooks', 'setup.yml'))
         return ansible_result
 
-    def central_service_destroy(self, auth_token, vm_id):
+    def service_vm_destroy(self, auth_token, vm_id):
         """
-        Deletes the central service vm.
+        Deletes the service vm.
         :return:
         """
 
         vmmanager = VM_Manager(auth_token=auth_token)
         vmmanager.destroy(vm_id=vm_id)
 
-    def central_service_start(self, auth_token, vm_id):
+    def service_vm_start(self, auth_token, vm_id):
         """
-        Starts the central service vm if it's not running.
+        Starts the service vm if it's not running.
         :return:
         """
 
         vmmanager = VM_Manager(auth_token=auth_token)
         vmmanager.start(vm_id=vm_id)
 
-    def central_service_stop(self, auth_token, vm_id):
+    def service_vm_stop(self, auth_token, vm_id):
         """
-        Stops the central service vm if it's running.
+        Stops the service vm if it's running.
         :return:
         """
 
