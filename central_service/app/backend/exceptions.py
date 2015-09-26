@@ -94,6 +94,6 @@ def custom_exception_handler(exc, context):
     default_response = exception_handler(exc, context)
 
     if isinstance(exc, custom_exceptions):
-        return parse_custom_exception(default_response)
+        return parse_custom_exception(exc, default_response)
 
     return default_response

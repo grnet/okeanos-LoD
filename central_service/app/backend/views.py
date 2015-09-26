@@ -230,7 +230,7 @@ class LambdaApplicationView(mixins.ListModelMixin, # debugging
         status = data['status']
         failure_message = data['failure_message']
 
-        matching_applications = LambdaInstance.objects.filter(uuid=uuid)
+        matching_applications = LambdaApplication.objects.filter(uuid=uuid)
         if matching_applications.exists():
             raise CustomAlreadyDoneError(CustomAlreadyDoneError.messages[
                 'lambda_application_already_exists'
