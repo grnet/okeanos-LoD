@@ -198,7 +198,7 @@ class LambdaInstanceCounterView(APIView):
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
     def get(self, request, format=None):
-
+        activeLambdaInstances = LambdaInstance.objects.filter(status="20").count()
         status_code = rest_status.HTTP_202_ACCEPTED
         return Response(
             {
@@ -207,7 +207,7 @@ class LambdaInstanceCounterView(APIView):
                     "short_description": ResponseMessages.short_descriptions['lambda_instances_count'],
                 },
                 "data": {
-                    "count": str(LambdaInstance.objects.count()),
+                    "count": str(activeLambdaInstances),
                 }
 
             },
@@ -342,6 +342,8 @@ class LambdaApplicationCounterView(APIView):
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
     def get(self, request, format=None):
+        activeLambdaApplications = LambdaApplication.objects.filter(status="0").count()
+
         status_code = rest_status.HTTP_202_ACCEPTED
         return Response(
             {
@@ -350,7 +352,7 @@ class LambdaApplicationCounterView(APIView):
                     "short_description": ResponseMessages.short_descriptions['lambda_applications_count'],
                 },
                 "data": {
-                    "count": str(LambdaApplication.objects.count()),
+                    "count": str(activeLambdaApplications),
                 }
 
             },
