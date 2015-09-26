@@ -40,6 +40,33 @@ class UsersViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+class LambdaUsersCounterView(APIView):
+    authentication_classes = KamakiTokenAuthentication,
+    permission_classes = IsAuthenticated,
+    renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
+
+    def get(self, request, format=None):
+        if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql_psycopg2':
+            lambdaUsersCount = LambdaInstance.objects.all().order_by('owner').distinct('owner').count() # This works only on Postgres
+        else:
+            lambdaUsersCount = LambdaInstance.objects.values('owner').distinct().count()
+
+        status_code = rest_status.HTTP_202_ACCEPTED
+        return Response(
+            {
+                "status": {
+                    "code": status_code,
+                    "short_description": ResponseMessages.short_descriptions['lambda_users_count'],
+                },
+                "data": {
+                    "count": str(lambdaUsersCount),
+                }
+
+            },
+            status=status_code)
+
+
+
 class LambdaInstanceView(mixins.RetrieveModelMixin,
                          mixins.ListModelMixin, # debugging
                          viewsets.GenericViewSet):

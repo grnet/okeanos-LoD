@@ -17,6 +17,7 @@ lambda_applications_router.include_format_suffixes = False
 
 urlpatterns = [
     url(r'^', include(users_router.urls)),
+    url(r'^users/count/?$', views.LambdaUsersCounterView.as_view()),
     url(r'^lambda_instances/count/?$', views.LambdaInstanceCounterView.as_view(),
         name='count_lambda_instances'),
     url(r'^lambda_applications/count/?$', views.LambdaApplicationCounterView.as_view(),
