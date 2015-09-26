@@ -4,6 +4,8 @@ import mock
 
 from os import path
 
+from random import randint
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -301,3 +303,133 @@ class TestApplicationUpload(APITestCase):
         for error in response.data['errors']:
             self.assertIn('status', error)
             self.assertIn('detail', error)
+
+
+class TestApplicationsList(APITestCase):
+    # Define a fake ~okeanos token.
+    AUTHENTICATION_TOKEN = "fake-token"
+
+    def setUp(self):
+        # Create a user and force authenticate.
+        self.user = User.objects.create(uuid=uuid.uuid4())
+        self.client.force_authenticate(user=self.user)
+
+        # Add a fake token to every request authentication header to be used by the API.
+        self.client.credentials(HTTP_AUTHORIZATION='Token {token}'.format(token=self.
+                                                                          AUTHENTICATION_TOKEN))
+
+    # Test for listing the existing applications.
+    def test_applications_list(self):
+        # Create some applications on the database.
+        number_of_applications = randint(0, 100)
+        for i in range(number_of_applications):
+            Application.objects.create(uuid=uuid.uuid4(), name="application_{i}.jar".format(i=i),
+                                       type=Application.BATCH)
+
+        # Make a request to list the existing applications.
+        response = self.client.get("/api/apps/")
+
+        # Assert the structure of the response.
+        self._assert_success_request_response_structure(response)
+
+        # Assert the contents of the response.
+        self.assertEqual(len(response.data['data']), number_of_applications)
+
+        self._assert_success_request_response_content(response)
+
+    # Test for listing existing applications when there is no application uploaded.
+    def test_applications_list_empty(self):
+        # Make a request to list the existing applications.
+        response = self.client.get("/api/apps/")
+
+        # Assert the structure of the response.
+        self._assert_success_request_response_structure(response)
+
+        # Assert the contents of the response.
+        self.assertEqual(len(response.data['data']), 0)
+
+        self._assert_success_request_response_content(response)
+
+    # Test for listing existing applications using pagination.
+    def test_applications_list_pagination(self):
+        # Create some applications on the database.
+        number_of_applications = randint(0, 100)
+        for i in range(number_of_applications):
+            Application.objects.create(uuid=uuid.uuid4(), name="application_{i}.jar".format(i=i),
+                                       type=Application.BATCH)
+
+        # Make a request using both limit and offset parameters.
+        limit = randint(0, 100)
+        offset = randint(-100, 100)
+        response = self.client.get("/api/apps/?limit={limit}&offset={offset}".
+                                   format(limit=limit, offset=offset))
+
+        # Assert the structure of the response.
+        self._assert_success_request_response_structure(response)
+
+        self.assertIn('pagination', response.data)
+
+        # Assert the contents of the response.
+        number_of_expected_applications = None
+        if offset < 0:
+            number_of_expected_applications = number_of_applications
+        elif offset < number_of_applications:
+            number_of_expected_applications = number_of_applications - offset
+        else:
+            number_of_expected_applications = 0
+
+        if number_of_expected_applications >= limit:
+            self.assertEqual(len(response.data['data']), limit)
+        else:
+            self.assertEqual(len(response.data['data']), number_of_expected_applications)
+
+        if offset >= 0:
+            self._assert_success_request_response_content(response, offset)
+        else:
+            self._assert_success_request_response_content(response)
+
+    # Test for listing existing applications when limit value for pagination is negative.
+    def test_negative_pagination_limit(self):
+        # Make a request.
+        limit = randint(-100, -1)
+        response = self.client.get("/api/apps/?limit={limit}".format(limit=limit))
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+        # Assert the contents of the response
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['errors'][0]['detail'], CustomParseError.
+                                                               messages['limit_value_error'])
+
+    def _assert_success_request_response_structure(self, response):
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Assert the structure of the response.
+        self.assertIn('status', response.data)
+        self.assertIn('short_description', response.data['status'])
+        self.assertIn('code', response.data['status'])
+
+        self.assertIn('data', response.data)
+        for application in response.data['data']:
+            self.assertIn('id', application)
+            self.assertIn('name', application)
+
+    def _assert_success_request_response_content(self, response, offset=0):
+        # Assert the contents of the response.
+        self.assertEqual(response.data['status']['code'], status.HTTP_200_OK)
+        self.assertEqual(response.data['status']['short_description'],
+                         ResponseMessages.short_descriptions['applications_list'])
+
+        for index, application in enumerate(response.data['data']):
+            self.assertEqual(application['name'], "application_{index}.jar".
+                             format(index=index + offset))
+            self.assertRegexpMatches(application['id'], r'^([^/.]+)$')
