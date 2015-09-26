@@ -15,7 +15,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from backend.models import User, Application
 from backend.views import ApplicationViewSet
 from backend.response_messages import ResponseMessages
-from backend.exceptions import CustomParseError
+from backend.exceptions import CustomParseError, CustomNotFoundError
 
 
 class TestApplicationUpload(APITestCase):
@@ -287,7 +287,7 @@ class TestApplicationUpload(APITestCase):
         self.assertIn('code', response.data['status'])
         self.assertIn('short_description', response.data['status'])
 
-        self.assertGreater(len(response.data['data']), 0)
+        self.assertEqual(len(response.data['data']), 1)
         self.assertIn('id', response.data['data'][0])
         self.assertIn('links', response.data['data'][0])
 
@@ -299,6 +299,8 @@ class TestApplicationUpload(APITestCase):
 
         # Assert the structure of the response.
         self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), 1)
 
         for error in response.data['errors']:
             self.assertIn('status', error)
@@ -400,6 +402,8 @@ class TestApplicationsList(APITestCase):
         # Assert the structure of the response.
         self.assertIn('errors', response.data)
 
+        self.assertEqual(len(response.data['errors']), 1)
+
         for error in response.data['errors']:
             self.assertIn('status', error)
             self.assertIn('detail', error)
@@ -433,3 +437,89 @@ class TestApplicationsList(APITestCase):
             self.assertEqual(application['name'], "application_{index}.jar".
                              format(index=index + offset))
             self.assertRegexpMatches(application['id'], r'^([^/.]+)$')
+
+
+class TestApplicationDetails(APITestCase):
+    # Define a fake ~okeanos token.
+    AUTHENTICATION_TOKEN = "fake-token"
+
+    def setUp(self):
+        # Create a user and force authenticate.
+        self.user = User.objects.create(uuid=uuid.uuid4())
+        self.client.force_authenticate(user=self.user)
+
+        # Add a fake token to every request authentication header to be used by the API.
+        self.client.credentials(HTTP_AUTHORIZATION='Token {token}'.format(token=self.
+                                                                          AUTHENTICATION_TOKEN))
+        # Create a uuid.
+        self.random_uuid = uuid.uuid4()
+
+        # Save an application on the database with the specified uuid.
+        Application.objects.create(uuid=self.random_uuid, name="application.jar",
+                                   description="A description.", type=Application.BATCH)
+
+    # Test for getting the details of an application.
+    def test_application_details(self):
+        # Make a request to get the details of the specified application.
+        response = self.client.get("/api/apps/{random_uuid}/".format(random_uuid=self.random_uuid))
+
+        # Assert the structure of the response.
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertIn('status', response.data)
+        self.assertIn('data', response.data)
+
+        self.assertIn('short_description', response.data['status'])
+        self.assertIn('code', response.data['status'])
+
+        self.assertEqual(len(response.data['data']), 1)
+
+        self.assertIn('id', response.data['data'][0])
+        self.assertIn('name', response.data['data'][0])
+        self.assertIn('path', response.data['data'][0])
+        self.assertIn('type', response.data['data'][0])
+        self.assertIn('description', response.data['data'][0])
+        self.assertIn('status', response.data['data'][0])
+
+        self.assertIn('message', response.data['data'][0]['status'])
+        self.assertIn('code', response.data['data'][0]['status'])
+        self.assertIn('detail', response.data['data'][0]['status'])
+
+        # Assert the content of the response.
+        self.assertEqual(response.data['status']['code'], status.HTTP_200_OK)
+        self.assertEqual(response.data['status']['short_description'],
+                         ResponseMessages.short_descriptions['application_details'])
+
+        self.assertEqual(response.data['data'][0]['id'],
+                         "{random_uuid}".format(random_uuid=self.random_uuid))
+        self.assertEqual(response.data['data'][0]['name'], "application.jar")
+        self.assertEqual(response.data['data'][0]['path'], "lambda_applications")
+        self.assertEqual(response.data['data'][0]['type'], "BATCH")
+        self.assertEqual(response.data['data'][0]['description'], "A description.")
+
+        self.assertEqual(response.data['data'][0]['status']['message'], "UPLOADING")
+        self.assertEqual(response.data['data'][0]['status']['code'], "1")
+        self.assertEqual(response.data['data'][0]['status']['detail'],
+                         ResponseMessages.application_status_details[
+                             response.data['data'][0]['status']['message']])
+
+    # Test for requesting the details of an application that doesn't exist.
+    def test_non_existent_id(self):
+        # Make a request to get the details of the specified application.
+        response = self.client.get("/api/apps/{random_uuid}/".format(random_uuid=uuid.uuid4()))
+
+        # Assert the structure of the response.
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), 1)
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+        # Assert the content of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomNotFoundError.messages['application_not_found'])

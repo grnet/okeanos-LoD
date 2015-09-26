@@ -73,8 +73,8 @@ class Application(models.Model):
     status = models.CharField(max_length=10, choices=status_choices, default=UPLOADING,
                               help_text="The status of this application.")
 
-    BATCH = "1"
-    STREAMING = "2"
+    BATCH = "0"
+    STREAMING = "1"
     type_choices = (
         (BATCH, 'BATCH'),
         (STREAMING, 'STREAMING')

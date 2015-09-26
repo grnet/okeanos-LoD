@@ -281,7 +281,10 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         message = Application.status_choices[int(data['status'])][1]
         data['status'] = {'message': message,
                           'code': data['status'],
-                           'details': ResponseMessages.application_status_details[message]}
+                           'detail': ResponseMessages.application_status_details[message]}
+
+        # Change the type to a human readable format.
+        data['type'] = Application.type_choices[int(data['type'])][1]
 
         # Show failure message only if it is not empty.
         if 'failure_message' in data:
@@ -301,7 +304,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                          "data": None
                          })
 
-        response['data'] = data
+        response['data'] = [data]
         return Response(response, status=status_code)
 
     def destroy(self, request, uuid, format=None):
@@ -688,7 +691,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 "status": {
                     "code": lambda_instance_all['code'],
                     "message": lambda_instance_all['status'],
-                    "details": lambda_instance_all['details']
+                    "detail": lambda_instance_all['details']
                 },
                 "id": lambda_instance_all['uuid'],
                 "name": lambda_instance_all['name']
@@ -721,7 +724,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 "status": {
                     "code": lambda_instance_all['code'],
                     "message": lambda_instance_all['status'],
-                    "details": lambda_instance_all['details']
+                    "detail": lambda_instance_all['details']
                 }
             }]
 
