@@ -13,7 +13,6 @@ from fokia import lambda_instance_manager
 from fokia.ansible_manager import Manager
 from . import events
 from .models import LambdaInstance, Application
-from .serializers import LambdaInstanceSerializer
 from .authenticate_user import get_named_keys
 
 @shared_task
