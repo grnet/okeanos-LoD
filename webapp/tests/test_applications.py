@@ -12,10 +12,11 @@ from rest_framework.test import APITestCase
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from backend.models import User, Application
+from backend.models import User, Application, LambdaInstance, LambdaInstanceApplicationConnection
 from backend.views import ApplicationViewSet
 from backend.response_messages import ResponseMessages
-from backend.exceptions import CustomParseError, CustomNotFoundError
+from backend.exceptions import CustomParseError, CustomNotFoundError, CustomCantDoError,\
+    CustomAlreadyDoneError
 
 
 class TestApplicationUpload(APITestCase):
@@ -598,3 +599,174 @@ class TestApplicationDelete(APITestCase):
         self.assertEqual(response.data['errors'][0]['status'], status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['errors'][0]['detail'], CustomNotFoundError.
                                                                messages['application_not_found'])
+
+class TestApplicationDeploy(APITestCase):
+    # Define ~okeanos authentication url.
+    AUTHENTICATION_URL = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+    # Define a fake ~okeanos token.
+    AUTHENTICATION_TOKEN = "fake-token"
+
+    def setUp(self):
+        # Create a user and force authenticate.
+        self.user = User.objects.create(uuid=uuid.uuid4())
+        self.client.force_authenticate(user=self.user)
+
+        # Add a fake token to every request authentication header to be used by the API.
+        self.client.credentials(HTTP_AUTHORIZATION='Token {token}'.format(token=self.
+                                                                          AUTHENTICATION_TOKEN))
+
+        # Save an application and a lambda instance on the database.
+        self.application_uuid = uuid.uuid4()
+        self.lambda_instance_uuid = uuid.uuid4()
+
+        Application.objects.create(uuid=self.application_uuid, name="application.jar",
+                                   description="A description.", type=Application.BATCH)
+
+        LambdaInstance.objects.create(uuid=self.lambda_instance_uuid, name="Lambda Instance 1",
+                                      status=LambdaInstance.STARTED)
+
+    # Test for deploying an application to a lambda instance.
+    @mock.patch('backend.views.tasks.deploy_application')
+    def test_application_deploy(self, mock_deploy_application_task):
+        # Make a request to deploy a specific application.
+        response = self.client.post("/api/apps/{application_uuid}/deploy/".
+                                      format(application_uuid=self.application_uuid),
+                                    {"lambda_instance_id": self.lambda_instance_uuid})
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+
+        # Assert the structure of the response.
+        self.assertIn('status', response.data)
+
+        self.assertIn('code', response.data['status'])
+        self.assertIn('short_description', response.data['status'])
+
+        # Assert the contents of the response
+        self.assertEqual(response.data['status']['code'], status.HTTP_202_ACCEPTED)
+        self.assertEqual(response.data['status']['short_description'],
+                         ResponseMessages.short_descriptions['application_deploy'])
+
+        # Assert that the proper tasks and views have been called.
+        mock_deploy_application_task.delay.\
+            assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
+                               ApplicationViewSet.pithos_container,
+                               "{lambda_instance_uuid}".format(
+                                   lambda_instance_uuid=self.lambda_instance_uuid),
+                               "{application_uuid}".format(application_uuid=self.application_uuid))
+
+    # Test for request to deploy an application when lambda instance id is not provided.
+    def test_no_lambda_instance_id(self):
+        # Make a request to delete a specific application without providing a lambda instance id.
+        response = self.client.post("/api/apps/{application_uuid}/deploy/".
+                                      format(application_uuid=self.application_uuid))
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Assert the structure of the response.
+        self._assert_error_response_structure(response)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomParseError.messages['no_lambda_instance_id_error'])
+
+    # Test for request to deploy an application when the specified lambda instance doesn't exist.
+    def test_non_existent_lambda_instance(self):
+        # Make a request to delete a specific application.
+        response = self.client.post("/api/apps/{application_uuid}/deploy/".
+                                      format(application_uuid=self.application_uuid),
+                                    {"lambda_instance_id": uuid.uuid4()})
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Assert the structure of the response.
+        self._assert_error_response_structure(response)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomNotFoundError.messages['lambda_instance_not_found'])
+
+    # Test for request to deploy an application when the specified application doesn't exist.
+    def test_non_existent_application(self):
+        # Make a request to delete a specific application.
+        response = self.client.post("/api/apps/{application_uuid}/deploy/".
+                                      format(application_uuid=uuid.uuid4()),
+                                    {"lambda_instance_id": self.lambda_instance_uuid})
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Assert the structure of the response.
+        self._assert_error_response_structure(response)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomNotFoundError.messages['application_not_found'])
+
+    # Test for request to deploy an application when the specified lambda instance status is not
+    # STARTED.
+    def test_lambda_instance_not_started(self):
+        # Change the status of the lambda instance saved on the database.
+        lambda_instance = LambdaInstance.objects.get(uuid=self.lambda_instance_uuid)
+
+        lambda_instance_status = randint(1, len(LambdaInstance.status_choices) - 1)
+        lambda_instance.status = "{lambda_instance_status}".\
+            format(lambda_instance_status=lambda_instance_status)
+        lambda_instance.save()
+
+        # Make a request to deploy a specific application.
+        response = self.client.post("/api/apps/{application_uuid}/deploy/".
+                                      format(application_uuid=self.application_uuid),
+                                    {"lambda_instance_id": self.lambda_instance_uuid})
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+        # Assert the structure of the response.
+        self._assert_error_response_structure(response)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_409_CONFLICT)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomCantDoError.messages['cant_do'].
+                         format(action="deploy", object="an application",
+                                status=LambdaInstance.status_choices[lambda_instance_status][1]))
+
+    # Test for request to deploy an application on a lambda instance when it is already deployed.
+    def test_already_deployed(self):
+        # Create a connection between the lambda instance and the application on the database.
+        lambda_instance = LambdaInstance.objects.get(uuid=self.lambda_instance_uuid)
+        application = Application.objects.get(uuid=self.application_uuid)
+        LambdaInstanceApplicationConnection.objects.create(lambda_instance=lambda_instance,
+                                                           application=application)
+
+        # Make a request to deploy a specific application.
+        response = self.client.post("/api/apps/{application_uuid}/deploy/".
+                                      format(application_uuid=self.application_uuid),
+                                    {"lambda_instance_id": self.lambda_instance_uuid})
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+        # Assert the structure of the response.
+        self._assert_error_response_structure(response)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_409_CONFLICT)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomAlreadyDoneError.messages['application_already_deployed'])
+
+    def _assert_error_response_structure(self, response):
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), 1)
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)

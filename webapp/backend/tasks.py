@@ -289,7 +289,7 @@ def deploy_application(auth_url, auth_token, container_name, lambda_instance_uui
     # Get the name of the application.
     application_name = Application.objects.get(uuid=application_uuid).name
 
-    # Dowload application from Pithos.
+    # Download application from Pithos.
     if not path.exists(settings.TEMPORARY_FILE_STORAGE):
         mkdir(settings.TEMPORARY_FILE_STORAGE)
     local_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, application_name)
@@ -301,6 +301,9 @@ def deploy_application(auth_url, auth_token, container_name, lambda_instance_uui
     except ClientError as exception:
         events.set_application_status.delay(application_uuid, Application.FAILED,
                                             exception.message)
+        local_file.close()
+        return
+
     local_file.close()
 
     # Get the hostname of the master node of the specified lambda instance.

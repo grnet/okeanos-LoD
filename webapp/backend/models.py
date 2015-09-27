@@ -168,7 +168,6 @@ class LambdaInstance(models.Model):
         (KAFKA_FAILED, 'KAFKA_FAILED'),
         (FLINK_INSTALLED, 'FLINK_INSTALLED'),
         (FLINK_FAILED, 'FLINK_FAILED'),
-
     )
     status = models.CharField(max_length=10, choices=status_choices, default=PENDING,
                               help_text="The status of this instance.")

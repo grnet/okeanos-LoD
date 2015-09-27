@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import Application, LambdaInstance, Server, PrivateNetwork
 
+
 class LambdaInstanceApplicationConnectionListingField(serializers.RelatedField):
     """
     Class that defines the way that connections between lambda instances and application will
