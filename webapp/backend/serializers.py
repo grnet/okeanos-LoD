@@ -2,10 +2,33 @@ from rest_framework import serializers
 
 from .models import Application, LambdaInstance, Server, PrivateNetwork
 
+class LambdaInstanceApplicationConnectionListingField(serializers.RelatedField):
+    """
+    Class that defines the way that connections between lambda instances and application will
+    be represented.
+    """
+
+    def to_internal_value(self, data):
+        pass
+
+    def to_representation(self, value):
+        lambda_instance_id = value.lambda_instance.uuid
+        started = value.started
+
+        return {"id": lambda_instance_id, "started": started}
+
+
 class ApplicationSerializer(serializers.ModelSerializer):
+    """
+    A serializer for Application objects.
+    """
+
+    connections = LambdaInstanceApplicationConnectionListingField(many=True, read_only=True)
+
     class Meta:
         model = Application
-        fields = ('uuid', 'name', 'path', 'type', 'description', 'failure_message', 'status')
+        fields = ('uuid', 'name', 'path', 'type', 'description', 'failure_message', 'status',
+                  'connections')
 
 
 class ServerSerializer(serializers.ModelSerializer):
