@@ -525,3 +525,76 @@ class TestApplicationDetails(APITestCase):
         self.assertEqual(response.data['errors'][0]['status'], status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['errors'][0]['detail'],
                          CustomNotFoundError.messages['application_not_found'])
+
+
+class TestApplicationDelete(APITestCase):
+    # Define ~okeanos authentication url.
+    AUTHENTICATION_URL = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+    # Define a fake ~okeanos token.
+    AUTHENTICATION_TOKEN = "fake-token"
+
+    def setUp(self):
+        # Create a user and force authenticate.
+        self.user = User.objects.create(uuid=uuid.uuid4())
+        self.client.force_authenticate(user=self.user)
+
+        # Add a fake token to every request authentication header to be used by the API.
+        self.client.credentials(HTTP_AUTHORIZATION='Token {token}'.format(token=self.
+                                                                          AUTHENTICATION_TOKEN))
+        # Create a uuid.
+        self.random_uuid = uuid.uuid4()
+
+        # Save an application on the database with the specified uuid.
+        Application.objects.create(uuid=self.random_uuid, name="application.jar",
+                                   description="A description.", type=Application.BATCH)
+
+    # Test for deleting an application.
+    @mock.patch('backend.views.tasks.delete_application_from_pithos')
+    def test_application_delete(self, mock_delete_application_from_pithos_task):
+        # Make a request to delete a specific application.
+        response = self.client.delete("/api/apps/{random_uuid}/".
+                                      format(random_uuid=self.random_uuid))
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+
+        # Assert the structure of the response.
+        self.assertIn('status', response.data)
+
+        self.assertIn('code', response.data['status'])
+        self.assertIn('short_description', response.data['status'])
+
+        # Assert the contents of the response
+        self.assertEqual(response.data['status']['code'], status.HTTP_202_ACCEPTED)
+        self.assertEqual(response.data['status']['short_description'],
+                         ResponseMessages.short_descriptions['application_delete'])
+
+        # Assert that the proper tasks and views have been called.
+        # Note that uuid is passed as a string and not as a UUID object. That is because,
+        # Django url parser gives the provided on the url uuid as a string.
+        mock_delete_application_from_pithos_task.delay.\
+            assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
+                               ApplicationViewSet.pithos_container, "application.jar",
+                               "{random_uuid}".format(random_uuid=self.random_uuid))
+
+    # Test for requesting to delete an application that doesn't exist.
+    def test_non_existent_id(self):
+        # Make a request to delete a specific application.
+        response = self.client.delete("/api/apps/{random_uuid}/".format(random_uuid=uuid.uuid4()))
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), 1)
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['errors'][0]['detail'], CustomNotFoundError.
+                                                               messages['application_not_found'])

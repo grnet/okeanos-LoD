@@ -331,7 +331,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({
             "status": {
                 'code': status_code,
-                'short-description': ResponseMessages.short_descriptions['application_delete']
+                'short_description': ResponseMessages.short_descriptions['application_delete']
             }}, status=status_code)
 
     @detail_route(methods=['post'])
@@ -385,7 +385,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({
             "status": {
                 'code': status_code,
-                'short-description': ResponseMessages.short_descriptions['application_deploy']
+                'short_description': ResponseMessages.short_descriptions['application_deploy']
             }}, status=status_code)
 
     @detail_route(methods=['get'], url_path="list-deployed")
@@ -455,7 +455,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({
             "status": {
                 'code': status_code,
-                'short-description': ResponseMessages.short_descriptions['application_withdraw']
+                'short_description': ResponseMessages.short_descriptions['application_withdraw']
             }}, status=status_code)
 
     @detail_route(methods=['post'])
@@ -499,7 +499,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({
             "status": {
                 'code': status_code,
-                'short-description': ResponseMessages.short_descriptions['application_start']
+                'short_description': ResponseMessages.short_descriptions['application_start']
             }}, status=status_code)
 
     @detail_route(methods=['post'])
@@ -541,7 +541,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({
             "status": {
                 'code': status_code,
-                'short-description': ResponseMessages.short_descriptions['application_stop']
+                'short_description': ResponseMessages.short_descriptions['application_stop']
             }}, status=status_code)
 
     def get_application_instance_connection(self, request, uuid):
