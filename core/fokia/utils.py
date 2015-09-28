@@ -10,15 +10,18 @@ from kamaki import defaults
 from kamaki.clients.pithos import PithosClient
 from kamaki.clients.astakos import AstakosClient
 from kamaki.clients.cyclades import CycladesComputeClient
+from kamaki.cli.config import Config as KamakiConfig
 
 
-def patch_certs(cert_path=None):
+def patch_certs():
     """
     Patch http certificates or ignore_ssl() if no certificates ca be found
     :param cert_path: Path to the certificate file
     """
 
     if not defaults.CACERTS_DEFAULT_PATH:
+        config = KamakiConfig()
+        cert_path = config.get('global', 'ca_certs')
         if cert_path:
             https.patch_with_certs(cert_path)
         else:
@@ -28,12 +31,14 @@ def patch_certs(cert_path=None):
                     get_default_verify_paths().openssl_cafile
             except:
                 pass
-
+            try_path = '/etc/ssl/certs/ca-certificates.crt'
             if cert_path:
                 https.patch_with_certs(cert_path)
+            elif os.path.exists(try_path):
+                https.patch_with_certs(try_path)
             else:
                 logger.warn("COULD NOT FIND ANY CERTIFICATES, PLEASE SET THEM IN YOUR "
-                            ".kamakirc global section, option ca_certs")
+                            ".kamakirc 'global' SECTION, OPTION 'ca_certs'")
                 https.patch_ignore_ssl()
 
 

@@ -25,12 +25,13 @@ class ProvisionerBase:
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, auth_token, cloud_name=None):
-        if auth_token is None:
 
+        if auth_token is None:
             # Load .kamakirc configuration
             logger.info("Retrieving .kamakirc configuration")
             self.config = KamakiConfig()
-            patch_certs(self.config.get('global', 'ca_certs'))
+            if not os.path.exists(self.config.path):
+                raise IOError('No auth token given, and .kamakirc does not exist! Aborting.')
             if cloud_name is None:
                 cloud_section = self.config._sections['cloud'].get(self.config.get('global',
                                                                                    'default_cloud'))
@@ -46,6 +47,8 @@ class ProvisionerBase:
 
         else:
             auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+
+        patch_certs()
 
         logger.info("Initiating Astakos Client")
         self.astakos = astakos.AstakosClient(auth_url, auth_token)
