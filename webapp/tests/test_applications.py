@@ -20,6 +20,10 @@ from backend.exceptions import CustomParseError, CustomNotFoundError, CustomCant
 
 
 class TestApplicationUpload(APITestCase):
+    """
+    Contains tests for application upload API call.
+    """
+
     # Define ~okeanos authentication url.
     AUTHENTICATION_URL = "https://accounts.okeanos.grnet.gr/identity/v2.0"
     # Define a fake ~okeanos token.
@@ -45,12 +49,7 @@ class TestApplicationUpload(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Token {token}'.format(token=self.
                                                                           AUTHENTICATION_TOKEN))
 
-        # Create an application on the database. It will be used to test the response of the API
-        # when a request to upload an application with the same name is made.
-        Application.objects.create(uuid=uuid.uuid4(), name="existing_application.jar",
-                                   type=Application.BATCH)
-
-    # Test for uploading an application when all the required information are provided.
+    # Test for uploading an application.
     @mock.patch('backend.views.events.create_new_application')
     @mock.patch('backend.views.tasks.upload_application_to_pithos')
     def test_application_upload(self, mock_upload_application_to_pithos_task,
@@ -95,6 +94,10 @@ class TestApplicationUpload(APITestCase):
     # Test for uploading an application when all the required information are provided
     # but there is already an application with the same name uploaded.
     def test_existent_name(self):
+        # Create an application on the database.
+        Application.objects.create(uuid=uuid.uuid4(), name="existing_application.jar",
+                                   type=Application.BATCH)
+
         # file
         existing_application = SimpleUploadedFile("existing_application.jar", "Hello World")
 
@@ -117,6 +120,8 @@ class TestApplicationUpload(APITestCase):
     @mock.patch('backend.views.tasks.upload_application_to_pithos')
     def test_no_description(self, mock_upload_application_to_pithos_task,
                             mock_create_new_application_event):
+
+        # Make a request to upload an application.
         response = self.client.post("/api/apps/", {'file': self.application,
                                                    'type': self.application_type_batch,
                                                    'project_name': self.project_name})
@@ -152,6 +157,8 @@ class TestApplicationUpload(APITestCase):
 
     # Test for uploading an application when no file is provided.
     def test_no_file(self):
+
+        # Make a request to upload an application.
         response = self.client.post("/api/apps/", {'description': self.application_description,
                                                    'type': self.application_type_batch,
                                                    'project_name': self.project_name})
@@ -309,6 +316,10 @@ class TestApplicationUpload(APITestCase):
 
 
 class TestApplicationsList(APITestCase):
+    """
+    Contains tests for applications list API call.
+    """
+
     # Define a fake ~okeanos token.
     AUTHENTICATION_TOKEN = "fake-token"
 
@@ -393,7 +404,7 @@ class TestApplicationsList(APITestCase):
 
     # Test for listing existing applications when limit value for pagination is negative.
     def test_negative_pagination_limit(self):
-        # Make a request.
+        # Make a request to list the existing applications.
         limit = randint(-100, -1)
         response = self.client.get("/api/apps/?limit={limit}".format(limit=limit))
 
@@ -441,6 +452,10 @@ class TestApplicationsList(APITestCase):
 
 
 class TestApplicationDetails(APITestCase):
+    """
+    Contains tests for application details API call.
+    """
+
     # Define a fake ~okeanos token.
     AUTHENTICATION_TOKEN = "fake-token"
 
@@ -529,6 +544,10 @@ class TestApplicationDetails(APITestCase):
 
 
 class TestApplicationDelete(APITestCase):
+    """
+    Contains tests for application delete API call.
+    """
+
     # Define ~okeanos authentication url.
     AUTHENTICATION_URL = "https://accounts.okeanos.grnet.gr/identity/v2.0"
     # Define a fake ~okeanos token.
@@ -602,6 +621,10 @@ class TestApplicationDelete(APITestCase):
 
 
 class TestApplicationDeploy(APITestCase):
+    """
+    Contains tests for application deploy API call.
+    """
+
     # Define ~okeanos authentication url.
     AUTHENTICATION_URL = "https://accounts.okeanos.grnet.gr/identity/v2.0"
     # Define a fake ~okeanos token.
@@ -658,7 +681,7 @@ class TestApplicationDeploy(APITestCase):
 
     # Test for request to deploy an application when lambda instance id is not provided.
     def test_no_lambda_instance_id(self):
-        # Make a request to delete a specific application without providing a lambda instance id.
+        # Make a request to deploy a specific application without providing a lambda instance id.
         response = self.client.post("/api/apps/{application_uuid}/deploy/".
                                       format(application_uuid=self.application_uuid))
 
@@ -675,7 +698,7 @@ class TestApplicationDeploy(APITestCase):
 
     # Test for request to deploy an application when the specified lambda instance doesn't exist.
     def test_non_existent_lambda_instance(self):
-        # Make a request to delete a specific application.
+        # Make a request to deploy a specific application.
         response = self.client.post("/api/apps/{application_uuid}/deploy/".
                                       format(application_uuid=self.application_uuid),
                                     {"lambda_instance_id": uuid.uuid4()})
@@ -693,7 +716,7 @@ class TestApplicationDeploy(APITestCase):
 
     # Test for request to deploy an application when the specified application doesn't exist.
     def test_non_existent_application(self):
-        # Make a request to delete a specific application.
+        # Make a request to deploy a specific application.
         response = self.client.post("/api/apps/{application_uuid}/deploy/".
                                       format(application_uuid=uuid.uuid4()),
                                     {"lambda_instance_id": self.lambda_instance_uuid})
@@ -774,6 +797,10 @@ class TestApplicationDeploy(APITestCase):
 
 
 class TestApplicationWithdraw(APITestCase):
+    """
+    Contains tests for application withdraw API call.
+    """
+
     # Define ~okeanos authentication url.
     AUTHENTICATION_URL = "https://accounts.okeanos.grnet.gr/identity/v2.0"
     # Define a fake ~okeanos token.
@@ -822,7 +849,7 @@ class TestApplicationWithdraw(APITestCase):
         self.assertIn('code', response.data['status'])
         self.assertIn('short_description', response.data['status'])
 
-        # Assert the contents of the response
+        # Assert the contents of the response.
         self.assertEqual(response.data['status']['code'], status.HTTP_202_ACCEPTED)
         self.assertEqual(response.data['status']['short_description'],
                          ResponseMessages.short_descriptions['application_withdraw'])
@@ -852,7 +879,7 @@ class TestApplicationWithdraw(APITestCase):
 
     # Test for request to withdraw an application when the specified lambda instance doesn't exist.
     def test_non_existent_lambda_instance(self):
-        # Make a request to delete a specific application.
+        # Make a request to withdraw a specific application.
         response = self.client.post("/api/apps/{application_uuid}/withdraw/".
                                       format(application_uuid=self.application_uuid),
                                     {"lambda_instance_id": uuid.uuid4()})
@@ -870,7 +897,7 @@ class TestApplicationWithdraw(APITestCase):
 
     # Test for request to withdraw an application when the specified application doesn't exist.
     def test_non_existent_application(self):
-        # Make a request to delete a specific application.
+        # Make a request to withdraw a specific application.
         response = self.client.post("/api/apps/{application_uuid}/withdraw/".
                                       format(application_uuid=uuid.uuid4()),
                                     {"lambda_instance_id": self.lambda_instance_uuid})
@@ -897,7 +924,7 @@ class TestApplicationWithdraw(APITestCase):
             format(lambda_instance_status=lambda_instance_status)
         lambda_instance.save()
 
-        # Make a request to deploy a specific application.
+        # Make a request to withdraw a specific application.
         response = self.client.post("/api/apps/{application_uuid}/withdraw/".
                                       format(application_uuid=self.application_uuid),
                                     {"lambda_instance_id": self.lambda_instance_uuid})
@@ -920,7 +947,7 @@ class TestApplicationWithdraw(APITestCase):
         # Delete the connection between the lambda instance and the application.
         LambdaInstanceApplicationConnection.objects.all().delete()
 
-        # Make a request to withraw a specific application.
+        # Make a request to withdraw a specific application.
         response = self.client.post("/api/apps/{application_uuid}/withdraw/".
                                       format(application_uuid=self.application_uuid),
                                     {"lambda_instance_id": self.lambda_instance_uuid})
@@ -948,6 +975,10 @@ class TestApplicationWithdraw(APITestCase):
 
 
 class TestApplicationsListDeployed(APITestCase):
+    """
+    Contains tests for applications list deployed API call.
+    """
+
     # Define a fake ~okeanos token.
     AUTHENTICATION_TOKEN = "fake-token"
 
@@ -1059,7 +1090,7 @@ class TestApplicationsListDeployed(APITestCase):
             self.assertIn('status', error)
             self.assertIn('detail', error)
 
-        # Assert the contents of the response
+        # Assert the contents of the response.
         self.assertEqual(response.data['errors'][0]['status'], status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['errors'][0]['detail'], CustomParseError.
                                                                messages['limit_value_error'])
@@ -1067,7 +1098,7 @@ class TestApplicationsListDeployed(APITestCase):
     # Test for listing applications deployed on a lambda instance when the lambda instance doesn't
     # exist.
     def test_non_existent_lambda_instance_id(self):
-        # Make a request to get the details of the specified application.
+        # Make a request to list the applications deployed on a lambda instance.
         response = self.client.get("/api/apps/{random_uuid}/list-deployed/".
                                    format(random_uuid=uuid.uuid4()))
 
@@ -1114,6 +1145,10 @@ class TestApplicationsListDeployed(APITestCase):
 
 
 class TestApplicationStart(APITestCase):
+    """
+    Contains tests for application start API call.
+    """
+
     # Define ~okeanos authentication url.
     AUTHENTICATION_URL = "https://accounts.okeanos.grnet.gr/identity/v2.0"
     # Define a fake ~okeanos token.
@@ -1209,7 +1244,7 @@ class TestApplicationStart(APITestCase):
                                app_action="start", app_type="streaming",
                                jar_filename="application.jar")
 
-    # Test for request to start an application when the lambda isntance id is not provided.
+    # Test for request to start an application when the lambda instance id is not provided.
     def test_no_lambda_instance_id(self):
         # Make a request to start the application without providing a lambda instance id.
         response = self.client.post("/api/apps/{application_uuid}/start/".
@@ -1411,6 +1446,10 @@ class TestApplicationStart(APITestCase):
 
 
 class TestApplicationStop(APITestCase):
+    """
+    Contains tests for application stop API call.
+    """
+
     # Define ~okeanos authentication url.
     AUTHENTICATION_URL = "https://accounts.okeanos.grnet.gr/identity/v2.0"
     # Define a fake ~okeanos token.
@@ -1448,7 +1487,7 @@ class TestApplicationStop(APITestCase):
     # Test for stopping an application on a specified lambda instance that it is already started.
     @mock.patch('backend.views.tasks.start_stop_application')
     def test_application_stop_batch(self, mock_start_stop_application_task):
-        # Make a request to start the application.
+        # Make a request to stop the application.
         response = self.client.post("/api/apps/{application_uuid}/stop/".
                                       format(application_uuid=self.application_uuid),
                                     {"lambda_instance_id": self.lambda_instance_uuid})
@@ -1481,7 +1520,7 @@ class TestApplicationStop(APITestCase):
         self.application.type = Application.STREAMING
         self.application.save()
 
-        # Make a request to start the application.
+        # Make a request to stop the application.
         response = self.client.post("/api/apps/{application_uuid}/stop/".
                                       format(application_uuid=self.application_uuid),
                                     {"lambda_instance_id": self.lambda_instance_uuid})
@@ -1570,7 +1609,7 @@ class TestApplicationStop(APITestCase):
             format(lambda_instance_status=lambda_instance_status)
         lambda_instance.save()
 
-        # Make a request to start the application.
+        # Make a request to stop the application.
         response = self.client.post("/api/apps/{application_uuid}/stop/".
                                       format(application_uuid=self.application_uuid),
                                     {"lambda_instance_id": self.lambda_instance_uuid})
@@ -1597,7 +1636,7 @@ class TestApplicationStop(APITestCase):
         self.lambda_instance.started_batch = False
         self.lambda_instance.started_streaming = False
 
-        # Make a request to start the application.
+        # Make a request to stop the application.
         response = self.client.post("/api/apps/{application_uuid}/stop/".
                                       format(application_uuid=self.application_uuid),
                                     {"lambda_instance_id": self.lambda_instance_uuid})
@@ -1618,7 +1657,7 @@ class TestApplicationStop(APITestCase):
         # Delete the connection between the application and the lambda instance.
         self.connection.delete()
 
-        # Make a request to start the application.
+        # Make a request to stop the application.
         response = self.client.post("/api/apps/{application_uuid}/stop/".
                                       format(application_uuid=self.application_uuid),
                                     {"lambda_instance_id": self.lambda_instance_uuid})
