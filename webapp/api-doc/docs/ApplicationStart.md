@@ -15,7 +15,7 @@ will reply with a "202 Accepted" code and will start the application on the lamb
 Type | Description |
 -------|-----------------|
 **Description** | application start
-**URL**         | /api/apps/[application-id]/start
+**URL**         | /api/apps/[application-id]/start/
 **HTTP Method** | POST
 **Security**    | Basic Authentication
 
