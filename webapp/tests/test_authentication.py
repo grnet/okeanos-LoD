@@ -3,6 +3,7 @@ from rest_framework.test import APITestCase
 
 from backend.exceptions import CustomAuthenticationFailed
 
+
 class TestAuthentication(APITestCase):
     """
     Contains tests for authentication API calls.
