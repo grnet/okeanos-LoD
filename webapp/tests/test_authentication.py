@@ -8,8 +8,17 @@ class TestAuthentication(APITestCase):
     Contains tests for authentication API calls.
     """
 
+    # Define a fake ~okeanos token.
+    AUTHENTICATION_TOKEN = "fake-token"
+
+    def setUp(self):
+
+        # Add a fake token to every request authentication header to be used by the API.
+        self.client.credentials(HTTP_AUTHORIZATION='Token {token}'.format(token=self.
+                                                                          AUTHENTICATION_TOKEN))
+
     # Test for making a request with an invalid token.
-    def invalid_token(self):
+    def test_invalid_token(self):
 
         # Make a request with an invalid token.
         response = self.client.get("/api/lambda-instances/")
