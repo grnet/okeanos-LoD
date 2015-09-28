@@ -29,8 +29,8 @@ pidfile=/tmp/supervisord.pid ; (supervisord pidfile;default supervisord.pid)
 nodaemon=false               ; (start in foreground if true;default false)
 minfds=1024                  ; (min. avail startup file descriptors;default 1024)
 minprocs=200                 ; (min. avail process descriptors;default 200)
+user=root                    ; (default is current user, required if root)
 ;umask=022                   ; (process file creation umask;default 022)
-;user=chrism                 ; (default is current user, required if root)
 ;identifier=supervisor       ; (supervisord identifier, default is 'supervisor')
 ;directory=/tmp              ; (default is not to cd during start)
 ;nocleanup=true              ; (don't clean up tempfiles at start;default false)
@@ -72,7 +72,9 @@ stdout_logfile=/home/kafka/supervisord_kafka_logs.log
 command={{ flink_home }}/bin/yarn-session.sh -n {{ flink_number_of_task_managers }} -tm {{ flink_ram_per_task_manager }}
 autostart=false
 user=flink
-stdout_logfile = /home/flink/supervisord_flink_logs.log
+stopsignal=INT
+stopasgroup=true
+stdout_logfile=/home/flink/supervisord_flink_logs.log
 environment=JAVA_HOME="/usr",HADOOP_HOME="/usr/local/hadoop",HADOOP_CONF_DIR="/usr/local/hadoop/etc/hadoop/"
 
 [program:flink_batch_job]

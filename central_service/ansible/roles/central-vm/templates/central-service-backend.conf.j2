@@ -10,9 +10,9 @@
 	ServerName {{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr
 
 	#ServerAdmin webmaster@localhost
-	DocumentRoot {{ repository_download_path }}/okeanos-LoD/webapp/
+	DocumentRoot {{ repository_download_path }}/okeanos-LoD/central_service/app/
 
-	WSGIScriptAlias / {{ repository_download_path }}/okeanos-LoD/webapp/webapp/wsgi.py
+	WSGIScriptAlias / {{ repository_download_path }}/okeanos-LoD/central_service/app/app/wsgi.py
 	WSGIPassAuthorization On
 
 	# Available loglevels: trace8, ..., trace1, debug, info, notice, warn,

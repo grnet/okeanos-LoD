@@ -17,7 +17,7 @@
 ############################# Server Basics #############################
 
 # The id of the broker. This must be set to a unique integer for each broker.
-broker.id=0
+broker.id={{ id }}
 
 delete.topic.enable=true
 
@@ -57,7 +57,7 @@ socket.request.max.bytes=104857600
 ############################# Log Basics #############################
 
 # A comma seperated list of directories under which to store log files
-log.dirs=/tmp/kafka-logs
+log.dirs={{ installation_path }}/kafka/kafka-logs
 
 # The default number of log partitions per topic. More partitions allow greater
 # parallelism for consumption, but this will also result in more files across
@@ -117,7 +117,7 @@ log.cleaner.enable=false
 # server. e.g. "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002".
 # You can also append an optional chroot string to the urls to specify the
 # root directory for all kafka znodes.
-zookeeper.connect=localhost:2181
+zookeeper.connect={{ hostvars[groups['master'][0]]['internal_ip'] }}:2181
 
 # Timeout in ms for connecting to zookeeper
 zookeeper.connection.timeout.ms=6000

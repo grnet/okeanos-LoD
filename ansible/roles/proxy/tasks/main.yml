@@ -1,10 +1,13 @@
 ---
 
+  - name: Copy sources list.
+    copy: src=sources.list dest=/etc/apt/sources.list owner=root group=root mode=0640
+
   - name: Copy hosts file.
     template: src=hosts.j2 dest=/etc/hosts backup=no owner=root mode=0750
 
   - name: Install squid http proxy
-    apt: name=squid3 state=latest
+    apt: name=squid3 state=latest update_cache=yes
     tags: install
 
   - name: Configure squid http proxy

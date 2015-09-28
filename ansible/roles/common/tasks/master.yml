@@ -16,7 +16,7 @@
     args:
       creates: /home/flink/.ssh/id_rsa.pub
 
-  - name: Fetch id_rsa.pub file from hduser.
+  - name: Fetch id_rsa.pub file from flink user.
     fetch: src=/home/flink/.ssh/id_rsa.pub dest=/tmp/fetched/flink_id_rsa.pub flat=yes
 
   - name: Set up ssh config for root user.
@@ -39,6 +39,9 @@
 
   - name: Put lambda init script on boot and shutdown sequence.
     command: update-rc.d lambda-init defaults
+
+  - name: Make sure the init script is started.
+    service: name=lambda-init state=started
 
   - name: Set PATH environment variable for flink user
     lineinfile: destfile="/home/flink/.bashrc"

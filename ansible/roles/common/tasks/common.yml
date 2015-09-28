@@ -5,6 +5,7 @@
 
   - name: Copy sources list.
     copy: src=sources.list dest=/etc/apt/sources.list owner=root group=root mode=0640
+    when: "'slaves' in group_names"
 
   - name: Set hostname
     hostname: name={{ inventory_hostname | replace(".vm.okeanos.grnet.gr",".local") }}
@@ -48,3 +49,13 @@
   - name: Configure supervisord for slaves.
     template: src=supervisord-slaves.conf.j2 dest=/etc/supervisor/supervisord.conf owner=root group=root mode=0600
     when: "'slaves' in group_names"
+
+  - name: Start supervisord on every node.
+    command: supervisord -c /etc/supervisor/supervisord.conf --logfile=/root/supervisord.log
+
+  - name: Distribute hduser ssh key to all nodes.
+    authorized_key: user=hduser key="{{ lookup('file', '/tmp/fetched/hduser_id_rsa.pub') }}"
+
+  - name: Distribute flink ssh key to all nodes.
+    authorized_key: user=flink key="{{ lookup('file', '/tmp/fetched/flink_id_rsa.pub') }}"
+
