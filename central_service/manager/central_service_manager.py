@@ -1,4 +1,5 @@
 import logging
+import argparse
 from fokia.vm_manager import VM_Manager
 from fokia.ansible_manager_minimal import Manager
 import os
@@ -78,3 +79,37 @@ class CentralServiceManager(object):
 
         vmmanager = VM_Manager(auth_token=self.auth_token)
         vmmanager.stop(vm_id=vm_id)
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description='Central service VM provisioning')
+    parser.add_argument('--action', type=str, dest='action', required=True,
+                        choices=['create', 'start', 'stop', 'destroy'])
+    parser.add_argument('--auth_token', type=str, dest='auth_token', required=False)
+    parser.add_argument('--vm_id', type=int, dest='vm_id')
+    parser.add_argument('--vcpus', type=int, dest='vcpus', default='4',
+                        choices=[1, 2, 4, 8])
+    parser.add_argument('--ram', type=int, dest='ram', default='4096',
+                        choices=[512, 1024, 2048, 4096, 6144, 8192])
+    parser.add_argument('--disk', type=int, dest='disk', default='40',
+                        choices=[5, 10, 20, 40, 60, 80, 100])
+    parser.add_argument('--project_name', type=str, dest='project_name', default='lambda.grnet.gr')
+    parser.add_argument('--private_key_path', type=str, dest='private_key_path')
+    parser.add_argument('--public_key_path', type=str, dest='public_key_path')
+    args = parser.parse_args()
+
+    csm = CentralServiceManager(args.auth_token)
+    if args.action == 'create':
+        csm.central_service_create(vcpus=args.vcpus, ram=args.ram, disk=args.disk,
+                                   project_name=args.project_name,
+                                   public_key_path=args.public_key_path)
+    elif args.vm_id is None:
+        raise ValueError("VM id must be specified")
+    else:
+        if args.action == 'start':
+            csm.central_service_start(vm_id=args.vm_id)
+        elif args.action == 'stop':
+            csm.central_service_start(vm_id=args.vm_id)
+        elif args.action == 'destroy':
+            csm.central_service_destroy(vm_id=args.vm_id)
