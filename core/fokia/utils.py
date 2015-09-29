@@ -20,8 +20,11 @@ def patch_certs():
     """
 
     if not defaults.CACERTS_DEFAULT_PATH:
-        config = KamakiConfig()
-        cert_path = config.get('global', 'ca_certs')
+        try:
+            config = KamakiConfig()
+            cert_path = config.get('global', 'ca_certs')
+        except:
+            cert_path = None
         if cert_path:
             https.patch_with_certs(cert_path)
         else:
