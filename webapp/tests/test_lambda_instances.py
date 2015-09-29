@@ -2,7 +2,7 @@ import uuid
 import mock
 import json
 
-from random import randint
+from random import randint, choice
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -604,13 +604,19 @@ class LambdaInstanceDestroy(APITestCase):
             create(uuid=self.lambda_instance_uuid, name="Lambda Instance created from tests")
 
         # Save the servers of the lambda instance on the database.
-        self.master_server = Server.objects.create(id=1, pub_ip="255.255.255.255", pub_ip_id=16343,
+        number_of_slaves = randint(2, 100)
+        self.slaves = list()
+        for slave_id in range(number_of_slaves):
+            self.slaves.append(Server.objects.create(id=slave_id,
+                                                     lambda_instance=self.lambda_instance))
+
+        self.master_server = Server.objects.create(id=number_of_slaves + 1,
+                                                   pub_ip="255.255.255.255", pub_ip_id=16343,
                                                    lambda_instance=self.lambda_instance)
-        self.slave_server = Server.objects.create(id=2, pub_ip_id=55634,
-                                                  lambda_instance=self.lambda_instance)
 
         # Save the private network of the lambda instance on the database.
-        self.private_network = PrivateNetwork.objects.create(id=3, gateway="192.168.0.1",
+        self.private_network = PrivateNetwork.objects.create(id=number_of_slaves + 2,
+                                                             gateway="192.168.0.1",
                                                              lambda_instance=self.lambda_instance)
 
     # Test for destroying a lambda instance.
@@ -637,12 +643,17 @@ class LambdaInstanceDestroy(APITestCase):
         self.assertEqual(response.data['status']['short_description'],
                          ResponseMessages.short_descriptions['lambda_instance_destroy'])
 
+        # Gather the ids of the slaves.
+        slave_ids = list()
+        for slave in self.slaves:
+            slave_ids.append(slave.id)
+
         # Assert that the proper tasks and views have been called.
         mock_lambda_instance_destroy_task.delay.\
             assert_called_with("{lambda_instance_id}".
                                format(lambda_instance_id=self.lambda_instance_uuid),
                                self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
-                               self.master_server.id, [self.slave_server.id],
+                               self.master_server.id, slave_ids,
                                self.master_server.pub_ip_id, self.private_network.id)
 
         mock_set_lambda_instance_status_event.delay.\
@@ -730,3 +741,221 @@ class LambdaInstanceDestroy(APITestCase):
                          CustomCantDoError.messages['cant_do'].
                          format(action="destroy", object="a lambda instance",
                                 status="CLUSTER_FAILED"))
+
+
+class TestLambdaInstanceStart(APITestCase):
+    """
+    Contains tests for lambda instance start API calls.
+    """
+
+    # Define ~okeanos authentication url.
+    AUTHENTICATION_URL = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+    # Define a fake ~okeanos token.
+    AUTHENTICATION_TOKEN = "fake-token"
+
+    def setUp(self):
+        # Create a user and force authenticate.
+        self.user = User.objects.create(uuid=uuid.uuid4())
+        self.client.force_authenticate(user=self.user)
+
+        # Add a fake token to every request authentication header to be used by the API.
+        self.client.credentials(HTTP_AUTHORIZATION='Token {token}'.format(token=self.
+                                                                          AUTHENTICATION_TOKEN))
+
+        # Save a lambda instance on the database with a specified uuid.
+        self.lambda_instance_uuid = uuid.uuid4()
+        self.lambda_instance = LambdaInstance.objects.\
+            create(uuid=self.lambda_instance_uuid, name="Lambda Instance created from tests",
+                   status=LambdaInstance.STOPPED)
+
+        # Save the servers of the lambda instance on the database.
+        number_of_slaves = randint(2, 100)
+        self.slaves = list()
+        for slave_id in range(number_of_slaves):
+            self.slaves.append(Server.objects.create(id=slave_id,
+                                                     lambda_instance=self.lambda_instance))
+
+        self.master_server = Server.objects.create(id=number_of_slaves + 1,
+                                                   pub_ip="255.255.255.255", pub_ip_id=16343,
+                                                   lambda_instance=self.lambda_instance)
+
+    # Test for starting a lambda instance.
+    @mock.patch('backend.views.events.set_lambda_instance_status')
+    @mock.patch('backend.views.tasks.lambda_instance_start')
+    def test_lambda_instance_start(self, mock_lambda_instance_start_task,
+                                   mock_set_lambda_instance_status_event):
+
+        # Make a request to start the lambda instance.
+        response = self.client.post("/api/lambda-instances/{lambda_instance_id}/".
+                                    format(lambda_instance_id=self.lambda_instance_uuid),
+                                    {"action": "start"})
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+
+        # Assert the structure of the response.
+        self.assertIn('status', response.data)
+
+        self.assertIn('code', response.data['status'])
+        self.assertIn('short_description', response.data['status'])
+
+        # Assert the contents of the response
+        self.assertEqual(response.data['status']['code'], status.HTTP_202_ACCEPTED)
+        self.assertEqual(response.data['status']['short_description'],
+                         ResponseMessages.short_descriptions['lambda_instance_action'])
+
+        # Gather the ids of the slaves.
+        slave_ids = list()
+        for slave in self.slaves:
+            slave_ids.append(slave.id)
+
+        # Assert that the proper tasks and views have been called.
+        mock_lambda_instance_start_task.delay.\
+            assert_called_with("{}".format(self.lambda_instance_uuid), self.AUTHENTICATION_URL,
+                               self.AUTHENTICATION_TOKEN,
+                               self.master_server.id, slave_ids)
+
+        mock_set_lambda_instance_status_event.delay.\
+            assert_called_with("{}".format(self.lambda_instance_uuid), LambdaInstance.STARTING)
+
+    # Test for starting a lambda instance when its status is FAILED.
+    @mock.patch('backend.views.events.set_lambda_instance_status')
+    @mock.patch('backend.views.tasks.lambda_instance_start')
+    def test_lambda_instance_start(self, mock_lambda_instance_start_task,
+                                   mock_set_lambda_instance_status_event):
+        # Change the status of the lambda instance to FAILED.
+        self.lambda_instance.status = LambdaInstance.FAILED
+        self.lambda_instance.save()
+
+        # Make a request to start the lambda instance.
+        response = self.client.post("/api/lambda-instances/{lambda_instance_id}/".
+                                    format(lambda_instance_id=self.lambda_instance_uuid),
+                                    {"action": "start"})
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+
+        # Assert the structure of the response.
+        self.assertIn('status', response.data)
+
+        self.assertIn('code', response.data['status'])
+        self.assertIn('short_description', response.data['status'])
+
+        # Assert the contents of the response
+        self.assertEqual(response.data['status']['code'], status.HTTP_202_ACCEPTED)
+        self.assertEqual(response.data['status']['short_description'],
+                         ResponseMessages.short_descriptions['lambda_instance_action'])
+
+        # Gather the ids of the slaves.
+        slave_ids = list()
+        for slave in self.slaves:
+            slave_ids.append(slave.id)
+
+        # Assert that the proper tasks and views have been called.
+        mock_lambda_instance_start_task.delay.\
+            assert_called_with("{}".format(self.lambda_instance_uuid), self.AUTHENTICATION_URL,
+                               self.AUTHENTICATION_TOKEN,
+                               self.master_server.id, slave_ids)
+
+        mock_set_lambda_instance_status_event.delay.\
+            assert_called_with("{}".format(self.lambda_instance_uuid), LambdaInstance.STARTING)
+
+    # Test for starting a lambda instance when the lambda instance doesn't exist.
+    def test_non_existent_id(self):
+        # Make a request to start the lambda instance.
+        response = self.client.post("/api/lambda-instances/{}/".format(uuid.uuid4()),
+                                    {"action": "start"})
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), 1)
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomNotFoundError.messages['lambda_instance_not_found'])
+
+    # Test for starting a lambda instance when it is already started.
+    def test_already_started(self):
+        # Change the status of the lambda instance to started.
+        self.lambda_instance.status = LambdaInstance.STARTED
+        self.lambda_instance.save()
+
+        # Make a request to start the lambda instance.
+        response = self.client.post("/api/lambda-instances/{}/".format(self.lambda_instance_uuid),
+                                    {"action": "start"})
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), 1)
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_409_CONFLICT)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomAlreadyDoneError.messages['lambda_instance_already'].
+                         format(state="started"))
+
+    # Test for starting the lambda instance when its status is not STARTED, STOPPED or FAILED.
+    def test_other_status(self):
+        # Change the status of the lambda instance to a random value except STARTED, STOPPED and
+        # FAILED.
+        values_list = [LambdaInstance.PENDING,
+                       LambdaInstance.STARTING,
+                       LambdaInstance.STOPPING,
+                       LambdaInstance.DESTROYING,
+                       LambdaInstance.DESTROYED,
+                       LambdaInstance.SCALING_UP,
+                       LambdaInstance.SCALING_DOWN,
+                       LambdaInstance.FAILED,
+                       LambdaInstance.CLUSTER_CREATED,
+                       LambdaInstance.CLUSTER_FAILED,
+                       LambdaInstance.INIT_DONE,
+                       LambdaInstance.INIT_FAILED,
+                       LambdaInstance.COMMONS_INSTALLED,
+                       LambdaInstance.COMMONS_FAILED,
+                       LambdaInstance.HADOOP_INSTALLED,
+                       LambdaInstance.HADOOP_FAILED,
+                       LambdaInstance.KAFKA_INSTALLED,
+                       LambdaInstance.KAFKA_FAILED,
+                       LambdaInstance.FLINK_INSTALLED,
+                       LambdaInstance.FLINK_FAILED]
+
+        self.lambda_instance.status = choice(values_list)
+        self.lambda_instance.save()
+
+        # Make a request to start the lambda instance.
+        response = self.client.post("/api/lambda-instances/{}/".format(self.lambda_instance_uuid),
+                                    {"action": "start"})
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), 1)
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_409_CONFLICT)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomCantDoError.messages['cant_do'].
+                                        format(action="start", object="a lambda instance",
+                                               status=LambdaInstance.status_choices[
+                                                   int(self.lambda_instance.status)][1]))
