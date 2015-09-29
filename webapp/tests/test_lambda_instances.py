@@ -7,9 +7,10 @@ from random import randint
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from backend.models import User, LambdaInstance
+from backend.models import User, LambdaInstance, Server, PrivateNetwork
 from backend.response_messages import ResponseMessages
-from backend.exceptions import CustomParseError, CustomNotFoundError
+from backend.exceptions import CustomParseError, CustomNotFoundError, CustomAlreadyDoneError,\
+    CustomCantDoError
 
 
 class TestLambdaInstanceCreate(APITestCase):
@@ -384,24 +385,24 @@ class TestLambdaInstaceDetails(APITestCase):
     # Define a fake ~okeanos token.
     AUTHENTICATION_TOKEN = "fake-token"
 
-    instance_info =  {
-          "vcpus_master": 4,
-          "project_name": "lambda.grnet.gr",
-          "public_key_name": [
+    instance_info = {
+        "vcpus_master": 4,
+        "project_name": "lambda.grnet.gr",
+        "public_key_name": [
             "key-1",
             "key-2"
-          ],
-          "master_name": "lambda-master",
-          "instance_name": "My Lambda Instance",
-          "network_request": 1,
-          "disk_slave": 20,
-          "slaves": 2,
-          "ram_slave": 4096,
-          "ram_master": 4096,
-          "vcpus_slave": 4,
-          "ip_allocation": "master",
-          "disk_master": 20
-        }
+        ],
+        "master_name": "lambda-master",
+        "instance_name": "My Lambda Instance",
+        "network_request": 1,
+        "disk_slave": 20,
+        "slaves": 2,
+        "ram_slave": 4096,
+        "ram_master": 4096,
+        "vcpus_slave": 4,
+        "ip_allocation": "master",
+        "disk_master": 20
+    }
 
     def setUp(self):
         # Create a user and force authenticate.
@@ -577,3 +578,155 @@ class TestLambdaInstaceDetails(APITestCase):
         self.assertEqual(response.data['errors'][0]['status'], status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['errors'][0]['detail'],
                          CustomNotFoundError.messages['lambda_instance_not_found'])
+
+class LambdaInstanceDestroy(APITestCase):
+    """
+    Contains tests for lambda instance destroy API call.
+    """
+
+    # Define ~okeanos authentication url.
+    AUTHENTICATION_URL = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+    # Define a fake ~okeanos token.
+    AUTHENTICATION_TOKEN = "fake-token"
+
+    def setUp(self):
+        # Create a user and force authenticate.
+        self.user = User.objects.create(uuid=uuid.uuid4())
+        self.client.force_authenticate(user=self.user)
+
+        # Add a fake token to every request authentication header to be used by the API.
+        self.client.credentials(HTTP_AUTHORIZATION='Token {token}'.format(token=self.
+                                                                          AUTHENTICATION_TOKEN))
+
+        # Save a lambda instance on the database with a specified uuid.
+        self.lambda_instance_uuid = uuid.uuid4()
+        self.lambda_instance = LambdaInstance.objects.\
+            create(uuid=self.lambda_instance_uuid, name="Lambda Instance created from tests")
+
+        # Save the servers of the lambda instance on the database.
+        self.master_server = Server.objects.create(id=1, pub_ip="255.255.255.255", pub_ip_id=16343,
+                                                   lambda_instance=self.lambda_instance)
+        self.slave_server = Server.objects.create(id=2, pub_ip_id=55634,
+                                                  lambda_instance=self.lambda_instance)
+
+        # Save the private network of the lambda instance on the database.
+        self.private_network = PrivateNetwork.objects.create(id=3, gateway="192.168.0.1",
+                                                             lambda_instance=self.lambda_instance)
+
+    # Test for destroying a lambda instance.
+    @mock.patch('backend.views.events.set_lambda_instance_status')
+    @mock.patch('backend.views.tasks.lambda_instance_destroy')
+    def test_lambda_instance_destroy(self, mock_lambda_instance_destroy_task,
+                                     mock_set_lambda_instance_status_event):
+
+        # Make a request to destroy the lambda instance.
+        response = self.client.delete("/api/lambda-instances/{id}/".
+                                      format(id=self.lambda_instance_uuid))
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+
+        # Assert the structure of the response.
+        self.assertIn('status', response.data)
+
+        self.assertIn('code', response.data['status'])
+        self.assertIn('short_description', response.data['status'])
+
+        # Assert the contents of the response
+        self.assertEqual(response.data['status']['code'], status.HTTP_202_ACCEPTED)
+        self.assertEqual(response.data['status']['short_description'],
+                         ResponseMessages.short_descriptions['lambda_instance_destroy'])
+
+        # Assert that the proper tasks and views have been called.
+        mock_lambda_instance_destroy_task.delay.\
+            assert_called_with("{lambda_instance_id}".
+                               format(lambda_instance_id=self.lambda_instance_uuid),
+                               self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
+                               self.master_server.id, [self.slave_server.id],
+                               self.master_server.pub_ip_id, self.private_network.id)
+
+        mock_set_lambda_instance_status_event.delay.\
+            assert_called_with("{lambda_instance_id}".
+                               format(lambda_instance_id=self.lambda_instance_uuid),
+                               LambdaInstance.DESTROYING)
+
+    # Test for destroying a lambda instance when the lambda instance doesn't exist.
+    def test_non_existent_id(self):
+        # Make a request to destroy the lambda instance.
+        response = self.client.delete("/api/lambda-instances/{id}/".format(id=uuid.uuid4()))
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), 1)
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomNotFoundError.messages['lambda_instance_not_found'])
+
+    # Test for destroying a lambda instance when it is already destroyed.
+    def test_already_destroyed(self):
+
+        # Change the status of the lambda instance to DESTROYED.
+        self.lambda_instance.status = LambdaInstance.DESTROYED
+        self.lambda_instance.save()
+
+        # Make a request to destroy the lambda instance.
+        response = self.client.delete("/api/lambda-instances/{id}/".
+                                      format(id=self.lambda_instance_uuid))
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), 1)
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_409_CONFLICT)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomAlreadyDoneError.messages['lambda_instance_already'].
+                         format(state="destroyed"))
+
+    # Test for destroying a lambda instance when its status is CLUSTER_FAILED.
+    def test_cluster_failed_status(self):
+
+        # Change the status of the lambda instance to CLUSTER_FAILED.
+        self.lambda_instance.status = LambdaInstance.CLUSTER_FAILED
+        self.lambda_instance.save()
+
+        # Make a request to destroy the lambda instance.
+        response = self.client.delete("/api/lambda-instances/{id}/".
+                                      format(id=self.lambda_instance_uuid))
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), 1)
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_409_CONFLICT)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomCantDoError.messages['cant_do'].
+                         format(action="destroy", object="a lambda instance",
+                                status="CLUSTER_FAILED"))

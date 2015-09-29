@@ -869,7 +869,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({
             "status": {
                 'code': status_code,
-                'short-description': ResponseMessages.short_descriptions['lambda_instance_destroy']
+                'short_description': ResponseMessages.short_descriptions['lambda_instance_destroy']
             }}, status=status_code)
 
     def parse_list_response(self, response):
