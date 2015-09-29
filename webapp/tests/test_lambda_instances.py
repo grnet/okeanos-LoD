@@ -6,7 +6,6 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from backend.models import User
-from backend.serializers import LambdaInstanceInfo
 from backend.response_messages import ResponseMessages
 
 
@@ -29,32 +28,40 @@ class TestLambdaInstanceCreate(APITestCase):
     AUTHENTICATION_TOKEN = "fake-token"
 
     # A request to create a lambda instance should include the following parameters:
-    # project name
-    project_name = "lambda.grnet.gr"
-    # instance name
-    instance_name = "My Lambda Instance"
-    # network request
-    network_request = 1
-    # master name
-    master_name = "lambda-master"
-    # vcpus master
-    vcpus_master = 4
-    # vcpus slave
-    vcpus_slave = 4
-    # ram master
-    ram_master = 4096
-    # ram slave
-    ram_slave = 4096
-    # disk master
-    disk_master = 20
-    # disk slave
-    disk_slave = 20
-    # slaves
-    slaves = 2
-    # ip allocation
-    ip_allocation = "master"
-    # public key name
-    public_key_name = ["key-1", "key-2"]
+    lambda_information = {'project_name': "lambda.grnet.gr",
+                          'instance_name': "My Lambda Instance",
+                          'network_request': 1,
+                          'master_name': "lambda-master",
+                          'vcpus_master': 4,
+                          'vcpus_slave': 4,
+                          'ram_master': 4096,
+                          'ram_slave': 4096,
+                          'disk_master': 20,
+                          'disk_slave': 20,
+                          'slaves': 2,
+                          'ip_allocation': "master",
+                          'public_key_name': ["key-1", "key-2"]}
+
+    # Gather required fields.
+    required_keys = ['project_name',
+                     'instance_name',
+                     'master_name',
+                     'vcpus_master',
+                     'vcpus_slave',
+                     'ram_master',
+                     'ram_slave',
+                     'disk_master',
+                     'disk_slave',
+                     'slaves']
+
+    # Gather fields that should take values from a specified list.
+    restricted_keys = ['vcpus_master',
+                       'vcpus_slave',
+                       'ram_master',
+                       'ram_slave',
+                       'disk_master',
+                       'disk_slave',
+                       'ip_allocation']
 
     def setUp(self):
         # Create a user and force authenticate.
@@ -73,21 +80,7 @@ class TestLambdaInstanceCreate(APITestCase):
     def test_lambda_instance_create(self, mock_create_lambda_instance_task):
 
         # Make a request to create a lambda instance.
-        lambda_information = {'project_name': self.project_name,
-                              'instance_name': self.instance_name,
-                              'network_request': self.network_request,
-                              'master_name': self.master_name,
-                              'vcpus_master': self.vcpus_master,
-                              'vcpus_slave': self.vcpus_slave,
-                              'ram_master': self.ram_master,
-                              'ram_slave': self.ram_slave,
-                              'disk_master': self.disk_master,
-                              'disk_slave': self.disk_slave,
-                              'slaves': self.slaves,
-                              'ip_allocation': self.ip_allocation,
-                              'public_key_name': self.public_key_name}
-
-        response = self.client.post("/api/lambda-instance/", lambda_information, format='json')
+        response = self.client.post("/api/lambda-instance/", self.lambda_information, format='json')
 
         # Assert the status code of the response.
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
@@ -122,4 +115,124 @@ class TestLambdaInstanceCreate(APITestCase):
         # of its first argument are equal to the data we provided.
         self.assertTrue(mock_create_lambda_instance_task.called)
         self.assertEqual(mock_create_lambda_instance_task.call_args[0][0].data,
-                         json.loads(json.dumps(lambda_information)))
+                         json.loads(json.dumps(self.lambda_information)))
+
+    # Test for request to create a lambda instance without providing each one of the mandatory
+    # information.
+    def test_field_not_provided(self):
+
+        # Iterate over the required keys removing one each time and making a request to create
+        # a lambda instance with the missing key.
+        for required_key in self.required_keys:
+            # Make a copy of the full lambda information.
+            lambda_information = self.lambda_information.copy()
+
+            # Remove the current required key from the copied lambda information.
+            del lambda_information[required_key]
+
+            # Make a request to create a lambda instance.
+            response = self.client.post("/api/lambda-instance/", lambda_information, format='json')
+
+            # Assert the status code of the response.
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+            # Assert the structure of the response.
+            self.assertIn('errors', response.data)
+
+            self.assertEqual(len(response.data['errors']), 1)
+
+            for error in response.data['errors']:
+                self.assertIn('status', error)
+                self.assertIn('detail', error)
+
+                self.assertEqual(len(error['detail']), 1)
+
+            # Assert the contents of the response.
+            self.assertEqual(response.data['errors'][0]['status'], status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(response.data['errors'][0]['detail'][0],
+                             "{field}: This field is required.".format(field=required_key))
+
+    # Test for request to create a lambda instance without providing any information.
+    def test_no_field_provided(self):
+        # Make a request to create a lambda instance.
+        response = self.client.post("/api/lambda-instance/", {}, format='json')
+
+        # Assert the status code of the response.
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), len(self.required_keys))
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+            self.assertEqual(len(error['detail']), 1)
+
+        # Assert the contents of the response.
+        # Gather all the error messages in a list.
+        error_messages = list()
+        for error in response.data['errors']:
+            self.assertEqual(error['status'], status.HTTP_400_BAD_REQUEST)
+            error_messages.append(error['detail'][0])
+
+        for required_key in self.required_keys:
+            self.assertIn("{field}: This field is required.".format(field=required_key),
+                          error_messages)
+
+    # Test for request to create a lambda instance when wrong values are provided.
+    def test_wrong_values(self):
+        # Make a request to create a lambda instance.
+        response = self.client.post("/api/lambda-instance/",
+                                    {'project_name': "lambda.grnet.gr",
+                                     'instance_name': "My Lambda Instance",
+                                     'network_request': 1,
+                                     'master_name': "lambda-master",
+                                     'vcpus_master': 5,
+                                     'vcpus_slave': 1,
+                                     'ram_master': 4097,
+                                     'ram_slave': 1000000,
+                                     'disk_master': 21,
+                                     'disk_slave': 33,
+                                     'slaves': 2,
+                                     'ip_allocation': "Hello World",
+                                     'public_key_name': ["key-1", "key-2"]},
+                                    format='json')
+
+        # Assert the status code of the response.
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), len(self.restricted_keys))
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+            self.assertEqual(len(error['detail']), 1)
+
+        # Assert the contents of the response.
+        # Gather all the error messages in a list.
+        error_messages = list()
+        for error in response.data['errors']:
+            self.assertEqual(error['status'], status.HTTP_400_BAD_REQUEST)
+            error_messages.append(error['detail'][0])
+
+        self.assertIn("vcpus_master: Wrong Number of master vcpus, available choices [2, 4, 8].",
+                      error_messages)
+        self.assertIn("vcpus_slave: Wrong Number of slave vcpus, available choices [2, 4, 8].",
+                      error_messages)
+        self.assertIn("disk_master: Wrong Size of master disk, available choices "
+                      "[5, 10, 20, 40, 60, 80, 100].", error_messages)
+        self.assertIn("disk_slave: Wrong Size of slave disk, available choices "
+                      "[5, 10, 20, 40, 60, 80, 100].", error_messages)
+        self.assertIn("ram_master: Wrong Amount of master ram, available choices "
+                      "[512, 1024, 2048, 4096, 6144, 8192].", error_messages)
+        self.assertIn("ram_slave: Wrong Amount of slave ram, available choices "
+                      "[512, 1024, 2048, 4096, 6144, 8192].", error_messages)
+        self.assertIn("ip_allocation: Wrong choice for ip_allocation, available choices "
+                      "['all', 'none', 'master'].", error_messages)

@@ -87,51 +87,56 @@ class LambdaInstanceInfo(serializers.Serializer):
     network_request = serializers.IntegerField(default=1)
     public_key_name = serializers.ListField(required=False, default=None)
 
-
     # Allowed values for fields
     allowed = {
-        "vcpus":         {8, 1, 2, 4},
-        "disks":         {100, 5, 40, 10, 80, 20, 60},
-        "ram":           {1024, 2048, 4096, 6144, 8192, 512},
-        "disk_types":    {u'drbd', u'ext_vlmc'},
-        "ip_allocation": {'all', 'none', 'master'}
+        "vcpus": [2, 4, 8],
+        "disks": [5, 10, 20, 40, 60, 80, 100],
+        "ram": [512, 1024, 2048, 4096, 6144, 8192],
+        "disk_types": [u'drbd', u'ext_vlmc'],
+        "ip_allocation": ['all', 'none', 'master']
     }
 
     def validate_vcpus_master(self, value):
         if value not in self.allowed['vcpus']:
-            raise serializers.ValidationError("Wrong Number of master vcpus")
+            raise serializers.ValidationError("Wrong Number of master vcpus, "
+                                              "available choices {}.".format(self.allowed['vcpus']))
         return value
 
     def validate_vcpus_slave(self, value):
         if value not in self.allowed['vcpus']:
-            raise serializers.ValidationError("Wrong Number of slave vcpus")
+            raise serializers.ValidationError("Wrong Number of slave vcpus, "
+                                              "available choices {}.".format(self.allowed['vcpus']))
         return value
 
     def validate_ram_master(self, value):
         if value not in self.allowed['ram']:
-            raise serializers.ValidationError("Wrong Amount of master ram")
+            raise serializers.ValidationError("Wrong Amount of master ram, "
+                                              "available choices {}.".format(self.allowed['ram']))
         return value
 
     def validate_ram_slave(self, value):
         if value not in self.allowed['ram']:
-            raise serializers.ValidationError("Wrong Amount of slave ram")
+            raise serializers.ValidationError("Wrong Amount of slave ram, "
+                                              "available choices {}.".format(self.allowed['ram']))
         return value
 
     def validate_disk_master(self, value):
         if value not in self.allowed['disks']:
-            raise serializers.ValidationError("Wrong Size of master disk")
+            raise serializers.ValidationError("Wrong Size of master disk, "
+                                              "available choices {}.".format(self.allowed['disks']))
         return value
 
     def validate_disk_slave(self, value):
         if value not in self.allowed['disks']:
-            raise serializers.ValidationError("Wrong Size of slave disk")
+            raise serializers.ValidationError("Wrong Size of slave disk, "
+                                              "available choices {}.".format(self.allowed['disks']))
         return value
 
     def validate_ip_allocation(self, value):
         if value not in self.allowed['ip_allocation']:
             raise serializers. \
-                ValidationError("Wrong choise for ip_allocation, "
-                                "available choices {}".format(self.allowed['ip_allocation']))
+                ValidationError("Wrong choice for ip_allocation, "
+                                "available choices {}.".format(self.allowed['ip_allocation']))
         return value
 
     def validate(self, data):
