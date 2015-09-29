@@ -2,11 +2,14 @@ import uuid
 import mock
 import json
 
+from random import randint
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from backend.models import User
+from backend.models import User, LambdaInstance
 from backend.response_messages import ResponseMessages
+from backend.exceptions import CustomParseError
 
 
 class TestLambdaInstanceCreate(APITestCase):
@@ -236,3 +239,138 @@ class TestLambdaInstanceCreate(APITestCase):
                       "[512, 1024, 2048, 4096, 6144, 8192].", error_messages)
         self.assertIn("ip_allocation: Wrong choice for ip_allocation, available choices "
                       "['all', 'none', 'master'].", error_messages)
+
+
+class TestLambdaInstancesList(APITestCase):
+    """
+    Contains tests for lambda instances list API call.
+    """
+
+    # Define a fake ~okeanos token.
+    AUTHENTICATION_TOKEN = "fake-token"
+
+    def setUp(self):
+        # Create a user and force authenticate.
+        self.user = User.objects.create(uuid=uuid.uuid4())
+        self.client.force_authenticate(user=self.user)
+
+        # Add a fake token to every request authentication header to be used by the API.
+        self.client.credentials(HTTP_AUTHORIZATION='Token {token}'.format(token=self.
+                                                                          AUTHENTICATION_TOKEN))
+
+    # Test for listing lambda instances.
+    def test_lambda_instances_list(self):
+        # Create some lambda instances on the database.
+        number_of_lambda_instances = randint(0, 100)
+        for i in range(number_of_lambda_instances):
+            LambdaInstance.objects.create(uuid=uuid.uuid4(),
+                                          name="lambda_instance_{i}".format(i=i))
+
+        # Make a request to list the lambda instances.
+        response = self.client.get("/api/lambda-instances/")
+
+        # Assert the structure of the response.
+        self._assert_success_request_response_structure(response)
+
+        # Assert the contents of the response.
+        self.assertEqual(len(response.data['data']), number_of_lambda_instances)
+
+        self._assert_success_request_response_content(response)
+
+    # Test for listing lambda instances when there is no lambda instances created.
+    def test_lambda_instances_list_empty(self):
+        # Make a request to list the lambda_instances.
+        response = self.client.get("/api/lambda-instances/")
+
+        # Assert the structure of the response.
+        self._assert_success_request_response_structure(response)
+
+        # Assert the contents of the response.
+        self.assertEqual(len(response.data['data']), 0)
+
+        self._assert_success_request_response_content(response)
+
+    # Test for listing lambda instances using pagination.
+    def test_lambda_instances_list_pagination(self):
+        # Create some lambda instances on the database.
+        number_of_lambda_instances = randint(0, 100)
+        for i in range(number_of_lambda_instances):
+            LambdaInstance.objects.create(uuid=uuid.uuid4(), name="lambda_instance_{i}".format(i=i))
+
+        # Make a request using both limit and offset parameters.
+        limit = randint(0, 100)
+        offset = randint(-100, 100)
+        response = self.client.get("/api/lambda-instances/?limit={limit}&offset={offset}".
+                                   format(limit=limit, offset=offset))
+
+        # Assert the structure of the response.
+        self._assert_success_request_response_structure(response)
+
+        self.assertIn('pagination', response.data)
+
+        # Assert the contents of the response.
+        number_of_expected_lambda_instances = None
+        if offset < 0:
+            number_of_expected_lambda_instances = number_of_lambda_instances
+        elif offset < number_of_lambda_instances:
+            number_of_expected_lambda_instances = number_of_lambda_instances - offset
+        else:
+            number_of_expected_lambda_instances = 0
+
+        if number_of_expected_lambda_instances >= limit:
+            self.assertEqual(len(response.data['data']), limit)
+        else:
+            self.assertEqual(len(response.data['data']), number_of_expected_lambda_instances)
+
+        if offset >= 0:
+            self._assert_success_request_response_content(response, offset)
+        else:
+            self._assert_success_request_response_content(response)
+
+    # Test for listing lambda instances when limit value for pagination is negative.
+    def test_negative_pagination_limit(self):
+        # Make a request to list the lambda instances.
+        limit = randint(-100, -1)
+        response = self.client.get("/api/lambda-instances/?limit={limit}".format(limit=limit))
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), 1)
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+        # Assert the contents of the response
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['errors'][0]['detail'], CustomParseError.
+                                                               messages['limit_value_error'])
+
+    def _assert_success_request_response_structure(self, response):
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Assert the structure of the response.
+        self.assertIn('status', response.data)
+        self.assertIn('short_description', response.data['status'])
+        self.assertIn('code', response.data['status'])
+
+        self.assertIn('data', response.data)
+        for lambda_instance in response.data['data']:
+            self.assertIn('id', lambda_instance)
+            self.assertIn('name', lambda_instance)
+
+    def _assert_success_request_response_content(self, response, offset=0):
+        # Assert the contents of the response.
+        self.assertEqual(response.data['status']['code'], status.HTTP_200_OK)
+        self.assertEqual(response.data['status']['short_description'],
+                         ResponseMessages.short_descriptions['lambda_instances_list'])
+
+        for index, lambda_instance in enumerate(response.data['data']):
+            self.assertEqual(lambda_instance['name'], "lambda_instance_{index}".
+                             format(index=index + offset))
+            self.assertRegexpMatches(lambda_instance['id'], r'^([^/.]+)$')
