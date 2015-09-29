@@ -6,7 +6,7 @@ description: Retrieve user's public keys from okeanos account
 # API - User Public Keys - Description
 The User public keys call, given an authentication token through the header Authorization, will
 connect to the ~okeanos service and retrieve the user's saved public keys. If
-the token is valid then the API will reply with a "200 Success" code, along with all the user's 
+the token is valid then the API will reply with a "200 Success" code, along with all the user's
 public keys and the names that has been assigned to them. if the token is invalid it will return
 an "401 Unauthorized" error along with details regarding the error.
 
@@ -36,29 +36,23 @@ If the authentication token is correct then the response is
 
 ```
 {
-  "status": 200,
-  "data": {
-    "keys": {
-      "main": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAB....ASDBKJ/AFuf9238h"
-    }
+  "status": {
+    "short_description": "Public keys uploaded to ~okeanos.",
+    "code": 200
   },
-  "result": "success"
-}
-```
-
-If the authentication token is not correct then the response is
-
-```
-{
-  "errors": [
+  "data": [
     {
-      "message": "Invalid token",
-      "code": 401,
-      "details": "unauthorized"
-    }
+      "content": "ssh-rsa gfadsgdssAfadsds...",
+      "fingerprint": "FC:ds:...",
+      "id": 1000,
+      "name": "key-1",
+      "uri": "/userdata/keys/1000"
+    },
   ]
 }
 ```
+
+For the case where the authentication token is not correct, refer to [Authentication page](Authentication.md).
 
 ### Response messages
 The main response messages are:

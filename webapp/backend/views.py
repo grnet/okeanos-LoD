@@ -93,29 +93,6 @@ def _parse_default_pagination_response(default_response):
     return default_response
 
 
-@api_view(['GET'])
-def user_public_keys(request):
-    """
-    Retrieves all the saved public keys from a user's account in okeanos
-    """
-    auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
-    check_status, info = check_auth_token(auth_token)
-    if not check_status:
-        error_info = json.loads(info)['unauthorized']
-        error_info['details'] = error_info.get('details') + 'unauthorized'
-
-        status_code = status.HTTP_401_UNAUTHORIZED
-        return Response({"errors": [error_info]}, status=status_code)
-    public_keys = get_public_key(auth_token)
-    return Response({
-        "status": {
-            "short_description": ResponseMessages.short_descriptions['user_public_keys'],
-            "code": 200
-        },
-        "data": public_keys
-    })
-
-
 @api_view(['GET', 'OPTION'])
 def authenticate(request):
     """
@@ -136,6 +113,28 @@ def authenticate(request):
 
         status_code = status.HTTP_401_UNAUTHORIZED
         return Response({"errors": [error_info]}, status=status_code)
+
+
+class UserPublicKeysView(APIView):
+    """
+    Implements the API calls relevant to public keys on ~okeanos.
+    """
+
+    authentication_classes = KamakiTokenAuthentication,
+    permission_classes = IsAuthenticated,
+
+    # Retrieves all the saved public keys from a user's account on okeanos.
+    def get(self, request, format=None):
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+
+        public_keys = get_public_key(auth_token)
+
+        return Response({"status": {
+            "short_description": ResponseMessages.short_descriptions['user_public_keys'],
+            "code": 200
+        },
+            "data": public_keys
+        })
 
 
 class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
