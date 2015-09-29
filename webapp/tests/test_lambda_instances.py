@@ -9,7 +9,7 @@ from rest_framework.test import APITestCase
 
 from backend.models import User, LambdaInstance
 from backend.response_messages import ResponseMessages
-from backend.exceptions import CustomParseError
+from backend.exceptions import CustomParseError, CustomNotFoundError
 
 
 class TestLambdaInstanceCreate(APITestCase):
@@ -32,7 +32,7 @@ class TestLambdaInstanceCreate(APITestCase):
 
     # A request to create a lambda instance should include the following parameters:
     lambda_information = {'project_name': "lambda.grnet.gr",
-                          'instance_name': "My Lambda Instance",
+                          'instance_name': "Lambda Instance created from tests",
                           'network_request': 1,
                           'master_name': "lambda-master",
                           'vcpus_master': 4,
@@ -374,3 +374,206 @@ class TestLambdaInstancesList(APITestCase):
             self.assertEqual(lambda_instance['name'], "lambda_instance_{index}".
                              format(index=index + offset))
             self.assertRegexpMatches(lambda_instance['id'], r'^([^/.]+)$')
+
+
+class TestLambdaInstaceDetails(APITestCase):
+    """
+    Contains tests for lambda instance details API call.
+    """
+
+    # Define a fake ~okeanos token.
+    AUTHENTICATION_TOKEN = "fake-token"
+
+    instance_info =  {
+          "vcpus_master": 4,
+          "project_name": "lambda.grnet.gr",
+          "public_key_name": [
+            "key-1",
+            "key-2"
+          ],
+          "master_name": "lambda-master",
+          "instance_name": "My Lambda Instance",
+          "network_request": 1,
+          "disk_slave": 20,
+          "slaves": 2,
+          "ram_slave": 4096,
+          "ram_master": 4096,
+          "vcpus_slave": 4,
+          "ip_allocation": "master",
+          "disk_master": 20
+        }
+
+    def setUp(self):
+        # Create a user and force authenticate.
+        self.user = User.objects.create(uuid=uuid.uuid4())
+        self.client.force_authenticate(user=self.user)
+
+        # Add a fake token to every request authentication header to be used by the API.
+        self.client.credentials(HTTP_AUTHORIZATION='Token {token}'.format(token=self.
+                                                                          AUTHENTICATION_TOKEN))
+
+        # Save a lambda instance on the database with a specified uuid.
+        self.lambda_instance_uuid = uuid.uuid4()
+        LambdaInstance.objects.create(uuid=self.lambda_instance_uuid,
+                                      name="Lambda Instance created from tests",
+                                      instance_info=json.dumps(self.instance_info))
+
+    # Test for getting the details of a lambda instance.
+    def test_lambda_instance_details(self):
+        # Make a request to get the details of the lambda instance.
+        response = self.client.get("/api/lambda-instances/{id}/".
+                                   format(id=self.lambda_instance_uuid))
+
+        # Assert the structure of the response.
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertIn('status', response.data)
+        self.assertIn('data', response.data)
+
+        self.assertIn('short_description', response.data['status'])
+        self.assertIn('code', response.data['status'])
+
+        self.assertEqual(len(response.data['data']), 1)
+        self.assertIn('info', response.data['data'][0])
+        self.assertIn('status', response.data['data'][0])
+
+        self.assertIn('id', response.data['data'][0]['info'])
+        self.assertIn('name', response.data['data'][0]['info'])
+        self.assertIn('instance_info', response.data['data'][0]['info'])
+
+        self.assertIn('message', response.data['data'][0]['status'])
+        self.assertIn('code', response.data['data'][0]['status'])
+        self.assertIn('detail', response.data['data'][0]['status'])
+
+        # Assert the content of the response.
+        self.assertEqual(response.data['status']['code'], status.HTTP_200_OK)
+        self.assertEqual(response.data['status']['short_description'],
+                         ResponseMessages.short_descriptions['lambda_instance_details'])
+
+        self.assertEqual(response.data['data'][0]['status']['code'], LambdaInstance.PENDING)
+        self.assertEqual(response.data['data'][0]['status']['message'], "PENDING")
+        self.assertEqual(response.data['data'][0]['status']['detail'],
+                         ResponseMessages.lambda_instance_status_details["PENDING"])
+
+        self.assertEqual(response.data['data'][0]['info']['id'],
+                         "{id}".format(id=self.lambda_instance_uuid))
+        self.assertEqual(response.data['data'][0]['info']['name'],
+                         "Lambda Instance created from tests")
+        self.assertEqual(response.data['data'][0]['info']['instance_info'], self.instance_info)
+
+    # Test for getting the details of a lambda instance using the filter parameter with value
+    # status.
+    def test_details_filter_status(self):
+        # Make a request to get the details of the lambda instance.
+        response = self.client.get("/api/lambda-instances/{id}/?filter=status".
+                                   format(id=self.lambda_instance_uuid))
+
+        # Assert the structure of the response.
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertIn('status', response.data)
+        self.assertIn('data', response.data)
+
+        self.assertIn('short_description', response.data['status'])
+        self.assertIn('code', response.data['status'])
+
+        self.assertEqual(len(response.data['data']), 1)
+        self.assertIn('id', response.data['data'][0])
+        self.assertIn('name', response.data['data'][0])
+        self.assertIn('status', response.data['data'][0])
+
+        self.assertIn('message', response.data['data'][0]['status'])
+        self.assertIn('code', response.data['data'][0]['status'])
+        self.assertIn('detail', response.data['data'][0]['status'])
+
+        # Assert the content of the response.
+        self.assertEqual(response.data['status']['code'], status.HTTP_200_OK)
+        self.assertEqual(response.data['status']['short_description'],
+                         ResponseMessages.short_descriptions['lambda_instance_details'])
+
+        self.assertEqual(response.data['data'][0]['status']['code'], LambdaInstance.PENDING)
+        self.assertEqual(response.data['data'][0]['status']['message'], "PENDING")
+        self.assertEqual(response.data['data'][0]['status']['detail'],
+                         ResponseMessages.lambda_instance_status_details["PENDING"])
+
+        self.assertEqual(response.data['data'][0]['id'],
+                         "{id}".format(id=self.lambda_instance_uuid))
+        self.assertEqual(response.data['data'][0]['name'], "Lambda Instance created from tests")
+
+    # Test for getting the details of a lambda instance using the filter parameter with value
+    # info.
+    def test_details_filter_info(self):
+        # Make a request to get the details of the lambda instance.
+        response = self.client.get("/api/lambda-instances/{id}/?filter=info".
+                                   format(id=self.lambda_instance_uuid))
+
+        # Assert the structure of the response.
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertIn('status', response.data)
+        self.assertIn('data', response.data)
+
+        self.assertIn('short_description', response.data['status'])
+        self.assertIn('code', response.data['status'])
+
+        self.assertEqual(len(response.data['data']), 1)
+        self.assertIn('info', response.data['data'][0])
+
+        self.assertIn('id', response.data['data'][0]['info'])
+        self.assertIn('name', response.data['data'][0]['info'])
+        self.assertIn('instance_info', response.data['data'][0]['info'])
+
+        # Assert the content of the response.
+        self.assertEqual(response.data['status']['code'], status.HTTP_200_OK)
+        self.assertEqual(response.data['status']['short_description'],
+                         ResponseMessages.short_descriptions['lambda_instance_details'])
+
+        self.assertEqual(response.data['data'][0]['info']['id'],
+                         "{id}".format(id=self.lambda_instance_uuid))
+        self.assertEqual(response.data['data'][0]['info']['name'],
+                         "Lambda Instance created from tests")
+        self.assertEqual(response.data['data'][0]['info']['instance_info'], self.instance_info)
+
+    # Test for getting the details of a lambda instance using the filter parameter with a
+    # wrong value.
+    def test_details_filter_wrong(self):
+        # Make a request to get the details of the lambda instance.
+        response = self.client.get("/api/lambda-instances/{id}/?filter=wrong_value".
+                                   format(id=self.lambda_instance_uuid))
+
+        # Assert the structure of the response.
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), 1)
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+        # Assert the content of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomParseError.messages['filter_value_error'])
+
+    # Test for requesting the details of a lambda instance that doesn't exist.
+    def test_non_existent_id(self):
+        # Make a request to get the details of the lambda instance.
+        response = self.client.get("/api/lambda-instances/{id}/".format(id=uuid.uuid4()))
+
+        # Assert the structure of the response.
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        self.assertIn('errors', response.data)
+
+        self.assertEqual(len(response.data['errors']), 1)
+
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+        # Assert the content of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomNotFoundError.messages['lambda_instance_not_found'])
