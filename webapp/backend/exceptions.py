@@ -65,7 +65,6 @@ class CustomAlreadyDoneError(APIException):
                                "has already been started.",
         'job_already_stopped': "The {type} job on the specified lambda instance "
                                "has already been stopped."
-
     }
 
 

@@ -35,6 +35,7 @@ script:
  - cd ../
  - python render_django_settings.py
 
+ - pip install -r devel_requirements.txt
  - cd webapp
  - pip install -r requirements.txt
 # - cd ansible
