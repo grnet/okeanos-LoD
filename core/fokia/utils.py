@@ -25,7 +25,7 @@ def patch_certs():
             cert_path = config.get('global', 'ca_certs')
         except:
             cert_path = None
-        if cert_path:
+        if cert_path and os.path.exists(cert_path):
             https.patch_with_certs(cert_path)
         else:
             try:
@@ -35,7 +35,7 @@ def patch_certs():
             except:
                 pass
             try_path = '/etc/ssl/certs/ca-certificates.crt'
-            if cert_path:
+            if cert_path and os.path.exists(cert_path):
                 https.patch_with_certs(cert_path)
             elif os.path.exists(try_path):
                 https.patch_with_certs(try_path)
