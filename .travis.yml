@@ -47,7 +47,8 @@ script:
  - python manage.py makemigrations
  - python manage.py syncdb --noinput
  - python manage.py migrate
- - python manage.py test
+ - coverage run --source='.' --omit="*tests*","*webapp/webapp*","*webapp/backend/migrations*","*__init__*","*manage.py*" manage.py test
+ - coverage report
 
 env:
 #  - DJANGO_SETTINGS_MODULE="webapp.settings" TOXENV_CORE=py27
