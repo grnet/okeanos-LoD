@@ -1,6 +1,5 @@
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.views import exceptions
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 
 from fokia.utils import check_auth_token
@@ -13,13 +12,28 @@ from .exceptions import CustomAuthenticationFailed
 
 
 class OldTokenException(Exception):
+    """
+    Exception class signifying that the authentication token inside the database
+    to which the user was matched is more than X days old, in which case a cross-reference
+    with Kamaki is needed.
+    """
     pass
 
 
 class KamakiTokenAuthentication(TokenAuthentication):
+    """
+    Token authentication class for restricing access to the LoD Central Service API.
+    """
+
+    # Model against which the authentication is made.
     model = Token
 
     def authenticate_credentials(self, key):
+        """
+        The actual authentication method.
+        :param key: Key is the token passed from the user.
+        :return: Tuple with the owner of the token (User) and their respective token.
+        """
         hashed_token_key = make_password(key, salt=settings.STATIC_SALT)
         try:
             token = self.model.objects.get(key=hashed_token_key)

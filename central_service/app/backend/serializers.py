@@ -1,10 +1,6 @@
 from rest_framework import serializers
 from .models import LambdaInstance, LambdaApplication, User
 
-# class ApplicationSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = LambdaApplication
-#         fields = ('id', 'description')
 
 class LambdaInstanceSerializer(serializers.ModelSerializer):
     """
@@ -14,6 +10,7 @@ class LambdaInstanceSerializer(serializers.ModelSerializer):
         model = LambdaInstance
         fields = ('uuid', 'name', 'instance_info',
                   'status', 'failure_message',)
+
 
 class UserSerializer(serializers.ModelSerializer):
     """
@@ -26,6 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('uuid', 'lambda_instances')
 
+
 class LambdaApplicationSerializer(serializers.ModelSerializer):
     """
     A serializer for LambdaApplication objects.
@@ -34,6 +32,7 @@ class LambdaApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = LambdaApplication
         fields = ('uuid', 'description', 'name', 'status', 'failure_message')
+
 
 class LambdaInstanceInfo(serializers.Serializer):
     """

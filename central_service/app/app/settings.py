@@ -114,7 +114,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-## Since we cannot have a salt for each account, we have one per application.
+# Since we cannot have a salt for each account, we have one per application.
 STATIC_SALT = get_random_string()
 
 # Celery configuration #
@@ -125,27 +125,27 @@ CELERY_QUEUES = (
 )
 
 CELERY_ROUTES = {
-    'backend.events.createLambdaInstance':{
+    'backend.events.createLambdaInstance': {
         'queue': 'events_queue',
         'routing_key': 'event_key'
     },
-    'backend.events.updateLambdaInstanceStatus':{
+    'backend.events.updateLambdaInstanceStatus': {
         'queue': 'events_queue',
         'routing_key': 'event_key'
     },
-    'backend.events.deleteLambdaInstance':{
+    'backend.events.deleteLambdaInstance': {
         'queue': 'events_queue',
         'routing_key': 'event_key'
     },
-    'backend.events.updateLambdaApplicationStatus':{
+    'backend.events.updateLambdaApplicationStatus': {
         'queue': 'events_queue',
         'routing_key': 'event_key'
     },
-    'backend.events.createLambdaApplication':{
+    'backend.events.createLambdaApplication': {
         'queue': 'events_queue',
         'routing_key': 'event_key'
     },
-    'backend.events.deleteLambdaApplication':{
+    'backend.events.deleteLambdaApplication': {
         'queue': 'events_queue',
         'routing_key': 'event_key'
     },

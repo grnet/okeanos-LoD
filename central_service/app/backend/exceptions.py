@@ -10,11 +10,17 @@ from rest_framework.exceptions import APIException, ValidationError
 
 
 class CustomAuthenticationFailed(APIException):
+    """
+    Exception thrown when the user fails to authenticate properly.
+    """
     status_code = status.HTTP_401_UNAUTHORIZED
     default_detail = "Unauthorized. Request failed because user provided an invalid token."
 
 
 class CustomNotFoundError(APIException):
+    """
+    Exception thrown when a specific resource cannot be found.
+    """
     status_code = status.HTTP_404_NOT_FOUND
     default_detail = "Not Found."
 
@@ -25,16 +31,25 @@ class CustomNotFoundError(APIException):
 
 
 class CustomAlreadyDoneError(APIException):
+    """
+    Exception thrwon when the specified action has already been made.
+    """
     status_code = status.HTTP_409_CONFLICT
     default_detail = "Already Done."
 
     messages = {
-        'lambda_instance_already_exists': "The specified lambda instance has already been created.",
-        'lambda_application_already_exists': "The specified lambda application has already been created.",
+        'lambda_instance_already_exists': "The specified lambda instance "
+                                          "has already been created.",
+        'lambda_application_already_exists': "The specified lambda "
+                                             "application has already been created.",
         'lambda_instance_already': "The specified lambda instance is already {state}."
     }
 
+
 class CustomParseError(APIException):
+    """
+    Exception thrown when a parsing error is in place.
+    """
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = "Parse error."
 
@@ -44,6 +59,9 @@ class CustomParseError(APIException):
 
 
 class CustomValidationError(ValidationError):
+    """
+    Exception thrown when a validation cannot be passed for the given data.
+    """
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = "Validation Error."
 
@@ -55,8 +73,10 @@ class CustomValidationError(ValidationError):
     }
 
 
-
 class CustomCantDoError(APIException):
+    """
+    Exception thrown when the specified action cannot continue due to conflicts.
+    """
     status_code = status.HTTP_409_CONFLICT
     default_detail = "Can't do."
 
@@ -65,6 +85,7 @@ class CustomCantDoError(APIException):
     }
 
 
+# Tuple containing all the custom exceptions.
 custom_exceptions = (CustomAuthenticationFailed, CustomParseError, CustomValidationError,
                      CustomNotFoundError, CustomAlreadyDoneError, CustomCantDoError)
 
@@ -90,6 +111,12 @@ def parse_custom_exception(exception, default_response):
 
 
 def custom_exception_handler(exc, context):
+    """
+    A parser for the customized exceptions thrown.
+    :param exc: The exception raised.
+    :param context: The context of the exception.
+    :return: A response to the user.
+    """
 
     default_response = exception_handler(exc, context)
 

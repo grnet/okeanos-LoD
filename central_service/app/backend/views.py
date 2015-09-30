@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from rest_framework import status as rest_status
-from rest_framework import generics, mixins
+from rest_framework import mixins
 from rest_framework.views import APIView
-from .models import LambdaInstance, LambdaApplication, User, Token
+from .models import LambdaInstance, LambdaApplication, User
 from .serializers import (UserSerializer, LambdaInstanceSerializer, LambdaApplicationSerializer)
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route
@@ -14,20 +14,20 @@ from rest_framework.pagination import LimitOffsetPagination
 from .authenticate_user import KamakiTokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from .exceptions import CustomParseError, CustomValidationError, CustomNotFoundError,\
-    CustomAlreadyDoneError, CustomCantDoError
+from .exceptions import CustomParseError, CustomNotFoundError, \
+    CustomAlreadyDoneError
 
 from .response_messages import ResponseMessages
 import events
 
 from django.conf import settings
 
+
 def _paginate_response(request, default_response):
     """
     This method is used to paginate a list response. The pagination method used is the default
     Django Rest Framework pagination.
     :param request: The request given to the calling view.
-    :param view: The view object calling this method.
     :return: Returns the paginated response.
     :rtype : object
     """
@@ -82,16 +82,21 @@ class UsersViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Viewset for viewing Users.
     """
-
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+
 class LambdaUsersCounterView(APIView):
+    """
+    View for views active Lambda Users.
+    """
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
     def get(self, request, format=None):
         if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql_psycopg2':
-            lambdaUsersCount = LambdaInstance.objects.all().order_by('owner').distinct('owner').count() # This works only on Postgres
+            # This works only on Postgres
+            lambdaUsersCount = LambdaInstance.objects.all(). \
+                order_by('owner').distinct('owner').count()
         else:
             lambdaUsersCount = LambdaInstance.objects.values('owner').distinct().count()
 
@@ -110,12 +115,13 @@ class LambdaUsersCounterView(APIView):
             status=status_code)
 
 
-
 class LambdaInstanceView(mixins.ListModelMixin,
                          viewsets.GenericViewSet):
     """
-    APIView for viewing lambda instances
+    APIView for viewing lambda instances.
     """
+
+    # The queryset is only the lambda applications the user making the response owns.
     def get_queryset(self):
         return LambdaInstance.objects.filter(owner=self.request.user)
 
@@ -128,10 +134,10 @@ class LambdaInstanceView(mixins.ListModelMixin,
 
     lookup_field = 'uuid'
 
-
+    # POST /api/lambda_instances/
     def create(self, request, *args, **kwargs):
         """
-        Create api call for lambda_instance.
+        Create api call responder for lambda_instance. Assigns the creation task to a celery worker.
         :param request: The HTTP POST request making the call.
         :param args:
         :param kwargs:
@@ -148,18 +154,11 @@ class LambdaInstanceView(mixins.ListModelMixin,
 
         matching_instances = LambdaInstance.objects.filter(uuid=uuid)
         if matching_instances.exists():
-            raise CustomAlreadyDoneError(CustomAlreadyDoneError.messages[
-                'lambda_instance_already_exists'
-                                         ])
+            raise CustomAlreadyDoneError(
+                CustomAlreadyDoneError.messages['lambda_instance_already_exists']
+            )
 
-        # Parse request json into a custom serializer
-        # lambda_info = LambdaInstanceInfo(data=request.data)
-        # try:
-        #     # Check Instance info validity
-        #     lambda_info.is_valid(raise_exception=True)
-        # except ValidationError as exception:
-        #     raise CustomValidationError(exception.detail)
-
+        # create the celery task
         create_event = events.createLambdaInstance.delay(uuid=uuid, instance_name=instance_name,
                                                          instance_info=instance_info, owner=owner,
                                                          status=status,
@@ -167,25 +166,36 @@ class LambdaInstanceView(mixins.ListModelMixin,
 
         status_code = rest_status.HTTP_202_ACCEPTED
         if settings.DEBUG:
-            return Response({"status": {"code": status_code,
-                                   "short_description": ResponseMessages.short_descriptions[
-                                       'lambda_instances_create']},
-                         "data": [
-                             {"id": uuid}
-                         ],
-                         "debug": create_event.status
-                         }, status=status_code)
+            return Response({"status":
+                                 {
+                                     "code": status_code,
+                                     "short_description":
+                                         ResponseMessages.short_descriptions['lambda_'
+                                                                             'instances_'
+                                                                             'create']
+                                 },
+                             "data": [{"id": uuid}],
+                             "debug": create_event.status
+                             }, status=status_code)
         else:
             return Response({"status": {"code": status_code,
-                                   "short_description": ResponseMessages.short_descriptions[
-                                       'lambda_instances_create']},
-                         "data": [
-                             {"id": uuid}
-                         ],}, status=status_code)
+                                        "short_description": ResponseMessages.short_descriptions[
+                                            'lambda_instances_create']},
+                             "data": [{"id": uuid}],
+                             }, status=status_code)
 
+    # POST /lambda_instances/[uuid]/status
     @detail_route(methods=['post'], url_path="status")
     def updateStatus(self, request, uuid, *args, **kwargs):
-
+        """
+        Update status of a lambda instance in the database API call responder. Assigns the update
+        task to a celery worker.
+        :param request: The request made by the user.
+        :param uuid: The uuid of the Lambda Instance to alter.
+        :param args:
+        :param kwargs:
+        :return: A response object according to the outcome of the call.
+        """
         matching_instances = LambdaInstance.objects.filter(uuid=uuid)
         if not matching_instances.exists():
             raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
@@ -209,7 +219,7 @@ class LambdaInstanceView(mixins.ListModelMixin,
             return Response({
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
-                                       'lambda_instances_update']},
+                               'lambda_instances_update']},
                 "data": [{"id": uuid}],
                 "debug": update_event.status,
             }, status=status_code)
@@ -217,12 +227,21 @@ class LambdaInstanceView(mixins.ListModelMixin,
             return Response({
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
-                                       'lambda_instances_update']},
+                               'lambda_instances_update']},
                 "data": [{"id": uuid}],
             }, status=status_code)
 
+    # DELETE /api/lambda_instances/[uuid]
     def destroy(self, request, uuid, *args, **kwargs):
-
+        """
+        Delete API call responder for Lambda Instances.
+        Assigns the deletion task to a celery worker.
+        :param request: The request made by the user.
+        :param uuid: The uuid of the Lambda Instance to delete.
+        :param args:
+        :param kwargs:
+        :return: A response object according to the outcome of the call.
+        """
         lambda_instances = LambdaInstance.objects.filter(uuid=uuid)
         if not lambda_instances.exists():
             raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
@@ -235,37 +254,53 @@ class LambdaInstanceView(mixins.ListModelMixin,
             return Response({
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
-                                       'lambda_instances_delete']},
-                "data": [{"id": uuid},],
+                               'lambda_instances_delete']},
+                "data": [{"id": uuid}, ],
                 "debug": destroy_event.status,
             }, status=status_code)
         else:
             return Response({
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
-                                       'lambda_instances_delete']},
-                "data": [{"id": uuid},],
+                               'lambda_instances_delete']},
+                "data": [{"id": uuid}, ],
             }, status=status_code)
 
+    # GET /api/lambda_instances
     def list(self, request, *args, **kwargs):
+        """
+        List API call responder for Lambda Instances. Lists all the lambda instances that
+        the user making the call owns.
+        :param request: The request made by the user.
+        :param args:
+        :param kwargs:
+        :return: A response object according to the outcome of the call.
+        """
         response = _paginate_response(request, super(LambdaInstanceView, self).list(request))
         return LambdaInstanceView._embed_status_to_response(response)
 
     @staticmethod
     def _embed_status_to_response(default_response):
-        # default_response.data = { "data": default_response.data }
+        """
+        Appends status information to the response object.
+        :param default_response: the input response.
+        :return: The updated with the status response.
+        """
         default_response.data['status'] = dict()
         default_response.data['status']['code'] = default_response.status_code
-        default_response.data['status']['short_description'] = ResponseMessages.short_descriptions['lambda_instances_list']
+        default_response.data['status']['short_description'] = \
+            ResponseMessages.short_descriptions['lambda_instances_list']
 
         return default_response
 
 
-
 class LambdaInstanceCounterView(APIView):
-
+    """
+    APIView class for showing the active lambda instances count.
+    """
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
+    # GET /api/lambda_instances/count
     def get(self, request, format=None):
         activeLambdaInstances = LambdaInstance.objects.filter(status="20").count()
         status_code = rest_status.HTTP_200_OK
@@ -273,7 +308,8 @@ class LambdaInstanceCounterView(APIView):
             {
                 "status": {
                     "code": status_code,
-                    "short_description": ResponseMessages.short_descriptions['lambda_instances_count'],
+                    "short_description":
+                        ResponseMessages.short_descriptions['lambda_instances_count'],
                 },
                 "data": {
                     "count": str(activeLambdaInstances),
@@ -282,9 +318,14 @@ class LambdaInstanceCounterView(APIView):
             },
             status=status_code)
 
+
 class LambdaApplicationView(mixins.ListModelMixin,
                             viewsets.GenericViewSet):
+    """
+    APIView for viewing lambda applications.
+    """
 
+    # The queryset is only the lambda applications the user making the response owns.
     def get_queryset(self):
         return LambdaApplication.objects.filter(owner=self.request.user)
 
@@ -296,9 +337,11 @@ class LambdaApplicationView(mixins.ListModelMixin,
 
     lookup_field = 'uuid'
 
+    # POST /api/lambda_applications/
     def create(self, request, *args, **kwargs):
         """
-        Create api call for lambda_application.
+        Create api call responder for lambda_application.
+        Assigns the deletion task to a celery worker.
         :param request: The HTTP POST request making the call.
         :param args:
         :param kwargs:
@@ -315,9 +358,9 @@ class LambdaApplicationView(mixins.ListModelMixin,
 
         matching_applications = LambdaApplication.objects.filter(uuid=uuid)
         if matching_applications.exists():
-            raise CustomAlreadyDoneError(CustomAlreadyDoneError.messages[
-                'lambda_application_already_exists'
-                                         ])
+            raise CustomAlreadyDoneError(
+                CustomAlreadyDoneError.messages['lambda_application_already_exists']
+            )
 
         create_event = events.createLambdaApplication.delay(
             uuid, status=status, name=name, description=description,
@@ -330,20 +373,30 @@ class LambdaApplicationView(mixins.ListModelMixin,
             return Response({
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
-                                       'lambda_applications_create']},
+                               'lambda_applications_create']},
                 "debug": create_event.status,
-                "data": [{"id": uuid},],
+                "data": [{"id": uuid}, ],
             }, status=status_code)
         else:
             return Response({
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
-                                       'lambda_application_create']},
-                "data": [{"id": uuid},],
+                               'lambda_application_create']},
+                "data": [{"id": uuid}, ],
             }, status=status_code)
 
+    # POST /api/lambda_applications/status
     @detail_route(methods=['post'], url_path="status")
     def updateStatus(self, request, uuid, *args, **kwargs):
+        """
+        Update status of a lambda application in the database API call responder. Assigns the update
+        task to a celery worker.
+        :param request: The request made by the user.
+        :param uuid: The uuid of the Lambda Instance to alter.
+        :param args:
+        :param kwargs:
+        :return: A response object according to the outcome of the call.
+        """
 
         matching_applications = self.get_queryset().filter(uuid=uuid)
         if not matching_applications.exists():
@@ -366,7 +419,7 @@ class LambdaApplicationView(mixins.ListModelMixin,
             return Response({
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
-                                       'lambda_applications_update']},
+                               'lambda_applications_update']},
                 "data": [{"id": uuid}],
                 "debug": update_event.status,
             }, status=status_code)
@@ -374,12 +427,20 @@ class LambdaApplicationView(mixins.ListModelMixin,
             return Response({
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
-                                       'lambda_applications_update']},
+                               'lambda_applications_update']},
                 "data": [{"id": uuid}],
             }, status=status_code)
 
     def destroy(self, request, uuid, *args, **kwargs):
-
+        """
+        Delete API call responder for Lambda Applications.
+        Assigns the deletion task to a celery worker.
+        :param request: The request made by the user.
+        :param uuid: The uuid of the Lambda Application to delete.
+        :param args:
+        :param kwargs:
+        :return: A response object according to the outcome of the call.
+        """
         applications = self.get_queryset().filter(uuid=uuid)
         if not applications.exists():
             raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
@@ -392,19 +453,27 @@ class LambdaApplicationView(mixins.ListModelMixin,
             return Response({
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
-                                       'lambda_applications_delete']},
-                "data": [{"id": uuid},],
+                               'lambda_applications_delete']},
+                "data": [{"id": uuid}, ],
                 "debug": destroy_event.status,
             }, status=status_code)
         else:
             return Response({
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
-                                       'lambda_applications_delete']},
-                "data": [{"id": uuid},],
+                               'lambda_applications_delete']},
+                "data": [{"id": uuid}, ],
             }, status=status_code)
 
     def list(self, request, *args, **kwargs):
+        """
+        List API call responder for Lambda Applications. Lists all the lambda applications that
+        the user making the call owns.
+        :param request: The request made by the user.
+        :param args:
+        :param kwargs:
+        :return: A response object according to the outcome of the call.
+        """
         response = _paginate_response(request, super(LambdaApplicationView, self).list(request))
         return LambdaApplicationView._embed_status_to_response(response)
 
@@ -413,13 +482,16 @@ class LambdaApplicationView(mixins.ListModelMixin,
         # default_response.data = { "data": default_response.data }
         default_response.data['status'] = dict()
         default_response.data['status']['code'] = default_response.status_code
-        default_response.data['status']['short_description'] = ResponseMessages.short_descriptions['lambda_applications_list']
+        default_response.data['status']['short_description'] = \
+            ResponseMessages.short_descriptions['lambda_applications_list']
 
         return default_response
 
 
 class LambdaApplicationCounterView(APIView):
-
+    """
+    APIView class for showing the active lambda applications count.
+    """
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
     def get(self, request, format=None):
@@ -430,7 +502,9 @@ class LambdaApplicationCounterView(APIView):
             {
                 "status": {
                     "code": status_code,
-                    "short_description": ResponseMessages.short_descriptions['lambda_applications_count'],
+                    "short_description": ResponseMessages.short_descriptions[
+                        'lambda_applications_count'
+                    ],
                 },
                 "data": {
                     "count": str(activeLambdaApplications),

@@ -1,13 +1,12 @@
 from django.db import models
 import uuid
 
-# Create your models here.
 
 class User(models.Model):
     """
     Stores information about every lambda-user.
-    id: the okeanos id of the user.
-    token: the okeanos token of the user.
+    id: Auto generated id for the database.
+    uuid: Unique Identifier for each user.
     """
     id = models.AutoField("id", primary_key=True)
     uuid = models.CharField("uuid", null=False, blank=False,
@@ -26,7 +25,12 @@ class User(models.Model):
     def is_authenticated(self, *args):
         return True
 
+
 class Token(models.Model):
+    """
+    Model representing the authentication token of a user.
+    One-to-one relationship with the User.
+    """
     user = models.OneToOneField(User, related_name='kamaki_token')
     key = models.CharField(max_length=100, null=True)
     creation_date = models.DateTimeField('Creation Date')
@@ -35,18 +39,22 @@ class Token(models.Model):
         info = "User: " + self.user.uuid + \
             "key: " + self.key + \
             "creation_date" + str(self.creation_date)
-
+        return info
 
     class Meta:
         verbose_name = "Token"
         app_label = "backend"
 
+
 class LambdaInstance(models.Model):
     """
     Stores every lambda instance created for the LoD service.
-    id: a unique identifier the service creates for every Lambda Instance.
+    id: Auto generated id for the database.
     uuid: A unique id assigned to every Lambda Instance. This key will be used by the API
           to reference a specific Lambda Instance.
+    name: The name for the specific lambda instance.
+    owner: The owner of the specific lambda instance. Instance of the User model.
+    status: The status of the lambda instance.
     failure_message: Message that denotes the reason of failure of the lambda instance.
     """
     id = models.AutoField("Instance ID", primary_key=True, null=False,
@@ -64,7 +72,7 @@ class LambdaInstance(models.Model):
                             default=uuid.uuid4,
                             help_text="Unique key assigned to every instance.")
 
-    owner = models.ForeignKey(User, limit_choices_to={ 'is_authenticated': True },
+    owner = models.ForeignKey(User, limit_choices_to={'is_authenticated': True},
                               related_name="lambda_instances",
                               on_delete=models.CASCADE)
 
@@ -116,7 +124,6 @@ class LambdaInstance(models.Model):
         (KAFKA_FAILED, 'KAFKA_FAILED'),
         (FLINK_INSTALLED, 'FLINK_INSTALLED'),
         (FLINK_FAILED, 'FLINK_FAILED'),
-
     )
     status = models.CharField(max_length=10, choices=status_choices, default=PENDING,
                               help_text="The status of this instance.")
@@ -130,16 +137,25 @@ class LambdaInstance(models.Model):
         verbose_name = "Lambda Instance"
         app_label = 'backend'
 
+
 class LambdaApplication(models.Model):
     """
     Table representing a lambda application running/to-run on a lambda cluster.
+    id: Auto generated id for the database.
+    uuid: A unique id assigned to every Lambda Application. This key will be used by the API
+          to reference a specific Lambda Application.
+    name: The name for the specific lambda application
+    description: A description for the specific lambda application
+    owner: The owner of the specific lambda application. Is an instance of the User model.
+    status: The status of the lambda instance.
+    failure_message: Message that denotes the reason of failure of the lambda instance.
     """
     id = models.AutoField("Lambda Application ID", primary_key=True, null=False,
                           help_text="Auto-increment instance id.")
     uuid = models.UUIDField("uuid", unique=True, default=uuid.uuid4, help_text="Application uuid.")
     name = models.CharField(max_length=100, default="")
-    description = models.TextField(blank="True", help_text='The description of the lambda application running on'
-                                                           'an instance')
+    description = models.TextField(blank="True", help_text='The description of the lambda '
+                                                           'application running on an instance')
     owner = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, null=True)
 
     UPLOADED = "0"
@@ -157,26 +173,26 @@ class LambdaApplication(models.Model):
 
     def __unicode__(self):
         unicode_str = "Application id: " + str(self.id) + "\n" + \
-               "Description: " + str(self.description)
+                      "Description: " + str(self.description)
         return unicode_str
 
-
-class LambdaInstanceApplicationConnection(models.Model):
-    """
-    Connection table for lambda instance and project.
-    :model: models.LambdaInstance
-    :model: models.Project
-    """
-    application = models.ForeignKey(LambdaApplication, null=False, blank=False, unique=False,
-                                on_delete=models.CASCADE)
-    lambda_instance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False,
-                                        on_delete=models.CASCADE)
-
-    def __unicode__(self):
-        info = "Application: " + self.project + "\n" + \
-               "LambdaInstance: " + self.lambda_instance
-        return info
-
-    class Meta:
-        verbose_name = "LambdaInstanceProjectConnection"
-        app_label = 'backend'
+# May be used
+# class LambdaInstanceApplicationConnection(models.Model):
+#     """
+#     Connection table for lambda instance and project.
+#     :model: models.LambdaInstance
+#     :model: models.Project
+#     """
+#     application = models.ForeignKey(LambdaApplication, null=False, blank=False, unique=False,
+#                                 on_delete=models.CASCADE)
+#     lambda_instance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False,
+#                                         on_delete=models.CASCADE)
+#
+#     def __unicode__(self):
+#         info = "Application: " + self.project + "\n" + \
+#                "LambdaInstance: " + self.lambda_instance
+#         return info
+#
+#     class Meta:
+#         verbose_name = "LambdaInstanceProjectConnection"
+#         app_label = 'backend'

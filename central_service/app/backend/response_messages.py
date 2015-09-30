@@ -7,19 +7,22 @@ class ResponseMessages:
         pass
 
     short_descriptions = {
-        'lambda_instances_create': "Your request to create a new lambda instance has been accepted.",
+        'lambda_instances_create': "Your request to create a "
+                                   "new lambda instance has been accepted.",
         'lambda_instances_list': "Lambda instances.",
         'lambda_instances_details': "Lambda instance details.",
         'lambda_instances_action': "Your request has been accepted.",
         'lambda_instances_delete': "Your request to destroy the specified lambda instance has been"
                                    " accepted.",
-        'lambda_instances_count': "Lamdba instances count.",
+        'lambda_instances_count': "Lambda instances count.",
         'lambda_instances_update': "Lambda instances status update accepted.",
 
-        'lambda_applications_create': "Your request to create the specified application has been accepted.",
+        'lambda_applications_create': "Your request to create the specified application"
+                                      " has been accepted.",
         'lambda_applications_list': "Lambda Applications.",
         'lambda_applications_details': "Lambda Application details.",
-        'lambda_applications_delete': "Your request to delete the specified application has been accepted.",
+        'lambda_applications_delete': "Your request to delete the specified application"
+                                      " has been accepted.",
         'lambda_applications_count': 'Lambda applications count.',
         'lambda_applications_update': "Lambda application status update accepted.",
 
