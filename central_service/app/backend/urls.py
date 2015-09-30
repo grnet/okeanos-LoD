@@ -8,11 +8,11 @@ users_router.register(r'users', views.UsersViewSet)
 users_router.include_format_suffixes = False
 
 lambda_instances_router = DefaultRouter()
-lambda_instances_router.register(r'lambda_instances', views.LambdaInstanceView)
+lambda_instances_router.register(r'lambda_instances', views.LambdaInstanceView, base_name='lambda_instances')
 lambda_instances_router.include_format_suffixes = False
 
 lambda_applications_router = DefaultRouter()
-lambda_applications_router.register(r'lambda_applications', views.LambdaApplicationView)
+lambda_applications_router.register(r'lambda_applications', views.LambdaApplicationView, base_name='lambda_applications')
 lambda_applications_router.include_format_suffixes = False
 
 urlpatterns = [

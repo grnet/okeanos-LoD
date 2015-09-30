@@ -69,7 +69,9 @@ class LambdaInstanceView(mixins.RetrieveModelMixin,
     """
     APIView for viewing lambda instances
     """
-    queryset = LambdaInstance.objects.all()
+    def get_queryset(self):
+        return LambdaInstance.objects.filter(owner=self.request.user)
+
     serializer_class = LambdaInstanceSerializer
     authentication_classes = KamakiTokenAuthentication,
     permission_classes = IsAuthenticated,
@@ -127,8 +129,10 @@ class LambdaInstanceView(mixins.RetrieveModelMixin,
         # except ValidationError as exception:
         #     raise CustomValidationError(exception.detail)
 
-        create_event = events.createLambdaInstance.delay(uuid, instance_name, instance_info, owner, status,
-                                                         failure_message)
+        create_event = events.createLambdaInstance.delay(uuid=uuid, instance_name=instance_name,
+                                                         instance_info=instance_info, owner=owner,
+                                                         status=status,
+                                                         failure_message=failure_message)
 
         status_code = rest_status.HTTP_202_ACCEPTED
         if settings.DEBUG:
@@ -214,6 +218,7 @@ class LambdaInstanceView(mixins.RetrieveModelMixin,
 
 
 
+
 class LambdaInstanceCounterView(APIView):
 
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
@@ -238,7 +243,9 @@ class LambdaApplicationView(mixins.ListModelMixin, # debugging
                             mixins.RetrieveModelMixin,
                             viewsets.GenericViewSet):
 
-    queryset = LambdaApplication.objects.all()
+    def get_queryset(self):
+        return LambdaApplication.objects.filter(owner=self.request.user)
+
     serializer_class = LambdaApplicationSerializer
     authentication_classes = KamakiTokenAuthentication,
     permission_classes = IsAuthenticated,
