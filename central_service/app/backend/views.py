@@ -1,11 +1,9 @@
 from rest_framework import viewsets
 from rest_framework import status as rest_status
 from rest_framework import generics, mixins
-from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from .models import LambdaInstance, LambdaApplication, User, Token
 from .serializers import (UserSerializer, LambdaInstanceSerializer, LambdaApplicationSerializer)
-# from .serializers import LambdaInstanceInfo
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
@@ -41,8 +39,6 @@ class UsersViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserSerializer
 
 class LambdaUsersCounterView(APIView):
-    authentication_classes = KamakiTokenAuthentication,
-    permission_classes = IsAuthenticated,
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
     def get(self, request, format=None):
@@ -220,13 +216,11 @@ class LambdaInstanceView(mixins.RetrieveModelMixin,
 
 class LambdaInstanceCounterView(APIView):
 
-    authentication_classes = KamakiTokenAuthentication,
-    permission_classes = IsAuthenticated,
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
     def get(self, request, format=None):
         activeLambdaInstances = LambdaInstance.objects.filter(status="20").count()
-        status_code = rest_status.HTTP_202_ACCEPTED
+        status_code = rest_status.HTTP_200_OK
         return Response(
             {
                 "status": {
@@ -364,14 +358,12 @@ class LambdaApplicationView(mixins.ListModelMixin, # debugging
 
 class LambdaApplicationCounterView(APIView):
 
-    authentication_classes = KamakiTokenAuthentication,
-    permission_classes = IsAuthenticated,
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
     def get(self, request, format=None):
         activeLambdaApplications = LambdaApplication.objects.filter(status="0").count()
 
-        status_code = rest_status.HTTP_202_ACCEPTED
+        status_code = rest_status.HTTP_200_OK
         return Response(
             {
                 "status": {
