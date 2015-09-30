@@ -371,11 +371,23 @@ class TestLambdaInstancesList(APITestCase):
         self.assertEqual(response.data['status']['short_description'],
                          ResponseMessages.short_descriptions['lambda_instances_list'])
 
-        for index, lambda_instance in enumerate(response.data['data']):
-            self.assertEqual(lambda_instance['name'], "lambda_instance_{index}".
-                             format(index=index + offset))
+        # Gather all the returned lambda instance names and asser the id of each lambda instance.
+        returned_lambda_instance_names = list()
+        for lambda_instance in response.data['data']:
+            returned_lambda_instance_names.append(lambda_instance['name'])
             self.assertRegexpMatches(lambda_instance['id'], r'^([^/.]+)$')
 
+        # Gather all the expected lambda instance names.
+        expected_lambda_instance_names = list()
+        for index in range(len(response.data['data'])):
+            expected_lambda_instance_names.append("lambda_instance_{}".format(index + offset))
+
+        # Assert that every expected lambda instance name exists inside the returned lambda
+        # instance names and that the sizes of these sets are equal.
+        for expected_lambda_instance_name in expected_lambda_instance_names:
+            self.assertIn(expected_lambda_instance_name, returned_lambda_instance_names)
+
+        self.assertEqual(len(expected_lambda_instance_names), len(returned_lambda_instance_names))
 
 class TestLambdaInstaceDetails(APITestCase):
     """
@@ -650,12 +662,32 @@ class LambdaInstanceDestroy(APITestCase):
             slave_ids.append(slave.id)
 
         # Assert that the proper tasks and views have been called.
-        mock_lambda_instance_destroy_task.delay.\
-            assert_called_with("{lambda_instance_id}".
-                               format(lambda_instance_id=self.lambda_instance_uuid),
-                               self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
-                               self.master_server.id, slave_ids,
-                               self.master_server.pub_ip_id, self.private_network.id)
+        # A way to test the mock_lambda_instance_destroy_task call would be the following:
+        # mock_lambda_instance_destroy_task.delay.\
+        #     assert_called_with("{lambda_instance_id}".
+        #                        format(lambda_instance_id=self.lambda_instance_uuid),
+        #                        self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
+        #                        self.master_server.id, slave_ids,
+        #                        self.master_server.pub_ip_id, self.private_network.id)
+        # but there is no guarantee about the sequence of the slave_ids that will be given
+        # as input to the call.
+        self.assertTrue(mock_lambda_instance_destroy_task.delay.called)
+        self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][0],
+                         "{}".format(self.lambda_instance_uuid))
+        self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][1],
+                         self.AUTHENTICATION_URL)
+        self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][2],
+                         self.AUTHENTICATION_TOKEN)
+        self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][3],
+                         self.master_server.id)
+        # Assert that every slave id was given to the task.
+        slave_ids_on_call = mock_lambda_instance_destroy_task.delay.call_args[0][4]
+        for slave_id in slave_ids:
+            self.assertIn(slave_id, slave_ids_on_call)
+        self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][5],
+                         self.master_server.pub_ip_id)
+        self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][6],
+                         self.private_network.id)
 
         mock_set_lambda_instance_status_event.delay.\
             assert_called_with("{lambda_instance_id}".
@@ -811,10 +843,26 @@ class TestLambdaInstanceStart(APITestCase):
             slave_ids.append(slave.id)
 
         # Assert that the proper tasks and views have been called.
-        mock_lambda_instance_start_task.delay.\
-            assert_called_with("{}".format(self.lambda_instance_uuid), self.AUTHENTICATION_URL,
-                               self.AUTHENTICATION_TOKEN,
-                               self.master_server.id, slave_ids)
+        # A way to test the mock_lambda_instance_start_task call would be the following:
+        # mock_lambda_instance_start_task.delay.\
+        #     assert_called_with("{}".format(self.lambda_instance_uuid), self.AUTHENTICATION_URL,
+        #                        self.AUTHENTICATION_TOKEN,
+        #                        self.master_server.id, slave_ids)
+        # but there is no guarantee about the sequence of the slave_ids that will be given
+        # as input to the call.
+        self.assertTrue(mock_lambda_instance_start_task.delay.called)
+        self.assertEqual(mock_lambda_instance_start_task.delay.call_args[0][0],
+                         "{}".format(self.lambda_instance_uuid))
+        self.assertEqual(mock_lambda_instance_start_task.delay.call_args[0][1],
+                         self.AUTHENTICATION_URL)
+        self.assertEqual(mock_lambda_instance_start_task.delay.call_args[0][2],
+                         self.AUTHENTICATION_TOKEN)
+        self.assertEqual(mock_lambda_instance_start_task.delay.call_args[0][3],
+                         self.master_server.id)
+        # Assert that every slave id was given to the task.
+        slave_ids_on_call = mock_lambda_instance_start_task.delay.call_args[0][4]
+        for slave_id in slave_ids:
+            self.assertIn(slave_id, slave_ids_on_call)
 
         mock_set_lambda_instance_status_event.delay.\
             assert_called_with("{}".format(self.lambda_instance_uuid), LambdaInstance.STARTING)
@@ -853,10 +901,26 @@ class TestLambdaInstanceStart(APITestCase):
             slave_ids.append(slave.id)
 
         # Assert that the proper tasks and views have been called.
-        mock_lambda_instance_start_task.delay.\
-            assert_called_with("{}".format(self.lambda_instance_uuid), self.AUTHENTICATION_URL,
-                               self.AUTHENTICATION_TOKEN,
-                               self.master_server.id, slave_ids)
+        # A way to test the mock_lambda_instance_start_task call would be the following:
+        # mock_lambda_instance_start_task.delay.\
+        #     assert_called_with("{}".format(self.lambda_instance_uuid), self.AUTHENTICATION_URL,
+        #                        self.AUTHENTICATION_TOKEN,
+        #                        self.master_server.id, slave_ids)
+        # but there is no guarantee about the sequence of the slave_ids that will be given
+        # as input to the call.
+        self.assertTrue(mock_lambda_instance_start_task.delay.called)
+        self.assertEqual(mock_lambda_instance_start_task.delay.call_args[0][0],
+                         "{}".format(self.lambda_instance_uuid))
+        self.assertEqual(mock_lambda_instance_start_task.delay.call_args[0][1],
+                         self.AUTHENTICATION_URL)
+        self.assertEqual(mock_lambda_instance_start_task.delay.call_args[0][2],
+                         self.AUTHENTICATION_TOKEN)
+        self.assertEqual(mock_lambda_instance_start_task.delay.call_args[0][3],
+                         self.master_server.id)
+        # Assert that every slave id was given to the task.
+        slave_ids_on_call = mock_lambda_instance_start_task.delay.call_args[0][4]
+        for slave_id in slave_ids:
+            self.assertIn(slave_id, slave_ids_on_call)
 
         mock_set_lambda_instance_status_event.delay.\
             assert_called_with("{}".format(self.lambda_instance_uuid), LambdaInstance.STARTING)
@@ -1031,10 +1095,26 @@ class TestLambdaInstanceStop(APITestCase):
             slave_ids.append(slave.id)
 
         # Assert that the proper tasks and views have been called.
-        mock_lambda_instance_stop_task.delay.\
-            assert_called_with("{}".format(self.lambda_instance_uuid), self.AUTHENTICATION_URL,
-                               self.AUTHENTICATION_TOKEN,
-                               self.master_server.id, slave_ids)
+        # A way to test the mock_lambda_instance_stop_task call would be the following:
+        # mock_lambda_instance_stop_task.delay.\
+        #     assert_called_with("{}".format(self.lambda_instance_uuid), self.AUTHENTICATION_URL,
+        #                        self.AUTHENTICATION_TOKEN,
+        #                        self.master_server.id, slave_ids)
+        # but there is no guarantee about the sequence of the slave_ids that will be given
+        # as input to the call.
+        self.assertTrue(mock_lambda_instance_stop_task.delay.called)
+        self.assertEqual(mock_lambda_instance_stop_task.delay.call_args[0][0],
+                         "{}".format(self.lambda_instance_uuid))
+        self.assertEqual(mock_lambda_instance_stop_task.delay.call_args[0][1],
+                         self.AUTHENTICATION_URL)
+        self.assertEqual(mock_lambda_instance_stop_task.delay.call_args[0][2],
+                         self.AUTHENTICATION_TOKEN)
+        self.assertEqual(mock_lambda_instance_stop_task.delay.call_args[0][3],
+                         self.master_server.id)
+        # Assert that every slave id was given to the task.
+        slave_ids_on_call = mock_lambda_instance_stop_task.delay.call_args[0][4]
+        for slave_id in slave_ids:
+            self.assertIn(slave_id, slave_ids_on_call)
 
         mock_set_lambda_instance_status_event.delay.\
             assert_called_with("{}".format(self.lambda_instance_uuid), LambdaInstance.STOPPING)
@@ -1073,10 +1153,26 @@ class TestLambdaInstanceStop(APITestCase):
             slave_ids.append(slave.id)
 
         # Assert that the proper tasks and views have been called.
-        mock_lambda_instance_stop_task.delay.\
-            assert_called_with("{}".format(self.lambda_instance_uuid), self.AUTHENTICATION_URL,
-                               self.AUTHENTICATION_TOKEN,
-                               self.master_server.id, slave_ids)
+        # A way to test the mock_lambda_instance_stop_task call would be the following:
+        # mock_lambda_instance_stop_task.delay.\
+        #     assert_called_with("{}".format(self.lambda_instance_uuid), self.AUTHENTICATION_URL,
+        #                        self.AUTHENTICATION_TOKEN,
+        #                        self.master_server.id, slave_ids)
+        # but there is no guarantee about the sequence of the slave_ids that will be given
+        # as input to the call.
+        self.assertTrue(mock_lambda_instance_stop_task.delay.called)
+        self.assertEqual(mock_lambda_instance_stop_task.delay.call_args[0][0],
+                         "{}".format(self.lambda_instance_uuid))
+        self.assertEqual(mock_lambda_instance_stop_task.delay.call_args[0][1],
+                         self.AUTHENTICATION_URL)
+        self.assertEqual(mock_lambda_instance_stop_task.delay.call_args[0][2],
+                         self.AUTHENTICATION_TOKEN)
+        self.assertEqual(mock_lambda_instance_stop_task.delay.call_args[0][3],
+                         self.master_server.id)
+        # Assert that every slave id was given to the task.
+        slave_ids_on_call = mock_lambda_instance_stop_task.delay.call_args[0][4]
+        for slave_id in slave_ids:
+            self.assertIn(slave_id, slave_ids_on_call)
 
         mock_set_lambda_instance_status_event.delay.\
             assert_called_with("{}".format(self.lambda_instance_uuid), LambdaInstance.STOPPING)

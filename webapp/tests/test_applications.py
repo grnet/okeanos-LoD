@@ -444,10 +444,23 @@ class TestApplicationsList(APITestCase):
         self.assertEqual(response.data['status']['short_description'],
                          ResponseMessages.short_descriptions['applications_list'])
 
-        for index, application in enumerate(response.data['data']):
-            self.assertEqual(application['name'], "application_{index}.jar".
-                             format(index=index + offset))
+        # Gather all the returned application names and assert the id of each application.
+        returned_application_names = list()
+        for application in response.data['data']:
+            returned_application_names.append(application['name'])
             self.assertRegexpMatches(application['id'], r'^([^/.]+)$')
+
+        # Gather all the expected application names.
+        expected_application_names = list()
+        for index in range(len(response.data['data'])):
+            expected_application_names.append("application_{}.jar".format(index + offset))
+
+        # Assert that every expected application name exists inside the returned application
+        # names and that the sizes of these sets are equal.
+        for expected_application_name in expected_application_names:
+            self.assertIn(expected_application_name, returned_application_names)
+
+        self.assertEqual(len(expected_application_names), len(returned_application_names))
 
 
 class TestApplicationDetails(APITestCase):
@@ -1137,10 +1150,23 @@ class TestApplicationsListDeployed(APITestCase):
         self.assertEqual(response.data['status']['short_description'],
                          ResponseMessages.short_descriptions['applications_list'])
 
-        for index, application in enumerate(response.data['data']):
-            self.assertEqual(application['name'], "application_{index}.jar".
-                             format(index=index + offset))
+        # Gather all the returned application names and assert the id of each application.
+        returned_application_names = list()
+        for application in response.data['data']:
+            returned_application_names.append(application['name'])
             self.assertRegexpMatches(application['id'], r'^([^/.]+)$')
+
+        # Gather all the expected application names.
+        expected_application_names = list()
+        for index in range(len(response.data['data'])):
+            expected_application_names.append("application_{}.jar".format(index + offset))
+
+        # Assert that every expected application name exists inside the returned application
+        # names and that the sizes of these sets are equal.
+        for expected_application_name in expected_application_names:
+            self.assertIn(expected_application_name, returned_application_names)
+
+        self.assertEqual(len(expected_application_names), len(returned_application_names))
 
 
 class TestApplicationStart(APITestCase):
