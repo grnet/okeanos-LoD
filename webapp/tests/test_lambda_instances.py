@@ -389,6 +389,7 @@ class TestLambdaInstancesList(APITestCase):
 
         self.assertEqual(len(expected_lambda_instance_names), len(returned_lambda_instance_names))
 
+
 class TestLambdaInstaceDetails(APITestCase):
     """
     Contains tests for lambda instance details API call.
