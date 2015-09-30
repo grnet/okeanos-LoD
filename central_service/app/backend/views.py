@@ -9,6 +9,7 @@ from rest_framework.decorators import detail_route
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework_xml.renderers import XMLRenderer
 from rest_framework.parsers import JSONParser
+from rest_framework.pagination import LimitOffsetPagination
 
 from .authenticate_user import KamakiTokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -21,13 +22,60 @@ import events
 
 from django.conf import settings
 
-# Create your views here.
+def _paginate_response(request, default_response):
+    """
+    This method is used to paginate a list response. The pagination method used is the default
+    Django Rest Framework pagination.
+    :param request: The request given to the calling view.
+    :param view: The view object calling this method.
+    :return: Returns the paginated response.
+    :rtype : object
+    """
 
-# def authenticate(request):
-#     user_auth_token = request.META.get('HTTP_AUTHORIZATION').split()[1]
-#     token_obj= list(Token.objects.filter(key=user_auth_token))[0]
-#     user = list(User.objects.filter(kamaki_token=token_obj))[0]
-#     # if it does not exist, create them
+    # Check if pagination was requested.
+    if 'limit' in request.query_params:
+
+        # Check if limit parameter is a positive integer.
+        limit = request.query_params.get('limit')
+        try:
+            limit = int(limit)
+
+            # Check if limit parameter is not a negative integer.
+            if limit >= 0:
+                default_response = _alter_default_pagination_response(default_response)
+            else:
+                raise CustomParseError(CustomParseError.messages['limit_value_error'])
+        except ValueError:
+            raise CustomParseError(CustomParseError.messages['limit_value_error'])
+    else:
+        default_response.data = {"data": default_response.data}
+
+    return default_response
+
+
+def _alter_default_pagination_response(default_response):
+    """
+    This method is used to refactor the default response of the Django Rest Framework default
+    pagination.
+    :param default_response: The response that the default pagination returned.
+    :return: The refactored response.
+    :rtype : object
+    """
+
+    # Change the name or 'result' field to 'data'
+    default_response.data['data'] = default_response.data['results']
+    del default_response.data['results']
+
+    # Add count, next and previous fields under pagination field.
+    default_response.data['pagination'] = dict()
+    default_response.data['pagination']['count'] = default_response.data['count']
+    del default_response.data['count']
+    default_response.data['pagination']['previous'] = default_response.data['previous']
+    del default_response.data['previous']
+    default_response.data['pagination']['next'] = default_response.data['next']
+    del default_response.data['next']
+
+    return default_response
 
 
 class UsersViewSet(viewsets.ReadOnlyModelViewSet):
@@ -63,8 +111,7 @@ class LambdaUsersCounterView(APIView):
 
 
 
-class LambdaInstanceView(mixins.RetrieveModelMixin,
-                         mixins.ListModelMixin, # debugging
+class LambdaInstanceView(mixins.ListModelMixin,
                          viewsets.GenericViewSet):
     """
     APIView for viewing lambda instances
@@ -77,26 +124,10 @@ class LambdaInstanceView(mixins.RetrieveModelMixin,
     permission_classes = IsAuthenticated,
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
     parser_classes = (JSONParser,)
+    pagination_class = LimitOffsetPagination
 
     lookup_field = 'uuid'
 
-    # @detail_route(methods=['post'], url_path="foo")
-    # def foo(self, request, *args, **kwargs):
-    #     """
-    #     Debug method for testing things. TODO: Delete it.
-    #     :param request:
-    #     :param args:
-    #     :param kwargs:
-    #     :return:
-    #     """
-    #     # data = request.data
-    #     user_auth = request.auth
-    #     user = request.user # this is the authenticated user.
-    #
-    #     user_headers = request.META['HTTP_AUTHORIZATION'].split()[-1]
-    #
-    #     response = Response({"user": str(user)}, status=201)
-    #     return response
 
     def create(self, request, *args, **kwargs):
         """
@@ -216,6 +247,18 @@ class LambdaInstanceView(mixins.RetrieveModelMixin,
                 "data": [{"id": uuid},],
             }, status=status_code)
 
+    def list(self, request, *args, **kwargs):
+        response = _paginate_response(request, super(LambdaInstanceView, self).list(request))
+        return LambdaInstanceView._embed_status_to_response(response)
+
+    @staticmethod
+    def _embed_status_to_response(default_response):
+        # default_response.data = { "data": default_response.data }
+        default_response.data['status'] = dict()
+        default_response.data['status']['code'] = default_response.status_code
+        default_response.data['status']['short_description'] = ResponseMessages.short_descriptions['lambda_instances_list']
+
+        return default_response
 
 
 
@@ -239,8 +282,7 @@ class LambdaInstanceCounterView(APIView):
             },
             status=status_code)
 
-class LambdaApplicationView(mixins.ListModelMixin, # debugging
-                            mixins.RetrieveModelMixin,
+class LambdaApplicationView(mixins.ListModelMixin,
                             viewsets.GenericViewSet):
 
     def get_queryset(self):
@@ -250,6 +292,7 @@ class LambdaApplicationView(mixins.ListModelMixin, # debugging
     authentication_classes = KamakiTokenAuthentication,
     permission_classes = IsAuthenticated,
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
+    pagination_class = LimitOffsetPagination
 
     lookup_field = 'uuid'
 
@@ -361,6 +404,18 @@ class LambdaApplicationView(mixins.ListModelMixin, # debugging
                 "data": [{"id": uuid},],
             }, status=status_code)
 
+    def list(self, request, *args, **kwargs):
+        response = _paginate_response(request, super(LambdaApplicationView, self).list(request))
+        return LambdaApplicationView._embed_status_to_response(response)
+
+    @staticmethod
+    def _embed_status_to_response(default_response):
+        # default_response.data = { "data": default_response.data }
+        default_response.data['status'] = dict()
+        default_response.data['status']['code'] = default_response.status_code
+        default_response.data['status']['short_description'] = ResponseMessages.short_descriptions['lambda_applications_list']
+
+        return default_response
 
 
 class LambdaApplicationCounterView(APIView):

@@ -160,8 +160,39 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 
 ```json
 
+{
+  "status": {
+    "short_description": "Lambda Applications.",
+    "code": 200
+  },
+  "data": [
+    {
+      "uuid": "24b8a635-8d71-4016-b8f5-c4a14348ed8f",
+      "description": "A lambda application created from the api",
+      "name": "CreatedFromAPi",
+      "status": "1",
+      "failure_message": "Some failure message"
+    },
+    {
+      "uuid": "24b8a635-8d71-4016-b8f5-c4a14348ed9f",
+      "description": "A lambda application created from the api",
+      "name": "CreatedFromAPi",
+      "status": "2",
+      "failure_message": "Segmentation fault"
+    }
+  ]
+}
 
 ```
+
+### Pagination
+
+Results may be paginated, if one passes in the url the parameters `limit` (*compulsory*) and `offset` (*optional*).
+
+e.g.
+
+`curl -X GET -H "Content-Type: application/json" -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" 'http://<hostname>/api/lambda_applications?limit=1&offset=2'`
+
 
 ## Count Lambda Instances
 
