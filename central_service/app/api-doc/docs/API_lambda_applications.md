@@ -194,7 +194,7 @@ e.g.
 `curl -X GET -H "Content-Type: application/json" -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" 'http://<hostname>/api/lambda_applications?limit=1&offset=2'`
 
 
-## Count Lambda Instances
+## Count Lambda Applications
 
 
 ### API Call

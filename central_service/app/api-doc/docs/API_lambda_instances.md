@@ -124,7 +124,7 @@ Type | Description |
 
 Type | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
-Authorization | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` | None | Token tJ3b3f32f23ceuqdoS_..
+Authorization | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | yes | None | Token tJ3b3f32f23ceuqdoS_..
 
 ### Example API call
 
@@ -163,7 +163,7 @@ Type | Description |
 
 Type | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
-Authorization | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes` | None | Token tJ3b3f32f23ceuqdoS_..
+Authorization | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | yes | None | Token tJ3b3f32f23ceuqdoS_..
 
 ### Example API call
 
