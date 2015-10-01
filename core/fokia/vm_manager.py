@@ -40,6 +40,11 @@ class VM_Manager(ProvisionerBase):
 
             if public_key_path is None:
                 public_key_path = os.path.expanduser('~/.ssh/id_rsa.pub')
+            if not os.path.exists(public_key_path):
+                message = "The public key file was not found in the default location, " \
+                          "or the location specified (if any). Please re-run, specifying a " \
+                          "valid public key file."
+                raise IOError(message)
             with open(public_key_path, 'r') as public_key_file:
                 public_key = public_key_file.read()
             authorized = {'contents': b64encode(public_key),

@@ -9,9 +9,14 @@ class Manager:
     def __init__(self, host, group, private_key_path=None):
         if private_key_path is None:
             private_key_path = os.path.expanduser('~/.ssh/id_rsa')
-        ansible.constants.DEFAULT_TIMEOUT = 30
+        if not os.path.exists(private_key_path):
+            message = "The private key file was not found in the default location, " \
+                      "or the location specified (if any). Please re-run, specifying a " \
+                      "valid private key file."
+            raise IOError(message)
         ansible.constants.DEFAULT_PRIVATE_KEY_FILE = private_key_path
         ansible.constants.HOST_KEY_CHECKING = False
+        ansible.constants.DEFAULT_TIMEOUT = 30
 
         self.ansible_inventory = ansible.inventory.Inventory(host_list=[host])
         all_group = self.ansible_inventory.get_group('all')
