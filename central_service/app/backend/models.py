@@ -144,11 +144,11 @@ class LambdaApplication(models.Model):
     id: Auto generated id for the database.
     uuid: A unique id assigned to every Lambda Application. This key will be used by the API
           to reference a specific Lambda Application.
-    name: The name for the specific lambda application
-    description: A description for the specific lambda application
-    owner: The owner of the specific lambda application. Is an instance of the User model.
-    status: The status of the lambda instance.
-    failure_message: Message that denotes the reason of failure of the lambda instance.
+    name: The name for the specific lambda application.
+    description: A description for the specific lambda application.
+    owner: The owner of the specific lambda application. Is an application of the User model.
+    status: The status of the lambda application.
+    failure_message: Message that denotes the reason of failure of the lambda application.
     """
     id = models.AutoField("Lambda Application ID", primary_key=True, null=False,
                           help_text="Auto-increment instance id.")
