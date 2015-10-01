@@ -174,14 +174,14 @@ class LambdaInstanceView(mixins.ListModelMixin,
                                                                              'instances_'
                                                                              'create']
                                  },
-                             "data": [{"id": uuid}],
+                             "data": {"id": uuid},
                              "debug": create_event.status
                              }, status=status_code)
         else:
             return Response({"status": {"code": status_code,
                                         "short_description": ResponseMessages.short_descriptions[
                                             'lambda_instances_create']},
-                             "data": [{"id": uuid}],
+                             "data": {"id": uuid},
                              }, status=status_code)
 
     # POST /lambda_instances/[uuid]/status
@@ -221,7 +221,7 @@ class LambdaInstanceView(mixins.ListModelMixin,
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
                                'lambda_instances_update']},
-                "data": [{"id": uuid}],
+                "data": {"id": uuid},
                 "debug": update_event.status,
             }, status=status_code)
         else:
@@ -229,7 +229,7 @@ class LambdaInstanceView(mixins.ListModelMixin,
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
                                'lambda_instances_update']},
-                "data": [{"id": uuid}],
+                "data": {"id": uuid},
             }, status=status_code)
 
     # DELETE /api/lambda_instances/[uuid]
@@ -256,7 +256,7 @@ class LambdaInstanceView(mixins.ListModelMixin,
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
                                'lambda_instances_delete']},
-                "data": [{"id": uuid}, ],
+                "data": {"id": uuid},
                 "debug": destroy_event.status,
             }, status=status_code)
         else:
@@ -264,7 +264,7 @@ class LambdaInstanceView(mixins.ListModelMixin,
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
                                'lambda_instances_delete']},
-                "data": [{"id": uuid}, ],
+                "data": {"id": uuid},
             }, status=status_code)
 
     # GET /api/lambda_instances
@@ -376,14 +376,14 @@ class LambdaApplicationView(mixins.ListModelMixin,
                            "short_description": ResponseMessages.short_descriptions[
                                'lambda_applications_create']},
                 "debug": create_event.status,
-                "data": [{"id": uuid}, ],
+                "data": {"id": uuid},
             }, status=status_code)
         else:
             return Response({
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
                                'lambda_application_create']},
-                "data": [{"id": uuid}, ],
+                "data": {"id": uuid},
             }, status=status_code)
 
     # POST /api/lambda_applications/status
@@ -421,7 +421,7 @@ class LambdaApplicationView(mixins.ListModelMixin,
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
                                'lambda_applications_update']},
-                "data": [{"id": uuid}],
+                "data": {"id": uuid},
                 "debug": update_event.status,
             }, status=status_code)
         else:
@@ -429,7 +429,7 @@ class LambdaApplicationView(mixins.ListModelMixin,
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
                                'lambda_applications_update']},
-                "data": [{"id": uuid}],
+                "data": {"id": uuid},
             }, status=status_code)
 
     def destroy(self, request, uuid, *args, **kwargs):
@@ -455,7 +455,7 @@ class LambdaApplicationView(mixins.ListModelMixin,
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
                                'lambda_applications_delete']},
-                "data": [{"id": uuid}, ],
+                "data": {"id": uuid},
                 "debug": destroy_event.status,
             }, status=status_code)
         else:
@@ -463,7 +463,7 @@ class LambdaApplicationView(mixins.ListModelMixin,
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
                                'lambda_applications_delete']},
-                "data": [{"id": uuid}, ],
+                "data": {"id": uuid},
             }, status=status_code)
 
     def list(self, request, *args, **kwargs):
