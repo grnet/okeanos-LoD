@@ -63,7 +63,7 @@ def lambda_instance_stop(instance_uuid, auth_url, auth_token, master_id, slave_i
 
 
 @shared_task
-def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slave_ids,
+def lambda_instance_destroy(instance_uuid, auth_token, master_id, slave_ids,
                             public_ip_id, private_network_id):
     """
     Destroys the specified lambda instance. The VMs of the lambda instance, along with the public
@@ -71,7 +71,6 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slav
     changed to DESTROYED. There is no going back from this state, the entries are kept to the
     database for reference.
     :param instance_uuid: The uuid of the lambda instance.
-    :param auth_url: The authentication url for ~okeanos API.
     :param auth_token: The authentication token of the owner of the lambda instance.
     :param master_id: The ~okeanos id of the VM that acts as the master node.
     :param slave_ids: The ~okeanos ids of the VMs that act as the slave nodes.
@@ -83,7 +82,6 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slav
         # Destroy all VMs, the public ip and the private network of the lambda instance.
         lambda_instance_manager.lambda_instance_destroy(
             instance_uuid,
-            auth_url,
             auth_token,
             master_id,
             slave_ids,

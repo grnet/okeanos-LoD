@@ -2,8 +2,6 @@ from storm import Storm
 from storm.parsers import ssh_config_parser
 from fokia.provisioner import Provisioner
 from fokia.ansible_manager import Manager
-from kamaki.clients.astakos import AstakosClient
-from kamaki.clients.cyclades import CycladesComputeClient, CycladesNetworkClient
 import os
 from os.path import join, expanduser, exists
 
@@ -94,8 +92,9 @@ def run_playbook(ansible_manager, playbook):
     return ansible_result
 
 
-def lambda_instance_destroy(instance_uuid, auth_url, auth_token,
-                            master_id, slave_ids, public_ip_id, private_network_id):
+def lambda_instance_destroy(instance_uuid, auth_token,
+                            master_id, slave_ids,
+                            public_ip_id, private_network_id):
     """
     Destroys the specified lambda instance. The VMs of the lambda instance, along with the public
     ip and the private network used are destroyed and the status of the lambda instance gets
@@ -109,15 +108,13 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token,
     :param private_network_id: The ~okeanos id of the private network used by the lambda instance.
     """
 
-    # Create cyclades compute client.
-    cyclades_compute_url = AstakosClient(auth_url, auth_token).get_endpoint_url(
-        CycladesComputeClient.service_type)
-    cyclades_compute_client = CycladesComputeClient(cyclades_compute_url, auth_token)
+    provisioner = Provisioner(auth_token=auth_token)
 
-    # Create cyclades network client.
-    cyclades_network_url = AstakosClient(auth_url, auth_token).get_endpoint_url(
-        CycladesNetworkClient.service_type)
-    cyclades_network_client = CycladesNetworkClient(cyclades_network_url, auth_token)
+    # Retrieve cyclades compute client
+    cyclades_compute_client = provisioner.cyclades
+
+    # Retrieve cyclades network client
+    cyclades_network_client = provisioner.network_client
 
     # Get the current status of the VMs.
     master_status = cyclades_compute_client.get_server_details(master_id)["status"]
