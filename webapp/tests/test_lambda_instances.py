@@ -675,19 +675,19 @@ class LambdaInstanceDestroy(APITestCase):
         self.assertTrue(mock_lambda_instance_destroy_task.delay.called)
         self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][0],
                          "{}".format(self.lambda_instance_uuid))
+        # self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][1],
+        #                  self.AUTHENTICATION_URL)
         self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][1],
-                         self.AUTHENTICATION_URL)
-        self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][2],
                          self.AUTHENTICATION_TOKEN)
-        self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][3],
+        self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][2],
                          self.master_server.id)
         # Assert that every slave id was given to the task.
-        slave_ids_on_call = mock_lambda_instance_destroy_task.delay.call_args[0][4]
+        slave_ids_on_call = mock_lambda_instance_destroy_task.delay.call_args[0][3]
         for slave_id in slave_ids:
             self.assertIn(slave_id, slave_ids_on_call)
-        self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][5],
+        self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][4],
                          self.master_server.pub_ip_id)
-        self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][6],
+        self.assertEqual(mock_lambda_instance_destroy_task.delay.call_args[0][5],
                          self.private_network.id)
 
         mock_set_lambda_instance_status_event.delay.\
