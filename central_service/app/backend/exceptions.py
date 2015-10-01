@@ -81,7 +81,7 @@ class CustomCantDoError(APIException):
     default_detail = "Can't do."
 
     messages = {
-        'cant_do': "Can't {action} {object} while lambda instance status is {status}."
+        'other_owner': 'The specified resource is not yours.'
     }
 
 

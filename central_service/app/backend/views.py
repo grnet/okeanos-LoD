@@ -196,7 +196,7 @@ class LambdaInstanceView(mixins.ListModelMixin,
         :param kwargs:
         :return: A response object according to the outcome of the call.
         """
-        matching_instances = LambdaInstance.objects.filter(uuid=uuid)
+        matching_instances = self.get_queryset().filter(uuid=uuid)
         if not matching_instances.exists():
             raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
 
@@ -206,6 +206,7 @@ class LambdaInstanceView(mixins.ListModelMixin,
         failure_message = data['failure_message'] if 'failure_message' in data else None
 
         matching_instance = LambdaInstanceSerializer(matching_instances[0]).data
+
         if status == matching_instance['status']:
             raise CustomAlreadyDoneError(CustomAlreadyDoneError
                                          .messages['lambda_instance_already']
@@ -242,7 +243,7 @@ class LambdaInstanceView(mixins.ListModelMixin,
         :param kwargs:
         :return: A response object according to the outcome of the call.
         """
-        lambda_instances = LambdaInstance.objects.filter(uuid=uuid)
+        lambda_instances = self.get_queryset().filter(uuid=uuid)
         if not lambda_instances.exists():
             raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
 
