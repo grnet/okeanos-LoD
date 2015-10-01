@@ -110,6 +110,6 @@ if __name__ == "__main__":
         if args.action == 'start':
             sm.central_service_start(vm_id=args.vm_id)
         elif args.action == 'stop':
-            sm.central_service_start(vm_id=args.vm_id)
+            sm.central_service_stop(vm_id=args.vm_id)
         elif args.action == 'destroy':
             sm.central_service_destroy(vm_id=args.vm_id)

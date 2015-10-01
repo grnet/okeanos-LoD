@@ -4,6 +4,7 @@ from fokia.cluster_error_constants import *
 from base64 import b64encode
 
 import logging
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -125,14 +126,15 @@ class VM_Manager(ProvisionerBase):
         vm_status = self.cyclades.get_server_details(vm_id)['status']
         floating_ips = self.network_client.list_floatingips()
         for ip in floating_ips:
-            if int(ip['instance_id']) == vm_id:
+            ip_instance = ip['instance_id']
+            if int(ip_instance or 0) == vm_id:
                 public_ip_id = int(ip['id'])
 
         # Destroy the VM
         if vm_status != "DELETED":
             self.cyclades.delete_server(vm_id)
 
-        # Wait for the VM to be destroyed before destroying the public ip
+            # Wait for the VM to be destroyed before destroying the public ip
             self.cyclades.wait_server(vm_id, current_status=vm_status, max_wait=600)
 
         # Destroy the public ip that was attached to the VM
