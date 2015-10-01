@@ -1,0 +1,42 @@
+- model: backend.token
+  pk: 0
+  fields:
+    user_id: 1
+    key: lala
+    creation_date: 2015-09-10 00:00:01
+
+- model: backend.token
+  pk: 1
+  fields:
+    user_id: 0
+    key: foo
+    creation_date: 2015-09-10 00:00:01
+
+- model: backend.token
+  pk: 3
+  fields:
+    user_id: 5
+    key: asdf
+    creation_date: 2015-09-10 00:00:01
+
+
+- model: backend.token
+  pk: 5
+  fields:
+    user_id: 2
+    key: ytrewq
+    creation_date: 2015-09-10 00:00:01
+
+- model: backend.token
+  pk: 6
+  fields:
+    user_id: 3
+    key: asldkfjalksdjf
+    creation_date: 2015-09-10 00:00:01
+
+- model: backend.token
+  pk: 7
+  fields:
+    user_id: 4
+    key: asdflk;adjsf
+    creation_date: 2015-09-10 00:00:01

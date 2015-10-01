@@ -1,0 +1,7 @@
+site_name: Central VM API documentation
+pages:
+- 'Home': 'index.md'
+- 'User API calls': 'API_users.md'
+- 'Lamdba Instances API calls': 'API_lambda_instances.md'
+- 'Lamdba Applications API calls': 'API_lambda_applications.md'
+theme: readthedocs
