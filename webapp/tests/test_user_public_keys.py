@@ -6,6 +6,7 @@ from rest_framework.test import APITestCase
 
 from backend.models import User
 from backend.response_messages import ResponseMessages
+from backend.authenticate_user import get_public_key, get_named_keys
 
 
 class TestUserPublicKeys(APITestCase):
@@ -38,9 +39,9 @@ class TestUserPublicKeys(APITestCase):
     def test_user_public_keys(self, mock_requests_get):
 
         # Determine the response of the mock.
-        mock_requests_get.return_value = self.CycladesResponse('[{"value_1": "value_1"},\
-                                                                 {"value_2": "value_2"},\
-                                                                 {"value_N": "value_N"}]')
+        mock_requests_get.return_value = self.CycladesResponse('[{"key_1": "value_1"},\
+                                                                 {"key_2": "value_2"},\
+                                                                 {"key_N": "value_N"}]')
 
         # Make a request to get the public keys stored on ~okeanos.
         response = self.client.get("/api/user-public-keys/")
@@ -60,6 +61,40 @@ class TestUserPublicKeys(APITestCase):
         self.assertEqual(response.data['status']['short_description'],
                          ResponseMessages.short_descriptions['user_public_keys'])
 
-        self.assertEqual(response.data['data'], [{"value_1": "value_1"},
-                                                 {"value_2": "value_2"},
-                                                 {"value_N": "value_N"}])
+        self.assertEqual(response.data['data'], [{"key_1": "value_1"},
+                                                 {"key_2": "value_2"},
+                                                 {"key_N": "value_N"}])
+
+    @mock.patch('backend.authenticate_user.requests.get')
+    def test_get_public_key(self, mock_requests_get):
+        # Determine the response of the mock.
+        mock_requests_get.return_value = self.CycladesResponse('[{"key_1": "value_1"},\
+                                                                 {"key_2": "value_2"},\
+                                                                 {"key_N": "value_N"}]')
+
+        # call get_public_key method.
+        response = get_public_key(self.AUTHENTICATION_TOKEN)
+
+        # Assertions.
+        mock_requests_get.assert_called_with(url="https://cyclades.okeanos.grnet.gr/userdata/keys",
+                                             headers={"Content-Type": "application/json",
+                                                      "Accept": "application/json",
+                                                      "X-Auth-Token": self.AUTHENTICATION_TOKEN})
+        self.assertEqual(response, [{"key_1": "value_1"},
+                                    {"key_2": "value_2"},
+                                    {"key_N": "value_N"}])
+
+    @mock.patch('backend.authenticate_user.get_public_key')
+    def test_get_named_keys(self, mock_get_public_key):
+        # Determine the response of the mock.
+        mock_get_public_key.return_value = [{'name': "key_1", 'content': "content_1"},
+                                            {'name': "key_2", 'content': "content_2"},
+                                            {'name': "key_3", 'content': "content_3"}]
+
+        # call get_named_keys method.
+        response = get_named_keys(self.AUTHENTICATION_TOKEN, names=["key_1", "key_3"])
+
+        # Assertions.
+        mock_get_public_key.assert_called_with(auth_token=self.AUTHENTICATION_TOKEN)
+
+        self.assertEqual(response, ["content_1", "content_3"])
