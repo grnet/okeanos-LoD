@@ -557,9 +557,9 @@ class TestCeleryTasks(APITestCase):
     @mock.patch('backend.tasks.events.set_lambda_instance_status')
     @mock.patch('backend.tasks.events.create_new_lambda_instance')
     def test_create_lambda_instance_except(self, mock_create_new_lambda_instance_event,
-                                    mock_set_lambda_instance_status_event,
-                                    mock_lambda_instance_manager_fokia,
-                                    mock_get_named_keys):
+                                           mock_set_lambda_instance_status_event,
+                                           mock_lambda_instance_manager_fokia,
+                                           mock_get_named_keys):
         # Setup mock return values and side effects.
         mock_lambda_instance_manager_fokia.create_cluster.\
             side_effect = CustomClientError("exception-message")
