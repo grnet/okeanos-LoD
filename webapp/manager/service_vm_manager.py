@@ -101,15 +101,15 @@ if __name__ == "__main__":
 
     sm = ServiceVMManager(args.auth_token)
     if args.action == 'create':
-        sm.central_service_create(vcpus=args.vcpus, ram=args.ram, disk=args.disk,
+        sm.service_vm_create(vcpus=args.vcpus, ram=args.ram, disk=args.disk,
                                   project_name=args.project_name,
                                   public_key_path=args.public_key_path)
     elif args.vm_id is None:
         raise ValueError("VM id must be specified")
     else:
         if args.action == 'start':
-            sm.central_service_start(vm_id=args.vm_id)
+            sm.service_vm_start(vm_id=args.vm_id)
         elif args.action == 'stop':
-            sm.central_service_stop(vm_id=args.vm_id)
+            sm.service_vm_stop(vm_id=args.vm_id)
         elif args.action == 'destroy':
-            sm.central_service_destroy(vm_id=args.vm_id)
+            sm.service_vm_destroy(vm_id=args.vm_id)
