@@ -139,12 +139,10 @@ class TestCeleryTasks(APITestCase):
         public_ip_id = 10
         private_network_id = 100
 
-        tasks.lambda_instance_destroy(lambda_instance_uuid, self.AUTHENTICATION_URL,
-                                      self.AUTHENTICATION_TOKEN, master_id, slave_ids,
-                                      public_ip_id, private_network_id)
+        tasks.lambda_instance_destroy(lambda_instance_uuid, self.AUTHENTICATION_TOKEN, master_id,
+                                      slave_ids, public_ip_id, private_network_id)
 
         mock_lambda_instance_destroy_fokia.assert_called_with(lambda_instance_uuid,
-                                                              self.AUTHENTICATION_URL,
                                                               self.AUTHENTICATION_TOKEN,
                                                               master_id, slave_ids,
                                                               public_ip_id, private_network_id)
@@ -164,12 +162,10 @@ class TestCeleryTasks(APITestCase):
         public_ip_id = 10
         private_network_id = 100
 
-        tasks.lambda_instance_destroy(lambda_instance_uuid, self.AUTHENTICATION_URL,
-                                      self.AUTHENTICATION_TOKEN, master_id, slave_ids,
-                                      public_ip_id, private_network_id)
+        tasks.lambda_instance_destroy(lambda_instance_uuid, self.AUTHENTICATION_TOKEN, master_id,
+                                      slave_ids, public_ip_id, private_network_id)
 
         mock_lambda_instance_destroy_fokia.assert_called_with(lambda_instance_uuid,
-                                                              self.AUTHENTICATION_URL,
                                                               self.AUTHENTICATION_TOKEN,
                                                               master_id, slave_ids,
                                                               public_ip_id, private_network_id)
