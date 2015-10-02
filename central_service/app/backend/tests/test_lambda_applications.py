@@ -1,5 +1,5 @@
 from mock import patch
-from backend.models import User, Token, LambdaApplication
+from backend.models import User, LambdaApplication
 from backend.response_messages import ResponseMessages
 from backend.exceptions import CustomAlreadyDoneError, CustomNotFoundError, CustomParseError
 from rest_framework.test import APITestCase
@@ -162,7 +162,7 @@ class TestLambdaApplications(APITestCase):
         :param mock_delete_task: Mock object for the celery deletion task.
         """
         other_uuid = uuid.uuid4()
-        while(self.create_request_data['uuid'] == other_uuid):
+        while (self.create_request_data['uuid'] == other_uuid):
             other_uuid = uuid.uuid4()
 
         patched_req_data = copy.deepcopy(self.create_request_data)
@@ -228,7 +228,6 @@ class TestLambdaApplications(APITestCase):
 
         self.assertTrue(mock_update_task.called)
 
-
     @patch('backend.events.updateLambdaApplicationStatus.delay')
     def test_update_status_of_non_existent_application(self, mock_update_task):
         """
@@ -270,7 +269,7 @@ class TestLambdaApplications(APITestCase):
         """
 
         other_uuid = uuid.uuid4()
-        while(self.create_request_data['uuid'] == other_uuid):
+        while (self.create_request_data['uuid'] == other_uuid):
             other_uuid = uuid.uuid4()
 
         patched_req_data = copy.deepcopy(self.create_request_data)
@@ -344,7 +343,7 @@ class TestLambdaApplications(APITestCase):
         self.assertFalse(mock_update_task.called)
 
     # ----- List Tests -----
-    def populate_database(self, user_count_range=(1,9), applications_count_range=(11,100),
+    def populate_database(self, user_count_range=(1, 9), applications_count_range=(11, 100),
                           authenticated_user_inclusion=True):
         """
         Creates dummy user and lambda applications data in the database for testing.
@@ -357,7 +356,7 @@ class TestLambdaApplications(APITestCase):
         current_user = User.objects.get(uuid=self.authenticated_user.uuid)
         # create a number of users
         self.user_count = randint(*user_count_range)
-        created_users = [current_user,] if authenticated_user_inclusion else []
+        created_users = [current_user, ] if authenticated_user_inclusion else []
         for i in range(self.user_count):
             uuid_to_use = uuid.uuid4()
             while uuid_to_use == self.authenticated_user.uuid:
@@ -368,9 +367,11 @@ class TestLambdaApplications(APITestCase):
         self.applications_count = randint(*applications_count_range)
         created_applications = []
         for i in range(self.applications_count):
-            LambdaApplication.objects.create(uuid=uuid.uuid4(), description="inst_info",
-                                          owner=created_users[i%(self.user_count)],
-                                          status=0)
+            created_applications.append(
+                LambdaApplication.objects.create(uuid=uuid.uuid4(), description="inst_info",
+                                                 owner=created_users[i % (self.user_count)],
+                                                 status=0)
+            )
 
     def test_list_users_applications_non_empty(self):
         """
@@ -398,10 +399,9 @@ class TestLambdaApplications(APITestCase):
         self.assertEqual(rest_status.HTTP_200_OK, response.data['status']['code'])
         self.assertEqual(ResponseMessages.short_descriptions['lambda_applications_list'],
                          response.data['status']['short_description'])
-        number_of_lambda_applications = int(ceil(float(self.applications_count)/self.user_count))
+        number_of_lambda_applications = int(ceil(float(self.applications_count) / self.user_count))
         self.assertEqual(number_of_lambda_applications,
                          len(response.data['data']))
-
 
     def test_list_users_applications_empty(self):
         """
@@ -431,7 +431,6 @@ class TestLambdaApplications(APITestCase):
 
         self.assertFalse(response.data['data'])
 
-
     def test_list_users_applications_paginated(self):
         """
         Tests APi for paginated list of lambda applications owned by the authenticated
@@ -445,9 +444,10 @@ class TestLambdaApplications(APITestCase):
 
         response = self.client.get("/api/lambda_applications/"
                                    "?limit={limit}&offset={offset}".format(limit=limit,
-                                   offset=offset), format='json')
+                                                                           offset=offset),
+                                   format='json')
 
-        number_of_lambda_applications = int(ceil(float(self.applications_count)/self.user_count))
+        number_of_lambda_applications = int(ceil(float(self.applications_count) / self.user_count))
 
         self.assertIn('pagination', response.data)
 
@@ -465,11 +465,9 @@ class TestLambdaApplications(APITestCase):
         else:
             self.assertEqual(len(response.data['data']), number_of_expected_lambda_applications)
 
-
         self.assertEqual(rest_status.HTTP_200_OK, response.data['status']['code'])
         self.assertEqual(ResponseMessages.short_descriptions['lambda_applications_list'],
-                     response.data['status']['short_description'])
-
+                         response.data['status']['short_description'])
 
     def test_negative_pagination(self):
         """
@@ -496,7 +494,7 @@ class TestLambdaApplications(APITestCase):
         # Assert the contents of the response
         self.assertEqual(response.data['errors'][0]['status'], rest_status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['errors'][0]['detail'], CustomParseError.
-                                                               messages['limit_value_error'])
+                         messages['limit_value_error'])
 
     # ----- Count Tests -----
     def test_count(self):

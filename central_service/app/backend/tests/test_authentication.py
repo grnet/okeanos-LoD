@@ -26,8 +26,6 @@ class TestAuthentication(unittest.TestCase):
 
         self.existent_token_owner = User.objects.create(uuid=str(uuid.uuid4()))
 
-
-
     def tearDown(self):
         pass
 
@@ -58,8 +56,7 @@ class TestAuthentication(unittest.TestCase):
             KamakiTokenAuthentication().authenticate_credentials(self.wrong_token)
         except(CustomAuthenticationFailed):
             self.assertTrue(make_pass_mock.called)
-        # self.assertTrue(make_pass_mock.called)
-
+            # self.assertTrue(make_pass_mock.called)
 
     @patch('backend.authenticate_user.check_auth_token')
     def test_non_existent_db_user_calls_kamaki(self, auth_mock):
@@ -91,13 +88,13 @@ class TestAuthentication(unittest.TestCase):
     def test_valid_token_non_existent_db_user_writes_database(self, auth_mock, make_pass_mock):
         make_pass_mock.return_value = "312312"
         auth_mock.return_value = (True,
-                                 {
-                                     'access': {
-                                         'user': {
-                                             'id': self.correct_token_inexistent_user_id
-                                         }
-                                     }
-                                 })
+                                  {
+                                      'access': {
+                                          'user': {
+                                              'id': self.correct_token_inexistent_user_id
+                                          }
+                                      }
+                                  })
         KamakiTokenAuthentication().authenticate_credentials(self.inexistent_token)
         db_user_count = User.objects.filter(uuid=self.correct_token_inexistent_user_id).count()
         self.assertEquals(db_user_count, 1)
@@ -113,7 +110,7 @@ class TestAuthentication(unittest.TestCase):
 
         self.existent_old_token_obj = Token.objects.create(
             key=make_password(self.existent_old_token, salt=settings.STATIC_SALT),
-            creation_date=timezone.now()-timezone.timedelta(days=6),
+            creation_date=timezone.now() - timezone.timedelta(days=6),
             user=self.existent_token_owner)
 
         auth_mock.return_value = ("whatever_status", "whatever_info")
@@ -130,12 +127,13 @@ class TestAuthentication(unittest.TestCase):
         :param auth_mock: The authentication endpoint mock object.
         """
         self.existent_token_obj = Token.objects.create(key=make_password(self.existent_token,
-                                                                     salt=settings.STATIC_SALT),
-                                                   creation_date=timezone.now(),
-                                                   user=self.existent_token_owner)
+                                                                         salt=settings.STATIC_SALT),
+                                                       creation_date=timezone.now(),
+                                                       user=self.existent_token_owner)
 
         KamakiTokenAuthentication().authenticate_credentials(self.existent_token)
         self.assertFalse(auth_mock.called)
+
 
 if __name__ == '__main__':
     unittest.main()

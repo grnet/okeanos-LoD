@@ -1,5 +1,5 @@
 from mock import patch
-from backend.models import User, Token, LambdaInstance
+from backend.models import User, LambdaInstance
 from backend.response_messages import ResponseMessages
 from backend.exceptions import CustomAlreadyDoneError, CustomNotFoundError, CustomParseError
 from rest_framework.test import APITestCase
@@ -8,6 +8,7 @@ import copy
 import uuid
 from random import randint
 from math import ceil
+
 
 class TestLambdaInstances(APITestCase):
     """
@@ -61,7 +62,6 @@ class TestLambdaInstances(APITestCase):
 
         self.assertTrue(mock_create_task.called)
 
-
     @patch('backend.views.events.createLambdaInstance.delay')
     def test_create_existent_instance(self, mock_create_task):
         """
@@ -91,7 +91,6 @@ class TestLambdaInstances(APITestCase):
                          response.data['errors'][0]['detail'])
 
         self.assertFalse(mock_create_task.called)
-
 
     # ----- Destroy Tests -----
     @patch('backend.views.events.deleteLambdaInstance.delay')
@@ -164,7 +163,7 @@ class TestLambdaInstances(APITestCase):
         """
 
         other_uuid = uuid.uuid4()
-        while(self.create_request_data['uuid'] == other_uuid):
+        while (self.create_request_data['uuid'] == other_uuid):
             other_uuid = uuid.uuid4()
 
         patched_req_data = copy.deepcopy(self.create_request_data)
@@ -231,7 +230,6 @@ class TestLambdaInstances(APITestCase):
 
         self.assertTrue(mock_update_task.called)
 
-
     @patch('backend.events.updateLambdaInstanceStatus.delay')
     def test_update_status_of_non_existent_instance(self, mock_update_task):
         """
@@ -273,7 +271,7 @@ class TestLambdaInstances(APITestCase):
         """
 
         other_uuid = uuid.uuid4()
-        while(self.create_request_data['uuid'] == other_uuid):
+        while (self.create_request_data['uuid'] == other_uuid):
             other_uuid = uuid.uuid4()
 
         patched_req_data = copy.deepcopy(self.create_request_data)
@@ -348,7 +346,7 @@ class TestLambdaInstances(APITestCase):
         self.assertFalse(mock_update_task.called)
 
     # ----- List Tests -----
-    def populate_database(self, user_count_range=(1,9), instances_count_range=(11,100),
+    def populate_database(self, user_count_range=(1, 9), instances_count_range=(11, 100),
                           authenticated_user_inclusion=True):
         """
         Creates dummy user and lambda instances data in the database for testing.
@@ -361,7 +359,7 @@ class TestLambdaInstances(APITestCase):
         current_user = User.objects.get(uuid=self.authenticated_user.uuid)
         # create a number of users
         self.user_count = randint(*user_count_range)
-        created_users = [current_user,] if authenticated_user_inclusion else []
+        created_users = [current_user, ] if authenticated_user_inclusion else []
         for i in range(self.user_count):
             uuid_to_use = uuid.uuid4()
             while uuid_to_use == self.authenticated_user.uuid:
@@ -372,9 +370,11 @@ class TestLambdaInstances(APITestCase):
         self.instances_count = randint(*instances_count_range)
         created_instances = []
         for i in range(self.instances_count):
-            LambdaInstance.objects.create(uuid=uuid.uuid4(), instance_info="inst_info",
-                                          owner=created_users[i%(self.user_count)],
-                                          status=20)
+            created_instances.append(
+                LambdaInstance.objects.create(uuid=uuid.uuid4(), instance_info="inst_info",
+                                              owner=created_users[i % (self.user_count)],
+                                              status=20)
+            )
 
     def test_list_users_instances_non_empty(self):
         """
@@ -402,10 +402,9 @@ class TestLambdaInstances(APITestCase):
         self.assertEqual(rest_status.HTTP_200_OK, response.data['status']['code'])
         self.assertEqual(ResponseMessages.short_descriptions['lambda_instances_list'],
                          response.data['status']['short_description'])
-        number_of_lambda_instances = int(ceil(float(self.instances_count)/self.user_count))
+        number_of_lambda_instances = int(ceil(float(self.instances_count) / self.user_count))
         self.assertEqual(number_of_lambda_instances,
                          len(response.data['data']))
-
 
     def test_list_users_instances_empty(self):
         """
@@ -436,7 +435,6 @@ class TestLambdaInstances(APITestCase):
 
         self.assertFalse(response.data['data'])
 
-
     def test_list_users_instances_paginated(self):
         """
         Tests APi for paginated list of lambda instances owned by the authenticated
@@ -450,9 +448,10 @@ class TestLambdaInstances(APITestCase):
 
         response = self.client.get("/api/lambda_instances/"
                                    "?limit={limit}&offset={offset}".format(limit=limit,
-                                   offset=offset), format='json')
+                                                                           offset=offset),
+                                   format='json')
 
-        number_of_lambda_instances = int(ceil(float(self.instances_count)/self.user_count))
+        number_of_lambda_instances = int(ceil(float(self.instances_count) / self.user_count))
 
         self.assertIn('pagination', response.data)
 
@@ -470,11 +469,9 @@ class TestLambdaInstances(APITestCase):
         else:
             self.assertEqual(len(response.data['data']), number_of_expected_lambda_instances)
 
-
         self.assertEqual(rest_status.HTTP_200_OK, response.data['status']['code'])
         self.assertEqual(ResponseMessages.short_descriptions['lambda_instances_list'],
-                     response.data['status']['short_description'])
-
+                         response.data['status']['short_description'])
 
     def test_negative_pagination(self):
         """
@@ -501,7 +498,7 @@ class TestLambdaInstances(APITestCase):
         # Assert the contents of the response
         self.assertEqual(response.data['errors'][0]['status'], rest_status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['errors'][0]['detail'], CustomParseError.
-                                                               messages['limit_value_error'])
+                         messages['limit_value_error'])
 
     # ----- Count Tests -----
     def test_count(self):
@@ -535,7 +532,7 @@ class TestLambdaInstances(APITestCase):
         """
         Tests API for count of active lambda instances when the user owns none.
         """
-        
+
         self.populate_database(authenticated_user_inclusion=False)
 
         response = self.client.get("/api/lambda_instances/count", format='json')
