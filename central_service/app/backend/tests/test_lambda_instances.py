@@ -1,5 +1,4 @@
-import unittest
-from mock import patch, Mock, MagicMock
+from mock import patch
 from backend.models import User, Token, LambdaInstance
 from backend.response_messages import ResponseMessages
 from backend.exceptions import CustomAlreadyDoneError, CustomNotFoundError, CustomParseError
@@ -34,10 +33,14 @@ class TestLambdaInstances(APITestCase):
             'failure_message': 'OK',
         }
 
-    # CREATE Tests
+    # ----- CREATE Tests -----
     @patch('backend.views.events.createLambdaInstance.delay')
     def test_create_non_existent_instance(self, mock_create_task):
-
+        """
+        Tests API for creation of non-existent instance in the database with the same
+        uuid.
+        :param mock_create_task: Mock object for the celery creation task.
+        """
 
         response = self.client.post("/api/lambda_instances/", self.create_request_data,
                                     format='json')
@@ -61,6 +64,11 @@ class TestLambdaInstances(APITestCase):
 
     @patch('backend.views.events.createLambdaInstance.delay')
     def test_create_existent_instance(self, mock_create_task):
+        """
+        Tests API for creation of already existent instance with the same UUID.
+        :param mock_create_task: Mock object for the celery creation task.
+        """
+
         current_user = User.objects.get(uuid=self.authenticated_user.uuid)
 
         patched_req_data = copy.deepcopy(self.create_request_data)
@@ -85,9 +93,15 @@ class TestLambdaInstances(APITestCase):
         self.assertFalse(mock_create_task.called)
 
 
-    # Destroy Tests
+    # ----- Destroy Tests -----
     @patch('backend.views.events.deleteLambdaInstance.delay')
     def test_destroy_existent_instance(self, mock_delete_task):
+        """
+        Tests API for deletion of already existent instance with the specified
+        UUID in the db.
+        :param mock_delete_task: Mock object for the celery deletion task.
+        """
+
         current_user = User.objects.get(uuid=self.authenticated_user.uuid)
 
         patched_req_data = copy.deepcopy(self.create_request_data)
@@ -117,6 +131,12 @@ class TestLambdaInstances(APITestCase):
 
     @patch('backend.views.events.deleteLambdaInstance.delay')
     def test_destroy_non_existent_instance(self, mock_delete_task):
+        """
+        Tests API for deletion of non-existent instance with the specified
+        UUID in the db.
+        :param mock_delete_task: Mock object for the celery deletion task.
+        """
+
         response = self.client.delete(
             "/api/lambda_instances/{id}/".format(id=self.create_request_data['uuid']),
             format='json'
@@ -138,6 +158,10 @@ class TestLambdaInstances(APITestCase):
 
     @patch('backend.views.events.deleteLambdaInstance.delay')
     def test_destroy_another_users_instance(self, mock_delete_task):
+        """
+        Tests API for deletion of an instance belonging to another user.
+        :param mock_delete_task: Mock object for the celery deletion task.
+        """
 
         other_uuid = uuid.uuid4()
         while(self.create_request_data['uuid'] == other_uuid):
@@ -166,9 +190,14 @@ class TestLambdaInstances(APITestCase):
 
         self.assertFalse(mock_delete_task.called)
 
-    # Update Tests
+    # ----- Update Tests -----
     @patch('backend.events.updateLambdaInstanceStatus.delay')
     def test_update_status_of_existent_instance(self, mock_update_task):
+        """
+        Tests API for status update of an existent instance in the database.
+        :param mock_update_task: Mock object for the celery update task.
+        """
+
         current_user = User.objects.get(uuid=self.authenticated_user.uuid)
 
         patched_req_data = copy.deepcopy(self.create_request_data)
@@ -205,6 +234,12 @@ class TestLambdaInstances(APITestCase):
 
     @patch('backend.events.updateLambdaInstanceStatus.delay')
     def test_update_status_of_non_existent_instance(self, mock_update_task):
+        """
+        Tests API for status update of a non-existent instance with the specified
+        if in the database.
+        :param mock_update_task: Mock object for the celery update task.
+        """
+
         update_args = {
             'status': '21',
             'failure_message': 'Flink failed.',
@@ -232,6 +267,11 @@ class TestLambdaInstances(APITestCase):
 
     @patch('backend.events.updateLambdaInstanceStatus.delay')
     def test_update_another_users_instance(self, mock_update_task):
+        """
+        Tests API for status update of an instance belonging to another user.
+        :param mock_update_task: Mock object for the celery update task.
+        """
+
         other_uuid = uuid.uuid4()
         while(self.create_request_data['uuid'] == other_uuid):
             other_uuid = uuid.uuid4()
@@ -266,6 +306,12 @@ class TestLambdaInstances(APITestCase):
 
     @patch('backend.events.updateLambdaInstanceStatus.delay')
     def test_update_with_same_status(self, mock_update_task):
+        """
+        Tests API for status update of an instance which already has the status
+        to be changed to.
+        :param mock_update_task: Mock object for the celery update task.
+        """
+
         current_user = User.objects.get(uuid=self.authenticated_user.uuid)
 
         patched_req_data = copy.deepcopy(self.create_request_data)
@@ -301,10 +347,17 @@ class TestLambdaInstances(APITestCase):
 
         self.assertFalse(mock_update_task.called)
 
-    # List Tests
-
+    # ----- List Tests -----
     def populate_database(self, user_count_range=(1,9), instances_count_range=(11,100),
                           authenticated_user_inclusion=True):
+        """
+        Creates dummy user and lambda instances data in the database for testing.
+        :param user_count_range: Range for random number of users to be created.
+        :param instances_count_range: Range for random number of instances to be created.
+        :param authenticated_user_inclusion: Equip the authenticated user with lambda instances
+        or not.
+        """
+
         current_user = User.objects.get(uuid=self.authenticated_user.uuid)
         # create a number of users
         self.user_count = randint(*user_count_range)
@@ -324,6 +377,10 @@ class TestLambdaInstances(APITestCase):
                                           status=20)
 
     def test_list_users_instances_non_empty(self):
+        """
+        Tests API for instances list when the authenticated user owns some.
+        """
+
         self.populate_database()
 
         response = self.client.get("/api/lambda_instances/", format='json')
@@ -351,6 +408,10 @@ class TestLambdaInstances(APITestCase):
 
 
     def test_list_users_instances_empty(self):
+        """
+        Tests API for instances list when the authenticated user owns none.
+        """
+
         self.populate_database(authenticated_user_inclusion=False)
 
         response = self.client.get("/api/lambda_instances/", format='json')
@@ -377,6 +438,11 @@ class TestLambdaInstances(APITestCase):
 
 
     def test_list_users_instances_paginated(self):
+        """
+        Tests APi for paginated list of lambda instances owned by the authenticated
+        user.
+        """
+
         self.populate_database()
         # Make a request using both limit and offset parameters.
         limit = randint(0, 100)
@@ -411,6 +477,11 @@ class TestLambdaInstances(APITestCase):
 
 
     def test_negative_pagination(self):
+        """
+        Tests APi for paginated list of lambda instances owned by the authenticated
+        user when the API user passes negative pagination params.
+        """
+
         # Make a request to list the lambda instances.
         limit = randint(-100, -1)
         response = self.client.get("/api/lambda_instances/?limit={limit}".format(limit=limit))
@@ -432,7 +503,12 @@ class TestLambdaInstances(APITestCase):
         self.assertEqual(response.data['errors'][0]['detail'], CustomParseError.
                                                                messages['limit_value_error'])
 
+    # ----- Count Tests -----
     def test_count(self):
+        """
+        Tests API for count of active lambda instances.
+        """
+
         self.populate_database()
 
         response = self.client.get("/api/lambda_instances/count", format='json')
@@ -456,6 +532,10 @@ class TestLambdaInstances(APITestCase):
         self.assertEqual(str(number_of_lambda_instances), response.data['data']['count'])
 
     def test_count_zero(self):
+        """
+        Tests API for count of active lambda instances when the user owns none.
+        """
+        
         self.populate_database(authenticated_user_inclusion=False)
 
         response = self.client.get("/api/lambda_instances/count", format='json')
