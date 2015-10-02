@@ -382,7 +382,7 @@ class LambdaApplicationView(mixins.ListModelMixin,
             return Response({
                 "status": {"code": status_code,
                            "short_description": ResponseMessages.short_descriptions[
-                               'lambda_application_create']},
+                               'lambda_applications_create']},
                 "data": {"id": uuid},
             }, status=status_code)
 
@@ -406,15 +406,16 @@ class LambdaApplicationView(mixins.ListModelMixin,
         data = request.data
         status = data['status']
         failure_message = data['failure_message'] if 'failure_message' in data else None
-        update_event = events.updateLambdaApplicationStatus.delay(uuid, status, failure_message)
 
         status_code = rest_status.HTTP_202_ACCEPTED
 
         matching_application = LambdaApplicationSerializer(matching_applications[0]).data
         if status == matching_application['status']:
             raise CustomAlreadyDoneError(CustomAlreadyDoneError
-                                         .messages['lambda_instance_already']
+                                         .messages['lambda_application_already']
                                          .format(state=status))
+
+        update_event = events.updateLambdaApplicationStatus.delay(uuid, status, failure_message)
 
         if settings.DEBUG:
             return Response({

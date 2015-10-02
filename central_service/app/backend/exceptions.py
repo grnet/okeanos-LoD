@@ -42,7 +42,8 @@ class CustomAlreadyDoneError(APIException):
                                           "has already been created.",
         'lambda_application_already_exists': "The specified lambda "
                                              "application has already been created.",
-        'lambda_instance_already': "The specified lambda instance is already {state}."
+        'lambda_instance_already': "The specified lambda instance status is already {state}.",
+        'lambda_application_already': "The specified lambda application status is already {state}.",
     }
 
 
@@ -54,7 +55,7 @@ class CustomParseError(APIException):
     default_detail = "Parse error."
 
     messages = {
-        'no_lambda_instance_id_error': "No lambda instance id provided."
+        'limit_value_error': 'Limit value should be an integer greater or equal to zero.',
     }
 
 
