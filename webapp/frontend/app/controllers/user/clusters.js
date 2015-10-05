@@ -1,3 +1,4 @@
+import Ember from "ember";
 
 window.App.ClustersController = Ember.Controller.extend({
 });

@@ -1,3 +1,4 @@
+import Ember from "ember";
 
 window.App.LoginController = Ember.Controller.extend({
   loginFailed: false,

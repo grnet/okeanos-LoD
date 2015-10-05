@@ -1,3 +1,5 @@
+import DS from "ember-data";
+
 App.ApplicationAdapter = DS.Adapter.extend({
   host: 'http://localhost:80'
 });
