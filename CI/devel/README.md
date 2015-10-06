@@ -30,6 +30,6 @@ To use these scripts for Continuous Integration, simply run
 ./create.sh <okeanos-token> <public_key_path> <private_key_path>
 ```
 
-each time a new pull request is merged on the branch you want to test. Note that, the first time
-that these scripts are deployed, `destroy.sh` script need not be called.
+each time a new pull request is merged on the branch you want to test. Note that, the first time 
+these scripts are deployed, `destroy.sh` script need not be called.
 
