@@ -1,8 +1,12 @@
 language: python
-cache: pip
+
+cache:
+  pip: true
+  directories:
+    - webapp/frontend/node_modules
+
 python:
  - "2.7"
-
 
 addons:
   ssh_known_hosts: localhost
@@ -13,9 +17,18 @@ services: postgresql
 
 before_install:
  - export DJANGO_SETTINGS_MODULE=webapp.settings
+ - nvm install 0.12
+ - export PATH=/usr/local/phantomjs-2.0.0/bin:$PATH
+ - "npm config set spin false"
+ - "npm install -g npm@^2"
 
 install: 
  - pip install tox ansible flake8-diff
+ - cd webapp/frontend/
+ - npm install -g bower
+ - npm install
+ - bower install
+ - cd ../../
 
 before_script:
  - psql -c "CREATE DATABASE lambda_db;" -U postgres
@@ -50,12 +63,13 @@ script:
  - python manage.py migrate
  - coverage run --source='.' --omit="*tests*","*webapp/webapp*","*webapp/backend/migrations*","*__init__*","*manage.py*" manage.py test
  - coverage report
+ - cd ../
 
  # Central service
  - psql -c "DROP DATABASE lambda_db;" -U postgres
  - psql -c "CREATE DATABASE lambda_db;" -U postgres
  - export DJANGO_SETTINGS_MODULE=app.settings
- - cd ../central_service/app
+ - cd central_service/app
  - python render_django_settings.py
 
  - pip install -r requirements.txt
@@ -64,7 +78,11 @@ script:
  - python manage.py migrate
  - coverage run --source='.' --omit="*tests*","*app/app*","*app/backend/migrations*","*__init__*","*manage.py*" manage.py test
  - coverage report
+ - cd ../../
 
+# Front end
+ - cd webapp/frontend/
+ - npm test
 
 env:
 #  - DJANGO_SETTINGS_MODULE="webapp.settings" TOXENV_CORE=py27
