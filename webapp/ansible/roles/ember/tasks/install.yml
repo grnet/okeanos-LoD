@@ -35,6 +35,6 @@
       - ember-install
 
   - name: Setup Ember configuration environment.
-    template: src=environment.js dest={{ install_dir }}/config/environment.js
+    template: src=environment.js.j2 dest={{ install_dir }}/config/environment.js
     notify:
       - django_dbs_migrate
