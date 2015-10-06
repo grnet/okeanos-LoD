@@ -1,6 +1,6 @@
 import Ember from "ember";
 
-window.App.ClustersController = Ember.Controller.extend({
+var ClustersController = Ember.Controller.extend({
 });
 
-export default window.App.ClustersController;
+export default ClustersController;

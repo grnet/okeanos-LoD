@@ -1,6 +1,6 @@
 import Ember from "ember";
 
-window.App.ClustersRoute  = Ember.Route.extend({
+var ClustersRoute  = Ember.Route.extend({
 });
 
-export default window.App.ClustersRoute;
+export default ClustersRoute;

@@ -1,6 +1,6 @@
 import Ember from "ember";
 
-window.App.LoginRoute  = Ember.Route.extend({
+var LoginRoute  = Ember.Route.extend({
 });
 
-export default window.App.LoginRoute;
+export default LoginRoute;

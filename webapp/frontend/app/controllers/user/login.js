@@ -1,11 +1,11 @@
 import Ember from "ember";
 
-window.App.LoginController = Ember.Controller.extend({
+var LoginController = Ember.Controller.extend({
   loginFailed: false,
   isProcessing: true,
 
 actions : {
-  login: function(options) {
+  login: function() {
   var _this = this;
 
     this.setProperties({
@@ -13,43 +13,42 @@ actions : {
       isProcessing: true
     });
 
-    App.token = token.value;
+    var token = this.get("token");
 
-    var data = this.store.adapterFor('login').get('headers'),
-    host = this.store.adapterFor('login').get('host'),
+    //var data = this.store.adapterFor('login').get('headers'),
+    var host = this.store.adapterFor('login').get('host'),
     namespace = this.store.adapterFor('login').namespace,
-    postUrl = [ host, namespace ].join('/');
+    postUrl = [ host, namespace ].join('/'),
+    headers = {'Authorization': "Token " + token};
     
 
-    $.ajax({
+    Ember.$.ajax({
       url: postUrl,
-      headers: {
-          'Authorization':App.token
-      },
+      headers: headers,
       crossDomain: true,
       method: 'GET',
       dataType: 'json',
-      data: data,
+      data: headers,
       xhrFields: {withCredentials: true},
-      success: function(data, textStatus, jqXHR){
+      success: function(){
           _this.set("isProcessing", false);
           _this.set("loginFailed", false);
 
           _this.transitionToRoute('user.clusters');
       },
-      error: function(data){
+      error: function(){
           _this.set("isProcessing", false);
           _this.set("loginFailed", true);
       }
     });
   },
   dismiss: function(){
-    $('#token').focus();
-    $('#id_alert_wrongtoken > button').click();
+    Ember.$('#token').focus();
+    Ember.$('#id_alert_wrongtoken > button').click();
     this.set('loginFailed', false);
   }
 }
 
 });
 
-export default window.App.LoginController;
+export default LoginController;
