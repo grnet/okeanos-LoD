@@ -4,6 +4,7 @@ from kamaki.clients.astakos import AstakosClient
 from kamaki.clients.cyclades import CycladesComputeClient, CycladesNetworkClient
 from kamaki.clients.utils import https
 
+
 class VMInfo:
     AUTHENTICATION_URL = 'https://accounts.okeanos.grnet.gr/identity/v2.0'
 
@@ -22,10 +23,10 @@ class VMInfo:
             get_endpoint_url(CycladesComputeClient.service_type)
         cyclades_compute_client = CycladesComputeClient(cyclades_compute_url,
                                                         self.authentication_token)
-    
+
         # Get the id of the vm with the specified name.
         servers = cyclades_compute_client.list_servers()
-    
+
         self.vm_id = None
         for server in servers:
             if server['name'] == self.vm_name:
