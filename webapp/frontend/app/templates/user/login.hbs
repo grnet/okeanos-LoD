@@ -15,6 +15,12 @@
 			  <strong>Wrong Token.</strong> Please <a href="#" {{action 'login'}}>try again.</a>
 			</div>
 			{{/if}}
+			{{#if serverError}}
+			<div id="id_alert_wrongtoken" class="alert alert-dismissable alert-danger col-sm-6 col-sm-offset-3">
+			  <button type="button" class="close" data-dismiss="alert">×</button>
+			  <strong>Internal server error.</strong> Please try later.
+			</div>
+			{{/if}}
 		</form>
 	</div>
 </div>

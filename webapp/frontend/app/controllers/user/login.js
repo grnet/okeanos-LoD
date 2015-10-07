@@ -3,6 +3,7 @@ import Ember from "ember";
 var LoginController = Ember.Controller.extend({
   loginFailed: false,
   isProcessing: true,
+  serverError: false,
 
 actions : {
   login: function() {
@@ -20,7 +21,7 @@ actions : {
     namespace = this.store.adapterFor('login').namespace,
     postUrl = [ host, namespace ].join('/'),
     headers = {'Authorization': "Token " + token};
-    
+
 
     Ember.$.ajax({
       url: postUrl,
@@ -36,9 +37,15 @@ actions : {
 
           _this.transitionToRoute('user.clusters');
       },
-      error: function(){
+      statusCode: {
+        401: function() {
+            _this.set("isProcessing", false);
+            _this.set("loginFailed", true);
+        }
+      },
+      error: function() {
           _this.set("isProcessing", false);
-          _this.set("loginFailed", true);
+          _this.set("serverError", true);
       }
     });
   },
@@ -46,6 +53,7 @@ actions : {
     Ember.$('#token').focus();
     Ember.$('#id_alert_wrongtoken > button').click();
     this.set('loginFailed', false);
+    _this.set("serverError", false);
   }
 }
 
