@@ -20,8 +20,13 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   app.import(app.bowerDirectory + '/handlebars/handlebars.js');
-  app.import(app.bowerDirectory + '/bootstrap/dist/js/bootstrap.js');
-  app.import(app.bowerDirectory + '/bootstrap/dist/css/bootstrap.css');
+  //app.import(app.bowerDirectory + '/bootstrap/dist/js/bootstrap.js');
+  //app.import(app.bowerDirectory + '/bootstrap/dist/css/bootstrap.css');
+  app.import(app.bowerDirectory + '/AdminLTE/bootstrap/js/bootstrap.min.js');
+  app.import(app.bowerDirectory + '/AdminLTE/dist/js/app.min.js');
+  app.import(app.bowerDirectory + '/AdminLTE/bootstrap/css/bootstrap.min.css');
+  app.import(app.bowerDirectory + '/AdminLTE/dist/css/AdminLTE.min.css');
+  app.import(app.bowerDirectory + '/AdminLTE/dist/css/skins/_all-skins.min.css');
 
   return app.toTree();
 };
