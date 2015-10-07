@@ -13,7 +13,6 @@ from fokia import lambda_instance_manager
 from fokia.ansible_manager import Manager
 from . import events
 from .models import LambdaInstance, Application
-from .serializers import LambdaInstanceSerializer
 from .authenticate_user import get_named_keys
 
 @shared_task
@@ -64,7 +63,7 @@ def lambda_instance_stop(instance_uuid, auth_url, auth_token, master_id, slave_i
 
 
 @shared_task
-def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slave_ids,
+def lambda_instance_destroy(instance_uuid, auth_token, master_id, slave_ids,
                             public_ip_id, private_network_id):
     """
     Destroys the specified lambda instance. The VMs of the lambda instance, along with the public
@@ -72,7 +71,6 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slav
     changed to DESTROYED. There is no going back from this state, the entries are kept to the
     database for reference.
     :param instance_uuid: The uuid of the lambda instance.
-    :param auth_url: The authentication url for ~okeanos API.
     :param auth_token: The authentication token of the owner of the lambda instance.
     :param master_id: The ~okeanos id of the VM that acts as the master node.
     :param slave_ids: The ~okeanos ids of the VMs that act as the slave nodes.
@@ -84,7 +82,6 @@ def lambda_instance_destroy(instance_uuid, auth_url, auth_token, master_id, slav
         # Destroy all VMs, the public ip and the private network of the lambda instance.
         lambda_instance_manager.lambda_instance_destroy(
             instance_uuid,
-            auth_url,
             auth_token,
             master_id,
             slave_ids,
@@ -141,7 +138,7 @@ def create_lambda_instance(lambda_info, auth_token):
                                      provisioner_response=provisioner_response)
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'initialize.yml')
-    check = __check_ansible_result(ansible_result)
+    check = _check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.INIT_FAILED,
@@ -152,7 +149,7 @@ def create_lambda_instance(lambda_info, auth_token):
                                                 status=LambdaInstance.INIT_DONE)
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'common-install.yml')
-    check = __check_ansible_result(ansible_result)
+    check = _check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.COMMONS_FAILED,
@@ -163,7 +160,7 @@ def create_lambda_instance(lambda_info, auth_token):
                                                 status=LambdaInstance.COMMONS_INSTALLED)
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'hadoop-install.yml')
-    check = __check_ansible_result(ansible_result)
+    check = _check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.HADOOP_FAILED,
@@ -174,7 +171,7 @@ def create_lambda_instance(lambda_info, auth_token):
                                                 status=LambdaInstance.HADOOP_INSTALLED)
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'kafka-install.yml')
-    check = __check_ansible_result(ansible_result)
+    check = _check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.KAFKA_FAILED,
@@ -185,7 +182,7 @@ def create_lambda_instance(lambda_info, auth_token):
                                                 status=LambdaInstance.KAFKA_INSTALLED)
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'flink-install.yml')
-    check = __check_ansible_result(ansible_result)
+    check = _check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.FLINK_FAILED,
@@ -200,7 +197,7 @@ def create_lambda_instance(lambda_info, auth_token):
                                             status=LambdaInstance.STARTED)
 
 
-def __check_ansible_result(ansible_result):
+def _check_ansible_result(ansible_result):
     for _, value in ansible_result.iteritems():
         if value['unreachable'] != 0:
             return 'Host unreachable'
@@ -290,7 +287,7 @@ def deploy_application(auth_url, auth_token, container_name, lambda_instance_uui
     # Get the name of the application.
     application_name = Application.objects.get(uuid=application_uuid).name
 
-    # Dowload application from Pithos.
+    # Download application from Pithos.
     if not path.exists(settings.TEMPORARY_FILE_STORAGE):
         mkdir(settings.TEMPORARY_FILE_STORAGE)
     local_file_path = path.join(settings.TEMPORARY_FILE_STORAGE, application_name)
@@ -302,6 +299,9 @@ def deploy_application(auth_url, auth_token, container_name, lambda_instance_uui
     except ClientError as exception:
         events.set_application_status.delay(application_uuid, Application.FAILED,
                                             exception.message)
+        local_file.close()
+        return
+
     local_file.close()
 
     # Get the hostname of the master node of the specified lambda instance.
@@ -352,11 +352,11 @@ def start_stop_application(lambda_instance_uuid, app_uuid,
     ansible_manager.create_master_inventory(app_action=app_action, app_type=app_type,
                                             jar_filename=jar_filename)
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'flink-apps.yml')
-    check = __check_ansible_result(ansible_result)
+    check = _check_ansible_result(ansible_result)
     if check == 'Ansible successful':
-        events.start_stop_application(lambda_instance_uuid=lambda_instance_uuid,
-                                      application_uuid=app_uuid,
-                                      action=app_action, app_type=app_type)
+        events.start_stop_application.delay(lambda_instance_uuid=lambda_instance_uuid,
+                                            application_uuid=app_uuid,
+                                            action=app_action, app_type=app_type)
 
 
 def get_master_node_info(lambda_instance_uuid):

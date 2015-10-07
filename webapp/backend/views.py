@@ -93,29 +93,6 @@ def _parse_default_pagination_response(default_response):
     return default_response
 
 
-@api_view(['GET'])
-def user_public_keys(request):
-    """
-    Retrieves all the saved public keys from a user's account in okeanos
-    """
-    auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
-    check_status, info = check_auth_token(auth_token)
-    if not check_status:
-        error_info = json.loads(info)['unauthorized']
-        error_info['details'] = error_info.get('details') + 'unauthorized'
-
-        status_code = status.HTTP_401_UNAUTHORIZED
-        return Response({"errors": [error_info]}, status=status_code)
-    public_keys = get_public_key(auth_token)
-    return Response({
-        "status": {
-            "short_description": ResponseMessages.short_descriptions['user_public_keys'],
-            "code": 200
-        },
-        "data": public_keys
-    })
-
-
 @api_view(['GET', 'OPTION'])
 def authenticate(request):
     """
@@ -136,6 +113,28 @@ def authenticate(request):
 
         status_code = status.HTTP_401_UNAUTHORIZED
         return Response({"errors": [error_info]}, status=status_code)
+
+
+class UserPublicKeysView(APIView):
+    """
+    Implements the API calls relevant to public keys on ~okeanos.
+    """
+
+    authentication_classes = KamakiTokenAuthentication,
+    permission_classes = IsAuthenticated,
+
+    # Retrieves all the saved public keys from a user's account on okeanos.
+    def get(self, request, format=None):
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+
+        public_keys = get_public_key(auth_token)
+
+        return Response({"status": {
+            "short_description": ResponseMessages.short_descriptions['user_public_keys'],
+            "code": 200
+        },
+            "data": public_keys
+        })
 
 
 class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -281,7 +280,10 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         message = Application.status_choices[int(data['status'])][1]
         data['status'] = {'message': message,
                           'code': data['status'],
-                           'details': ResponseMessages.application_status_details[message]}
+                           'detail': ResponseMessages.application_status_details[message]}
+
+        # Change the type to a human readable format.
+        data['type'] = Application.type_choices[int(data['type'])][1]
 
         # Show failure message only if it is not empty.
         if 'failure_message' in data:
@@ -301,7 +303,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                          "data": None
                          })
 
-        response['data'] = data
+        response['data'] = [data]
         return Response(response, status=status_code)
 
     def destroy(self, request, uuid, format=None):
@@ -328,7 +330,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({
             "status": {
                 'code': status_code,
-                'short-description': ResponseMessages.short_descriptions['application_delete']
+                'short_description': ResponseMessages.short_descriptions['application_delete']
             }}, status=status_code)
 
     @detail_route(methods=['post'])
@@ -382,7 +384,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({
             "status": {
                 'code': status_code,
-                'short-description': ResponseMessages.short_descriptions['application_deploy']
+                'short_description': ResponseMessages.short_descriptions['application_deploy']
             }}, status=status_code)
 
     @detail_route(methods=['get'], url_path="list-deployed")
@@ -452,7 +454,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({
             "status": {
                 'code': status_code,
-                'short-description': ResponseMessages.short_descriptions['application_withdraw']
+                'short_description': ResponseMessages.short_descriptions['application_withdraw']
             }}, status=status_code)
 
     @detail_route(methods=['post'])
@@ -496,7 +498,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({
             "status": {
                 'code': status_code,
-                'short-description': ResponseMessages.short_descriptions['application_start']
+                'short_description': ResponseMessages.short_descriptions['application_start']
             }}, status=status_code)
 
     @detail_route(methods=['post'])
@@ -538,7 +540,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({
             "status": {
                 'code': status_code,
-                'short-description': ResponseMessages.short_descriptions['application_stop']
+                'short_description': ResponseMessages.short_descriptions['application_stop']
             }}, status=status_code)
 
     def get_application_instance_connection(self, request, uuid):
@@ -688,7 +690,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 "status": {
                     "code": lambda_instance_all['code'],
                     "message": lambda_instance_all['status'],
-                    "details": lambda_instance_all['details']
+                    "detail": lambda_instance_all['details']
                 },
                 "id": lambda_instance_all['uuid'],
                 "name": lambda_instance_all['name']
@@ -721,7 +723,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 "status": {
                     "code": lambda_instance_all['code'],
                     "message": lambda_instance_all['status'],
-                    "details": lambda_instance_all['details']
+                    "detail": lambda_instance_all['details']
                 }
             }]
 
@@ -810,7 +812,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({
             "status": {
                 'code': status_code,
-                'short-description': ResponseMessages.short_descriptions['lambda_instance_action']
+                'short_description': ResponseMessages.short_descriptions['lambda_instance_action']
             }}, status=status_code)
 
     def destroy(self, request, uuid, format=None):
@@ -852,9 +854,9 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Create task to destroy the lambda instance.
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
-        auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+        # auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
-        tasks.lambda_instance_destroy.delay(lambda_instance_data['uuid'], auth_url, auth_token,
+        tasks.lambda_instance_destroy.delay(lambda_instance_data['uuid'], auth_token,
                                             master_id, slave_ids, public_ip_id,
                                             lambda_instance_data['private_network'][0]['id'])
 
@@ -867,7 +869,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({
             "status": {
                 'code': status_code,
-                'short-description': ResponseMessages.short_descriptions['lambda_instance_destroy']
+                'short_description': ResponseMessages.short_descriptions['lambda_instance_destroy']
             }}, status=status_code)
 
     def parse_list_response(self, response):

@@ -3,5 +3,4 @@ psycopg2
 django
 djangorestframework
 djangorestframework-xml
-pytest-django
-pytest-xdist
+

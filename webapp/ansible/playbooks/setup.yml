@@ -1,4 +1,11 @@
 ---
+
+- hosts: service-vms
+  user: root
+  gather_facts: no
+  roles:
+    - wait_for_ssh
+
 - hosts: service-vms
   user: root
   roles:

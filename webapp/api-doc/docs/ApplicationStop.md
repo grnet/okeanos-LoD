@@ -15,7 +15,7 @@ will reply with a "202 Accepted" code and will stop the application on the lambd
 Type | Description |
 -------|-----------------|
 **Description** | application stop
-**URL**         | /api/apps/[application-id]/stop
+**URL**         | /api/apps/[application-id]/stop/
 **HTTP Method** | POST
 **Security**    | Basic Authentication
 

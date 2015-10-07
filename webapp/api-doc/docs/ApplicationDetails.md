@@ -55,15 +55,17 @@ curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY
     "short_description": "Application details.",
     "code": 200
   },
-  "data": {
-    "id": "1b9f7773-f19d-426d-bc29-5434844e4537",
-    "name": "test_file",
-    "status": {
-      "message": "UPLOADED",
-      "code": "0",
-      "details": "Application has been successfully uploaded."
+  "data": [
+    {
+      "id": "1b9f7773-f19d-426d-bc29-5434844e4537",
+      "name": "test_file",
+      "status": {
+        "message": "UPLOADED",
+        "code": "0",
+        "details": "Application has been successfully uploaded."
+      }
     }
-  }
+  ]
 }
 ```
 

@@ -14,7 +14,7 @@ with a "401 Unauthorized" code. If the token is valid, the API will check if the
 |Type | Description
 ------|-------------
 **Description** | application list deployed
-**URL**         | /api/apps/[lambda-instance-id]/
+**URL**         | /api/apps/[lambda-instance-id]/list-deployed/
 **HTTP Method** | GET
 **Security**    | Basic Authentication
 
@@ -31,7 +31,7 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 
 Name | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
-lambda-instance-id  | The id of the lambda instance |`Yes` |None|
+lambda-instance-id  | The id of the lambda instance |`Yes` |None| 3f763964-d519-4fd2-916d-b5cfbe3b878b
 
 
 ## Example

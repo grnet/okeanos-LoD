@@ -4,13 +4,13 @@ import os
 
 from celery import Celery
 
+
 # set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
 
 from django.conf import settings
 
 rabbitmq = 'amqp://lambda:change_me@localhost:5672'
-
 app = Celery('app', broker=rabbitmq, backend=rabbitmq)
 
 # Using a string here means the worker will not have to

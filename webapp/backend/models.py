@@ -73,8 +73,8 @@ class Application(models.Model):
     status = models.CharField(max_length=10, choices=status_choices, default=UPLOADING,
                               help_text="The status of this application.")
 
-    BATCH = "1"
-    STREAMING = "2"
+    BATCH = "0"
+    STREAMING = "1"
     type_choices = (
         (BATCH, 'BATCH'),
         (STREAMING, 'STREAMING')
@@ -168,7 +168,6 @@ class LambdaInstance(models.Model):
         (KAFKA_FAILED, 'KAFKA_FAILED'),
         (FLINK_INSTALLED, 'FLINK_INSTALLED'),
         (FLINK_FAILED, 'FLINK_FAILED'),
-
     )
     status = models.CharField(max_length=10, choices=status_choices, default=PENDING,
                               help_text="The status of this instance.")
@@ -303,6 +302,7 @@ class LambdaInstanceApplicationConnection(models.Model):
     """
 
     lambda_instance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False)
-    application = models.ForeignKey(Application, null=False, blank=False, unique=False)
+    application = models.ForeignKey(Application, null=False, blank=False, unique=False,
+                                    related_name="connections")
     started = models.BooleanField(default=False,
                                   help_text="True, if application is started")

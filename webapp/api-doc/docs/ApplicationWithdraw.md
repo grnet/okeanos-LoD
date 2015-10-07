@@ -15,7 +15,7 @@ will reply with a "202 Accepted" code and will start withdrawing the specified a
 |Type | Description
 ------|-------------
 **Description** | application withdraw
-**URL**         | /api/apps/[application-id]/withdraw
+**URL**         | /api/apps/[application-id]/withdraw/
 **HTTP Method** | POST
 **Security**    | Basic Authentication
 
@@ -32,7 +32,7 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 Name | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
 application-id  | The id of the application to be withdrawn |`Yes` |None|
-lambda-instance-id | The id of the lambda instance from which the application will be withdrawn |`Yes`| None
+lambda-instance-id | The id of the lambda instance from which the application will be withdrawn |`Yes`| None | 3f763964-d519-4fd2-916d-b5cfbe3b878b
 
 
 ## Example

@@ -1,0 +1,19 @@
+- model: backend.lambdainstanceapplicationconnection
+  fields:
+    application: 0
+    lambda_instance: 0
+
+- model: backend.lambdainstanceapplicationconnection
+  fields:
+    application: 1
+    lambda_instance: 0
+
+- model: backend.lambdainstanceapplicationconnection
+  fields:
+    application: 2
+    lambda_instance: 1
+
+- model: backend.lambdainstanceapplicationconnection
+  fields:
+    application: 3
+    lambda_instance: 2
