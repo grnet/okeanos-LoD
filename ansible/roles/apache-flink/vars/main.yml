@@ -1,6 +1,6 @@
 ---
 mirror_url: "http://mirrors.myaegean.gr/apache/flink"
-version: "0.9.0"
+version: "0.9.1"
 version_for: "bin-hadoop27"
 download_path: "/root"
 installation_path: "/usr/local"
