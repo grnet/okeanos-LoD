@@ -5,7 +5,6 @@ from fokia.ansible_manager_minimal import Manager
 from fokia.utils import check_auth_token
 from kamaki.cli.config import Config as KamakiConfig
 import os
-from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -82,18 +81,14 @@ class ServiceVMManager(object):
         if res:
             uuid = info['access']['user']['id']
         with open("../ansible/roles/service-vm/vars/main.yml", "a") as vars_file:
-            vars_file.write("auth_token: {auth_token}\n".format(auth_token=self.auth_token))
             vars_file.write("user_uuid: {user_uuid}\n".format(user_uuid=uuid))
-            vars_file.write(
-                "creation_date: {creation_date}\n".format(creation_date=str(datetime.now()))
-            )
 
     def _clean_up_token_ansible_patch(self):
         file_lines = None
         with open("../ansible/roles/service-vm/vars/main.yml", "r") as vars_file:
             file_lines = vars_file.readlines()
         with open("../ansible/roles/service-vm/vars/main.yml", "w") as vars_file:
-            vars_file.writelines([item for item in file_lines[:-3]])
+            vars_file.writelines([item for item in file_lines[:-1]])
 
     def service_vm_destroy(self, vm_id):
         """
