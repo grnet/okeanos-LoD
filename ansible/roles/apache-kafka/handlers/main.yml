@@ -1,14 +1,14 @@
 ---
 - name: create topics
-  shell: "{{ installation_path }}/kafka/bin/kafka-topics.sh --create --zookeeper {{ hostvars[groups['master'][0]]['internal_ip'] }}:2181 --replication-factor {{ groups['slaves']|count + 1 }} --partitions 1 --topic input"
+  shell: "{{ installation_path }}/kafka/bin/kafka-topics.sh --create --zookeeper {{ hostvars[groups['master'][0]]['internal_ip'] }}:2181 --replica-assignment 0 --topic input"
   notify:
     - create batch output topic
 
 - name: create batch output topic
-  shell: "{{ installation_path }}/kafka/bin/kafka-topics.sh --create --zookeeper {{ hostvars[groups['master'][0]]['internal_ip'] }}:2181 --replication-factor {{ groups['slaves']|count + 1 }} --partitions 1 --topic batch-output"
+  shell: "{{ installation_path }}/kafka/bin/kafka-topics.sh --create --zookeeper {{ hostvars[groups['master'][0]]['internal_ip'] }}:2181 --replica-assignment 0 --topic batch-output"
   notify:
     - create stream output topic
 
 - name: create stream output topic
-  shell: "{{ installation_path }}/kafka/bin/kafka-topics.sh --create --zookeeper {{ hostvars[groups['master'][0]]['internal_ip'] }}:2181 --replication-factor {{ groups['slaves']|count + 1 }} --partitions 1 --topic stream-output"
+  shell: "{{ installation_path }}/kafka/bin/kafka-topics.sh --create --zookeeper {{ hostvars[groups['master'][0]]['internal_ip'] }}:2181 --replica-assignment 0 --topic stream-output"
 
