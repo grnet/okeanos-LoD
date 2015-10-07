@@ -2,6 +2,8 @@ import logging
 import argparse
 from fokia.vm_manager import VM_Manager
 from fokia.ansible_manager_minimal import Manager
+from fokia.utils import check_auth_token
+from kamaki.cli.config import Config as KamakiConfig
 import os
 
 logging.basicConfig(level=logging.INFO)
@@ -48,10 +50,45 @@ class ServiceVMManager(object):
                                              public_key_path=public_key_path)
         hostname = 'snf-' + str(vm_id) + '.vm.okeanos.grnet.gr'
         group = 'service-vms'
+
+        self._patch_auth_token_ansible()
         ansible_manager = Manager(hostname, group, private_key_path)
         ansible_result = ansible_manager.run_playbook(
             playbook_file=os.path.join(ansible_path, 'playbooks', 'setup.yml'))
+
+        self._clean_up_token_ansible_patch()
         return ansible_result
+
+    def _patch_auth_token_ansible(self):
+        if self.auth_token is None:
+            # Load .kamakirc configuration
+            logger.info("Retrieving .kamakirc configuration")
+            self.config = KamakiConfig()
+            if not os.path.exists(self.config.path):
+                raise IOError('No auth token given, and .kamakirc does not exist! Aborting.')
+            cloud_section = self.config._sections['cloud'].get(self.config.get('global',
+                                                                               'default_cloud'))
+            if not cloud_section:
+                message = "Default Cloud was not found in your .kamakirc configuration file. " \
+                          "Currently you have available in your configuration these clouds: %s"
+                raise KeyError(message % (self.config._sections['cloud'].keys()))
+
+            # Get the authentication token
+            self.auth_token = cloud_section['token']
+
+        res, info = check_auth_token(self.auth_token)
+        uuid = None
+        if res:
+            uuid = info['access']['user']['id']
+        with open("../ansible/roles/service-vm/vars/main.yml", "a") as vars_file:
+            vars_file.write("user_uuid: {user_uuid}\n".format(user_uuid=uuid))
+
+    def _clean_up_token_ansible_patch(self):
+        file_lines = None
+        with open("../ansible/roles/service-vm/vars/main.yml", "r") as vars_file:
+            file_lines = vars_file.readlines()
+        with open("../ansible/roles/service-vm/vars/main.yml", "w") as vars_file:
+            vars_file.writelines([item for item in file_lines[:-1]])
 
     def service_vm_destroy(self, vm_id):
         """

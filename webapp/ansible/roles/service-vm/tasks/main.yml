@@ -34,3 +34,11 @@
     template: src=settings.py.j2 dest={{ repository_download_path}}/okeanos-LoD/webapp/webapp/settings.py
     notify:
       - django_dbs_migrate
+
+  - meta: flush_handlers
+
+  - name: Create user fixture
+    template: src=users.yaml.j2 dest={{ repository_download_path}}/okeanos-LoD/webapp/backend/fixtures/users.yaml
+
+  - name: Load user from fixtures
+    django_manage: command=loaddata app_path={{ repository_download_path }}/okeanos-LoD/webapp/ fixtures=users.yaml

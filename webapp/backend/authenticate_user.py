@@ -29,7 +29,8 @@ class KamakiTokenAuthentication(TokenAuthentication):
             if status:
                 uuid = info['access']['user']['id']
                 if User.objects.filter(uuid=uuid).count() == 0:
-                    user = User.objects.create(uuid=uuid)
+                    raise CustomAuthenticationFailed()
+                    # user = User.objects.create(uuid=uuid)
                 else:
                     user = User.objects.get(uuid=uuid)
 
