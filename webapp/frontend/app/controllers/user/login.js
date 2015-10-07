@@ -45,7 +45,7 @@ actions : {
       },
       error: function() {
           _this.set("isProcessing", false);
-          _this.set("serverError", true);
+          _this.set("loginFailed", true);
       }
     });
   },
@@ -53,7 +53,7 @@ actions : {
     Ember.$('#token').focus();
     Ember.$('#id_alert_wrongtoken > button').click();
     this.set('loginFailed', false);
-    _this.set("serverError", false);
+    this.set("serverError", false);
   }
 }
 
