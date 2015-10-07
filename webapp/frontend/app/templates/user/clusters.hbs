@@ -1,0 +1,23 @@
+
+<div class="row">
+ <div class="large-4 columns">
+   <div class="panel">
+     <h1>Login Successful.</h1>
+   </div>
+ </div>
+</div>
+
+ <div class="large-3 columns ">
+   <div class="panel">
+       <div class="section-container vertical-nav" data-section data-options="deep_linking: false; one_up: true">
+       <ul>
+         {{#each instances as |instance|}}
+         <section class="section">
+           <h5 class="title">{{instance.name}}</h5>
+         </section>
+         {{/each}}
+       </ul>
+     </div>
+
+   </div>
+ </div>

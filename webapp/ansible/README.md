@@ -20,6 +20,9 @@ To use this code you need:
 - Install python-pip.
 - Installs celery using pip.
 
+### ember
+- Install nodejs, ember and bower.
+
 ## Usage
 To use this code, run
 
@@ -55,3 +58,11 @@ supervisorctl status
 
 to make sure that the workers are up and running. After that, reboot the vm and login again. Run the same command to make
 sure that the workers are started after the rebooting.
+
+To check ember while you re still logged in the vm, enter the folder /var/www/okeanos-LoD/webapp/frontend/app and run as root:
+```bash
+ember server
+```
+
+After that open a web browser and enter your vm's public ip on the address bar and the port 4200, you will see the frontend
+web application main page.

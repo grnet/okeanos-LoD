@@ -19,6 +19,16 @@
   - name: Remove default sites-enabled.
     file: name=/etc/apache2/sites-enabled/000-default.conf state=absent
 
+  - name: Activate Apache rewrite module.
+    apache2_module: name=rewrite state=present
+    notify:
+          - restart_apache2
+
+  - name: Activate Apache headers module.
+    apache2_module: name=headers state=present
+    notify:
+          - restart_apache2
+
   - name: Configure Apache.
     lineinfile: dest=/etc/apache2/apache2.conf line="WSGIPythonPath {{ repository_download_path }}/okeanos-LoD/webapp" state=present insertafter=EOF
     notify:

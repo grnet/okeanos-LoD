@@ -1,0 +1,5 @@
+---
+  - name: Include tasks for emberjs.
+    include: install.yml
+    tags:
+      - ember-install

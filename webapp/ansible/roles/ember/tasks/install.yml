@@ -1,0 +1,40 @@
+---
+
+  - name: Fetch url for nodejs.
+    shell: "curl --silent --location https://deb.nodesource.com/setup_0.12 | bash -"
+    tags:
+      - ember-install
+
+  - name: Install nodejs.
+    apt: name=nodejs force=yes
+    tags:
+      - ember-install
+
+  - name: Install Ember globally.
+    npm: name=ember-cli global=yes
+    tags:
+      - ember-install
+
+  - name: Install Ember Application dependencies
+    shell: "npm install"
+    args:
+      chdir: "{{ install_dir }}/app"
+    tags:
+      - ember-install
+
+  - name: Install Bower globally.
+    npm: name=bower global=yes
+    tags:
+      - ember-install
+
+  - name: Install Ember Application dependencies for bower
+    shell: "bower install --allow-root"
+    args:
+      chdir: "{{ install_dir }}"
+    tags:
+      - ember-install
+
+  - name: Setup Ember configuration environment.
+    template: src=environment.js.j2 dest={{ install_dir }}/config/environment.js
+    notify:
+      - django_dbs_migrate

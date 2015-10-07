@@ -1,0 +1,26 @@
+<div class="row">
+	<div class="col-lg-12 text-center v-center">
+		<br>
+		<br>
+		<h2 id='id_title_user_login_route'> ~Okeanos Token </h2>
+		<br><br>
+		<form class="col-lg-12"  {{action "login" on="submit"}}>
+			<div class="input-group input-group-lg col-sm-offset-3 col-sm-6">
+				{{input value=token placeholder="enter your ~okeanos token..." type="password" class="center-block form-control input-lg" id="token"}}
+				<span class="input-group-btn"><button type="submit" id="id_login_submit_button" class="btn btn-lg btn-primary">Submit</button></span>
+			</div>
+			{{#if loginFailed}}
+			<div id="id_alert_wrongtoken" class="alert alert-dismissable alert-danger col-sm-6 col-sm-offset-3">
+			  <button type="button" class="close" data-dismiss="alert">×</button>
+			  <strong>Wrong Token.</strong> Please <a href="#" {{action 'login'}}>try again.</a>
+			</div>
+			{{/if}}
+			{{#if serverError}}
+			<div id="id_alert_wrongtoken" class="alert alert-dismissable alert-danger col-sm-6 col-sm-offset-3">
+			  <button type="button" class="close" data-dismiss="alert">×</button>
+			  <strong>Internal server error.</strong> Please try later.
+			</div>
+			{{/if}}
+		</form>
+	</div>
+</div>
