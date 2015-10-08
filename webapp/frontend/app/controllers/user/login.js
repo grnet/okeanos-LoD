@@ -34,6 +34,7 @@ actions : {
       success: function(){
           _this.set("isProcessing", false);
           _this.set("loginFailed", false);
+          _this.set("serverError", false);
 
           _this.transitionToRoute('user.clusters');
       },
@@ -45,7 +46,7 @@ actions : {
       },
       error: function() {
           _this.set("isProcessing", false);
-          _this.set("loginFailed", true);
+          _this.set("serverError", true);
       }
     });
   },
