@@ -9,7 +9,8 @@ Running
 ./create.sh <okeanos-token> <public_key_path> <private_key_path>
 ```
 
-will create a Central VM that will be used to collect statistical data about ~okeanos-LoD service.
+will create a Central Service VM that will host the application which will collect statistical
+data about ~okeanos-LoD service.
 
 Running
 
@@ -31,3 +32,5 @@ To use these scripts for Continuous Integration, simply run
 each time a new pull request is merged on the branch you want to test. Note that, the first time 
 these scripts are deployed, `destroy.sh` script need not be called.
 
+# Requirements
+~okeanos-LoD Fokia package.

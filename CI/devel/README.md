@@ -11,7 +11,7 @@ Running
 
 will create a Service VM that will host the API of ~okeanos-LoD service, a Central VM that will be
 used to collect statistical data about ~okeanos-LoD service usage and a Lambda Instance through
-the API.
+the API. Moreover, a given application will be deployed and started on the Lambda Instance.
 
 Running
 
@@ -33,3 +33,6 @@ To use these scripts for Continuous Integration, simply run
 each time a new pull request is merged on the branch you want to test. Note that, the first time 
 these scripts are deployed, `destroy.sh` script need not be called.
 
+
+# Requirements
+~okeanos-LoD Fokia package.

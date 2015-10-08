@@ -1,5 +1,23 @@
 #!/bin/bash
 
+#####
+## Bash script to destroy everything that create.sh script has created.
+##
+## Requirements: ~okeanos-LoD Fokia package.
+##
+## Usage:
+## ./destroy.sh <okeanos_token> <public_key_path> <private_key_path>
+##
+## Parameters:
+## okeanos_token: ~okeanos API token.
+## public_key_path: path to a public ssh key.
+## private_key_path: path to the private ssh key related with the public ssh key provided.
+##
+## Description:
+## Upon execution, this script will destroy everything that create.sh script has created.
+## For more information see the README.md file.
+#####
+
 # ~okeanos token is given as first argument.
 okeanos_token=$1
 

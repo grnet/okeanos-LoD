@@ -9,6 +9,12 @@ from utils import VMInfo
 
 
 class LambdaInstanceManager:
+    """
+    Class to manage a Lambda Instance on the ~okeanos LoD Service.
+    Contains methods to create and destroy a Lambda Instance. Every interaction is done through
+    the ~okeanos LoD Service API.
+    """
+
     def __init__(self, authentication_token=None, service_vm_name=None):
         https.patch_ignore_ssl()
 
@@ -31,7 +37,15 @@ class LambdaInstanceManager:
                                             'slaves': 2,
                                             'ip_allocation': "master"}
 
-    def create(self):
+    def create(self, sleep_time=10, max_wait=6):
+        """
+        Method for creating a Lambda Instance.
+        :param sleep_time: Time(in milli seconds) to sleep waiting for the Lambda Instance database
+                           entry to be created on ~okeanos LoD Service API.
+        :param max_wait: Number of iterations to wait for the Lambda Instance database entry to be
+                         created on ~okeanos LoD Service API.
+        """
+
         # Send a request to the service vm to create a lambda instance.
         response = requests.post("http://{ip}/api/lambda-instance/".format(ip=self.service_vm_ip),
                                  headers={'Content-Type': 'application/json',
@@ -49,22 +63,28 @@ class LambdaInstanceManager:
         # Wait until the entry of the lambda instance on the API database has been created.
         lambda_instances = requests.get("http://{ip}/api/lambda-instances/".
                                         format(ip=self.service_vm_ip),
-                                               headers={'Authorization': "Token {token}".
-                                                        format(token=self.authentication_token)})
-        while len(lambda_instances.json()['data']) == 0:
+                                        headers={'Authorization': "Token {token}".
+                                                 format(token=self.authentication_token)})
+        while len(lambda_instances.json()['data']) == 0 and max_wait > 0:
+            time.sleep(sleep_time)
             lambda_instances = requests.\
                 get("http://{ip}/api/lambda-instances/".format(ip=self.service_vm_ip),
                     headers={'Authorization': "Token {token}".
                     format(token=self.authentication_token)})
+            max_wait -= 1
 
         # Wait for the lambda instance to be created and started.
         self._wait_for_lambda_instance_status("STARTED", lambda_instance_uuid)
 
     def destroy(self):
+        """
+        Method for destroying a Lambda Instance.
+        """
+
         lambda_instances = requests.get("http://{ip}/api/lambda-instances/".
-                                               format(ip=self.service_vm_ip),
-                                               headers={'Authorization': "Token {token}".
-                                                        format(token=self.authentication_token)})
+                                        format(ip=self.service_vm_ip),
+                                        headers={'Authorization': "Token {token}".
+                                                 format(token=self.authentication_token)})
         lambda_instance_uuid = lambda_instances.json()['data'][0]['id']
 
         # Send a request to the service vm to destroy the lambda instance.
@@ -78,6 +98,17 @@ class LambdaInstanceManager:
 
     def _wait_for_lambda_instance_status(self, status, lambda_instance_uuid,
                                          sleep_time=300, max_wait=20):
+        """
+        Helper method. Waits for a specified amount of time or until a current state of a Lambda
+                       Instance is reached.
+        :param status: The status of the Lambda Instance to be reached.
+        :param lambda_instance_uuid: The uuid of the Lambda Instance.
+        :param sleep_time: Time(in milli seconds) to sleep waiting for the Lambda Instance to reach
+                           the specified state.
+        :param max_wait: Number of iterations to wait for the Lambda Instance to reach the specified
+                         state.
+        """
+
         lambda_instance_details = requests.get("http://{ip}/api/lambda-instances/{id}/".
                                                format(ip=self.service_vm_ip,
                                                       id=lambda_instance_uuid),
