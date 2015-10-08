@@ -20,7 +20,7 @@ public class Main {
 
         String zookeeper= "192.168.0.2:2181";
         String consumerGroupId = "consumer-stream";
-        String kafkaBroker = "192.168.0.2:9092";
+        String kafkaBroker = "localhost:9092";
         String inputTopic = "input";
         String outputTopic = "stream-output";
 
