@@ -32,7 +32,8 @@ class CentralServiceManager(object):
     def __init__(self, auth_token):
         self.auth_token = auth_token
 
-    def central_service_create(self, vcpus=4, ram=4096, disk=40,
+    def central_service_create(self, vm_name='Central Service',
+                               vcpus=4, ram=4096, disk=40,
                                project_name='lambda.grnet.gr',
                                private_key_path=None, public_key_path=None):
         """
@@ -41,7 +42,6 @@ class CentralServiceManager(object):
         """
 
         provisioner = VM_Manager(auth_token=self.auth_token)
-        vm_name = 'central_service'
         vm_id = provisioner.create_single_vm(vm_name=vm_name,
                                              vcpus=vcpus, ram=ram, disk=disk,
                                              project_name=project_name,
@@ -88,6 +88,7 @@ if __name__ == "__main__":
                         choices=['create', 'start', 'stop', 'destroy'])
     parser.add_argument('--auth_token', type=str, dest='auth_token', required=False)
     parser.add_argument('--vm_id', type=int, dest='vm_id')
+    parser.add_argument('--vm_name', type=str, dest='vm_name', required=False)
     parser.add_argument('--vcpus', type=int, dest='vcpus', default='4',
                         choices=[1, 2, 4, 8])
     parser.add_argument('--ram', type=int, dest='ram', default='4096',
@@ -101,7 +102,8 @@ if __name__ == "__main__":
 
     csm = CentralServiceManager(args.auth_token)
     if args.action == 'create':
-        csm.central_service_create(vcpus=args.vcpus, ram=args.ram, disk=args.disk,
+        csm.central_service_create(vm_name=args.vm_name,
+                                   vcpus=args.vcpus, ram=args.ram, disk=args.disk,
                                    project_name=args.project_name,
                                    public_key_path=args.public_key_path)
     elif args.vm_id is None:
