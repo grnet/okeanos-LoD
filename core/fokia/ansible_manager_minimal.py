@@ -14,13 +14,13 @@ class Manager:
                       "or the location specified (if any). Please re-run, specifying a " \
                       "valid private key file."
             raise IOError(message)
-        ansible.constants.DEFAULT_PRIVATE_KEY_FILE = private_key_path
         ansible.constants.HOST_KEY_CHECKING = False
         ansible.constants.DEFAULT_TIMEOUT = 30
 
         self.ansible_inventory = ansible.inventory.Inventory(host_list=[host])
         all_group = self.ansible_inventory.get_group('all')
         ansible_host = all_group.get_hosts()[0]
+        ansible_host.set_variable('ansible_ssh_private_key_file', private_key_path)
         ansible_group = ansible.inventory.group.Group(name=group)
         ansible_group.add_host(ansible_host)
         self.ansible_inventory.add_group(ansible_group)

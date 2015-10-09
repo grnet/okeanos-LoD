@@ -105,6 +105,7 @@ if __name__ == "__main__":
         csm.central_service_create(vm_name=args.vm_name,
                                    vcpus=args.vcpus, ram=args.ram, disk=args.disk,
                                    project_name=args.project_name,
+                                   private_key_path=args.private_key_path,
                                    public_key_path=args.public_key_path)
     elif args.vm_id is None:
         raise ValueError("VM id must be specified")
