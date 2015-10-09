@@ -31,7 +31,7 @@ private_key_path=$3
 source okeanos_lod_python_environment/bin/activate
 
 # Get the id of the Central VM.
-central_vm_id=$(python utils.py --get id --vm_name "central_service" --auth_token $okeanos_token)
+central_vm_id=$(python utils.py --get id --vm_name "Central VM master CI" --auth_token $okeanos_token)
 
 # Destroy the Central VM.
 cd okeanos-LoD/central_service/manager

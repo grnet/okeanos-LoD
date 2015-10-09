@@ -41,7 +41,7 @@ cd ../../
 
 # Create a Central VM.
 cd okeanos-LoD/central_service/manager
-python central_service_manager.py --action create --auth_token $okeanos_token --public_key_path "$public_key_path" --private_key_path "$private_key_path"
+python central_service_manager.py --action create --auth_token $okeanos_token --public_key_path "$public_key_path" --private_key_path "$private_key_path" --vm_name "Central VM master CI"
 cd ../../../
 
 # Deactivate the virtual environment.
