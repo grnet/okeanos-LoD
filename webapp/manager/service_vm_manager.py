@@ -125,7 +125,8 @@ if __name__ == "__main__":
                         choices=['create', 'start', 'stop', 'destroy'])
     parser.add_argument('--auth_token', type=str, dest='auth_token', required=False)
     parser.add_argument('--vm_id', type=int, dest='vm_id')
-    parser.add_argument('--vm_name', type=str, dest='vm_name', required=False)
+    parser.add_argument('--vm_name', type=str, dest='vm_name', required=False,
+                        default="Service VM")
     parser.add_argument('--vcpus', type=int, dest='vcpus', default='4',
                         choices=[1, 2, 4, 8])
     parser.add_argument('--ram', type=int, dest='ram', default='4096',
