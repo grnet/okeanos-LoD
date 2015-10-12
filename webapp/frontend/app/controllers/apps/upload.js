@@ -18,12 +18,12 @@ export default Ember.Controller.extend({
     var type = this.get("type");
     var project_name = this.get("project_name");
     var file = this.get("file");
+    var token = this.store.findRecord('user',1).token;
 
-    //var data = this.store.adapterFor('login').get('headers'),
     var host = this.store.adapterFor('upload').get('host'),
     namespace = this.store.adapterFor('upload').namespace,
-    postUrl = [ host, namespace ].join('/');
-    //headers = {'Authorization': "Token " + token};
+    postUrl = [ host, namespace ].join('/')
+    headers = {'Authorization': "Token " + token};
 
     Ember.$.ajax({
       url: postUrl,
