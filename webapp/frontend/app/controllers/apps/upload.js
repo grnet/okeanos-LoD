@@ -22,7 +22,7 @@ export default Ember.Controller.extend({
 
     var host = this.store.adapterFor('upload').get('host'),
     namespace = this.store.adapterFor('upload').namespace,
-    postUrl = [ host, namespace ].join('/')
+    postUrl = [ host, namespace ].join('/'),
     headers = {'Authorization': "Token " + token};
 
     Ember.$.ajax({
