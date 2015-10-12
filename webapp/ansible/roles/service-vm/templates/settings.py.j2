@@ -116,6 +116,7 @@ from kombu import Queue
 CELERY_QUEUES = (
     Queue('events_queue', routing_key='event_key'),
     Queue('tasks_queue', routing_key='task_key'),
+    Queue('statistics_queue', routing_key='statistics_key'),
 )
 
 CELERY_ROUTES = {
