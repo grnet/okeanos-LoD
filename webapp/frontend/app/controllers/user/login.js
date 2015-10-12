@@ -36,7 +36,7 @@ actions : {
           _this.set("loginFailed", false);
           _this.set("serverError", false);
 
-          var post = _this.store.createRecord('user', {
+          _this.store.createRecord('user', {
               token: token,
               id: 1,
           });

@@ -4,7 +4,6 @@ var ClustersController = Ember.Controller.extend({
 
   actions : {
     list: function() {
-    var _this = this;
 
     var token = this.get("token");
 
