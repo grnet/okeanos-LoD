@@ -41,7 +41,7 @@ For everything to work properly, the following packages need to be installed:
 * `virtualenv`  
 
 
-# File Arrangement
+# Files Arrangement
 For everything to work properly, place `create.sh`, `destroy.sh` and `utils.py`inside the same directory.
 
 

@@ -41,7 +41,7 @@ For everything to work properly, the following packages need to be installed:
 * `virtualenv`  
 
 
-# File Arrangement
+# Files Arrangement
 For everything to work properly, place `create.sh`,`destroy.sh`,`manage_application.py`,`manage_lambda_instance.py`, `utils.py` and the application you want to start on the
 lambda instance inside the same directory.
 
