@@ -1,0 +1,12 @@
+<h1>Listing Lambda Instances</h1>
+
+<table>
+{{#each model as |lambda-instance|}}
+<tr class="instance-info">
+  <td>{{lambda-instance.uuid}}</td>
+  <td>{{lambda-instance.name}}</td>
+</tr>
+{{else}}
+  No lambda instances under ownership.
+{{/each}}
+</table>
