@@ -12,7 +12,7 @@ export default Ember.Controller.extend({
 
   actions : {
     upload: function() {
-    var _this = this;
+    //var _this = this;
 
     var description = this.get("description");
     var type = this.get("type");
