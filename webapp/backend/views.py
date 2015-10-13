@@ -653,7 +653,8 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         elif filter == "info":
             wanted_fields = ['uuid', 'name', 'instance_info']
         elif filter == "":
-            wanted_fields = ['uuid', 'name', 'instance_info', 'status', 'failure_message']
+            wanted_fields = ['uuid', 'name', 'instance_info', 'status', 'failure_message',
+                             'applications']
         else:
             raise CustomParseError(CustomParseError.messages['filter_value_error'])
 
@@ -724,7 +725,8 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                     "code": lambda_instance_all['code'],
                     "message": lambda_instance_all['status'],
                     "detail": lambda_instance_all['details']
-                }
+                },
+                "applications": lambda_instance_all['applications']
             }]
 
             # Add failure message only if it is not empty.

@@ -24,12 +24,12 @@ class ApplicationSerializer(serializers.ModelSerializer):
     A serializer for Application objects.
     """
 
-    connections = LambdaInstanceApplicationConnectionListingField(many=True, read_only=True)
+    lambda_instances = LambdaInstanceApplicationConnectionListingField(many=True, read_only=True)
 
     class Meta:
         model = Application
         fields = ('uuid', 'name', 'path', 'type', 'description', 'failure_message', 'status',
-                  'connections')
+                  'lambda_instances')
 
 
 class ServerSerializer(serializers.ModelSerializer):
@@ -59,11 +59,13 @@ class LambdaInstanceSerializer(serializers.ModelSerializer):
 
     servers = ServerSerializer(many=True, read_only=True)
     private_network = PrivateNetworkSerializer(many=True, read_only=True)
+    applications = LambdaInstanceApplicationConnectionListingField(many=True, read_only=True)
 
     class Meta:
         model = LambdaInstance
         fields = ('id', 'uuid', 'name', 'instance_info', 'status', 'failure_message', 'servers',
-                  'private_network', 'master_node', 'started_batch', 'started_streaming')
+                  'private_network', 'master_node', 'started_batch', 'started_streaming',
+                  'applications')
 
 
 class LambdaInstanceInfo(serializers.Serializer):
