@@ -878,7 +878,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         but are not wanted in a list response
         """
 
-        wanted_fields = ['uuid', 'name']
+        wanted_fields = ['uuid', 'name', 'status', 'failure_message']
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
 
         for lambda_instance in response['data']:
@@ -887,6 +887,17 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         response['status']['short_description'] = ResponseMessages.short_descriptions[
             'lambda_instances_list']
+
+        for lambda_instance in response['data']:
+            lambda_instance['status'] = {
+                'code': lambda_instance['status'],
+                'message': LambdaInstance.status_choices[int(lambda_instance['status'])][1],
+                'detail': ResponseMessages.lambda_instance_status_details[
+                    LambdaInstance.status_choices[int(lambda_instance['status'])][1]]
+            }
+            if lambda_instance['failure_message'] != "":
+                lambda_instance['status']['failure_message'] = lambda_instance['failure_message']
+            del lambda_instance['failure_message']
 
         # Change uuid name to id
         for item in response['data']:

@@ -364,6 +364,11 @@ class TestLambdaInstancesList(APITestCase):
         for lambda_instance in response.data['data']:
             self.assertIn('id', lambda_instance)
             self.assertIn('name', lambda_instance)
+            self.assertIn('status', lambda_instance)
+
+            self.assertIn('code', lambda_instance['status'])
+            self.assertIn('message', lambda_instance['status'])
+            self.assertIn('detail', lambda_instance['status'])
 
     def _assert_success_request_response_content(self, response, offset=0):
         # Assert the contents of the response.
@@ -371,7 +376,7 @@ class TestLambdaInstancesList(APITestCase):
         self.assertEqual(response.data['status']['short_description'],
                          ResponseMessages.short_descriptions['lambda_instances_list'])
 
-        # Gather all the returned lambda instance names and asser the id of each lambda instance.
+        # Gather all the returned lambda instance names and assert the id of each lambda instance.
         returned_lambda_instance_names = list()
         for lambda_instance in response.data['data']:
             returned_lambda_instance_names.append(lambda_instance['name'])
@@ -386,6 +391,16 @@ class TestLambdaInstancesList(APITestCase):
         # instance names and that the sizes of these sets are equal.
         for expected_lambda_instance_name in expected_lambda_instance_names:
             self.assertIn(expected_lambda_instance_name, returned_lambda_instance_names)
+
+        # Assert that the message, the code and the detail inside lambda instance status are
+        # correctly chosen.
+        for lambda_instance in response.data['data']:
+            self.assertEqual(lambda_instance['status']['message'],
+                             LambdaInstance.status_choices[
+                                 int(lambda_instance['status']['code'])][1])
+            self.assertEqual(lambda_instance['status']['detail'],
+                             ResponseMessages.lambda_instance_status_details[
+                                 lambda_instance['status']['message']])
 
         self.assertEqual(len(expected_lambda_instance_names), len(returned_lambda_instance_names))
 
