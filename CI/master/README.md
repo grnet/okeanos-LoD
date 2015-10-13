@@ -29,8 +29,21 @@ To use these scripts for Continuous Integration, simply run
 ./create.sh <okeanos-token> <public_key_path> <private_key_path>
 ```
 
-each time a new pull request is merged on the branch you want to test. Note that, the first time 
+each time a new pull request is merged on the branch you want to test. Note that, the first time
 these scripts are deployed, `destroy.sh` script need not be called.
 
+
 # Requirements
-~okeanos-LoD Fokia package.
+For everything to work properly, the following packages need to be installed:
+
+* `git`  
+* `python-dev`  
+* `virtualenv`  
+
+
+# File Arrangement
+For everything to work properly, place `create.sh`, `destroy.sh` and `utils.py`inside the same directory.
+
+
+# Clarifications
+Make sure that the paths for the public and the private ssh keys are absolute and not relative paths.
