@@ -38,12 +38,12 @@ lambda-instance-id  | The id of the specified lambda instance. For more informat
 
 ## Example
 
-In this example we are going to get the details of the application with id 1b9f7773-f19d-426d-bc29-5434844e4537
+In this example we are going to get the details of the application with id eb9b1cda-1c81-4850-92f3-897b01d4685c
 
 The request in curl
 
 ```
-curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/apps/1b9f7773-f19d-426d-bc29-5434844e4537/'
+curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/apps/eb9b1cda-1c81-4850-92f3-897b01d4685c/'
 ```
 
 
@@ -57,13 +57,22 @@ curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY
   },
   "data": [
     {
-      "id": "1b9f7773-f19d-426d-bc29-5434844e4537",
-      "name": "test_file",
+      "name": "test_file_1",
+      "path": "lambda_applications",
+      "type": "BATCH",
+      "description": "My first application",
       "status": {
         "message": "UPLOADED",
         "code": "0",
-        "details": "Application has been successfully uploaded."
-      }
+        "detail": "Application has been successfully uploaded."
+      },
+      "lambda_instances": [
+        {
+          "started": false,
+          "id": "3bc97580-45e1-4c39-90ae-0c2178431526"
+        }
+      ],
+      "id": "eb9b1cda-1c81-4850-92f3-897b01d4685c"
     }
   ]
 }

@@ -301,8 +301,9 @@ class LambdaInstanceApplicationConnection(models.Model):
     application: models.Application
     """
 
-    lambda_instance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False)
+    lambda_instance = models.ForeignKey(LambdaInstance, null=False, blank=False, unique=False,
+                                        related_name="applications")
     application = models.ForeignKey(Application, null=False, blank=False, unique=False,
-                                    related_name="connections")
+                                    related_name="lambda_instances")
     started = models.BooleanField(default=False,
                                   help_text="True, if application is started")

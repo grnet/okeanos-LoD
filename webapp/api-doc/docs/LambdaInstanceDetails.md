@@ -85,6 +85,13 @@ If the authentication token is correct, a sample response is
         "details": "~okeanos cluster build has failed.",
         "failure_message": "Cyclades VMs out of limit\n"
       }
+      "applications": [
+        {
+          "started": true,
+          "type": "BATCH",
+          "id": "eb9b1cda-1c81-4850-92f3-897b01d4685c"
+        }
+      ]
     }
   ]
 }

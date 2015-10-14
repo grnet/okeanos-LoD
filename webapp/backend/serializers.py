@@ -3,10 +3,11 @@ from rest_framework import serializers
 from .models import Application, LambdaInstance, Server, PrivateNetwork
 
 
-class LambdaInstanceApplicationConnectionListingField(serializers.RelatedField):
+class ApplicationLambdaInstancesListingField(serializers.RelatedField):
     """
     Class that defines the way that connections between lambda instances and application will
-    be represented.
+    be represented. Used by ApplicationSerializer to serializer lambda instances related to
+    a specific application.
     """
 
     def to_internal_value(self, data):
@@ -19,17 +20,35 @@ class LambdaInstanceApplicationConnectionListingField(serializers.RelatedField):
         return {"id": lambda_instance_id, "started": started}
 
 
+class LambdaInstanceApplicationsListingField(serializers.RelatedField):
+    """
+    Class that defines the way that connections between lambda instances and application will
+    be represented. Used by LambdaInstanceSerializer to serializer applications related to
+    a specific lambda instance.
+    """
+
+    def to_internal_value(self, data):
+        pass
+
+    def to_representation(self, value):
+        application_id = value.application.uuid
+        application_type = Application.type_choices[int(value.application.type)][1]
+        started = value.started
+
+        return {'id': application_id, 'started': started, 'type': application_type}
+
+
 class ApplicationSerializer(serializers.ModelSerializer):
     """
     A serializer for Application objects.
     """
 
-    connections = LambdaInstanceApplicationConnectionListingField(many=True, read_only=True)
+    lambda_instances = ApplicationLambdaInstancesListingField(many=True, read_only=True)
 
     class Meta:
         model = Application
         fields = ('uuid', 'name', 'path', 'type', 'description', 'failure_message', 'status',
-                  'connections')
+                  'lambda_instances')
 
 
 class ServerSerializer(serializers.ModelSerializer):
@@ -59,11 +78,13 @@ class LambdaInstanceSerializer(serializers.ModelSerializer):
 
     servers = ServerSerializer(many=True, read_only=True)
     private_network = PrivateNetworkSerializer(many=True, read_only=True)
+    applications = LambdaInstanceApplicationsListingField(many=True, read_only=True)
 
     class Meta:
         model = LambdaInstance
         fields = ('id', 'uuid', 'name', 'instance_info', 'status', 'failure_message', 'servers',
-                  'private_network', 'master_node', 'started_batch', 'started_streaming')
+                  'private_network', 'master_node', 'started_batch', 'started_streaming',
+                  'applications')
 
 
 class LambdaInstanceInfo(serializers.Serializer):
