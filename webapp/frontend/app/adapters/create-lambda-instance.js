@@ -4,7 +4,7 @@ import Env from 'frontend/config/environment';
 var CreateLambdaInstanceAdapter = DS.JSONAPIAdapter.extend({
   host: Env.host,
   namespace: 'api',
-  pathForType: function(type) {
+  pathForType: function() {
     return 'lambda-instance';
   },
   headers: {
@@ -14,4 +14,4 @@ var CreateLambdaInstanceAdapter = DS.JSONAPIAdapter.extend({
   }
 });
 
-export default CreateLambdaInstanceAdapter; 
+export default CreateLambdaInstanceAdapter;
