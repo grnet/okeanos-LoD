@@ -16,6 +16,7 @@ Router.map(function () {
   });
   this.route('lambda-instance');
   this.route('lambda-instance', {path: '/lambda-instances/:instance_uuid'});
+  this.route('create-lambda-instance');
 });
 
 export default Router;
