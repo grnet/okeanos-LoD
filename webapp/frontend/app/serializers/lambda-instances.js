@@ -5,7 +5,7 @@ export default DS.JSONAPISerializer.extend({
   normalizeArrayResponse: function(store, primaryModelClass, payload, id, requestType) {
     var pluralTypeKey = Ember.Inflector.inflector.pluralize(primaryModelClass.modelName);
     for (var i=0;i<payload.data.length;++i) {
-      payload.data[i].attributes = payload.data[i];
+      payload.data[i].attributes = jQuery.extend(true, {}, payload.data[i]);
       payload.data[i].attributes.uuid = payload.data[i].id;
       payload.data[i].type = pluralTypeKey;
     }
