@@ -1,7 +1,7 @@
-import ApplicationAdapter from './application';
-import config from '../config/environment';
+import DS from "ember-data";
+import ENV from 'frontend/config/environment';
 
-export default ApplicationAdapter.extend({
-  host: config.host + ':80',
-  namespace: 'api/authenticate'
-});
+export default DS.JSONAPIAdapter.extend({
+  host: ENV.host + ':80',
+  namespace: 'api/authenticate',
+ });

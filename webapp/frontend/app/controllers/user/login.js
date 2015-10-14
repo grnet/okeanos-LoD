@@ -29,7 +29,6 @@ actions : {
       crossDomain: true,
       method: 'GET',
       dataType: 'json',
-      data: headers,
       xhrFields: {withCredentials: true},
       success: function(){
           _this.set("isProcessing", false);
