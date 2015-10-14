@@ -34,7 +34,7 @@ class LambdaInstanceManager:
                                             'ram_slave': 4096,
                                             'disk_master': 20,
                                             'disk_slave': 20,
-                                            'slaves': 2,
+                                            'slaves': 1,
                                             'ip_allocation': "master"}
 
     def create(self, sleep_time=10, max_wait=6):
