@@ -30,7 +30,7 @@ class TestLambdaInstances(APITestCase):
             'uuid': '24b8a635-8d71-4016-b8f5-c4a14348ed1f',
             'name': 'test_lambda_instance',
             'instance_info': 'test_content',
-            'status': '20',
+            'status': '0',
             'failure_message': 'OK',
         }
 
@@ -524,7 +524,7 @@ class TestLambdaInstances(APITestCase):
                          response.data['status']['short_description'])
 
         number_of_lambda_instances = \
-            LambdaInstance.objects.filter(status="20").count()
+            LambdaInstance.objects.filter(status="0").count()
 
         self.assertEqual(str(number_of_lambda_instances), response.data['data']['count'])
 
@@ -551,6 +551,6 @@ class TestLambdaInstances(APITestCase):
                          response.data['status']['short_description'])
 
         number_of_lambda_instances = \
-            LambdaInstance.objects.filter(status="20").count()
+            LambdaInstance.objects.filter(status="0").count()
 
         self.assertEqual(str(number_of_lambda_instances), response.data['data']['count'])
