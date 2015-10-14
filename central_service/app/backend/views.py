@@ -303,7 +303,7 @@ class LambdaInstanceCounterView(APIView):
 
     # GET /api/lambda_instances/count
     def get(self, request, format=None):
-        activeLambdaInstances = LambdaInstance.objects.filter(status="20").count()
+        activeLambdaInstances = LambdaInstance.objects.filter(status="0").count()
         status_code = rest_status.HTTP_200_OK
         return Response(
             {
