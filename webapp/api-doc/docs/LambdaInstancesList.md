@@ -50,6 +50,10 @@ status | The status code of the response | None
 next | The URL to be used to list the next lambda instance | null
 previous | The URL to be used to list the previous lambda instance | null
 count | The number of existing lambda instances | None
+code | A code defining the state of the lambda instance| 2
+message | A literal explaining the code| PENDING
+detail | Some details for the message | Lambda instance installation is pending.
+failure_message | An optional message in case something went wrong| None
 
 ## Example
 
@@ -76,23 +80,49 @@ If the authentication token is correct, a sample response is
   "data": [
     {
       "name": "My first Lambda Instance",
-      "id": "9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c"
+      "id": "9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c",
+      "status": {
+        "message": "STARTED",
+        "code": "0",
+        "detail": "Lambda instance has been started."
+      }
     },
     {
       "name": "Lambda Instance 1",
-      "id": "bc206a2a-b220-43e5-9d76-a7774de5c377"
+      "id": "bc206a2a-b220-43e5-9d76-a7774de5c377",
+      "status": {
+        "message": "STARTED",
+        "code": "0",
+        "detail": "Lambda instance has been started."
+      }
     },
     {
       "name": "Lambda Instance 2",
-      "id": "b141f48c-787b-4345-af6d-1e2e84a45c7e"
+      "id": "b141f48c-787b-4345-af6d-1e2e84a45c7e",
+      "status": {
+        "message": "STARTED",
+        "code": "0",
+        "detail": "Lambda instance has been started."
+      }
     },
     {
       "name": "Lambda Instance 3",
-      "id": "8d8b574b-742e-4b90-9926-3c034dc40516"
+      "id": "8d8b574b-742e-4b90-9926-3c034dc40516",
+      "status": {
+        "message": "STARTED",
+        "code": "0",
+        "detail": "Lambda instance has been started."
+      }
     },
     {
       "name": "Lambda Instance 4",
-      "id": "bbe29514-4f21-4960-89b3-becd82515ef3"
+      "id": "bbe29514-4f21-4960-89b3-becd82515ef3",
+      "status": {
+        "message": "KAFKA_FAILED",
+        "code": "17",
+        "detail": "Apache Kafka installation and configuration have failed."
+        "failure_message": "Ansible task failed"
+      }
     }
   ]
 }
@@ -117,9 +147,25 @@ If the authentication token is correct, a sample response is
     "next":null,
     "previous":"http://<hostname>/api/lambda-instances/?limit=2&offset=1",
   },
-  "data":[
-    {"name":"Lambda Instance 3","id":"8d8b574b-742e-4b90-9926-3c034dc40516"},
-    {"name":"Lambda Instance 4","id":"bbe29514-4f21-4960-89b3-becd82515ef3"}
+  "data":[{
+      "name":"Lambda Instance 3",
+      "id":"8d8b574b-742e-4b90-9926-3c034dc40516",
+      "status": {
+        "message": "STARTED",
+        "code": "0",
+        "detail": "Lambda instance has been started."
+      }
+    },
+    {
+      "name":"Lambda Instance 4",
+      "id":"bbe29514-4f21-4960-89b3-becd82515ef3",
+      "status": {
+        "message": "KAFKA_FAILED",
+        "code": "17",
+        "detail": "Apache Kafka installation and configuration have failed."
+        "failure_message": "Ansible task failed"
+      }
+    }
   ],
   "status": {
     "short_description": "Lambda instances.",
