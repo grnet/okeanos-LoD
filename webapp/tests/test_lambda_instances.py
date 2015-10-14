@@ -465,6 +465,7 @@ class TestLambdaInstaceDetails(APITestCase):
         self.assertEqual(len(response.data['data']), 1)
         self.assertIn('info', response.data['data'][0])
         self.assertIn('status', response.data['data'][0])
+        self.assertIn('applications', response.data['data'][0])
 
         self.assertIn('id', response.data['data'][0]['info'])
         self.assertIn('name', response.data['data'][0]['info'])
@@ -478,6 +479,8 @@ class TestLambdaInstaceDetails(APITestCase):
         self.assertEqual(response.data['status']['code'], status.HTTP_200_OK)
         self.assertEqual(response.data['status']['short_description'],
                          ResponseMessages.short_descriptions['lambda_instance_details'])
+
+        self.assertEqual(len(response.data['data'][0]['applications']), 0)
 
         self.assertEqual(response.data['data'][0]['status']['code'], LambdaInstance.PENDING)
         self.assertEqual(response.data['data'][0]['status']['message'], "PENDING")

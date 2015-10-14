@@ -507,7 +507,7 @@ class TestApplicationDetails(APITestCase):
         self.assertIn('path', response.data['data'][0])
         self.assertIn('type', response.data['data'][0])
         self.assertIn('description', response.data['data'][0])
-        self.assertIn('connections', response.data['data'][0])
+        self.assertIn('lambda_instances', response.data['data'][0])
         self.assertIn('status', response.data['data'][0])
 
         self.assertIn('message', response.data['data'][0]['status'])
@@ -525,7 +525,7 @@ class TestApplicationDetails(APITestCase):
         self.assertEqual(response.data['data'][0]['path'], "lambda_applications")
         self.assertEqual(response.data['data'][0]['type'], "BATCH")
         self.assertEqual(response.data['data'][0]['description'], "A description.")
-        self.assertEqual(len(response.data['data'][0]['connections']), 0)
+        self.assertEqual(len(response.data['data'][0]['lambda_instances']), 0)
 
         self.assertEqual(response.data['data'][0]['status']['message'], "UPLOADING")
         self.assertEqual(response.data['data'][0]['status']['code'], "1")
