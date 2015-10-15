@@ -5,6 +5,10 @@
 <tr class="instance-info">
   <td>{{lambda-instance.uuid}}</td>
   <td>{{lambda-instance.name}}</td>
+  <td>{{lambda-instance.status}}</td>
+  {{#if lambda-instance.failure_message}}
+    <td>{{lambda-instance.failure_message}}</td>
+  {{/if}}
 </tr>
 {{else}}
   No lambda instances under ownership.
