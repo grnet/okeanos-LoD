@@ -2,15 +2,19 @@
 
 {{#if sameUpload}}
 <div id="id_alert_wrongtoken" class="alert alert-dismissable alert-danger col-sm-6 col-sm-offset-3">
-  <button type="button" class="close" data-dismiss="alert">×</button>
-  <strong>The application with this name already exists.</strong>Please try another file.
+  <strong>The application with this name already exists.</strong> Please try another file.
+</div>
+{{/if}}
+
+{{#if successUpload}}
+<div class="alert alert-success col-sm-6 col-sm-offset-3">
+  <strong>Success!</strong> The application was uploaded successfully.
 </div>
 {{/if}}
 
 {{#if serverError}}
 <div id="id_alert_wrongtoken" class="alert alert-dismissable alert-danger col-sm-6 col-sm-offset-3">
-  <button type="button" class="close" data-dismiss="alert">×</button>
-  <strong>Internal server error.</strong>Please try later.
+  <strong>Internal server error.</strong> Please try later.
 </div>
 {{/if}}
 
@@ -34,7 +38,7 @@
 
       <br><br><br>
 
-      {{input value=file type="file" name="file" id="file" class="file-upload"}}
+      {{input value=file type="file" name="file" id="file"}}
 
       <br>
 

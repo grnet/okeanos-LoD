@@ -10,15 +10,16 @@ var UploadController = Ember.Controller.extend({
     var _this = this;
 
       this.setProperties({
-        loginFailed: false,
-        isProcessing: true
+        sameUpload: false,
+        serverError: false,
+        successUpload: false,
       });
 
       var host = this.store.adapterFor('app').get('host'),
       namespace = this.store.adapterFor('app').namespace,
       postUrl = [ host, namespace ].join('/'),
       headers = {
-        'Authorization': "Token " + "",
+        'Authorization': "Token " + "VtADuc3I2tTVlf5YrWM5QIM1-1tt0Xy2N6JRzeDWTM8",
         'Accept': "application/json",
       };
 
@@ -33,26 +34,25 @@ var UploadController = Ember.Controller.extend({
         data: data,
         success: function(){
           console.log("success");
+          _this.set("successUpload", true);
+          _this.set("sameUpload", false);
+          _this.set("serverError", false);
         },
         statusCode: {
           400: function() {
-            _this.set('sameUpload', true);
+            _this.set("sameUpload", true);
             _this.set("serverError", false);
+            _this.set("successUpload", false);
           }
         },
         error: function() {
-          _this.set('sameUpload', false);
+          _this.set("sameUpload", false);
           _this.set("serverError", true);
+          _this.set("successUpload", false);
         }
       });
     },
   },
-  dismiss: function(){
-    Ember.$('#upload-app').focus();
-    Ember.$('#id_alert_wrongtoken > button').click();
-    this.set('sameUpload', false);
-    this.set("serverError", false);
-  }
 
 });
 
