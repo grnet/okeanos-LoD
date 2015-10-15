@@ -74,7 +74,8 @@ If the authentication token is correct, a sample response is
           "ram_master": 4096,
           "vcpus_slave": 4,
           "ip_allocation": "master",
-          "disk_master": 20
+          "disk_master": 20,
+          "master_node_id": 10000
         },
         "id": "3f763964-d519-4fd2-916d-b5cfbe3b878b",
         "name": "My first Lambda Instance"

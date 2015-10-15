@@ -443,9 +443,18 @@ class TestLambdaInstaceDetails(APITestCase):
 
         # Save a lambda instance on the database with a specified uuid.
         self.lambda_instance_uuid = uuid.uuid4()
-        LambdaInstance.objects.create(uuid=self.lambda_instance_uuid,
-                                      name="Lambda Instance created from tests",
-                                      instance_info=json.dumps(self.instance_info))
+        lambda_instance = LambdaInstance.objects.create(uuid=self.lambda_instance_uuid,
+                                                        name="Lambda Instance created from tests",
+                                                        instance_info=json.dumps(
+                                                            self.instance_info))
+
+        # Save a server on the database.
+        self.master_node_id = randint(2, 100)
+        master_node = Server.objects.create(id=self.master_node_id, lambda_instance=lambda_instance)
+
+        # Set the server as the master node for the lambda instance.
+        lambda_instance.master_node = master_node
+        lambda_instance.save()
 
     # Test for getting the details of a lambda instance.
     def test_lambda_instance_details(self):
@@ -491,7 +500,9 @@ class TestLambdaInstaceDetails(APITestCase):
                          "{id}".format(id=self.lambda_instance_uuid))
         self.assertEqual(response.data['data'][0]['info']['name'],
                          "Lambda Instance created from tests")
-        self.assertEqual(response.data['data'][0]['info']['instance_info'], self.instance_info)
+        extended_instance_info = self.instance_info
+        extended_instance_info['master_node_id'] = self.master_node_id
+        self.assertEqual(response.data['data'][0]['info']['instance_info'], extended_instance_info)
 
     # Test for getting the details of a lambda instance using the filter parameter with value
     # status.
@@ -564,7 +575,9 @@ class TestLambdaInstaceDetails(APITestCase):
                          "{id}".format(id=self.lambda_instance_uuid))
         self.assertEqual(response.data['data'][0]['info']['name'],
                          "Lambda Instance created from tests")
-        self.assertEqual(response.data['data'][0]['info']['instance_info'], self.instance_info)
+        extended_instance_info = self.instance_info
+        extended_instance_info['master_node_id'] = self.master_node_id
+        self.assertEqual(response.data['data'][0]['info']['instance_info'], extended_instance_info)
 
     # Test for getting the details of a lambda instance using the filter parameter with a
     # wrong value.

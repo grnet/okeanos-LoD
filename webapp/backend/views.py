@@ -651,10 +651,10 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         if filter == "status":
             wanted_fields = ['uuid', 'name', 'status', 'failure_message']
         elif filter == "info":
-            wanted_fields = ['uuid', 'name', 'instance_info']
+            wanted_fields = ['uuid', 'name', 'instance_info', 'master_node']
         elif filter == "":
             wanted_fields = ['uuid', 'name', 'instance_info', 'status', 'failure_message',
-                             'applications']
+                             'applications', 'master_node']
         else:
             raise CustomParseError(CustomParseError.messages['filter_value_error'])
 
@@ -669,6 +669,8 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         if 'instance_info' in lambda_instance_all:
             lambda_instance_all['instance_info'] = json.loads(
                 lambda_instance_all['instance_info'])
+            lambda_instance_all['instance_info']['master_node_id'] = lambda_instance_all[
+                'master_node']
 
         # If status exists, create a code field and change status to a human readable format.
         if 'status' in lambda_instance_all:
