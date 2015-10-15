@@ -10,6 +10,6 @@ export default DS.JSONAPIAdapter.extend({
   headers: {
     'Authorization': "Token " + "VtADuc3I2tTVlf5YrWM5QIM1-1tt0Xy2N6JRzeDWTM8",
     'Accept': "application/json",
-    'Content-Type': "multipart/form-data"
+    'Content-Type': "application/json"
   }
  });
