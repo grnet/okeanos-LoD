@@ -79,7 +79,9 @@
   <p>
     Public keys:
     <select multiple name="public_key_name">
-
+      {{#each userPublicKeys as |publicKey|}}
+        <option value={{publicKey.name}}>{{publicKey.name}}</option>
+      {{/each}}
     </select> 
   </p>
   <input type="submit" value="Submit">

@@ -1,17 +1,18 @@
-import DS from "ember-data";
-import Env from 'frontend/config/environment';
+import Ember from 'ember';
+import GenericAdapter from 'frontend/adapters/application';
 
-var CreateLambdaInstanceAdapter = DS.JSONAPIAdapter.extend({
-  host: Env.host,
-  namespace: 'api',
+var CreateLambdaInstanceAdapter = GenericAdapter.extend({
   pathForType: function() {
     return 'lambda-instance';
   },
-  headers: {
-    'Authorization': "Token " + Env.token,
-    'Accept': "application/json",
-    'Content-Type': "application/json"
-  }
+  headers: Ember.computed(function(){
+    var defaultHeaders = GenericAdapter.create().get('headers');
+    var newHeaders = Ember.$.extend(true, {}, defaultHeaders);
+
+    newHeaders['Content-Type'] = "application/json";
+
+    return newHeaders;
+  })
 });
 
 export default CreateLambdaInstanceAdapter;
