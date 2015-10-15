@@ -14,10 +14,10 @@ var LambdaInstance = DS.Model.extend({
   disk_master: DS.attr('number'),           // disk of master
   disk_slave: DS.attr('number'),            // disk of each slave
   public_key_name: DS.attr(),               // ~okeanos public keys
-  status: DS.attr(),                        // status of lambda instance
-  failure_message: DS.attr(),               // failure message
-  running_batch: DS.attr('boolean'),        // batch job running or not
-  running_stream: DS.attr('boolean'),       // streaming job running or not
+  status_message: DS.attr(),                // status of lambda instance
+  status_code: DS.attr('number'),           // status code of lambda instance
+  status_detail: DS.attr(),                 // status detail of lambda instance
+  status_failure_message: DS.attr(),        // failure message
   applications: DS.hasMany('lambda-apps'),  // deployed applications
 });
 
