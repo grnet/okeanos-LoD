@@ -66,5 +66,4 @@ actions : {
 
 });
 
-export var token;
 export default LoginController;
