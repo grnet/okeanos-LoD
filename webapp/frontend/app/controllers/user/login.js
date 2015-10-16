@@ -39,8 +39,6 @@ actions : {
               token: token,
               id: 1,
           });
-
-          _this.transitionToRoute('user.clusters');
       },
       statusCode: {
         401: function() {
