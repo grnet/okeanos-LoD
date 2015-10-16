@@ -1,5 +1,46 @@
+<h1>Lambda Instance Details</h1>
+
 <ul>
-    <li>Hello, {{model.name}}!</li>
+    <li>ID: {{model.instance.id}}</li>
+    <li>Name: {{model.instance.name}}</li>
+    <li>Project name: {{model.instance.project_name}}</li>
+    <li>Number of nodes: {{math-op model.instance.slaves "+" 1}}</li>
+    <li>Name of master node: {{model.instance.master_name}}</li>
+    <li>Hostname of master node: snf-{{model.instance.master_node_id}}.vm.okeanos.grnet.gr</li>
+    <li>Number of master node cpus: {{model.instance.vcpus_master}}</li>
+    <li>Number of each slave node cpus: {{model.instance.vcpus_slave}}</li>
+    <li>Size of master node RAM: {{model.instance.ram_master}}MB</li>
+    <li>Size of each slave node RAM: {{model.instance.ram_slave}}MB</li>
+    <li>Size of master node HDD: {{model.instance.disk_master}}GB</li>
+    <li>Size of master node HDD: {{model.instance.disk_slave}}GB</li>
+  {{#if lambda-instance.public_key_name}}
+      <li>Authorized public keys: {{lambda-instance.public_key_name}}</li>
+  {{/if}}
+    <li>Instance status message: {{model.instance.status_message}}</li>
+    <li>Instance status details: {{model.instance.status_detail}}</li>
+  {{#if lambda-instance.status_failure_message}}
+      <li>Instance failure message: {{lambda-instance.status_failure_message}}</li>
+  {{/if}}
 </ul>
+
+
+<h3>Deployed apps</h3>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Type</th>
+        <th>Started</th>
+    </tr>
+  {{#each model.apps as |app|}}
+      <tr class="instance-info">
+          <td>{{app.id}} </td>
+          <td>{{lower-case app.app_type}} </td>
+          <td>{{app.started}}</td>
+      </tr>
+  {{else}}
+      No apps deployed on the instance
+  {{/each}}
+</table>
 
 {{outlet}}
