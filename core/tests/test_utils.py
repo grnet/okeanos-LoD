@@ -4,13 +4,17 @@ from fokia import utils
 
 
 @mock.patch('fokia.utils.AstakosClient')
-def test_get_user_okeanos_projects(mock_astakos_client):
+def test_get_user_okeanos_projects(mock_AstakosClient):
     # Define ~okeanos authentication url.
     AUTHENTICATION_URL = "https://accounts.okeanos.grnet.gr/identity/v2.0"
     # Define a fake ~okeanos token.
     AUTHENTICATION_TOKEN = "fake-token"
 
     # Set the responses of the mocks.
+    mock_astakos_client = mock.Mock()
+
+    mock_AstakosClient.return_value = mock_astakos_client
+
     mock_astakos_client.get_projects.return_value = [
         {'id': 1, 'name': "name1", 'garbage': 'garbage'},
         {'id': 2, 'name': "name2", 'garbage2': 'garbage2'}]
@@ -19,7 +23,7 @@ def test_get_user_okeanos_projects(mock_astakos_client):
     response = utils.get_user_okeanos_projects(AUTHENTICATION_URL, AUTHENTICATION_TOKEN)
 
     # Assert that the proper mocks have been called.
-    mock_astakos_client.assert_called_with(AUTHENTICATION_URL, AUTHENTICATION_TOKEN)
+    mock_AstakosClient.assert_called_with(AUTHENTICATION_URL, AUTHENTICATION_TOKEN)
 
     mock_astakos_client.get_projects.assert_called_with()
 
