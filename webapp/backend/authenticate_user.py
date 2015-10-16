@@ -49,7 +49,7 @@ class KamakiTokenAuthentication(TokenAuthentication):
 
 def get_public_key(auth_token):
     headers = {"Content-Type": "application/json",
-               "Accept":       "application/json",
+               "Accept": "application/json",
                "X-Auth-Token": auth_token}
     req = requests.get(url="https://cyclades.okeanos.grnet.gr/userdata/keys",
                        headers=headers)

@@ -53,7 +53,7 @@ If the authentication token is correct, a sample response would be
 ```
 {
   "status": {
-    "short_description": "Applications.",
+    "short_description": "Applications",
     "code": 200
   },
   "data": [

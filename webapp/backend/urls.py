@@ -24,6 +24,8 @@ application_router.include_format_suffixes = False
 urlpatterns = [
     url(r'^authenticate/?$', views.authenticate),
     url(r'^user-public-keys/?$', views.UserPublicKeysView.as_view(), name="user public keys"),
+    url(r'^user-okeanos-projects/?$', views.UserOkeanosProjects.as_view(),
+        name="user okeanos projects"),
     url(r'^lambda-instance/?$', views.CreateLambdaInstance.as_view(),
         name='create lambda instance'),
     url(r'^lambda-instances/?$', lambda_instances_list, name="lambda instances list"),

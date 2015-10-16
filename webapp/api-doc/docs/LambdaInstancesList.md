@@ -74,7 +74,7 @@ If the authentication token is correct, a sample response is
 ```
 {
   "status": {
-    "short_description": "Lambda instances.",
+    "short_description": "Lambda instances",
     "code": 200
   },
   "data": [

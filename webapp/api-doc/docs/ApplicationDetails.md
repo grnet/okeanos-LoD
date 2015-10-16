@@ -52,7 +52,7 @@ curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY
 ```
 {
   "status": {
-    "short_description": "Application details.",
+    "short_description": "Application details",
     "code": 200
   },
   "data": [

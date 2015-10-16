@@ -219,3 +219,24 @@ def download_file_from_pithos(auth_url, auth_token, container_name, filename, de
 
     # Download the file from Pithos.
     pithos_client.download_object(filename, destination)
+
+
+def get_user_okeanos_projects(auth_url, auth_token):
+    """
+    Fetches the ~okeanos projects on which the user is a member, and returns their names and ids.
+    :param auth_url: The authentication url for ~okeanos API.
+    :param auth_token: The authentication token of the user.
+    :return: Returns a list with the requested projects. Each object of the list is a dictionary
+             with field 'id' and 'name'.
+    """
+
+    # Create astakos client.
+    astakos_client = AstakosClient(auth_url, auth_token)
+
+    # Get the names and the ids of user's projects.
+    okeanos_projects = list()
+
+    for okeanos_project in astakos_client.get_projects():
+        okeanos_projects.append({'id': okeanos_project['id'], 'name': okeanos_project['name']})
+
+    return okeanos_projects
