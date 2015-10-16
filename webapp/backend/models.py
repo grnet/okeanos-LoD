@@ -58,8 +58,8 @@ class Application(models.Model):
     name = models.CharField(max_length=100, default="")
     path = models.CharField(max_length=400, default="lambda_applications")
     description = models.CharField(max_length=400, blank=True, default='')
-    owner = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, null=True)
-    failure_message = models.TextField(default="", null=True,
+    owner = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, null=True, blank=True)
+    failure_message = models.TextField(default="", null=True, blank=True,
                                        help_text="Error message regarding this application.")
 
     UPLOADED = "0"
