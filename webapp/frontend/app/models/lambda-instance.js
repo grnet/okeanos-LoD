@@ -18,7 +18,7 @@ var LambdaInstance = DS.Model.extend({
   status_code: DS.attr('number'),           // status code of lambda instance
   status_detail: DS.attr(),                 // status detail of lambda instance
   status_failure_message: DS.attr(),        // failure message
-  applications: DS.hasMany('lambda-apps'),  // deployed applications
+  applications: DS.hasMany('lambda-app')    // deployed applications
 });
 
 export default LambdaInstance;
