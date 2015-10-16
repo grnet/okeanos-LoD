@@ -1,4 +1,5 @@
 import mock
+import uuid
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -11,6 +12,8 @@ class TestUserOkeanosProjects(APITestCase):
     Contains tests for user okeanos projects API call.
     """
 
+    # Define ~okeanos authentication url.
+    AUTHENTICATION_URL = "https://accounts.okeanos.grnet.gr/identity/v2.0"
     # Define a fake ~okeanos token.
     AUTHENTICATION_TOKEN = "fake-token"
 
@@ -27,10 +30,14 @@ class TestUserOkeanosProjects(APITestCase):
     @mock.patch('backend.views.get_user_okeanos_projects', return_value=[
         {'id': 1, 'name': "name1"},
         {'id': 2, 'name': "name2"}])
-    def test_user_okeanos_projects(self):
+    def test_user_okeanos_projects(self, mock_get_user_okeanos_projects_fokia):
 
         # Make a request to get the user okeanos projects.
         response = self.client.get("/api/user-okeanos-projects/")
+
+        # Assert that hte proper mocks have been called.
+        mock_get_user_okeanos_projects_fokia.\
+            assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN)
 
         # Assert the response status code.
         self.assertEqual(response.status_code, status.HTTP_200_OK)
