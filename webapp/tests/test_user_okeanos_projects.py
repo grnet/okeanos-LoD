@@ -7,6 +7,7 @@ from rest_framework.test import APITestCase
 from backend.models import User
 from backend.response_messages import ResponseMessages
 
+
 class TestUserOkeanosProjects(APITestCase):
     """
     Contains tests for user okeanos projects API call.
@@ -35,7 +36,7 @@ class TestUserOkeanosProjects(APITestCase):
         # Make a request to get the user okeanos projects.
         response = self.client.get("/api/user-okeanos-projects/")
 
-        # Assert that hte proper mocks have been called.
+        # Assert that the proper mocks have been called.
         mock_get_user_okeanos_projects_fokia.\
             assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN)
 
