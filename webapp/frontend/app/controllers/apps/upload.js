@@ -19,7 +19,7 @@ var UploadController = Ember.Controller.extend({
       namespace = this.store.adapterFor('app').namespace,
       postUrl = [ host, namespace ].join('/'),
       headers = {
-        'Authorization': "Token " + "VtADuc3I2tTVlf5YrWM5QIM1-1tt0Xy2N6JRzeDWTM8",
+        'Authorization': "Token " + "token",
         'Accept': "application/json",
       };
 
