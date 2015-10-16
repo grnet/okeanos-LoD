@@ -132,7 +132,7 @@ class LambdaInstance(models.Model):
     uuid = models.UUIDField("Instance UUID", null=False, unique=True, editable=False,
                             help_text="Unique key assigned to every instance.")
 
-    failure_message = models.TextField(default="",
+    failure_message = models.TextField(default="", null=True, blank=True,
                                        help_text="Error message regarding this lambda instance")
 
     STARTED = "0"
