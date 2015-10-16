@@ -18,7 +18,7 @@ from rest_framework.exceptions import ValidationError
 
 from rest_framework_xml.renderers import XMLRenderer
 
-from fokia.utils import check_auth_token
+from fokia.utils import check_auth_token, get_user_okeaos_projects
 
 from . import tasks, events
 from .models import Application, LambdaInstance, LambdaInstanceApplicationConnection
@@ -135,6 +135,31 @@ class UserPublicKeysView(APIView):
         },
             "data": public_keys
         })
+
+
+class UserOkeanosProjects(APIView):
+    """
+    Implements the API calls relevant with the user's ~okeanos projects.
+    """
+
+    authentication_classes = KamakiTokenAuthentication,
+    permission_classes = IsAuthenticated,
+
+    # Retrieves all the ~okeanos projects on which the user is a member.
+    def get(self, request, format=None):
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+        auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+
+        okeanos_projects = get_user_okeaos_projects(auth_url, auth_token)
+
+        status_code = status.HTTP_200_OK
+        return Response({
+            'status': {
+                'short_description': ResponseMessages.short_descriptions['user_okeanos_projects'],
+                'code': status_code
+            },
+            'data': okeanos_projects
+        }, status=status_code)
 
 
 class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
