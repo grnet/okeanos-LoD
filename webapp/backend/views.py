@@ -18,7 +18,7 @@ from rest_framework.exceptions import ValidationError
 
 from rest_framework_xml.renderers import XMLRenderer
 
-from fokia.utils import check_auth_token, get_user_okeaos_projects
+from fokia.utils import check_auth_token, get_user_okeanos_projects
 
 from . import tasks, events
 from .models import Application, LambdaInstance, LambdaInstanceApplicationConnection
@@ -150,7 +150,7 @@ class UserOkeanosProjects(APIView):
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
-        okeanos_projects = get_user_okeaos_projects(auth_url, auth_token)
+        okeanos_projects = get_user_okeanos_projects(auth_url, auth_token)
 
         status_code = status.HTTP_200_OK
         return Response({

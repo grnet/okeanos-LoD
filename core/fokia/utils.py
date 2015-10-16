@@ -221,7 +221,7 @@ def download_file_from_pithos(auth_url, auth_token, container_name, filename, de
     pithos_client.download_object(filename, destination)
 
 
-def get_user_okeaos_projects(auth_url, auth_token):
+def get_user_okeanos_projects(auth_url, auth_token):
     """
     Fetches the ~okeanos projects on which the user is a member, and returns their names and ids.
     :param auth_url: The authentication url for ~okeanos API.
