@@ -67,7 +67,7 @@ If the authentication token and url is correct, and all the headers are given co
 ```
 {
   "status": {
-    "short_description": "Your request to create a new lambda instance has been accepted.",
+    "short_description": "Your request to create a new lambda instance has been accepted",
     "code": 202
   },
   "data": [

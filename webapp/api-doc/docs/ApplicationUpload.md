@@ -56,7 +56,7 @@ If the authentication token is correct, a sample response would be
 ```
 {
   "status": {
-    "short_description": "Your request to upload the specified application has been accepted.",
+    "short_description": "Your request to upload the specified application has been accepted",
     "code": 202
   },
   "data": [

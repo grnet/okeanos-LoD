@@ -54,7 +54,7 @@ If the authentication token is correct, the response will be
 ```
 {
   "status": {
-    "short-description": "Your request to deploy the specified application has been accepted.",
+    "short-description": "Your request to deploy the specified application has been accepted",
     "code": 202
   }
 }

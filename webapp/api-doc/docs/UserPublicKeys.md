@@ -13,7 +13,7 @@ an "401 Unauthorized" error along with details regarding the error.
 ## Basic Parameters
 |Type             | Description
 |-----------------|--------------------------
-| **Description** | authentication token validation
+| **Description** | user public keys
 | **URL**         | /api/user-public-keys/
 | **HTTP Method** | GET
 | **Security**    | Basic Authentication
@@ -25,10 +25,11 @@ Type          | Description          | Required | Default value | Example value
 Authorization | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes`    | None          | Token tJ3b3f32f23ceuqdoS_..
 
 ## Example
-Example of simple validation of an API token
+In the following example we are going to the get the keys uploaded on ~okeanos for
+a specified user.
 
 ```
-curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/user-publickeys/'
+curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/user-public-keys/'
 ```
 
 ### Response body
@@ -37,7 +38,7 @@ If the authentication token is correct then the response is
 ```
 {
   "status": {
-    "short_description": "Public keys uploaded to ~okeanos.",
+    "short_description": "Public keys uploaded to ~okeanos",
     "code": 200
   },
   "data": [

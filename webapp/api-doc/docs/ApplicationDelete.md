@@ -52,7 +52,7 @@ curl -X DELETE -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKc
 ```
 {
   "status": {
-    "short-description": "Your request to delete the specified application has been accepted.",
+    "short-description": "Your request to delete the specified application has been accepted",
     "code": 202
   }
 }
