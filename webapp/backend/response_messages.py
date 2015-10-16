@@ -25,6 +25,7 @@ class ResponseMessages:
         'application_stop': "Your request to stop the specified application has been accepted",
         'user_public_keys': "Public keys uploaded to ~okeanos",
         'user_okeanos_projects': "~okeanos projects",
+        'vm_parameter_values': "Allowed values of parameters for creating a Lambda Instance",
     }
 
     lambda_instance_status_details = {
