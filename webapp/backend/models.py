@@ -88,14 +88,14 @@ class Application(models.Model):
 
     def __unicode__(self):
         info = "Id: " + str(self.id) + "\n" + \
-               "Description: " + str(self.description)+ "\n" + \
-               "Status: " + str(self.status)+ "\n" + \
+               "Description: " + str(self.description) + "\n" + \
+               "Status: " + str(self.status) + "\n" + \
                "Type: " + str(self.type)
         return info
 
     def save(self, *args, **kwargs):
-        self.full_clean() # Call clean to validate the given values
-        super(Application, self).save(*args, **kwargs) # Call the "real" save() method.
+        self.full_clean()
+        super(Application, self).save(*args, **kwargs)
 
 
 
@@ -198,8 +198,8 @@ class LambdaInstance(models.Model):
         return info
 
     def save(self, *args, **kwargs):
-        self.full_clean() # Call clean to validate the given values
-        super(LambdaInstance, self).save(*args, **kwargs) # Call the "real" save() method.
+        self.full_clean()
+        super(LambdaInstance, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Lambda Instance"
