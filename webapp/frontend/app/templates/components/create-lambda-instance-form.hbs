@@ -10,7 +10,9 @@
     <select name="vcpus_master">
       {{#each VMParameterValues as |valuesSet|}}
         {{#each valuesSet.vcpus as |vcpusValue|}}
-          <option value={{vcpusValue}}>{{vcpusValue}}</option>
+          {{#if (compare vcpusValue "!=" 1)}}
+            <option value={{vcpusValue}}>{{vcpusValue}}</option>
+          {{/if}}
         {{/each}}
       {{/each}}
     </select>
@@ -20,7 +22,9 @@
     <select name="vcpus_slave">
       {{#each VMParameterValues as |valuesSet|}}
         {{#each valuesSet.vcpus as |vcpusValue|}}
-          <option value={{vcpusValue}}>{{vcpusValue}}</option>
+          {{#if (compare vcpusValue "!=" 1)}}
+            <option value={{vcpusValue}}>{{vcpusValue}}</option>
+          {{/if}}
         {{/each}}
       {{/each}}
     </select>
