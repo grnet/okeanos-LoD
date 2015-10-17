@@ -26,6 +26,7 @@
 
 <h3>Deployed apps</h3>
 
+{{#if model.apps}}
 <table border="1">
     <tr>
         <th>ID</th>
@@ -38,9 +39,10 @@
           <td>{{lower-case app.app_type}} </td>
           <td>{{app.started}}</td>
       </tr>
-  {{else}}
-      No apps deployed on the instance
   {{/each}}
 </table>
+{{else}}
+    No apps are currently deployed on the instance
+{{/if}}
 
 {{outlet}}
