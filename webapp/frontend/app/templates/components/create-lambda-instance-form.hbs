@@ -1,5 +1,4 @@
 <form {{action "create"  newLambdaInstance on="submit"}} method="post">
-  <p>{{input type="text" value=projectName placeholder="~okeanos project" size="50"}}</p>
   <p>{{input type="text" value=instanceName placeholder="Lambda Instance name" size="50"}}</p>
   <p>{{input type="text" value=masterName placeholder="Master node name" size="50"}}</p>
   <p>
@@ -9,63 +8,61 @@
   <p>
     Number of CPUs on Master Node:
     <select name="vcpus_master">
-      <option value="2">2</option>
-      <option value="4" selected>4</option>
-      <option value="8">8</option>
+      {{#each VMParameterValues as |valuesSet|}}
+        {{#each valuesSet.vcpus as |vcpusValue|}}
+          <option value={{vcpusValue}}>{{vcpusValue}}</option>
+        {{/each}}
+      {{/each}}
     </select>
   </p>
   <p>
     Number of CPUs on each Slave Node:
     <select name="vcpus_slave">
-      <option value="2">2</option>
-      <option value="4" selected>4</option>
-      <option value="8">8</option>
+      {{#each VMParameterValues as |valuesSet|}}
+        {{#each valuesSet.vcpus as |vcpusValue|}}
+          <option value={{vcpusValue}}>{{vcpusValue}}</option>
+        {{/each}}
+      {{/each}}
     </select>
   </p>
   <p>
     Amount or RAM memory on Master Node:
     <select name="ram_master">
-      <option value="512">512</option>
-      <option value="1024">1024</option>
-      <option value="2048">2048</option>
-      <option value="4096" selected>4096</option>
-      <option value="6144">6144</option>
-      <option value="8192">8192</option>
+      {{#each VMParameterValues as |valuesSet|}}
+        {{#each valuesSet.ram as |ramValue|}}
+          <option value={{ramValue}}>{{ramValue}}</option>
+        {{/each}}
+      {{/each}}
     </select>
   </p>
   <p>
     Amount of RAM memory on each Slave Node:
     <select name="ram_slave">
-      <option value="512">512</option>
-      <option value="1024">1024</option>
-      <option value="2048">2048</option>
-      <option value="4096" selected>4096</option>
-      <option value="6144">6144</option>
-      <option value="8192">8192</option>
+      {{#each VMParameterValues as |valuesSet|}}
+        {{#each valuesSet.ram as |ramValue|}}
+          <option value={{ramValue}}>{{ramValue}}</option>
+        {{/each}}
+      {{/each}}
     </select>
   </p>
   <p>
     Size of hard disk on Master Node:
     <select name="disk_master">
-      <option value="5">5</option>
-      <option value="10">10</option>
-      <option value="20" selected>20</option>
-      <option value="40">40</option>
-      <option value="60">60</option>
-      <option value="80">80</option>
-      <option value="100">100</option>
+      {{#each VMParameterValues as |valuesSet|}}
+        {{#each valuesSet.disk as |diskValue|}}
+          <option value={{diskValue}}>{{diskValue}}</option>
+        {{/each}}
+      {{/each}}
     </select> 
   </p>
   <p>
     Size of hard disk on each Slave Node:
     <select name="disk_slave">
-      <option value="5">5</option>
-      <option value="10">10</option>
-      <option value="20" selected>20</option>
-      <option value="40">40</option>
-      <option value="60">60</option>
-      <option value="80">80</option>
-      <option value="100">100</option>
+      {{#each VMParameterValues as |valuesSet|}}
+        {{#each valuesSet.disk as |diskValue|}}
+          <option value={{diskValue}}>{{diskValue}}</option>
+        {{/each}}
+      {{/each}}
     </select>
   </p>
   <p>
@@ -74,6 +71,14 @@
       <option value="master" selected>Master</option>
       <!-- <option value="all">All</option> -->
       <!-- <option value="none">None</option> -->
+    </select>
+  </p>
+  <p>
+    ~okeanos Project:
+    <select name="okeanos_project">
+      {{#each userOkeanosProjects as |project|}}
+        <option value={{project.name}}>{{project.name}}</option>
+      {{/each}}
     </select>
   </p>
   <p>
