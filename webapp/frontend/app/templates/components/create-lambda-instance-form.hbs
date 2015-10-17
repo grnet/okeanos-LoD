@@ -103,3 +103,11 @@
   </p>
   <input type="submit" value="Submit">
 </form>
+
+{{#if newLambdaInstance.isSaving}}
+<p>Your request is being send to the server...</p>
+{{/if}}
+
+{{#unless newLambdaInstance.isNew}}
+<p>You request for creating a new Lambda Instance has been accepted!</p>
+{{/unless}}
