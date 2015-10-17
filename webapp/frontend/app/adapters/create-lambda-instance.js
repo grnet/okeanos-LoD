@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import DS from 'ember-data';
 import GenericAdapter from 'frontend/adapters/application';
 
 var CreateLambdaInstanceAdapter = GenericAdapter.extend({
@@ -12,7 +13,15 @@ var CreateLambdaInstanceAdapter = GenericAdapter.extend({
     newHeaders['Content-Type'] = "application/json";
 
     return newHeaders;
-  })
+  }),
+  handleResponse: function(status, headers, payload) {
+    if (this.isSuccess(status, headers, payload)) {
+      return payload;
+    }
+    else{
+      return new DS.InvalidError(payload.errors);
+    }
+  }
 });
 
 export default CreateLambdaInstanceAdapter;

@@ -1,6 +1,14 @@
 <form {{action "create"  newLambdaInstance on="submit"}} method="post">
-  <p>{{input type="text" value=instanceName placeholder="Lambda Instance name" size="50"}}</p>
-  <p>{{input type="text" value=masterName placeholder="Master node name" size="50"}}</p>
+  <p>{{input type="text" value=instanceName placeholder="Lambda Instance name" size="50"}}
+    {{#each newLambdaInstance.errors.instanceName as |error|}}
+        {{error.message}}
+    {{/each}}
+  </p>
+  <p>{{input type="text" value=masterName placeholder="Master node name" size="50"}}
+    {{#each newLambdaInstance.errors.masterName as |error|}}
+      {{error.message}}
+    {{/each}}
+  </p>
   <p>
     Number of Slaves:
     <input type="number" min="1" value="2" name="slaves">
@@ -10,7 +18,7 @@
     <select name="vcpus_master">
       {{#each VMParameterValues as |valuesSet|}}
         {{#each valuesSet.vcpus as |vcpusValue|}}
-          {{#if (compare vcpusValue "!=" 1)}}
+          {{#if (compare vcpusValue "!==" 1)}}
             <option value={{vcpusValue}}>{{vcpusValue}}</option>
           {{/if}}
         {{/each}}
@@ -22,7 +30,7 @@
     <select name="vcpus_slave">
       {{#each VMParameterValues as |valuesSet|}}
         {{#each valuesSet.vcpus as |vcpusValue|}}
-          {{#if (compare vcpusValue "!=" 1)}}
+          {{#if (compare vcpusValue "!==" 1)}}
             <option value={{vcpusValue}}>{{vcpusValue}}</option>
           {{/if}}
         {{/each}}
