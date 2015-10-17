@@ -18,7 +18,7 @@ from rest_framework.exceptions import ValidationError
 
 from rest_framework_xml.renderers import XMLRenderer
 
-from fokia.utils import check_auth_token, get_user_okeanos_projects
+from fokia.utils import check_auth_token, get_user_okeanos_projects, get_vm_parameter_values
 
 from . import tasks, events
 from .models import Application, LambdaInstance, LambdaInstanceApplicationConnection
@@ -159,6 +159,32 @@ class UserOkeanosProjects(APIView):
                 'code': status_code
             },
             'data': okeanos_projects
+        }, status=status_code)
+
+
+class VMParameterValues(APIView):
+    """
+    Implements the API calls relevant to the values of the parameters for creating a VM on
+    ~okeanos
+    """
+
+    authentication_classes = KamakiTokenAuthentication,
+    permission_classes = IsAuthenticated,
+
+    # Retrieves all the allowed values of the parameters for creating a VM
+    def get(self, request, format=None):
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+        auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+
+        vm_parameter_values = get_vm_parameter_values(auth_url, auth_token)
+
+        status_code = status.HTTP_200_OK
+        return Response({
+            'status': {
+                'short_description': ResponseMessages.short_descriptions['vm_parameter_values'],
+                'code': status_code
+            },
+            'data': [vm_parameter_values]
         }, status=status_code)
 
 

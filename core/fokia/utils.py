@@ -240,3 +240,40 @@ def get_user_okeanos_projects(auth_url, auth_token):
         okeanos_projects.append({'id': okeanos_project['id'], 'name': okeanos_project['name']})
 
     return okeanos_projects
+
+
+def get_vm_parameter_values(auth_url, auth_token):
+    """
+    Fetches from ~okeanos the available values for the number of CPUs, the amount of RAM and the
+    size of the Disk on a single VM.
+    :param auth_url: The authentication url for ~okeanos API.
+    :param auth_token: The authentication token of the user.
+    :return: Returns a dictionary with keys 'vcpus', 'ram' and 'disk'. Each value is a list with
+             the corresponding available values.
+    """
+
+    # Create cyclades compute client.
+    cyclades_url = AstakosClient(auth_url, auth_token).\
+        get_endpoint_url(CycladesComputeClient.service_type)
+    cyclades_compute_client = CycladesComputeClient(cyclades_url, auth_token)
+
+    # Get all the flavors from ~okeanos and keep only those which are allowed to be created.
+    flavors = cyclades_compute_client.list_flavors(detail=True)
+
+    allowed_flavors = list()
+    for flavor in flavors:
+        if flavor['SNF:allow_create']:
+            allowed_flavors.append(flavor)
+
+    # Get the values of the parameters found inside the allowed flavors.
+    vm_parameter_values = {'vcpus': set(), 'ram': set(), 'disk': set()}
+    for allowed_flavor in allowed_flavors:
+        for parameter, values in vm_parameter_values.iteritems():
+            values.add(allowed_flavor[parameter])
+
+    # Change the sets to lists in each parameter's values.
+    for parameter in vm_parameter_values.iterkeys():
+        vm_parameter_values[parameter] = list(vm_parameter_values[parameter])
+        vm_parameter_values[parameter].sort()
+
+    return vm_parameter_values
