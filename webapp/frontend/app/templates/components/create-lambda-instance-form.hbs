@@ -1,0 +1,113 @@
+<form {{action "create"  newLambdaInstance on="submit"}} method="post">
+  <p>{{input type="text" value=instanceName placeholder="Lambda Instance name" size="50"}}
+    {{#each newLambdaInstance.errors.instanceName as |error|}}
+        {{error.message}}
+    {{/each}}
+  </p>
+  <p>{{input type="text" value=masterName placeholder="Master node name" size="50"}}
+    {{#each newLambdaInstance.errors.masterName as |error|}}
+      {{error.message}}
+    {{/each}}
+  </p>
+  <p>
+    Number of Slaves:
+    <input type="number" min="1" value="2" name="slaves">
+  </p>
+  <p>
+    Number of CPUs on Master Node:
+    <select name="vcpus_master">
+      {{#each VMParameterValues as |valuesSet|}}
+        {{#each valuesSet.vcpus as |vcpusValue|}}
+          {{#if (compare vcpusValue "!==" 1)}}
+            <option value={{vcpusValue}}>{{vcpusValue}}</option>
+          {{/if}}
+        {{/each}}
+      {{/each}}
+    </select>
+  </p>
+  <p>
+    Number of CPUs on each Slave Node:
+    <select name="vcpus_slave">
+      {{#each VMParameterValues as |valuesSet|}}
+        {{#each valuesSet.vcpus as |vcpusValue|}}
+          {{#if (compare vcpusValue "!==" 1)}}
+            <option value={{vcpusValue}}>{{vcpusValue}}</option>
+          {{/if}}
+        {{/each}}
+      {{/each}}
+    </select>
+  </p>
+  <p>
+    Amount or RAM memory on Master Node:
+    <select name="ram_master">
+      {{#each VMParameterValues as |valuesSet|}}
+        {{#each valuesSet.ram as |ramValue|}}
+          <option value={{ramValue}}>{{ramValue}}</option>
+        {{/each}}
+      {{/each}}
+    </select>
+  </p>
+  <p>
+    Amount of RAM memory on each Slave Node:
+    <select name="ram_slave">
+      {{#each VMParameterValues as |valuesSet|}}
+        {{#each valuesSet.ram as |ramValue|}}
+          <option value={{ramValue}}>{{ramValue}}</option>
+        {{/each}}
+      {{/each}}
+    </select>
+  </p>
+  <p>
+    Size of hard disk on Master Node:
+    <select name="disk_master">
+      {{#each VMParameterValues as |valuesSet|}}
+        {{#each valuesSet.disk as |diskValue|}}
+          <option value={{diskValue}}>{{diskValue}}</option>
+        {{/each}}
+      {{/each}}
+    </select> 
+  </p>
+  <p>
+    Size of hard disk on each Slave Node:
+    <select name="disk_slave">
+      {{#each VMParameterValues as |valuesSet|}}
+        {{#each valuesSet.disk as |diskValue|}}
+          <option value={{diskValue}}>{{diskValue}}</option>
+        {{/each}}
+      {{/each}}
+    </select>
+  </p>
+  <p>
+    Public IP allocation:
+    <select name="ip_allocation">
+      <option value="master" selected>Master</option>
+      <!-- <option value="all">All</option> -->
+      <!-- <option value="none">None</option> -->
+    </select>
+  </p>
+  <p>
+    ~okeanos Project:
+    <select name="okeanos_project">
+      {{#each userOkeanosProjects as |project|}}
+        <option value={{project.name}}>{{project.name}}</option>
+      {{/each}}
+    </select>
+  </p>
+  <p>
+    Public keys:
+    <select multiple name="public_key_name">
+      {{#each userPublicKeys as |publicKey|}}
+        <option value={{publicKey.name}}>{{publicKey.name}}</option>
+      {{/each}}
+    </select> 
+  </p>
+  <input type="submit" value="Submit">
+</form>
+
+{{#if newLambdaInstance.isSaving}}
+<p>Your request is being send to the server...</p>
+{{/if}}
+
+{{#unless newLambdaInstance.isNew}}
+<p>You request for creating a new Lambda Instance has been accepted!</p>
+{{/unless}}

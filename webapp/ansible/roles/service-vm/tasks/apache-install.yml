@@ -10,14 +10,20 @@
     command: hostname
     register: hostname
 
-  - name: Copy Lambda sites-available configuration.
+  - name: Copy Lambda sites-available backend configuration.
     template: src=lambda-service-backend.conf.j2 dest=/etc/apache2/sites-available/lambda-service-backend.conf
 
+  - name: Copy lambda sites-available frontend configuration.
+    template: src=lambda-service-frontend.conf.j2 dest=/etc/apache2/sites-available/lambda-service-frontend.conf
+
   - name: Add lambda-service-backend to sites-enabled.
-    file: src=/etc/apache2/sites-available/lambda-service-backend.conf dest=/etc/apache2/sites-enabled/lambda-service-backend.conf state=link
+    command: a2ensite lambda-service-backend.conf
+
+  - name: Add lambda-service-frontend to sites-enabled.
+    command: a2ensite lambda-service-frontend.conf
 
   - name: Remove default sites-enabled.
-    file: name=/etc/apache2/sites-enabled/000-default.conf state=absent
+    command: a2dissite 000-default.conf
 
   - name: Activate Apache rewrite module.
     apache2_module: name=rewrite state=present
