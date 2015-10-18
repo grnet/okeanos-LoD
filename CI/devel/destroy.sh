@@ -3,7 +3,10 @@
 #####
 ## Bash script to destroy everything that create.sh script has created.
 ##
-## Requirements: ~okeanos-LoD Fokia package.
+## Requirements: ~okeanos-LoD Fokia package,
+##               virtual-env package,
+##               python-dev package,
+##               git package.
 ##
 ## Usage:
 ## ./destroy.sh <okeanos_token> <public_key_path> <private_key_path>

@@ -3,7 +3,10 @@
 #####
 ## Bash script to fully deploy ~okeanos-LoD Service.
 ##
-## Requirements: ~okeanos-LoD Fokia package.
+## Requirements: ~okeanos-LoD Fokia package,
+##               virtual-env package,
+##               python-dev package,
+##               git package.
 ##
 ## Usage ./create <okeanos-token> <public_key_path> <private_key_path>
 ##

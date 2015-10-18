@@ -1,9 +1,12 @@
 #!/bin/bash
 
 #####
-## Bash script to destroy an ~okeanos Central Service VM.
+## Bash script to destroy everything that create.sh script has created.
 ##
-## Requirements: ~okeanos-LoD Fokia package.
+## Requirements: ~okeanos-LoD Fokia package,
+##               virtual-env package,
+##               python-dev package,
+##               git package.
 ##
 ## Usage:
 ## ./destroy.sh <okeanos_token> <public_key_path> <private_key_path>
@@ -14,8 +17,8 @@
 ## private_key_path: path to the private ssh key related with the public ssh key provided.
 ##
 ## Description:
-## Upon execution, this script will destroy the ~okeanos Central Service VM based on its
-## name(central_service).
+## Upon execution, this script will destroy everything that create.sh script has created.
+## For more information see the README.md file.
 #####
 
 # ~okeanos token is given as first argument.
@@ -37,6 +40,20 @@ central_vm_id=$(python utils.py --get id --vm_name "Central VM master CI" --auth
 cd okeanos-LoD/central_service/manager
 python central_service_manager.py --action destroy --auth_token $okeanos_token --vm_id $central_vm_id --public_key_path "$public_key_path" --private_key_path "$private_key_path"
 cd ../../../
+
+# Destroy the lambda instance.
+echo "$(python manage_lambda_instance.py --action destroy --service_vm_name "Service VM master CI" --auth_token $okeanos_token)"
+
+# Get the id of the Service VM.
+service_vm_id=$(python utils.py --get id --vm_name "Service VM master CI" --auth_token $okeanos_token)
+
+# Destroy the Service VM.
+cd okeanos-LoD/webapp/manager
+python service_vm_manager.py --action destroy --auth_token $okeanos_token --vm_id $service_vm_id --public_key_path "$public_key_path" --private_key_path "$private_key_path"
+cd ../../../
+
+# Destroy the python virtual environment.
+rm -r okeanos_lod_python_environment
 
 # Delete the cloned repository.
 $(yes | rm -r okeanos-LoD/)
