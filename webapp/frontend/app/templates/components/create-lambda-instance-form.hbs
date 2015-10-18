@@ -42,7 +42,9 @@
     <select name="ram_master">
       {{#each VMParameterValues as |valuesSet|}}
         {{#each valuesSet.ram as |ramValue|}}
-          <option value={{ramValue}}>{{ramValue}}</option>
+          {{#if (compare ramValue ">=" 2048)}}
+            <option value={{ramValue}}>{{ramValue}}</option>
+          {{/if}}
         {{/each}}
       {{/each}}
     </select>
@@ -52,7 +54,9 @@
     <select name="ram_slave">
       {{#each VMParameterValues as |valuesSet|}}
         {{#each valuesSet.ram as |ramValue|}}
-          <option value={{ramValue}}>{{ramValue}}</option>
+          {{#if (compare ramValue ">=" 2048)}}
+            <option value={{ramValue}}>{{ramValue}}</option>
+          {{/if}}
         {{/each}}
       {{/each}}
     </select>
@@ -62,7 +66,9 @@
     <select name="disk_master">
       {{#each VMParameterValues as |valuesSet|}}
         {{#each valuesSet.disk as |diskValue|}}
-          <option value={{diskValue}}>{{diskValue}}</option>
+          {{#if (compare diskValue ">=" 10)}}
+            <option value={{diskValue}}>{{diskValue}}</option>
+          {{/if}}
         {{/each}}
       {{/each}}
     </select> 
@@ -72,7 +78,9 @@
     <select name="disk_slave">
       {{#each VMParameterValues as |valuesSet|}}
         {{#each valuesSet.disk as |diskValue|}}
-          <option value={{diskValue}}>{{diskValue}}</option>
+          {{#if (compare diskValue ">=" 10)}}
+            <option value={{diskValue}}>{{diskValue}}</option>
+          {{/if}}
         {{/each}}
       {{/each}}
     </select>
@@ -105,7 +113,7 @@
 </form>
 
 {{#if newLambdaInstance.isSaving}}
-<p>Your request is being send to the server...</p>
+<p>Your request is being sent to the server...</p>
 {{/if}}
 
 {{#unless newLambdaInstance.isNew}}
