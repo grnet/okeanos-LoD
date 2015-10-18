@@ -108,13 +108,14 @@ class LambdaInstanceInfo(serializers.Serializer):
     network_request = serializers.IntegerField(default=1)
     public_key_name = serializers.ListField(required=False, default=[])
 
-    # Allowed values for fields
+    # Allowed values for vm parameters. They will be changed dynamically in the view that will
+    # be called to create a new lambda instance. These entries are kept here in case the view
+    # fails to fetch the values.
     allowed = {
         "vcpus": [2, 4, 8],
-        "disks": [5, 10, 20, 40, 60, 80, 100],
-        "ram": [512, 1024, 2048, 4096, 6144, 8192],
-        "disk_types": [u'drbd', u'ext_vlmc'],
-        "ip_allocation": ['all', 'none', 'master']
+        "disk": [10, 20, 40, 60, 80, 100],
+        "ram": [2048, 4096, 6144, 8192],
+        "ip_allocation": ['master']  # TODO add 'all' choice.
     }
 
     def validate_vcpus_master(self, value):
@@ -142,15 +143,15 @@ class LambdaInstanceInfo(serializers.Serializer):
         return value
 
     def validate_disk_master(self, value):
-        if value not in self.allowed['disks']:
+        if value not in self.allowed['disk']:
             raise serializers.ValidationError("Wrong Size of master disk, "
-                                              "available choices {}.".format(self.allowed['disks']))
+                                              "available choices {}.".format(self.allowed['disk']))
         return value
 
     def validate_disk_slave(self, value):
-        if value not in self.allowed['disks']:
+        if value not in self.allowed['disk']:
             raise serializers.ValidationError("Wrong Size of slave disk, "
-                                              "available choices {}.".format(self.allowed['disks']))
+                                              "available choices {}.".format(self.allowed['disk']))
         return value
 
     def validate_ip_allocation(self, value):

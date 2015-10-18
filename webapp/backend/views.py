@@ -978,6 +978,33 @@ class CreateLambdaInstance(APIView):
 
         # Get okeanos authentication token
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+        auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+
+        # Dynamically fetch the allowed values for the number of CPUs, the amount of RAM and the
+        # size of the Disk for each VM.
+        vm_parameter_values = get_vm_parameter_values(auth_url, auth_token)
+
+        # Keep the vcpus values that are equal or greater than 2.
+        vcpus = list()
+        for value in vm_parameter_values['vcpus']:
+            if value >= 2:
+                vcpus.append(value)
+
+        # Keep the ram values that are equal or greater that 2048.
+        ram = list()
+        for value in vm_parameter_values['ram']:
+            if value >= 2048:
+                ram.append(value)
+
+        # Keep the disk values that are equal or greater than 10.
+        disk = list()
+        for value in vm_parameter_values['disk']:
+            if value >= 10:
+                disk.append(value)
+
+        LambdaInstanceInfo.allowed['vcpus'] = vcpus
+        LambdaInstanceInfo.allowed['ram'] = ram
+        LambdaInstanceInfo.allowed['disk'] = disk
 
         # Parse request json into a custom serializer
         lambda_info = LambdaInstanceInfo(data=request.data)
