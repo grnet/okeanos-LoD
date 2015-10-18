@@ -16,5 +16,12 @@ export default DS.JSONSerializer.extend({
     payload.errors = transformedErrors;
 
     return payload.errors;
+  },
+  normalize: function(modelClass, resourceHash) {
+    var data = {
+      id: resourceHash.data[0].id
+    };
+
+    return data;
   }
 });

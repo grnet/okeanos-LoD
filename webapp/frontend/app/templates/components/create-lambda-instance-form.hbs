@@ -117,5 +117,8 @@
 {{/if}}
 
 {{#unless newLambdaInstance.isNew}}
-<p>You request for creating a new Lambda Instance has been accepted!</p>
+<p>You request for creating a new Lambda Instance has been accepted!
+  {{#link-to "lambda-instance" newLambdaInstance.id}}
+    {{newLambdaInstance.instanceName}}
+  {{/link-to}}</p>
 {{/unless}}
