@@ -1,6 +1,7 @@
 import Ember from "ember";
+import LoDRoute from 'frontend/routes/application';
 
-export default Ember.Route.extend({
+export default LoDRoute.extend({
   model() {
     return Ember.RSVP.hash({
       newLambdaInstance: this.store.createRecord('create-lambda-instance', {}),

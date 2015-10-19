@@ -1,6 +1,6 @@
-import Ember from "ember";
+import LoDRoute from 'frontend/routes/application';
 
-export default Ember.Route.extend({
+export default LoDRoute.extend({
   setupController: function() {
   }
 });

@@ -34,6 +34,13 @@
     tags:
       - ember-install
 
+  - name: Install ember-simple-auth
+    shell: "ember install ember-simple-auth"
+    args:
+      chdir: "{{ install_dir }}"
+    tags:
+      - ember-install
+
   - name: Setup Ember configuration environment.
     template: src=environment.js.j2 dest={{ install_dir }}/config/environment.js
 

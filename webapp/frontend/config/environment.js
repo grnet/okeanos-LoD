@@ -19,6 +19,12 @@ module.exports = function(environment) {
     }
   };
 
+  ENV['ember-simple-auth'] = {
+      authorizer: 'authorizer:django',
+      routeAfterAuthentication: '/user/clusters',
+    crossOriginWhitelist: ['*']
+  };
+
   if (environment === 'development') {
     // ENV.APP.LOG_RESOLVER = true;
     // ENV.APP.LOG_ACTIVE_GENERATION = true;

@@ -25,6 +25,12 @@ module.exports = function(environment) {
     'connect-src': "'self' http://{{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr:80"
   }
 
+  ENV['ember-simple-auth'] = {
+    authorizer: 'authorizer:django',
+    routeAfterAuthentication: '/create-lambda-instance',
+    // crossOriginWhitelist: ['*']
+  };
+
   if (environment === 'development') {
     // ENV.APP.LOG_RESOLVER = true;
     // ENV.APP.LOG_ACTIVE_GENERATION = true;
