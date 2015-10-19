@@ -5,10 +5,10 @@ export default Ember.Helper.helper(function(parameters) {
   var operator = parameters[1];
   var operand2 = parameters[2];
   switch (operator) {
-    case '<':
-      return operand1 < operand2;
-    case '>':
-      return operand1 > operand2;
+    case '<=':
+      return operand1 <= operand2;
+    case '>=':
+      return operand1 >= operand2;
     case '===':
       return operand1 === operand2;
     case '!==':
