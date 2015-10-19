@@ -3,5 +3,5 @@ import ENV from 'frontend/config/environment';
 
 export default DS.JSONAPIAdapter.extend({
   host: ENV.host + ':' + ENV.port,
-  namespace: 'api',
+  namespace: 'api/apps/',
  });

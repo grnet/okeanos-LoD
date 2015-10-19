@@ -18,13 +18,13 @@
 </div>
 {{/if}}
 
-  <form class="col-lg-12" role="form" enctype="multipart/form-data" method="post" id="upload-app-form" {{action "upload" on="submit"}} >
+  <form class="col-lg-12" role="form" enctype="multipart/form-data" method="post" id="upload-app-form" {{action "upload" on="submit"}}>
     <div class="input-group input-group-lg col-sm-offset-3 col-sm-6">
       <h2>Upload an application</h2>
 
-      {{input value=description placeholder="File description" type="textarea" class="center-block form-control input-lg" id="description"}}
+      <input type="textarea" name="description" class="center-block form-control input-lg" id="description" placeholder="File description"><br>
 
-      <br><br><br>
+      <br><br>
 
       Application type:
       <select name="type">
@@ -34,9 +34,16 @@
 
       <br><br>
 
-      {{input value=project_name placeholder="Project name" type="textarea" class="center-block form-control input-lg" id="project_name"}}
+      <p>
+        ~okeanos Project:
+        <select name="okeanos_project">
+          {{#each model.userOkeanosProjects as |project|}}
+            <option value={{project.name}}>{{project.name}}</option>
+          {{/each}}
+        </select>
+      </p>
 
-      <br><br><br>
+      <br>
 
       {{input value=file type="file" name="file" id="file"}}
 
@@ -45,5 +52,4 @@
       <button type="submit" id="id_login_submit_button" class="btn btn-lg btn-primary">Submit</button>
     </div>
   </form>
-
 </div>

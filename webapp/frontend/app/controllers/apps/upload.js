@@ -15,11 +15,11 @@ var UploadController = Ember.Controller.extend({
         successUpload: false,
       });
 
-      var host = this.store.adapterFor('app').get('host'),
-      namespace = this.store.adapterFor('app').namespace,
+      var host = this.store.adapterFor('upload-app').get('host'),
+      namespace = this.store.adapterFor('upload-app').namespace,
       postUrl = [ host, namespace ].join('/'),
       headers = {
-        'Authorization': "Token " + "token",
+        'Authorization': "Token " + "XMnarnQSNJ098bS8tsGcUc5bVBXwN-CL47LFsoDj8uM",
         'Accept': "application/json",
       };
 
