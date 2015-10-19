@@ -1,6 +1,7 @@
 import uuid
 import mock
 import json
+import re
 
 from random import randint, choice
 
@@ -79,10 +80,15 @@ class TestLambdaInstanceCreate(APITestCase):
                                 HTTP_CONTENT_TYPE='application/json')
 
     # Test for creating a lambda instance.
+    @mock.patch('backend.views.get_vm_parameter_values', return_value={
+        'vcpus': [1, 2, 4, 8],
+        'ram': [512, 1024, 2048, 4096, 6144, 8192],
+        'disk': [5, 10, 20, 40, 60, 80]
+    })
     @mock.patch('backend.views.tasks.create_lambda_instance.delay',
                 return_value=CeleryTaskResponse(uuid.uuid4()))
-    def test_lambda_instance_create(self, mock_create_lambda_instance_task):
-
+    def test_lambda_instance_create(self, mock_create_lambda_instance_task,
+                                    mock_get_vm_parameter_values):
         # Make a request to create a lambda instance.
         response = self.client.post("/api/lambda-instance/", self.lambda_information, format='json')
 
@@ -113,6 +119,8 @@ class TestLambdaInstanceCreate(APITestCase):
                                  r'^http://testserver/api/lambda-instances/([^/.]+)$')
 
         # Assert that the proper tasks and views have been called.
+        mock_get_vm_parameter_values.assert_called_with(self.AUTHENTICATION_URL,
+                                                        self.AUTHENTICATION_TOKEN)
         # Note: Can't user assert_called_with because the object provided to the mocked object is
         # created inside the view and cannot be reproduced here to be given as argument in
         # assert_called_with. That is why we test if the mocked object was called and if the data
@@ -123,8 +131,12 @@ class TestLambdaInstanceCreate(APITestCase):
 
     # Test for request to create a lambda instance without providing each one of the mandatory
     # information.
-    def test_field_not_provided(self):
-
+    @mock.patch('backend.views.get_vm_parameter_values', return_value={
+        'vcpus': [1, 2, 4, 8],
+        'ram': [512, 1024, 2048, 4096, 6144, 8192],
+        'disk': [5, 10, 20, 40, 60, 80]
+    })
+    def test_field_not_provided(self, mock_get_vm_parameter_values):
         # Iterate over the required keys removing one each time and making a request to create
         # a lambda instance with the missing key.
         for required_key in self.required_keys:
@@ -157,7 +169,12 @@ class TestLambdaInstanceCreate(APITestCase):
                              "{field}: This field is required.".format(field=required_key))
 
     # Test for request to create a lambda instance without providing any information.
-    def test_no_field_provided(self):
+    @mock.patch('backend.views.get_vm_parameter_values', return_value={
+        'vcpus': [1, 2, 4, 8],
+        'ram': [512, 1024, 2048, 4096, 6144, 8192],
+        'disk': [5, 10, 20, 40, 60, 80]
+    })
+    def test_no_field_provided(self, mock_get_vm_parameter_values):
         # Make a request to create a lambda instance.
         response = self.client.post("/api/lambda-instance/", {}, format='json')
 
@@ -187,20 +204,25 @@ class TestLambdaInstanceCreate(APITestCase):
                           error_messages)
 
     # Test for request to create a lambda instance when wrong values are provided.
-    def test_wrong_values(self):
+    @mock.patch('backend.views.get_vm_parameter_values', return_value={
+        'vcpus': [1, 2, 4, 8],
+        'ram': [512, 1024, 2048, 4096, 6144, 8192],
+        'disk': [5, 10, 20, 40, 60, 80]
+    })
+    def test_wrong_values(self, mock_get_vm_parameter_values):
         # Make a request to create a lambda instance.
         response = self.client.post("/api/lambda-instance/",
                                     {'project_name': "lambda.grnet.gr",
                                      'instance_name': "My Lambda Instance",
                                      'network_request': 1,
                                      'master_name': "lambda-master",
-                                     'vcpus_master': 5,
-                                     'vcpus_slave': 1,
-                                     'ram_master': 4097,
-                                     'ram_slave': 1000000,
-                                     'disk_master': 21,
-                                     'disk_slave': 33,
-                                     'slaves': 2,
+                                     'vcpus_master': -5,
+                                     'vcpus_slave': -1,
+                                     'ram_master': -4097,
+                                     'ram_slave': -1000000,
+                                     'disk_master': -21,
+                                     'disk_slave': -33,
+                                     'slaves': -2,
                                      'ip_allocation': "Hello World",
                                      'public_key_name': ["key-1", "key-2"]},
                                     format='json')
@@ -220,26 +242,30 @@ class TestLambdaInstanceCreate(APITestCase):
             self.assertEqual(len(error['detail']), 1)
 
         # Assert the contents of the response.
+        self.assertEqual(len(response.data['errors']), 7)
+
         # Gather all the error messages in a list.
         error_messages = list()
         for error in response.data['errors']:
             self.assertEqual(error['status'], status.HTTP_400_BAD_REQUEST)
             error_messages.append(error['detail'][0])
 
-        self.assertIn("vcpus_master: Wrong Number of master vcpus, available choices [2, 4, 8].",
-                      error_messages)
-        self.assertIn("vcpus_slave: Wrong Number of slave vcpus, available choices [2, 4, 8].",
-                      error_messages)
-        self.assertIn("disk_master: Wrong Size of master disk, available choices "
-                      "[5, 10, 20, 40, 60, 80, 100].", error_messages)
-        self.assertIn("disk_slave: Wrong Size of slave disk, available choices "
-                      "[5, 10, 20, 40, 60, 80, 100].", error_messages)
-        self.assertIn("ram_master: Wrong Amount of master ram, available choices "
-                      "[512, 1024, 2048, 4096, 6144, 8192].", error_messages)
-        self.assertIn("ram_slave: Wrong Amount of slave ram, available choices "
-                      "[512, 1024, 2048, 4096, 6144, 8192].", error_messages)
-        self.assertIn("ip_allocation: Wrong choice for ip_allocation, available choices "
-                      "['all', 'none', 'master'].", error_messages)
+        expected_error_messages_regular_expressions = [
+            "^vcpus_master: Wrong Number of master vcpus,"
+            " available choices \[([0-9]+, )+[0-9]+\]\.$",
+            "^vcpus_slave: Wrong Number of slave vcpus, available choices \[([0-9]+, )+[0-9]+\]\.$",
+            "^disk_master: Wrong Size of master disk, available choices \[([0-9]+, )+[0-9]+\]\.$",
+            "^disk_slave: Wrong Size of slave disk, available choices \[([0-9]+, )+[0-9]+\]\.$",
+            "^ram_master: Wrong Amount of master ram, available choices \[([0-9]+, )+[0-9]+\]\.$",
+            "^ram_slave: Wrong Amount of slave ram, available choices \[([0-9]+, )+[0-9]+\]\.$",
+            "^ip_allocation: Wrong choice for ip_allocation, available choices \['master'\]\.$"
+        ]
+
+        combined_regular_expressions = "(" + ")|(".\
+            join(expected_error_messages_regular_expressions) + ")"
+
+        for error_message in error_messages:
+            self.assertIsNotNone(re.match(combined_regular_expressions, error_message))
 
 
 class TestLambdaInstancesList(APITestCase):
