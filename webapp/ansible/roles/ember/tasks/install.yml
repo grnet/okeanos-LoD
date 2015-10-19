@@ -48,6 +48,3 @@
     command: ember build --environment=production
     args:
       chdir: "{{ install_dir }}"
-
-  - name: Copy htaccess file in ember distribution directory.
-    copy: src=htaccess dest={{ install_dir }}/dist/.htaccess owner=celery group=celery mode=0644
