@@ -55,11 +55,11 @@ class Project(models.Model):
 class Application(models.Model):
     id = models.AutoField("id", primary_key=True, unique=True, help_text="Application id.")
     uuid = models.UUIDField("uuid", unique=True, default=uuid.uuid4, help_text="Application uuid.")
-    name = models.CharField(max_length=100, default="")
+    name = models.CharField(max_length=100, default="", null=True, blank=True)
     path = models.CharField(max_length=400, default="lambda_applications")
     description = models.CharField(max_length=400, blank=True, default='')
-    owner = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, null=True)
-    failure_message = models.TextField(default="",
+    owner = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, null=True, blank=True)
+    failure_message = models.TextField(default="", null=True, blank=True,
                                        help_text="Error message regarding this application.")
 
     UPLOADED = "0"
@@ -85,6 +85,18 @@ class Application(models.Model):
     class Meta:
         verbose_name = "ProjectFile"
         app_label = "backend"
+
+    def __unicode__(self):
+        info = "Id: " + str(self.id) + "\n" + \
+               "Description: " + str(self.description) + "\n" + \
+               "Status: " + str(self.status) + "\n" + \
+               "Type: " + str(self.type)
+        return info
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super(Application, self).save(*args, **kwargs)
+
 
 
 class Token(models.Model):
@@ -120,7 +132,7 @@ class LambdaInstance(models.Model):
     uuid = models.UUIDField("Instance UUID", null=False, unique=True, editable=False,
                             help_text="Unique key assigned to every instance.")
 
-    failure_message = models.TextField(default="",
+    failure_message = models.TextField(default="", null=True, blank=True,
                                        help_text="Error message regarding this lambda instance")
 
     STARTED = "0"
@@ -172,7 +184,7 @@ class LambdaInstance(models.Model):
     status = models.CharField(max_length=10, choices=status_choices, default=PENDING,
                               help_text="The status of this instance.")
 
-    master_node = models.OneToOneField('Server', null=True, default=None,
+    master_node = models.ForeignKey('Server', blank=True, null=True, default=None,
                                        on_delete=models.CASCADE)
 
     started_batch = models.BooleanField(default=False,
@@ -184,6 +196,10 @@ class LambdaInstance(models.Model):
         info = "Instance id: " + str(self.id) + "\n" + \
                "Instance info: " + str(self.instance_info)
         return info
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super(LambdaInstance, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Lambda Instance"
