@@ -1,5 +1,4 @@
 import Ember from "ember";
-import SessionService from 'ember-simple-auth/services/session';
 
 var UploadController = Ember.Controller.extend({
   sameUpload: false,
