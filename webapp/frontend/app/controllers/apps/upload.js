@@ -22,8 +22,8 @@ var UploadController = Ember.Controller.extend({
       const headers = {};
 
       this.get('session').authorize('authorizer:django', (headerName, headerValue) => {
-      headers["Authorization"] = headerValue;
-      Ember.$.ajax('/secret-data', { headers });
+      headers[headerName] = headerValue;
+      //Ember.$.ajax('/secret-data', { headers });
       });
 
       var data = new FormData(document.getElementById("upload-app-form"));
