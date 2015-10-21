@@ -4,6 +4,7 @@ var UploadController = Ember.Controller.extend({
   sameUpload: false,
   serverError: false,
   successUpload: false,
+  noFile: false,
   session: Ember.inject.service('session'),
 
   actions : {
@@ -14,6 +15,7 @@ var UploadController = Ember.Controller.extend({
         sameUpload: false,
         serverError: false,
         successUpload: false,
+        noFile: false,
       });
 
       var host = this.store.adapterFor('upload-app').get('host'),
@@ -21,16 +23,26 @@ var UploadController = Ember.Controller.extend({
       postUrl = [ host, namespace ].join('/');
       const headers = {};
 
+      var file = this.get("file");
+      if (file == null)
+      {
+        this.set("noFile", false);
+      }
+      console.log(file);
+
       this.get('session').authorize('authorizer:django', (headerName, headerValue) => {
       headers[headerName] = headerValue;
-      //Ember.$.ajax('/secret-data', { headers });
       });
 
       var data = new FormData(document.getElementById("upload-app-form"));
 
       var progress = document.getElementById('progress');
       var progress_text = document.getElementById('progress_text');
+      var progress_bar = document.getElementById('progress_bar');
+      progress.innerHTML =  '';
       progress.style.width = 0;
+      progress_text.innerHTML = '';
+      progress.className = "progress-bar progress-bar-striped active";
 
 
       Ember.$.ajax({
@@ -62,21 +74,26 @@ var UploadController = Ember.Controller.extend({
           _this.set("successUpload", true);
           _this.set("sameUpload", false);
           _this.set("serverError", false);
-          //progress.style.width = 0 + '%';
+          progress.className = "progress-bar progress-bar-success";
+          progress.innerHTML =  'Success';
         },
         statusCode: {
           400: function() {
             _this.set("sameUpload", true);
             _this.set("serverError", false);
             _this.set("successUpload", false);
-            //progress.style.width = 0 + '%';
+            progress.className = "progress-bar progress-bar-danger";
+            progress.innerHTML =  'Failed';
+            progress_text.innerHTML =  '';
           }
         },
         error: function() {
           _this.set("sameUpload", false);
           _this.set("serverError", true);
           _this.set("successUpload", false);
-          //progress.style.width = 0 + '%';
+          progress.className = "progress-bar progress-bar-danger";
+          progress.innerHTML =  'Failed';
+          progress_text.innerHTML =  '';
         }
       });
     },
