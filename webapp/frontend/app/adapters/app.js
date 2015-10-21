@@ -6,7 +6,8 @@ export default DS.JSONAPIAdapter.extend(DataAdapterMixin, {
   host: ENV.host + ':80',
   namespace: 'api',
   buildURL: function(type, id, record){
-    return this._super(type, id, record) + "/" + record._attributes.application_id + '/start';
+    console.log(record);
+    return this._super(type, id, record) + "/" + record._attributes.application_id + '/' + record._attributes.call + "/";
   },
   authorizer: 'authorizer:django'
 });
