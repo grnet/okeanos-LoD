@@ -21,8 +21,13 @@
             <button class="btn"><i class="fa fa-arrow-right text-muted"></i></button>
           </div>
         </div>
+      </form><!-- /.lockscreen credentials -->
 
-        {{#if loginFailed}}
+    </div><!-- /.lockscreen-item -->
+      <div class="help-block text-center">
+        Enter your token to retrieve your session
+      </div>
+             {{#if loginFailed}}
         <div id="id_alert_wrongtoken" class="alert alert-dismissable alert-danger">
           <button type="button" class="close" data-dismiss="alert">×</button>
           <strong>Wrong Token.</strong> Please <a href="#" {{action 'authenticate'}}>try again.</a>
@@ -34,13 +39,5 @@
           <strong>Internal server error.</strong> Please try later.
         </div>
         {{/if}}
-      </form><!-- /.lockscreen credentials -->
-
-    </div><!-- /.lockscreen-item -->
-    {{#unless loginFailed}}
-      <div class="help-block text-center">
-        Enter your token to retrieve your session
-      </div>
-    {{/unless}}
   </div><!-- /.center -->
 </section><!-- /.content -->

@@ -15,6 +15,7 @@
       <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
         <span class="sr-only">Toggle navigation</span>
       </a>
+      {{#if session.isAuthenticated}}
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
           <!-- User Account: style can be found in dropdown.less -->
@@ -24,17 +25,17 @@
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="user-menu">
-              {{#if session.isAuthenticated}}
-                <li role="presentation"> <a {{action 'invalidateSession'}}>Logout</a></li>
-              {{/if}}
+              <li role="presentation"> <a {{action 'invalidateSession'}}>Logout</a></li> 
             </ul>
           </li>
         </ul>
       </div>
+      {{/if}}
     </nav>
   </header>
 
   <!-- Left side column. contains the logo and sidebar -->
+  {{#if session.isAuthenticated}}
   <aside class="main-sidebar">
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
@@ -69,6 +70,7 @@
     </section>
     <!-- /.sidebar -->
   </aside>
+  {{/if}}
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
