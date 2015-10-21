@@ -6,12 +6,7 @@ var Router = Ember.Router.extend({
 });
 
 Router.map(function () {
-  this.resource('user', function () {
-    // /user/login
-    this.route('login');
-    // /user/clusters
-    this.route('clusters');
-  });
+  this.route('dashboard');
   this.route('lambda-instance');
   this.route('lambda-instance', {path: '/lambda-instances/:instance_uuid'});
   this.route('create-lambda-instance');
