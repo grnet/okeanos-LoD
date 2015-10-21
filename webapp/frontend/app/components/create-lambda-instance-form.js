@@ -15,8 +15,6 @@ export default Ember.Component.extend({
       newLambdaInstance.set('RamSlave', this.$("select[name='ram_slave']")[0].value);
       newLambdaInstance.set('DiskMaster', this.$("select[name='disk_master']")[0].value);
       newLambdaInstance.set('DiskSlave', this.$("select[name='disk_slave']")[0].value);
-      
-      newLambdaInstance.set('ipAllocation', this.$("select[name='ip_allocation']")[0].value);
 
       var requestedPublicKeys = [];
       var options = this.$("select[name='public_key_name']")[0].options;

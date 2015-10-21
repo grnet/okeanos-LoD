@@ -1,124 +1,258 @@
-<form {{action "create"  newLambdaInstance on="submit"}} method="post">
-  <p>{{input type="text" value=instanceName placeholder="Lambda Instance name" size="50"}}
-    {{#each newLambdaInstance.errors.instanceName as |error|}}
-        {{error.message}}
-    {{/each}}
-  </p>
-  <p>{{input type="text" value=masterName placeholder="Master node name" size="50"}}
-    {{#each newLambdaInstance.errors.masterName as |error|}}
-      {{error.message}}
-    {{/each}}
-  </p>
-  <p>
-    Number of Slaves:
-    <input type="number" min="1" value="2" name="slaves">
-  </p>
-  <p>
-    Number of CPUs on Master Node:
-    <select name="vcpus_master">
-      {{#each VMParameterValues as |valuesSet|}}
-        {{#each valuesSet.vcpus as |vcpusValue|}}
-          {{#if (compare vcpusValue "!==" 1)}}
-            <option value={{vcpusValue}}>{{vcpusValue}}</option>
-          {{/if}}
-        {{/each}}
-      {{/each}}
-    </select>
-  </p>
-  <p>
-    Number of CPUs on each Slave Node:
-    <select name="vcpus_slave">
-      {{#each VMParameterValues as |valuesSet|}}
-        {{#each valuesSet.vcpus as |vcpusValue|}}
-          {{#if (compare vcpusValue "!==" 1)}}
-            <option value={{vcpusValue}}>{{vcpusValue}}</option>
-          {{/if}}
-        {{/each}}
-      {{/each}}
-    </select>
-  </p>
-  <p>
-    Amount or RAM memory on Master Node:
-    <select name="ram_master">
-      {{#each VMParameterValues as |valuesSet|}}
-        {{#each valuesSet.ram as |ramValue|}}
-          {{#if (compare ramValue ">=" 2048)}}
-            <option value={{ramValue}}>{{ramValue}}</option>
-          {{/if}}
-        {{/each}}
-      {{/each}}
-    </select>
-  </p>
-  <p>
-    Amount of RAM memory on each Slave Node:
-    <select name="ram_slave">
-      {{#each VMParameterValues as |valuesSet|}}
-        {{#each valuesSet.ram as |ramValue|}}
-          {{#if (compare ramValue ">=" 2048)}}
-            <option value={{ramValue}}>{{ramValue}}</option>
-          {{/if}}
-        {{/each}}
-      {{/each}}
-    </select>
-  </p>
-  <p>
-    Size of hard disk on Master Node:
-    <select name="disk_master">
-      {{#each VMParameterValues as |valuesSet|}}
-        {{#each valuesSet.disk as |diskValue|}}
-          {{#if (compare diskValue ">=" 10)}}
-            <option value={{diskValue}}>{{diskValue}}</option>
-          {{/if}}
-        {{/each}}
-      {{/each}}
-    </select> 
-  </p>
-  <p>
-    Size of hard disk on each Slave Node:
-    <select name="disk_slave">
-      {{#each VMParameterValues as |valuesSet|}}
-        {{#each valuesSet.disk as |diskValue|}}
-          {{#if (compare diskValue ">=" 10)}}
-            <option value={{diskValue}}>{{diskValue}}</option>
-          {{/if}}
-        {{/each}}
-      {{/each}}
-    </select>
-  </p>
-  <p>
-    Public IP allocation:
-    <select name="ip_allocation">
-      <option value="master" selected>Master</option>
-      <!-- <option value="all">All</option> -->
-      <!-- <option value="none">None</option> -->
-    </select>
-  </p>
-  <p>
-    ~okeanos Project:
-    <select name="okeanos_project">
-      {{#each userOkeanosProjects as |project|}}
-        <option value={{project.name}}>{{project.name}}</option>
-      {{/each}}
-    </select>
-  </p>
-  <p>
-    Public keys:
-    <select multiple name="public_key_name">
-      {{#each userPublicKeys as |publicKey|}}
-        <option value={{publicKey.name}}>{{publicKey.name}}</option>
-      {{/each}}
-    </select> 
-  </p>
-  <input type="submit" value="Submit">
-</form>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <h1>
+    Dashboard
+    <small>Create a Lambda Instance</small>
+  </h1>
+</section>
 
-{{#if newLambdaInstance.isSaving}}
-<p>Your request is being sent to the server...</p>
-{{/if}}
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-info">
+        <div class="box-header with-border">
+          <h3 class="box-title">Create a new Lambda Instance</h3>
+          <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+          </div>
+        </div><!-- /.box-header -->
+        <div class="box-body no-padding">
+          <div class="row">
+            <div class="col-md-9 col-sm-8">
+              <div class="pad">
+                Here you can create your own lambda Instance
+              </div>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div><!--box-->
+      </div> <!-- box-primary -->
+    </div> <!--col -->
+  </div> <!--row-->
+  <form {{action "create" newLambdaInstance on="submit"}} method="post">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+            <h3 class="box-title">Main</h3>: Lambda Instance details
+          </div><!-- /.box-header -->
+          <div class="box-body">
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="name1"> Name of Lamdba Instance: </label>
+                {{input type="text" value=instanceName placeholder="Lambda Instance name" size="50" class="form-control"}}
+                {{#each newLambdaInstance.errors.instanceName as |error|}}
+                  <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h4><i class="icon fa fa-ban"></i> Alert!</h4>
+                    {{error.message}}
+                  </div>
+                {{/each}}
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="name1"> Name of Master Node: </label>
+                {{input type="text" value=masterName placeholder="Master node name" size="50" class="form-control"}}
+                {{#each newLambdaInstance.errors.masterName as |error|}}
+                  <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h4><i class="icon fa fa-ban"></i> Alert!</h4>
+                    {{error.message}}
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="okeanos_project" class="col-sm-6">~okeanos Project:</label>
+                <div class="col-sm-6">
+                  <select name="okeanos_project" class="form-control">
+                    {{#each userOkeanosProjects as |project|}}
+                    <option value={{project.name}}>{{project.name}}</option>
+                    {{/each}}
+                  </select>
+                  <span id="helpBlock" class="help-block">Select a project</span>
+                </div>	<!--class="col-sm-6"-->
+                <label for="slaves" class="col-sm-6">Number of slaves:</label>
+                <div class="col-sm-6">
+                  <input type="number" min="1" value="2" name="slaves">
+                  <span id="helpBlock" class="help-block">Select the number of slaves</span>
+                </div>	<!--class="col-sm-6"-->
+              </div>	<!--class="col-sm-6"-->
+              <div class="form-group col-sm-6">
+                <label for="public_key_name"  class="col-sm-6">Public SSH keys:</label>
+                <div class="col-sm-6">
+                  <select multiple name="public_key_name" class="form-control">
+                    {{#each userPublicKeys as |publicKey|}}
+                    <option value={{publicKey.name}}>{{publicKey.name}}</option>
+                    {{/each}}
+                  </select>
+                  <span id="helpBlock" class="help-block">Select the public SSH keys to upload</span>
+                </div><!--class="col-sm-6"-->
+              </div><!--class="form-group col-sm-6"-->
+            </div> <!--row-->
+            <div class="row">
+              <div class="form-group col-sm-6">
+              </div>
+            </div><!--row-->
+          </div><!--box-body-->
+        </div><!--box-->
+      </div><!--col-->
+    </div><!--row-->
 
-{{#unless newLambdaInstance.isNew}}
-<p>You request for creating a new Lambda Instance has been accepted!
-  {{#link-to "lambda-instance" newLambdaInstance.id}}
-    {{newLambdaInstance.instanceName}}
-  {{/link-to}}</p>
-{{/unless}}
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+            <h3 class="box-title">Master</h3>: Master Node details
+          </div><!-- /.box-header -->
+          <div class="box-body">
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="vcpus_master" class="col-sm-6">Number of CPUs on Master Node:</label>
+                <div class="col-sm-6">
+                  <select name="vcpus_master" class="form-control">
+                    {{#each VMParameterValues as |valuesSet|}}
+                      {{#each valuesSet.vcpus as |vcpusValue|}}
+                        {{#if (compare vcpusValue "!==" 1)}}
+                          {{#if (compare vcpusValue "!==" 4)}}
+                          <option value={{vcpusValue}}>{{vcpusValue}}</option>
+                          {{else}}
+                          <option value={{vcpusValue}} selected>{{vcpusValue}}</option>
+                          {{/if}}
+                        {{/if}}
+                      {{/each}}
+                    {{/each}}
+                  </select>
+                  <span id="helpBlock" class="help-block">We recommend using 4 CPUs</span>
+                </div>	<!--class="col-sm-6"-->
+              </div>	<!--class="col-sm-6"-->
+              <div class="form-group col-sm-6">
+                <label for="ram_master"  class="col-sm-6">Amount or RAM memory on Master Node: </label>
+                <div class="col-sm-6">
+                  <select name="ram_master"  class="form-control">
+                    {{#each VMParameterValues as |valuesSet|}}
+                      {{#each valuesSet.ram as |ramValue|}}
+                        {{#if (compare ramValue ">=" 2048)}}
+                          {{#if (compare ramValue "!==" 4096)}}
+                            <option value={{ramValue}}>{{ramValue}}</option>
+                          {{else}}
+                            <option value={{ramValue}} selected>{{ramValue}}</option>
+                          {{/if}}
+                        {{/if}}
+                      {{/each}}
+                    {{/each}}
+                  </select>ff
+                  <span id="helpBlock" class="help-block">We recommend using 4096MB of RAM</span>
+                </div><!--class="col-sm-6"-->
+              </div><!--class="form-group col-sm-6"-->
+            </div> <!--row-->
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="disk_master"> Size of hard disk on Master Node: </label>
+                <select name="disk_master" class="form-control">
+                  {{#each VMParameterValues as |valuesSet|}}
+                    {{#each valuesSet.disk as |diskValue|}}
+                      {{#if (compare diskValue ">=" 10)}}
+                        {{#if (compare diskValue "!==" 20)}}
+                          <option value={{diskValue}}>{{diskValue}}</option>
+                        {{else}}
+                          <option value={{diskValue}} selected>{{diskValue}}</option>
+                        {{/if}}
+                      {{/if}}
+                    {{/each}}
+                  {{/each}}
+                </select>
+                <span id="helpBlock" class="help-block">We recommend using 20GB of hard disk</span>
+              </div>
+            </div><!--row-->
+          </div><!--box-body-->
+        </div><!--box-->
+      </div><!--col-->
+    </div><!--row-->
+
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+            <h3 class="box-title">Slaves</h3>: Slave Nodes details
+          </div><!-- /.box-header -->
+          <div class="box-body">
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="vcpus_slave" class="col-sm-6">Number of CPUs on each Slave Node:</label>
+                <div class="col-sm-6">
+                  <select name="vcpus_slave" class="form-control">
+                    {{#each VMParameterValues as |valuesSet|}}
+                      {{#each valuesSet.vcpus as |vcpusValue|}}
+                        {{#if (compare vcpusValue "!==" 1)}}
+                          {{#if (compare vcpusValue "!==" 4)}}
+                          <option value={{vcpusValue}}>{{vcpusValue}}</option>
+                          {{else}}
+                          <option value={{vcpusValue}} selected>{{vcpusValue}}</option>
+                          {{/if}}
+                        {{/if}}
+                      {{/each}}
+                    {{/each}}
+                  </select>
+                  <span id="helpBlock" class="help-block">We recommend using 4 CPUs</span>
+                </div>	<!--class="col-sm-6"-->
+              </div>	<!--class="col-sm-6"-->
+              <div class="form-group col-sm-6">
+                <label for="ram_slave"  class="col-sm-6">Amount or RAM memory on each Slave Node:</label>
+                <div class="col-sm-6">
+                  <select name="ram_slave"  class="form-control">
+                    {{#each VMParameterValues as |valuesSet|}}
+                      {{#each valuesSet.ram as |ramValue|}}
+                        {{#if (compare ramValue ">=" 2048)}}
+                          {{#if (compare ramValue "!==" 4096)}}
+                            <option value={{ramValue}}>{{ramValue}}</option>
+                          {{else}}
+                            <option value={{ramValue}} selected>{{ramValue}}</option>
+                          {{/if}}
+                        {{/if}}
+                      {{/each}}
+                    {{/each}}
+                  </select>
+                  <span id="helpBlock" class="help-block">We recommend using 4096MB of RAM</span>
+                </div><!--class="col-sm-6"-->
+              </div><!--class="form-group col-sm-6"-->
+            </div> <!--row-->
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="disk_slave"> Size of hard disk on each Slave Node:</label>
+                <select name="disk_slave" class="form-control">
+                  {{#each VMParameterValues as |valuesSet|}}
+                    {{#each valuesSet.disk as |diskValue|}}
+                      {{#if (compare diskValue ">=" 10)}}
+                        {{#if (compare diskValue "!==" 20)}}
+                          <option value={{diskValue}}>{{diskValue}}</option>
+                        {{else}}
+                          <option value={{diskValue}} selected>{{diskValue}}</option>
+                        {{/if}}
+                      {{/if}}
+                    {{/each}}
+                  {{/each}}
+                </select>
+                <span id="helpBlock" class="help-block">We recommend using 20GB of hard disk</span>
+              </div>
+            </div><!--row-->
+          </div><!--box-body-->
+        </div><!--box-->
+      </div><!--col-->
+    </div><!--row-->
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+
+  {{#if newLambdaInstance.isSaving}}
+          <div class="row">
+              <div class="col-xs-12">
+                  <div class="alert alert-info alert-dismissable">
+                      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                      <h4><i class="icon fa fa-info"></i> Alert!</h4>
+                      Your request to create a new Lambda Instance is being sent to the server...
+                  </div>
+              </div><!--col-xs-12-->
+          </div><!--row-->
+  {{/if}}
+  </form>
+</section><!-- /.content -->
