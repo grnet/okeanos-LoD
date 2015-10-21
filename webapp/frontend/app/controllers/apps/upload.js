@@ -28,7 +28,6 @@ var UploadController = Ember.Controller.extend({
       {
         this.set("noFile", false);
       }
-      console.log(file);
 
       this.get('session').authorize('authorizer:django', (headerName, headerValue) => {
       headers[headerName] = headerValue;
@@ -38,7 +37,6 @@ var UploadController = Ember.Controller.extend({
 
       var progress = document.getElementById('progress');
       var progress_text = document.getElementById('progress_text');
-      var progress_bar = document.getElementById('progress_bar');
       progress.innerHTML =  '';
       progress.style.width = 0;
       progress_text.innerHTML = '';
@@ -60,8 +58,6 @@ var UploadController = Ember.Controller.extend({
           xhr.upload.addEventListener("progress", function(evt){
             if (evt.lengthComputable) {
               var percentComplete = evt.loaded / evt.total;
-              //Do something with upload progress
-              console.log(percentComplete);
               progress.style.width = percentComplete * 100 + '%';
               progress_text.innerHTML =  percentComplete * 100 + '%';
             }
@@ -70,7 +66,6 @@ var UploadController = Ember.Controller.extend({
         },
 
         success: function(){
-          console.log("success");
           _this.set("successUpload", true);
           _this.set("sameUpload", false);
           _this.set("serverError", false);
