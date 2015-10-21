@@ -4,7 +4,6 @@ var UploadController = Ember.Controller.extend({
   sameUpload: false,
   serverError: false,
   successUpload: false,
-  noFile: false,
   session: Ember.inject.service('session'),
 
   actions : {
@@ -15,19 +14,12 @@ var UploadController = Ember.Controller.extend({
         sameUpload: false,
         serverError: false,
         successUpload: false,
-        noFile: false,
       });
 
       var host = this.store.adapterFor('upload-app').get('host'),
       namespace = this.store.adapterFor('upload-app').namespace,
       postUrl = [ host, namespace ].join('/');
       const headers = {};
-
-      var file = this.get("file");
-      if (file == null)
-      {
-        this.set("noFile", false);
-      }
 
       this.get('session').authorize('authorizer:django', (headerName, headerValue) => {
       headers[headerName] = headerValue;
