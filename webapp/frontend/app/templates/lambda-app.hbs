@@ -1,0 +1,36 @@
+<h1>Lambda Application Details</h1>
+
+<ul>
+    <li>ID: {{model.application.id}}</li>
+    <li>Path: {{model.application.path}}</li>
+    <li>Type: {{lower-case model.application.app_type}}</li>
+  {{#if model.application.description}}
+      <li>Description: {{model.application.description}}</li>
+  {{/if}}
+    <li>Status message: {{lower-case model.application.status_message}}</li>
+    <li>Status code: {{model.application.status_code}}</li>
+    <li>Status detail: {{model.application.status_detail}}</li>
+</ul>
+
+
+<h3>Lambda instances</h3>
+
+{{#if model.instances}}
+
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Started</th>
+        </tr>
+      {{#each model.instances as |li|}}
+          <tr class="instance-info">
+              <td>{{li.id}} </td>
+              <td>{{li.started_app}}</td>
+          </tr>
+      {{/each}}
+    </table>
+{{else}}
+    The application is not currently deployed on an instance
+{{/if}}
+
+{{outlet}}
