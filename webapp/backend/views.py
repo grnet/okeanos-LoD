@@ -102,17 +102,15 @@ def authenticate(request):
 
     # request.META contains all the headers of the request
     auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
-    check_status, info = check_auth_token(auth_token)
-    if check_status:
-        status_code = status.HTTP_200_OK
-        return Response({"status": status_code,
-                         "result": "Success"}, status=status_code)
-    else:
-        error_info = json.loads(info)['unauthorized']
-        error_info['details'] = error_info.get('details') + 'unauthorized'
 
-        status_code = status.HTTP_401_UNAUTHORIZED
-        return Response({"errors": [error_info]}, status=status_code)
+    # If something is wrong with the given token, authenticate credentials will throw an exception
+    # which will be correctly handled by the exception handler.
+    authenticator = KamakiTokenAuthentication()
+    authenticator.authenticate_credentials(auth_token)
+
+    status_code = status.HTTP_200_OK
+    return Response({"status": status_code,
+                     "result": "Success"}, status=status_code)
 
 
 class UserPublicKeysView(APIView):
