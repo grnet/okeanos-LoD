@@ -25,7 +25,7 @@ export default Ember.Component.extend({
       }
       newLambdaInstance.set('publicKeyName', requestedPublicKeys);
 
-      newLambdaInstance.save();
+      this.sendAction('saveAction', newLambdaInstance);
     }
   }
 });
