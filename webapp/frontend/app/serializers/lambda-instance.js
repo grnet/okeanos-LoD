@@ -26,5 +26,16 @@ export default LoDSerializer.extend(DS.EmbeddedRecordsMixin, {
     delete payload.data[0].attributes.info;
     delete payload.data[0].attributes.status;
     return this._super(store, primaryModelClass, payload, id, requestType);
+  },
+
+  normalizeArrayResponse: function(store, primaryModelClass, payload, id, requestType) {
+    for (var i=0;i<payload.data.length;++i) {
+      for (var k in payload.data[i].attributes.status) {
+        var key = 'status_' + k;
+        payload.data[i].attributes[key] = payload.data[i].attributes.status[k];
+      }
+    }
+    return this._super(store, primaryModelClass, payload, id, requestType);
   }
+  
 });

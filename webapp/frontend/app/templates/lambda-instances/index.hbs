@@ -1,0 +1,24 @@
+<h1>Listing Lambda Instances</h1>
+
+<table>
+  <thead>
+    <td>UUID</td>
+    <td>Name</td>
+    <td>Status</td>
+    <td>Failure message</td>
+  </thead>
+  <tbody>
+    {{#each model as |lambda-instance|}}
+    <tr class="instance-info">
+      <td>{{lambda-instance.id}}</td>
+      <td>{{lambda-instance.name}}</td>
+      <td>{{lambda-instance.status_detail}}</td>
+      {{#if lambda-instance.status_failure_message}}
+        <td>{{lambda-instance.status_failure_message}}</td>
+      {{/if}}
+    </tr>
+{{else}}
+  No lambda instances under ownership.
+{{/each}}
+  </tbody>
+</table>
