@@ -1,0 +1,9 @@
+<div>
+  <form {{action "start" app on="submit"}} method="post">
+    {{#if disabled}}
+      <button class="btn btn-success" disabled type="submit">Start</button>
+    {{else}}
+      <button class="btn btn-success" active type="submit">Start</button>
+    {{/if}}
+  </form>
+</div>
