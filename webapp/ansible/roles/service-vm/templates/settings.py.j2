@@ -156,7 +156,27 @@ CELERY_ROUTES = {
         'queue': 'tasks_queue',
         'routing_key': 'task_key',
     },
-    'backend.tasks.create_lambda_instance_central_vm': {
+    'backend.central_vm_tasks.create_lambda_instance_central_vm': {
+        'queue': 'statistics_queue',
+        'routing_key': 'statistics_key',
+    },
+    'backend.central_vm_tasks.set_lambda_instance_status_central_vm': {
+        'queue': 'statistics_queue',
+        'routing_key': 'statistics_key',
+    },
+    'backend.central_vm_tasks.delete_lambda_instance_central_vm': {
+        'queue': 'statistics_queue',
+        'routing_key': 'statistics_key',
+    },
+    'backend.central_vm_tasks.create_application_central_vm': {
+        'queue': 'statistics_queue',
+        'routing_key': 'statistics_key',
+    },
+    'backend.central_vm_tasks.set_application_status_central_vm': {
+        'queue': 'statistics_queue',
+        'routing_key': 'statistics_key',
+    },
+    'backend.central_vm_tasks.delete_application_central_vm': {
         'queue': 'statistics_queue',
         'routing_key': 'statistics_key',
     },

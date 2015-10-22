@@ -16,6 +16,7 @@ from . import central_vm_tasks
 from .models import LambdaInstance, Application
 from .authenticate_user import get_named_keys
 
+
 @shared_task
 def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_ids):
     """
