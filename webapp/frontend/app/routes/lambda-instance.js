@@ -13,7 +13,7 @@ export default LoDRoute.extend({
 
     return Ember.RSVP.hash({
       instance: this.store.findRecord('lambda-instance', params.instance_uuid),
-      apps: this.store.all('lambda-app')
+      apps: this.store.peekAll('lambda-app')
     });
 
   },
