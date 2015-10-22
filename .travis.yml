@@ -82,6 +82,7 @@ script:
 
 # Front end
  - cd webapp/frontend/
+ - python render_ember_environment.py
  - npm test
 
 env:

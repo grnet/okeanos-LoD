@@ -27,8 +27,9 @@ module.exports = function(environment) {
 
   ENV['ember-simple-auth'] = {
     authorizer: 'authorizer:django',
-    routeAfterAuthentication: '/dashboard',
-    // crossOriginWhitelist: ['*']
+    routeAfterAuthentication: 'dashboard',
+    authenticationRoute: 'index',
+    routeIfAlreadyAuthenticated: 'dashboard'
   };
 
   ENV.refresh_interval = 1000;

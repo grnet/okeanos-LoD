@@ -13,7 +13,6 @@ var LoginController = Ember.Controller.extend({
       });
       let token = this.get("token");
       this.get('session').authenticate('authenticator:django', token).catch((xhr) => {
-        console.debug('reason', xhr);
         if (xhr.statusText === 'UNAUTHORIZED') {
           this.set('loginFailed', true);
         }
