@@ -33,7 +33,7 @@ var UploadController = Ember.Controller.extend({
 
       var res = this.get("file").split(".");
       var ext = res[res.length-1];
-      if (ext != "jar")
+      if (ext !== "jar")
       {
         this.set("wrongExt", true);
       }
