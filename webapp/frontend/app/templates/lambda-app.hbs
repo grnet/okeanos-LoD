@@ -93,14 +93,16 @@
     </div>
     <!--row-->
 
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="box box-info">
-                <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-th"></i> Lambda instances the application is deployed on </h3>
-                </div>
-                <!-- /.box-header -->
-              {{#if model.instances}}
+  {{#if model.instances}}
+      <div class="row">
+          <div class="col-xs-12">
+              <div class="box box-info">
+                  <div class="box-header with-border">
+                      <h3 class="box-title"><i class="fa fa-th"></i> Lambda instances the application is deployed on
+                      </h3>
+                  </div>
+                  <!-- /.box-header -->
+
                   <div class="box-body">
                       <div class="row">
                           <div class="col-ms-12 col-xs-12">
@@ -111,7 +113,7 @@
 
                           <div class="col-ms-8 col-xs-8">
 
-                              <div class="table table-bordered table-hover table-responsive">
+                              <div class="table">
                                   <table class="table">
                                       <thead>
                                       <tr>
@@ -120,17 +122,19 @@
                                           <th>Actions</th>
                                       </tr>
                                       </thead>
-                                    {{#each model.instances as |li|}}
-                                        <tr>
-                                            <td>{{li.id}} </td>
-                                            <td>{{li.started_app}}</td>
-                                            <td>
-                                                <a href="delete-instance.html" class="btn  btn-danger btn-xs"
-                                                   style="margin-right: 15px;"><i class="fa fa-close"></i> Discard
-                                                    application</a>
-                                            </td>
-                                        </tr>
-                                    {{/each}}
+                                      <tbody>
+                                      {{#each model.instances as |li|}}
+                                          <tr>
+                                              <td>{{li.id}} </td>
+                                              <td>{{li.started_app}}</td>
+                                              <td>
+                                                  <a href="delete-instance.html" class="btn  btn-danger btn-xs"
+                                                     style="margin-right: 15px;"><i class="fa fa-close"></i> Discard
+                                                      application</a>
+                                              </td>
+                                          </tr>
+                                      {{/each}}
+                                      </tbody>
                                   </table>
                               </div>
                               <!--class="table-responsive"-->
@@ -139,11 +143,9 @@
                       </div>
                       <!-- /.row -->
                   </div>
-              {{else}}
-                  The application is not currently deployed on an instance
-              {{/if}}
-            </div>
-        </div>
-    </div>
+              </div>
+          </div>
+      </div>
+  {{/if}}
 
 </section><!-- /.content -->
