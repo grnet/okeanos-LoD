@@ -42,7 +42,7 @@
                     <!-- /.row -->
 
                     <div class="row">
-                        <div class="col-ms-10 col-xs-9">
+                        <div class="col-ms-6 col-xs-4">
                             <table class="table table-bordered table-hover table-responsive">
                                 <thead>
                                 <tr>
@@ -52,8 +52,8 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <th>Path</th>
-                                    <td>{{model.application.path}}</td>
+                                    <th>Pithos path</th>
+                                    <td>{{model.application.path}}/{{model.application.name}}</td>
                                 </tr>
                                 <tr>
                                     <th>Type</th>
@@ -98,32 +98,26 @@
             <div class="box box-info">
                 <div class="box-header with-border">
                     <h3 class="box-title"><i class="fa fa-th"></i> Lambda instances the application is deployed on </h3>
-
-                    <!--<div class="box-tools pull-right">-->
-                        <!--<a href="app-instance.html" class="btn btn-primary pull-right" style="margin-right: 15px;"><i-->
-                                <!--class="fa fa-mail-reply"></i> Deploy on a lambda instance</a>-->
-                    <!--</div>-->
                 </div>
                 <!-- /.box-header -->
               {{#if model.instances}}
                   <div class="box-body">
                       <div class="row">
-                          <!-- accepted payments column -->
-                          <div class="col-xs-4">
-                              <p class="lead">Description:</p>
-
-                              <p>These are the lambda instances that the application is currently deployed on</p>
+                          <div class="col-ms-12 col-xs-12">
+                              Here, you can view all the lambda instances the application is deployed on
                           </div>
-                          <!-- /.col -->
-                          <div class="col-xs-8">
-                              <p class="lead">Lambda Instances</p>
+                      </div>
+                      <div class="row">
 
-                              <div class="table-responsive">
+                          <div class="col-ms-8 col-xs-8">
+
+                              <div class="table table-bordered table-hover table-responsive">
                                   <table class="table">
                                       <thead>
                                       <tr>
                                           <th>Instance ID</th>
                                           <th>App started</th>
+                                          <th>Actions</th>
                                       </tr>
                                       </thead>
                                     {{#each model.instances as |li|}}
@@ -131,7 +125,7 @@
                                             <td>{{li.id}} </td>
                                             <td>{{li.started_app}}</td>
                                             <td>
-                                                <a href="delete-instance.html" class="btn  btn-danger pull-right"
+                                                <a href="delete-instance.html" class="btn  btn-danger btn-xs"
                                                    style="margin-right: 15px;"><i class="fa fa-close"></i> Discard
                                                     application</a>
                                             </td>
