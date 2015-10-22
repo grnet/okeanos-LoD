@@ -1,20 +1,11 @@
 import Ember from "ember";
 
 var UploadController = Ember.Controller.extend({
-  sameUpload: false,
-  serverError: false,
-  successUpload: false,
   session: Ember.inject.service('session'),
 
   actions : {
     upload: function() {
     var _this = this;
-
-      this.setProperties({
-        sameUpload: false,
-        serverError: false,
-        successUpload: false,
-      });
 
       var host = this.store.adapterFor('upload-app').get('host'),
       namespace = this.store.adapterFor('upload-app').namespace,
@@ -58,28 +49,19 @@ var UploadController = Ember.Controller.extend({
         },
 
         success: function(){
-          _this.set("successUpload", true);
-          _this.set("sameUpload", false);
-          _this.set("serverError", false);
           progress.className = "progress-bar progress-bar-success";
-          progress.innerHTML =  'Success';
+          progress.innerHTML =  'Success.The application was uploaded successfully.';
         },
         statusCode: {
           400: function() {
-            _this.set("sameUpload", true);
-            _this.set("serverError", false);
-            _this.set("successUpload", false);
             progress.className = "progress-bar progress-bar-danger";
-            progress.innerHTML =  'Failed';
+            progress.innerHTML =  'Upload failed.<strong>The application with this name already exists.</strong> Please try another file.';
             progress_text.innerHTML =  '';
           }
         },
         error: function() {
-          _this.set("sameUpload", false);
-          _this.set("serverError", true);
-          _this.set("successUpload", false);
           progress.className = "progress-bar progress-bar-danger";
-          progress.innerHTML =  'Failed';
+          progress.innerHTML =  'Upload failed.<strong>Internal server error.</strong> Please try again later.';
           progress_text.innerHTML =  '';
         }
       });
