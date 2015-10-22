@@ -19,6 +19,8 @@ module.exports = function(defaults) {
   // please specify an object with the list of modules as keys
   // along with the exports of each module as its value.
 
+  app.import(app.bowerDirectory + '/AdminLTE/plugins/jQuery/jQuery-2.1.4.min.js');
+  app.import(app.bowerDirectory + '/AdminLTE/plugins/jQueryUI/jquery-ui.min.js');
   app.import(app.bowerDirectory + '/handlebars/handlebars.js');
   //app.import(app.bowerDirectory + '/bootstrap/dist/js/bootstrap.js');
   //app.import(app.bowerDirectory + '/bootstrap/dist/css/bootstrap.css');
@@ -27,6 +29,9 @@ module.exports = function(defaults) {
   app.import(app.bowerDirectory + '/AdminLTE/bootstrap/css/bootstrap.min.css');
   app.import(app.bowerDirectory + '/AdminLTE/dist/css/AdminLTE.min.css');
   app.import(app.bowerDirectory + '/AdminLTE/dist/css/skins/_all-skins.min.css');
+  app.import(app.bowerDirectory + '/AdminLTE/build/less/header.less');
+  app.import(app.bowerDirectory + '/AdminLTE/build/less/dropdown.less');
+  app.import(app.bowerDirectory + '/AdminLTE/build/less/sidebar.less');
 
   return app.toTree();
 };
