@@ -10,7 +10,9 @@
   <tbody>
     {{#each model as |lambda-instance|}}
     <tr class="instance-info">
+      {{#linkTo 'lambda-instance' lambda-instance.id}}
       <td>{{lambda-instance.id}}</td>
+      {{/linkTo}}
       <td>{{lambda-instance.name}}</td>
       <td>{{lambda-instance.status_detail}}</td>
       {{#if lambda-instance.status_failure_message}}
