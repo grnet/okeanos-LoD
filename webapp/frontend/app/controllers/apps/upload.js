@@ -27,11 +27,9 @@ var UploadController = Ember.Controller.extend({
       var progress_bar = document.getElementById('progress_bar');
       progress.innerHTML =  '';
       progress.style.width = 0;
-      progress_bar.hidden = true;
-      progress_text.hidden = true;
-      progress.hidden = true;
       progress_text.innerHTML = '';
       progress.className = "progress-bar progress-bar-striped active";
+      progress_bar.hidden=true;
 
       var res = this.get("file").split(".");
       var ext = res[res.length-1];
@@ -40,7 +38,7 @@ var UploadController = Ember.Controller.extend({
         this.set("wrongExt", true);
       }
       else {
-      progress_bar.hidden = false;
+      progress_bar.hidden=false;
       Ember.$.ajax({
         url: postUrl,
         headers: headers,
