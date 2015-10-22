@@ -35,7 +35,7 @@
           </div><!-- /.row -->
 
           <div class="row">
-            <div class="col-ms-10 col-xs-9">
+            <div class="col-ms-6 col-xs-5">
               <table  class="table table-bordered table-hover table-responsive">
                 <thead>
                   <tr>
@@ -49,8 +49,8 @@
                     <td>{{model.instance.project_name}}</td>
                   </tr>
                   <tr>
-                    <th>Number of nodes</th>
-                    <td>{{math-op model.instance.slaves "+" 1}}</td>
+                    <th>Number of slaves</th>
+                    <td>{{model.instance.slaves}}</td>
                   </tr>
                   <tr>
                     <th>Name of master node</th>
@@ -58,7 +58,11 @@
                   </tr>
                   <tr>
                     <th>Hostname of master node</th>
+                    {{#if model.instance.master_node_id}}
                     <td>snf-{{model.instance.master_node_id}}.vm.okeanos.grnet.gr</td>
+                    {{else}}
+                    <td>-</td>
+                    {{/if}}
                   </tr>
                   <tr>
                     <th>Number of master node cpus</th>
@@ -104,7 +108,6 @@
                     <td>{{lambda-instance.status_failure_message}}</td>
                   </tr>
                   {{/if}}
-
                 </tbody>
               </table>
             </div><!--col-xs-12-->
@@ -113,43 +116,45 @@
       </div> <!-- box-primary -->
     </div> <!--col -->
   </div> <!--row-->
+  {{#if (compare model.apps.length "!==" 0)}}
   <div class="row">
     <div class="col-xs-12">
-      <div class="box box-info">
+      <div class="box box-warning">
         <div class="box-header with-border">
-          <h3 class="box-title"><i class="fa fa-th"></i>Applications uploaded to this Lambda Instance</h3>
+          <h3 class="box-title"><i class="fa fa-th"></i> Applications uploaded to this Lambda Instance</h3>
         </div><!-- /.box-header -->
         <div class="box-body">
-          <div class="row">
-            <!-- accepted payments column -->
-            <div class="col-xs-4">
-              <p class="lead">Describe:</p>
-              <p>These are the Applications that are currently deployed on the current Lambda Instance.</p>
-          </div><!-- /.col -->
-          <div class="col-xs-8">
-            <p class="lead">Applications</p>
-            <div class="table-responsive">
-              <table class="table">
+          <div class=“row”>
+            <div class="col-xs-12">
+              These are the Applications that are currently deployed on the current Lambda Instance.
+            </div>
+          </div>
+          <div class=“row”>
+            <div class="col-ms-8 col-xs-8">
+              <table class="table table-bordered table-hover table-responsive">
                 <thead>
                   <tr>
                     <th>ID</th>
                     <th>Type</th>
                     <th>Started</th>
+                    <th> Actions </th>
                   </tr>
                 </thead>
-                {{#each model.apps as |app|}}
+                <tbody>
+                  {{#each model.apps as |app|}}
                   <tr class="instance-info">
                     <td>{{app.id}}</td>
                     <td>{{lower-case app.app_type}}</td>
                     <td>{{app.started}}</td>
-                    <a href="delete-instance.html" class="btn  btn-danger pull-right" style="margin-right: 15px;"><i class="fa fa-close"></i> Delete</a>
+                    <a href="delete-instance.html" class="btn  btn-danger btn-xs" style="margin-right: 15px;"><i class="fa fa-close"></i> Delete</a>
                     {{#if app.started}}
-                    <a href="delete-instance.html" class="btn  btn-warning pull-right" style="margin-right: 15px;"><i class="fa fa-stop"></i> Stop</a>
+                    <a href="delete-instance.html" class="btn  btn-warning btn-xs" style="margin-right: 15px;"><i class="fa fa-stop"></i> Stop</a>
                     {{else}}
-                    <a href="delete-instance.html" class="btn  btn-primary pull-right" style="margin-right: 15px;"><i class="fa fa-play"></i> Start</a>
+                    <a href="delete-instance.html" class="btn  btn-primary btn-xs" style="margin-right: 15px;"><i class="fa fa-play"></i> Start</a>
                     {{/if}}
                   </tr>
-                {{/each}}
+                  {{/each}}
+                </tbody>
               </table>
             </div><!--class="table-responsive"-->
           </div><!-- /.col -->
@@ -157,5 +162,5 @@
       </div>
     </div>
   </div>
-  </div>
+  {{/if}}
 </section><!-- /.content -->
