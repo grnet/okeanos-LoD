@@ -24,8 +24,12 @@ var UploadController = Ember.Controller.extend({
 
       var progress = document.getElementById('progress');
       var progress_text = document.getElementById('progress_text');
+      var progress_bar = document.getElementById('progress_bar');
       progress.innerHTML =  '';
       progress.style.width = 0;
+      progress_bar.hidden = true;
+      progress_text.hidden = true;
+      progress.hidden = true;
       progress_text.innerHTML = '';
       progress.className = "progress-bar progress-bar-striped active";
 
@@ -36,6 +40,7 @@ var UploadController = Ember.Controller.extend({
         this.set("wrongExt", true);
       }
       else {
+      progress_bar.hidden = false;
       Ember.$.ajax({
         url: postUrl,
         headers: headers,
@@ -60,18 +65,18 @@ var UploadController = Ember.Controller.extend({
 
         success: function(){
           progress.className = "progress-bar progress-bar-success";
-          progress.innerHTML =  'Success.Your request to upload the file has been sent.';
+          progress.innerHTML =  'Success.Your request to upload the application has been sent.';
         },
         statusCode: {
           400: function() {
             progress.className = "progress-bar progress-bar-danger";
-            progress.innerHTML =  'Upload failed.<strong>The application with this name already exists.</strong> Please try another file.';
+            progress.innerHTML =  'Failure. Your request to upload the application has failed.Try another application';
             progress_text.innerHTML =  '';
           }
         },
         error: function() {
           progress.className = "progress-bar progress-bar-danger";
-          progress.innerHTML =  'Upload failed.<strong>Internal server error.</strong> Please try again later.';
+          progress.innerHTML =  'Your request to application the file has been rejected.Please try again later.';
           progress_text.innerHTML =  '';
         }
       });

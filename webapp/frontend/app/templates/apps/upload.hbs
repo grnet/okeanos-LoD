@@ -24,7 +24,8 @@
             <div class="row">
               <div class="col-md-9 col-sm-8">
                 <div class="pad">
-                From here you can Upload an application.
+                From here you can upload a java application to Pithos storage service.The application will be stored in the folder <i>lambda_applications</i>.
+                Every application you upload can be deployed later in your lambda-instance(s).
                 </div>
               </div><!-- /.col -->
 
@@ -90,7 +91,7 @@
       <label for="type"  class="col-sm-6">File to upload: </label>
       <div class="col-sm-6" >
           {{input value=file type="file" name="file" id="file" required="true" accept=".jar"}}
-        <span id="helpBlock" class="help-block">Upload the file of the application.</span>
+        <span id="helpBlock" class="help-block">Upload the file of the application.<br>Only jar files accepted.</span>
       </div>
       </div>
 
