@@ -156,6 +156,10 @@ CELERY_ROUTES = {
         'queue': 'tasks_queue',
         'routing_key': 'task_key',
     },
+    'backend.tasks.create_lambda_instance_central_vm': {
+        'queue': 'statistics_queue',
+        'routing_key': 'statistics_key',
+    },
     'backend.events.set_lambda_instance_status': {
         'queue': 'events_queue',
         'routing_key': 'event_key',
@@ -207,3 +211,7 @@ REST_FRAMEWORK = {
 }
 
 TEMPORARY_FILE_STORAGE = os.path.abspath("/tmp/lambda_applications")
+
+# Central VM configuration #
+CENTRAL_VM_IP = "83.212.117.69"
+CENTRAL_VM_RETRY_COUNTDOWN = 120
