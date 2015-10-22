@@ -101,6 +101,12 @@
      </div>
      <p id="progress_text" class="col-sm-6 col-sm-offset-3"></p>
 
+    {{#if wrongExt}}
+      <div class="alert alert-danger col-sm-6 col-sm-offset-3">
+        <strong>File error!We only support file with jar extension for upload.</strong>.
+      </div>
+    {{/if}}
+
     </div><!--row-->
 
     </div><!--box-body-->

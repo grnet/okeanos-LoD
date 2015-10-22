@@ -2,9 +2,14 @@ import Ember from "ember";
 
 var UploadController = Ember.Controller.extend({
   session: Ember.inject.service('session'),
+  wrongExt: false,
 
   actions : {
     upload: function() {
+
+      this.setProperties({
+        wrongExt: false,
+      });
 
       var host = this.store.adapterFor('upload-app').get('host'),
       namespace = this.store.adapterFor('upload-app').namespace,
@@ -24,7 +29,13 @@ var UploadController = Ember.Controller.extend({
       progress_text.innerHTML = '';
       progress.className = "progress-bar progress-bar-striped active";
 
-
+      var res = this.get("file").split(".");
+      var ext = res[res.length-1];
+      if (ext != "jar")
+      {
+        this.set("wrongExt", true);
+      }
+      else {
       Ember.$.ajax({
         url: postUrl,
         headers: headers,
@@ -49,7 +60,7 @@ var UploadController = Ember.Controller.extend({
 
         success: function(){
           progress.className = "progress-bar progress-bar-success";
-          progress.innerHTML =  'Success.The application was uploaded successfully.';
+          progress.innerHTML =  'Success.Your request to upload the file has been sent.';
         },
         statusCode: {
           400: function() {
@@ -64,6 +75,7 @@ var UploadController = Ember.Controller.extend({
           progress_text.innerHTML =  '';
         }
       });
+      }
     },
   },
 
