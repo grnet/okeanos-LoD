@@ -41,7 +41,7 @@ var UploadController = Ember.Controller.extend({
             if (evt.lengthComputable) {
               var percentComplete = evt.loaded / evt.total;
               progress.style.width = percentComplete * 100 + '%';
-              progress_text.innerHTML =  percentComplete * 100 + '%';
+              progress_text.innerHTML =  Math.floor(percentComplete * 100) + '%';
             }
           }, false);
           return xhr;
