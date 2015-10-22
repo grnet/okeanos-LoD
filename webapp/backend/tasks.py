@@ -1,5 +1,4 @@
 import json
-import requests
 
 from os import path, mkdir, remove, system
 
@@ -13,6 +12,7 @@ from fokia import utils
 from fokia import lambda_instance_manager
 from fokia.ansible_manager import Manager
 from . import events
+from . import central_vm_tasks
 from .models import LambdaInstance, Application
 from .authenticate_user import get_named_keys
 
@@ -108,10 +108,11 @@ def create_lambda_instance(lambda_info, auth_token):
                                             specs=specs_json)
 
     # Create a central vm task to create the new Lambda Instance on the Central VM.
-    create_lambda_instance_central_vm.delay(auth_token=auth_token,
-                                            instance_uuid=instance_uuid,
-                                            instance_name=specs['instance_name'],
-                                            specs=specs_json)
+    central_vm_tasks.\
+        create_lambda_instance_central_vm.delay(auth_token=auth_token,
+                                                instance_uuid=instance_uuid,
+                                                instance_name=specs['instance_name'],
+                                                specs=specs_json)
 
     pub_keys = []
     if specs.get('public_key_name'):
@@ -366,35 +367,6 @@ def start_stop_application(lambda_instance_uuid, app_uuid,
         events.start_stop_application.delay(lambda_instance_uuid=lambda_instance_uuid,
                                             application_uuid=app_uuid,
                                             action=app_action, app_type=app_type)
-
-
-@shared_task(bind=True)
-def create_lambda_instance_central_vm(self, auth_token, instance_uuid, instance_name, specs='{}'):
-    """
-    Makes an HTTP request to Central VM to send information about the new Lambda Instance.
-    :param instance_uuid: The uuid of the Lambda Instance.
-    :param instance_name: The name of the Lambda Instance.
-    :param specs: The specifications of the Lambda Instance.
-    """
-
-    # Make a POST request to send the information to Service VM. In case of a timeout, retry
-    # three(3) times(default Celery retry) and then stop trying.
-    try:
-        requests.post(url="http://" + settings.CENTRAL_VM_IP + "/api/lambda_instances/",
-                      json={
-                          'uuid': instance_uuid,
-                          'name': instance_name,
-                          'instance_info': specs,
-                          'status': LambdaInstance.PENDING,
-                          'failure_message': ""
-                      },
-                      headers={
-                          'Authorization': "Token {}".format(auth_token),
-                          'Content-Type': "application/json"
-                      })
-    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-        self.retry(instance_uuid=instance_uuid, instance_name=instance_name, specs=specs,
-                   countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
 
 def get_master_node_info(lambda_instance_uuid):
