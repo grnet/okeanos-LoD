@@ -2,6 +2,7 @@ import DS from "ember-data";
 
 // Information about lambda applications
 var LambdaApp = DS.Model.extend({
+  name: DS.attr(),
   path: DS.attr(),
   app_type: DS.attr(),
   description: DS.attr(),

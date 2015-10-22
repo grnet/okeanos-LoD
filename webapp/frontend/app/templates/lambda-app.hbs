@@ -1,36 +1,155 @@
-<h1>Lambda Application Details</h1>
-
-<ul>
-    <li>ID: {{model.application.id}}</li>
-    <li>Path: {{model.application.path}}</li>
-    <li>Type: {{lower-case model.application.app_type}}</li>
-  {{#if model.application.description}}
-      <li>Description: {{model.application.description}}</li>
-  {{/if}}
-    <li>Status message: {{lower-case model.application.status_message}}</li>
-    <li>Status code: {{model.application.status_code}}</li>
-    <li>Status detail: {{model.application.status_detail}}</li>
-</ul>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Dashboard
+        <small>Lambda Application Details</small>
+    </h1>
+</section>
 
 
-<h3>Lambda instances</h3>
+<!-- Main content -->
+<section class="content">
+    <!-- TOP DATA -->
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-laptop"></i> Application {{model.application.name}}</h3>
 
-{{#if model.instances}}
+                    <div class="box-tools pull-right">
+                        <small>ID: {{model.application.id}}</small>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row ">
+                        <div class="col-xs-12">
+                            <a href="delete-application.html" class="btn  btn-danger pull-right"
+                               style="margin-right: 15px;"><i class="fa fa-close"></i> Delete</a>
+                            <a href="app-instance.html" class="btn btn-primary pull-right"
+                               style="margin-right: 15px;"><i class="fa fa-mail-reply"></i> Deploy on a lambda instance</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-9 col-sm-8">
+                            <div class="pad">
+                                Details of your application
+                            </div>
+                        </div>
+                        <!-- /.col -->
 
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Started</th>
-        </tr>
-      {{#each model.instances as |li|}}
-          <tr class="instance-info">
-              <td>{{li.id}} </td>
-              <td>{{li.started_app}}</td>
-          </tr>
-      {{/each}}
-    </table>
-{{else}}
-    The application is not currently deployed on an instance
-{{/if}}
+                    </div>
+                    <!-- /.row -->
 
-{{outlet}}
+                    <div class="row">
+                        <div class="col-ms-10 col-xs-9">
+                            <table class="table table-bordered table-hover table-responsive">
+                                <thead>
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Value</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th>Path</th>
+                                    <td>{{model.application.path}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Type</th>
+                                    <td>{{lower-case model.application.app_type}}</td>
+                                </tr>
+                                {{#if model.application.description}}
+                                    <tr>
+                                        <th>Description</th>
+                                        <td>{{model.application.description}}</td>
+                                    </tr>
+                                {{/if}}
+                                <tr>
+                                    <th>Status message</th>
+                                    <td>{{lower-case model.application.status_message}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Status code</th>
+                                    <td>{{model.application.status_code}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Status detail</th>
+                                    <td>{{model.application.status_detail}}</td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <!--col-xs-12-->
+                    </div>
+                    <!--row-->
+                </div>
+                <!--box-->
+            </div>
+            <!-- box-primary -->
+        </div>
+        <!--col -->
+    </div>
+    <!--row-->
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-th"></i> Lambda instances the application is deployed on </h3>
+
+                    <!--<div class="box-tools pull-right">-->
+                        <!--<a href="app-instance.html" class="btn btn-primary pull-right" style="margin-right: 15px;"><i-->
+                                <!--class="fa fa-mail-reply"></i> Deploy on a lambda instance</a>-->
+                    <!--</div>-->
+                </div>
+                <!-- /.box-header -->
+              {{#if model.instances}}
+                  <div class="box-body">
+                      <div class="row">
+                          <!-- accepted payments column -->
+                          <div class="col-xs-4">
+                              <p class="lead">Description:</p>
+
+                              <p>These are the lambda instances that the application is currently deployed on</p>
+                          </div>
+                          <!-- /.col -->
+                          <div class="col-xs-8">
+                              <p class="lead">Lambda Instances</p>
+
+                              <div class="table-responsive">
+                                  <table class="table">
+                                      <thead>
+                                      <tr>
+                                          <th>Instance ID</th>
+                                          <th>App started</th>
+                                      </tr>
+                                      </thead>
+                                    {{#each model.instances as |li|}}
+                                        <tr>
+                                            <td>{{li.id}} </td>
+                                            <td>{{li.started_app}}</td>
+                                            <td>
+                                                <a href="delete-instance.html" class="btn  btn-danger pull-right"
+                                                   style="margin-right: 15px;"><i class="fa fa-close"></i> Discard
+                                                    application</a>
+                                            </td>
+                                        </tr>
+                                    {{/each}}
+                                  </table>
+                              </div>
+                              <!--class="table-responsive"-->
+                          </div>
+                          <!-- /.col -->
+                      </div>
+                      <!-- /.row -->
+                  </div>
+              {{else}}
+                  The application is not currently deployed on an instance
+              {{/if}}
+            </div>
+        </div>
+    </div>
+
+</section><!-- /.content -->
