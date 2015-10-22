@@ -78,7 +78,7 @@
 
 
                       </tr> -->
-                      {{#each model as |lambda-instance|}}
+                      {{#each pagedContent as |lambda-instance|}}
                       <tr>
                         <td>{{lambda-instance.id}}</td>
                         <td>{{lambda-instance.name}}</td>
@@ -102,16 +102,10 @@
         </div><!--row-->
         <div class="row">
         	<div class="col-sm-6">
-        		<div>Showing 1 to 10 of 57 entries</div>
+        		<div>Showing {{firstOfCurrentPage}} to {{lastOfCurrentPage}} of {{model.length}} entries</div>
         	</div>
         	<div class="col-sm-6">
-				<ul class="pagination pagination-sm no-margin pull-right">
-                    <li><a href="#">«</a></li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">»</a></li>
-                  </ul>
+				{{page-numbers content=pagedContent currentPage=page totalPages=totalPages showFL=true}}
             </div>
         </div><!--row-->
 
