@@ -41,6 +41,9 @@
     tags:
       - ember-install
 
+  - name: Create Ember config directory
+    file: path={{install_dir}}/config state=directory
+
   - name: Setup Ember configuration environment.
     template: src=environment.js.j2 dest={{ install_dir }}/config/environment.js
 
