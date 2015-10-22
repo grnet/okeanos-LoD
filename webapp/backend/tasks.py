@@ -310,10 +310,10 @@ def upload_application_to_pithos(auth_url, auth_token, container_name, project_n
 
         events.set_application_status.delay(application_uuid=application_uuid,
                                             status=Application.UPLOADED)
+        application = Application.objects.get(uuid=application_uuid)
         central_vm_tasks.\
-            create_application_central_vm(auth_token, application_uuid, project_name,
-                                          Application.objects.
-                                          get(uuid=application_uuid).description)
+            create_application_central_vm.delay(auth_token, application_uuid, application.name,
+                                                application.description)
     except ClientError as exception:
         events.set_application_status.delay(application_uuid, Application.FAILED,
                                             exception.message)
@@ -347,13 +347,13 @@ def delete_application_from_pithos(auth_url, auth_token, container_name, filenam
         # deleted.
         if exception.status == status.HTTP_404_NOT_FOUND:
             events.delete_application.delay(application_uuid)
-            central_vm_tasks.delete_application_central_vm(auth_token, application_uuid)
+            central_vm_tasks.delete_application_central_vm.delay(auth_token, application_uuid)
         else:
             events.set_application_status.delay(application_uuid, Application.FAILED,
                                                 exception.message)
             central_vm_tasks.\
-                set_application_status_central_vm(auth_token, application_uuid,
-                                                  Application.FAILED, exception.message)
+                set_application_status_central_vm.delay(auth_token, application_uuid,
+                                                        Application.FAILED, exception.message)
 
 
 @shared_task

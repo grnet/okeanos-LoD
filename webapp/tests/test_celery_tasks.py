@@ -51,10 +51,12 @@ class TestCeleryTasks(APITestCase):
     # Define a fake ~okeanos token.
     AUTHENTICATION_TOKEN = "fake-token"
 
+    @mock.patch('backend.central_vm_tasks.set_lambda_instance_status_central_vm')
     @mock.patch('backend.tasks.events.set_lambda_instance_status')
     @mock.patch('backend.tasks.utils.lambda_instance_start')
     def test_lambda_instance_start(self, mock_lambda_instance_start_fokia,
-                                   mock_set_lambda_instance_status_event):
+                                   mock_set_lambda_instance_status_event,
+                                   mock_set_lambda_instance_status_central_vm):
         lambda_instance_uuid = uuid.uuid4()
         master_id = 1
         slave_ids = [2, 3, 4]
@@ -67,12 +69,17 @@ class TestCeleryTasks(APITestCase):
                                                             master_id, slave_ids)
         mock_set_lambda_instance_status_event.delay.\
             assert_called_with(lambda_instance_uuid, LambdaInstance.STARTED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, lambda_instance_uuid,
+                               LambdaInstance.STARTED, "")
 
     @mock.patch('backend.tasks.ClientError', new=CustomClientError)
+    @mock.patch('backend.central_vm_tasks.set_lambda_instance_status_central_vm')
     @mock.patch('backend.tasks.events.set_lambda_instance_status')
     @mock.patch('backend.tasks.utils.lambda_instance_start')
     def test_lambda_instance_start_except(self, mock_lambda_instance_start_fokia,
-                                          mock_set_lambda_instance_status_event):
+                                          mock_set_lambda_instance_status_event,
+                                          mock_set_lambda_instance_status_central_vm):
         # Fokia utils.lambda_instance_start will throw a CustomClientError exception when called.
         # ClientError exception is replaced with CustomClientError exception.
         mock_lambda_instance_start_fokia.side_effect = CustomClientError("exception-message")
@@ -89,11 +96,16 @@ class TestCeleryTasks(APITestCase):
                                                             master_id, slave_ids)
         mock_set_lambda_instance_status_event.delay.\
             assert_called_with(lambda_instance_uuid, LambdaInstance.FAILED, "exception-message")
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, lambda_instance_uuid,
+                               LambdaInstance.FAILED, "exception-message")
 
+    @mock.patch('backend.central_vm_tasks.set_lambda_instance_status_central_vm')
     @mock.patch('backend.tasks.events.set_lambda_instance_status')
     @mock.patch('backend.tasks.utils.lambda_instance_stop')
     def test_lambda_instance_stop(self, mock_lambda_instance_stop_fokia,
-                                  mock_set_lambda_instance_status_event):
+                                  mock_set_lambda_instance_status_event,
+                                  mock_set_lambda_instance_status_central_vm):
         lambda_instance_uuid = uuid.uuid4()
         master_id = 1
         slave_ids = [2, 3, 4]
@@ -106,12 +118,17 @@ class TestCeleryTasks(APITestCase):
                                                            master_id, slave_ids)
         mock_set_lambda_instance_status_event.delay.\
             assert_called_with(lambda_instance_uuid, LambdaInstance.STOPPED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, lambda_instance_uuid,
+                               LambdaInstance.STOPPED, "")
 
     @mock.patch('backend.tasks.ClientError', new=CustomClientError)
+    @mock.patch('backend.central_vm_tasks.set_lambda_instance_status_central_vm')
     @mock.patch('backend.tasks.events.set_lambda_instance_status')
     @mock.patch('backend.tasks.utils.lambda_instance_stop')
     def test_lambda_instance_stop_except(self, mock_lambda_instance_stop_fokia,
-                                         mock_set_lambda_instance_status_event):
+                                         mock_set_lambda_instance_status_event,
+                                         set_lambda_instance_status_central_vm):
         # Fokia utils.lambda_instance_stop will throw a CustomClientError exception when called.
         # ClientError exception is replaced with CustomClientError exception.
         mock_lambda_instance_stop_fokia.side_effect = CustomClientError("exception-message")
@@ -128,11 +145,16 @@ class TestCeleryTasks(APITestCase):
                                                            master_id, slave_ids)
         mock_set_lambda_instance_status_event.delay.\
             assert_called_with(lambda_instance_uuid, LambdaInstance.FAILED, "exception-message")
+        set_lambda_instance_status_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, lambda_instance_uuid,
+                               LambdaInstance.FAILED, "exception-message")
 
+    @mock.patch('backend.central_vm_tasks.delete_lambda_instance_central_vm')
     @mock.patch('backend.tasks.events.set_lambda_instance_status')
     @mock.patch('backend.tasks.lambda_instance_manager.lambda_instance_destroy')
     def test_lambda_instance_destroy(self, mock_lambda_instance_destroy_fokia,
-                                     mock_set_lambda_instance_status_event):
+                                     mock_set_lambda_instance_status_event,
+                                     mock_delete_lambda_instance_central_vm):
         lambda_instance_uuid = uuid.uuid4()
         master_id = 1
         slave_ids = [2, 3, 4]
@@ -148,12 +170,16 @@ class TestCeleryTasks(APITestCase):
                                                               public_ip_id, private_network_id)
         mock_set_lambda_instance_status_event.delay.\
             assert_called_with(lambda_instance_uuid, LambdaInstance.DESTROYED)
+        mock_delete_lambda_instance_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, lambda_instance_uuid)
 
     @mock.patch('backend.tasks.ClientError', new=CustomClientError)
+    @mock.patch('backend.central_vm_tasks.set_lambda_instance_status_central_vm')
     @mock.patch('backend.tasks.events.set_lambda_instance_status')
     @mock.patch('backend.tasks.lambda_instance_manager.lambda_instance_destroy')
     def test_lambda_instance_destroy_except(self, mock_lambda_instance_destroy_fokia,
-                                            mock_set_lambda_instance_status_event):
+                                            mock_set_lambda_instance_status_event,
+                                            mock_set_lambda_instance_status_central_vm):
         mock_lambda_instance_destroy_fokia.side_effect = CustomClientError("exception-message")
 
         lambda_instance_uuid = uuid.uuid4()
@@ -171,18 +197,30 @@ class TestCeleryTasks(APITestCase):
                                                               public_ip_id, private_network_id)
         mock_set_lambda_instance_status_event.delay.\
             assert_called_with(lambda_instance_uuid, LambdaInstance.FAILED, "exception-message")
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, lambda_instance_uuid,
+                               LambdaInstance.FAILED, "exception-message")
 
+    @mock.patch('backend.central_vm_tasks.create_application_central_vm')
     @mock.patch('backend.tasks.remove')
     @mock.patch('__builtin__.open')
     @mock.patch('backend.tasks.events.set_application_status')
     @mock.patch('backend.tasks.utils.upload_file_to_pithos')
     def test_upload_application_to_pithos(self, mock_upload_file_to_pithos_fokia,
                                           mock_set_application_status_event, mock_builtin_open,
-                                          mock_os_remove):
+                                          mock_os_remove,
+                                          mock_create_application_central_vm):
+        # Create the database entry of the Application.
+        application_name = "application_name"
+        application_description = "application_description"
         container_name = "container_name"
         project_name = "project_name"
         local_file_path = "local_file_path"
         application_uuid = uuid.uuid4()
+
+        Application.objects.create(uuid=application_uuid, name=application_name,
+                                   path=container_name, description=application_description,
+                                   type=Application.BATCH)
 
         mock_local_file = mock.create_autospec(CustomFile())
         mock_builtin_open.return_value = mock_local_file
@@ -198,6 +236,9 @@ class TestCeleryTasks(APITestCase):
                                                             mock_local_file)
         mock_set_application_status_event.delay.\
             assert_called_with(application_uuid=application_uuid, status=Application.UPLOADED)
+        mock_create_application_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, application_uuid, application_name,
+                               application_description)
         self.assertTrue(mock_local_file.close.called)
         mock_os_remove.assert_called_with(local_file_path)
 
@@ -233,10 +274,12 @@ class TestCeleryTasks(APITestCase):
         self.assertTrue(mock_local_file.close.called)
         mock_os_remove.assert_called_with(local_file_path)
 
+    @mock.patch('backend.central_vm_tasks.delete_application_central_vm')
     @mock.patch('backend.tasks.events.delete_application')
     @mock.patch('backend.tasks.utils.delete_file_from_pithos')
     def test_delete_application_from_pithos(self, mock_delete_file_from_pithos_fokia,
-                                            mock_delete_application_event):
+                                            mock_delete_application_event,
+                                            mock_delete_application_central_vm):
         container_name = "container_name"
         filename = "filename"
         application_uuid = uuid.uuid4()
@@ -248,12 +291,16 @@ class TestCeleryTasks(APITestCase):
                                                               self.AUTHENTICATION_TOKEN,
                                                               container_name, filename)
         mock_delete_application_event.delay.assert_called_with(application_uuid)
+        mock_delete_application_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, application_uuid)
 
     @mock.patch('backend.tasks.ClientError', new=CustomClientError)
+    @mock.patch('backend.central_vm_tasks.set_application_status_central_vm')
     @mock.patch('backend.tasks.events.set_application_status')
     @mock.patch('backend.tasks.utils.delete_file_from_pithos')
     def test_delete_application_from_pithos_except(self, mock_delete_file_from_pithos_fokia,
-                                                   mock_set_application_statusn_event):
+                                                   mock_set_application_status_event,
+                                                   mock_set_application_status_central_vm):
         mock_delete_file_from_pithos_fokia.side_effect = CustomClientError("exception-message")
 
         container_name = "container_name"
@@ -266,14 +313,19 @@ class TestCeleryTasks(APITestCase):
         mock_delete_file_from_pithos_fokia.assert_called_with(self.AUTHENTICATION_URL,
                                                               self.AUTHENTICATION_TOKEN,
                                                               container_name, filename)
-        mock_set_application_statusn_event.delay.\
+        mock_set_application_status_event.delay.\
             assert_called_with(application_uuid, Application.FAILED, "exception-message")
+        mock_set_application_status_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, application_uuid,
+                               Application.FAILED, "exception-message")
 
     @mock.patch('backend.tasks.ClientError', new=CustomClientError)
+    @mock.patch('backend.central_vm_tasks.delete_application_central_vm')
     @mock.patch('backend.tasks.events.delete_application')
     @mock.patch('backend.tasks.utils.delete_file_from_pithos')
     def test_delete_application_from_pithos_except_404(self, mock_delete_file_from_pithos_fokia,
-                                                       mock_delete_application_event):
+                                                       mock_delete_application_event,
+                                                       mock_delete_application_central_vm):
         mock_delete_file_from_pithos_fokia.\
             side_effect = CustomClientError("exception-message", status.HTTP_404_NOT_FOUND)
 
@@ -288,6 +340,8 @@ class TestCeleryTasks(APITestCase):
                                                               self.AUTHENTICATION_TOKEN,
                                                               container_name, filename)
         mock_delete_application_event.delay.assert_called_with(application_uuid)
+        mock_delete_application_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, application_uuid)
 
     @mock.patch('backend.tasks.events.create_lambda_instance_application_connection')
     @mock.patch('backend.tasks.remove')
@@ -332,6 +386,7 @@ class TestCeleryTasks(APITestCase):
             assert_called_with(lambda_instance_uuid, application_uuid)
 
     @mock.patch('backend.tasks.ClientError', new=CustomClientError)
+    @mock.patch('backend.central_vm_tasks.set_application_status_central_vm')
     @mock.patch('backend.tasks.path.exists', return_value=False)
     @mock.patch('backend.tasks.mkdir')
     @mock.patch('__builtin__.open')
@@ -339,7 +394,8 @@ class TestCeleryTasks(APITestCase):
     @mock.patch('backend.tasks.utils.download_file_from_pithos')
     def test_deploy_application_except(self, mock_download_file_from_pithos_fokia,
                                        mock_set_application_status_event, mock_builtin_open,
-                                       mock_mkdir, mock_path_exists):
+                                       mock_mkdir, mock_path_exists,
+                                       mock_set_application_status_central_vm):
         mock_download_file_from_pithos_fokia.side_effect = CustomClientError("exception-message")
 
         container_name = "container_name"
@@ -371,6 +427,9 @@ class TestCeleryTasks(APITestCase):
                                container_name, "application.jar", mock_local_file)
         mock_set_application_status_event.delay.\
             assert_called_with(application_uuid, Application.FAILED, "exception-message")
+        mock_set_application_status_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, application_uuid, Application.FAILED,
+                               "exception-message")
         self.assertTrue(mock_local_file.close.called)
 
     @mock.patch('backend.tasks.system')
@@ -451,6 +510,8 @@ class TestCeleryTasks(APITestCase):
                                application_uuid=application_uuid, action="start",
                                app_type="batch")
 
+    @mock.patch('backend.central_vm_tasks.set_lambda_instance_status_central_vm')
+    @mock.patch('backend.central_vm_tasks.create_lambda_instance_central_vm')
     @mock.patch('backend.tasks._check_ansible_result', return_value="Ansible successful")
     @mock.patch('backend.tasks.get_named_keys', return_value={'key-1': "ssh", 'key-2': "ssh2"})
     @mock.patch('backend.tasks.lambda_instance_manager')
@@ -461,7 +522,9 @@ class TestCeleryTasks(APITestCase):
                                     mock_set_lambda_instance_status_event,
                                     mock_insert_cluster_info_event,
                                     mock_lambda_instance_manager_fokia,
-                                    mock_get_named_keys, mock_check_ansible_result):
+                                    mock_get_named_keys, mock_check_ansible_result,
+                                    mock_create_lambda_instance_central_vm,
+                                    mock_set_lambda_instance_status_central_vm):
         # Setup mock return values and side effects.
         mock_ansible_manager = mock.Mock()
         mock_provisioner_response = mock.Mock()
@@ -498,6 +561,11 @@ class TestCeleryTasks(APITestCase):
             assert_called_with(instance_uuid=None,
                                instance_name="Lambda Instance created from Tests",
                                specs=json.dumps(specs))
+        mock_create_lambda_instance_central_vm.delay.\
+            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
+                               instance_uuid=None,
+                               instance_name="Lambda Instance created from Tests",
+                               specs=json.dumps(specs))
         mock_get_named_keys.assert_called_with(self.AUTHENTICATION_TOKEN,
                                                names=['key-1', 'key-2'])
         mock_lambda_instance_manager_fokia.create_cluster.\
@@ -510,6 +578,8 @@ class TestCeleryTasks(APITestCase):
                                pub_keys={'key-1': "ssh", 'key-2': "ssh2"})
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.CLUSTER_CREATED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.CLUSTER_CREATED, "")
         mock_insert_cluster_info_event.delay.\
             assert_called_with(instance_uuid=None, provisioner_response=mock_provisioner_response,
                                specs=specs)
@@ -519,35 +589,49 @@ class TestCeleryTasks(APITestCase):
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.INIT_DONE)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.INIT_DONE, "")
 
         mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
                                                                         'common-install.yml')
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.COMMONS_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.COMMONS_INSTALLED, "")
 
         mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
                                                                         'hadoop-install.yml')
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.HADOOP_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.HADOOP_INSTALLED, "")
 
         mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
                                                                         'kafka-install.yml')
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.KAFKA_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.KAFKA_INSTALLED, "")
 
         mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
                                                                         'flink-install.yml')
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.FLINK_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.FLINK_INSTALLED, "")
 
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.STARTED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.STARTED, "")
 
     @mock.patch('backend.tasks.ClientError', new=CustomClientError)
+    @mock.patch('backend.central_vm_tasks.set_lambda_instance_status_central_vm')
+    @mock.patch('backend.central_vm_tasks.create_lambda_instance_central_vm')
     @mock.patch('backend.tasks.get_named_keys', return_value={'key-1': "ssh", 'key-2': "ssh2"})
     @mock.patch('backend.tasks.lambda_instance_manager')
     @mock.patch('backend.tasks.events.set_lambda_instance_status')
@@ -555,7 +639,9 @@ class TestCeleryTasks(APITestCase):
     def test_create_lambda_instance_except(self, mock_create_new_lambda_instance_event,
                                            mock_set_lambda_instance_status_event,
                                            mock_lambda_instance_manager_fokia,
-                                           mock_get_named_keys):
+                                           mock_get_named_keys,
+                                           mock_create_lambda_instance_central_vm,
+                                           mock_set_lambda_instance_status_central_vm):
         # Setup mock return values and side effects.
         mock_lambda_instance_manager_fokia.create_cluster.\
             side_effect = CustomClientError("exception-message")
@@ -586,6 +672,11 @@ class TestCeleryTasks(APITestCase):
             assert_called_with(instance_uuid=None,
                                instance_name="Lambda Instance created from Tests",
                                specs=json.dumps(specs))
+        mock_create_lambda_instance_central_vm.delay.\
+            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
+                               instance_uuid=None,
+                               instance_name="Lambda Instance created from Tests",
+                               specs=json.dumps(specs))
         mock_get_named_keys.assert_called_with(self.AUTHENTICATION_TOKEN,
                                                names=['key-1', 'key-2'])
         mock_lambda_instance_manager_fokia.create_cluster.\
@@ -599,7 +690,12 @@ class TestCeleryTasks(APITestCase):
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.CLUSTER_FAILED,
                             failure_message="exception-message")
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.CLUSTER_FAILED,
+                            "exception-message")
 
+    @mock.patch('backend.central_vm_tasks.set_lambda_instance_status_central_vm')
+    @mock.patch('backend.central_vm_tasks.create_lambda_instance_central_vm')
     @mock.patch('backend.tasks._check_ansible_result')
     @mock.patch('backend.tasks.get_named_keys', return_value={'key-1': "ssh", 'key-2': "ssh2"})
     @mock.patch('backend.tasks.lambda_instance_manager')
@@ -610,7 +706,9 @@ class TestCeleryTasks(APITestCase):
                                               mock_set_lambda_instance_status_event,
                                               mock_insert_cluster_info_event,
                                               mock_lambda_instance_manager_fokia,
-                                              mock_get_named_keys, mock_check_ansible_result):
+                                              mock_get_named_keys, mock_check_ansible_result,
+                                              mock_create_lambda_instance_central_vm,
+                                              mock_set_lambda_instance_status_central_vm):
         # Setup mock return values and side effects.
         mock_ansible_manager = mock.Mock()
         mock_provisioner_response = mock.Mock()
@@ -648,6 +746,11 @@ class TestCeleryTasks(APITestCase):
             assert_called_with(instance_uuid=None,
                                instance_name="Lambda Instance created from Tests",
                                specs=json.dumps(specs))
+        mock_create_lambda_instance_central_vm.delay.\
+            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
+                               instance_uuid=None,
+                               instance_name="Lambda Instance created from Tests",
+                               specs=json.dumps(specs))
         mock_get_named_keys.assert_called_with(self.AUTHENTICATION_TOKEN,
                                                names=['key-1', 'key-2'])
         mock_lambda_instance_manager_fokia.create_cluster.\
@@ -660,6 +763,8 @@ class TestCeleryTasks(APITestCase):
                                pub_keys={'key-1': "ssh", 'key-2': "ssh2"})
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.CLUSTER_CREATED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.CLUSTER_CREATED, "")
         mock_insert_cluster_info_event.delay.\
             assert_called_with(instance_uuid=None, provisioner_response=mock_provisioner_response,
                                specs=specs)
@@ -670,7 +775,12 @@ class TestCeleryTasks(APITestCase):
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.INIT_FAILED,
                             failure_message="Ansible task failed")
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.INIT_FAILED,
+                            "Ansible task failed")
 
+    @mock.patch('backend.central_vm_tasks.set_lambda_instance_status_central_vm')
+    @mock.patch('backend.central_vm_tasks.create_lambda_instance_central_vm')
     @mock.patch('backend.tasks._check_ansible_result')
     @mock.patch('backend.tasks.get_named_keys', return_value={'key-1': "ssh", 'key-2': "ssh2"})
     @mock.patch('backend.tasks.lambda_instance_manager')
@@ -681,7 +791,9 @@ class TestCeleryTasks(APITestCase):
                                                  mock_set_lambda_instance_status_event,
                                                  mock_insert_cluster_info_event,
                                                  mock_lambda_instance_manager_fokia,
-                                                 mock_get_named_keys, mock_check_ansible_result):
+                                                 mock_get_named_keys, mock_check_ansible_result,
+                                                 mock_create_lambda_instance_central_vm,
+                                                 mock_set_lambda_instance_status_central_vm):
         # Setup mock return values and side effects.
         mock_ansible_manager = mock.Mock()
         mock_provisioner_response = mock.Mock()
@@ -719,6 +831,11 @@ class TestCeleryTasks(APITestCase):
             assert_called_with(instance_uuid=None,
                                instance_name="Lambda Instance created from Tests",
                                specs=json.dumps(specs))
+        mock_create_lambda_instance_central_vm.delay.\
+            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
+                               instance_uuid=None,
+                               instance_name="Lambda Instance created from Tests",
+                               specs=json.dumps(specs))
         mock_get_named_keys.assert_called_with(self.AUTHENTICATION_TOKEN,
                                                names=['key-1', 'key-2'])
         mock_lambda_instance_manager_fokia.create_cluster.\
@@ -731,6 +848,8 @@ class TestCeleryTasks(APITestCase):
                                pub_keys={'key-1': "ssh", 'key-2': "ssh2"})
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.CLUSTER_CREATED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.CLUSTER_CREATED, "")
         mock_insert_cluster_info_event.delay.\
             assert_called_with(instance_uuid=None, provisioner_response=mock_provisioner_response,
                                specs=specs)
@@ -740,6 +859,8 @@ class TestCeleryTasks(APITestCase):
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.INIT_DONE)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.INIT_DONE, "")
 
         mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
                                                                         'common-install.yml')
@@ -747,7 +868,12 @@ class TestCeleryTasks(APITestCase):
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.COMMONS_FAILED,
                             failure_message="Ansible task failed")
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.COMMONS_FAILED,
+                            "Ansible task failed")
 
+    @mock.patch('backend.central_vm_tasks.set_lambda_instance_status_central_vm')
+    @mock.patch('backend.central_vm_tasks.create_lambda_instance_central_vm')
     @mock.patch('backend.tasks._check_ansible_result')
     @mock.patch('backend.tasks.get_named_keys', return_value={'key-1': "ssh", 'key-2': "ssh2"})
     @mock.patch('backend.tasks.lambda_instance_manager')
@@ -758,7 +884,9 @@ class TestCeleryTasks(APITestCase):
                                                 mock_set_lambda_instance_status_event,
                                                 mock_insert_cluster_info_event,
                                                 mock_lambda_instance_manager_fokia,
-                                                mock_get_named_keys, mock_check_ansible_result):
+                                                mock_get_named_keys, mock_check_ansible_result,
+                                                mock_create_lambda_instance_central_vm,
+                                                mock_set_lambda_instance_status_central_vm):
         # Setup mock return values and side effects.
         mock_ansible_manager = mock.Mock()
         mock_provisioner_response = mock.Mock()
@@ -799,6 +927,11 @@ class TestCeleryTasks(APITestCase):
             assert_called_with(instance_uuid=None,
                                instance_name="Lambda Instance created from Tests",
                                specs=json.dumps(specs))
+        mock_create_lambda_instance_central_vm.delay.\
+            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
+                               instance_uuid=None,
+                               instance_name="Lambda Instance created from Tests",
+                               specs=json.dumps(specs))
         mock_get_named_keys.assert_called_with(self.AUTHENTICATION_TOKEN,
                                                names=['key-1', 'key-2'])
         mock_lambda_instance_manager_fokia.create_cluster.\
@@ -811,6 +944,8 @@ class TestCeleryTasks(APITestCase):
                                pub_keys={'key-1': "ssh", 'key-2': "ssh2"})
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.CLUSTER_CREATED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.CLUSTER_CREATED, "")
         mock_insert_cluster_info_event.delay.\
             assert_called_with(instance_uuid=None, provisioner_response=mock_provisioner_response,
                                specs=specs)
@@ -820,12 +955,16 @@ class TestCeleryTasks(APITestCase):
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.INIT_DONE)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.INIT_DONE, "")
 
         mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
                                                                         'common-install.yml')
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.COMMONS_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.COMMONS_INSTALLED, "")
 
         mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
                                                                         'hadoop-install.yml')
@@ -833,7 +972,12 @@ class TestCeleryTasks(APITestCase):
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.HADOOP_FAILED,
                             failure_message="Ansible task failed")
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.HADOOP_FAILED,
+                            "Ansible task failed")
 
+    @mock.patch('backend.central_vm_tasks.set_lambda_instance_status_central_vm')
+    @mock.patch('backend.central_vm_tasks.create_lambda_instance_central_vm')
     @mock.patch('backend.tasks._check_ansible_result')
     @mock.patch('backend.tasks.get_named_keys', return_value={'key-1': "ssh", 'key-2': "ssh2"})
     @mock.patch('backend.tasks.lambda_instance_manager')
@@ -844,7 +988,9 @@ class TestCeleryTasks(APITestCase):
                                                 mock_set_lambda_instance_status_event,
                                                 mock_insert_cluster_info_event,
                                                 mock_lambda_instance_manager_fokia,
-                                                mock_get_named_keys, mock_check_ansible_result):
+                                                mock_get_named_keys, mock_check_ansible_result,
+                                                mock_create_lambda_instance_central_vm,
+                                                mock_set_lambda_instance_status_central_vm):
         # Setup mock return values and side effects.
         mock_ansible_manager = mock.Mock()
         mock_provisioner_response = mock.Mock()
@@ -886,6 +1032,11 @@ class TestCeleryTasks(APITestCase):
             assert_called_with(instance_uuid=None,
                                instance_name="Lambda Instance created from Tests",
                                specs=json.dumps(specs))
+        mock_create_lambda_instance_central_vm.delay.\
+            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
+                               instance_uuid=None,
+                               instance_name="Lambda Instance created from Tests",
+                               specs=json.dumps(specs))
         mock_get_named_keys.assert_called_with(self.AUTHENTICATION_TOKEN,
                                                names=['key-1', 'key-2'])
         mock_lambda_instance_manager_fokia.create_cluster.\
@@ -898,6 +1049,8 @@ class TestCeleryTasks(APITestCase):
                                pub_keys={'key-1': "ssh", 'key-2': "ssh2"})
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.CLUSTER_CREATED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.CLUSTER_CREATED, "")
         mock_insert_cluster_info_event.delay.\
             assert_called_with(instance_uuid=None, provisioner_response=mock_provisioner_response,
                                specs=specs)
@@ -907,18 +1060,24 @@ class TestCeleryTasks(APITestCase):
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.INIT_DONE)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.INIT_DONE, "")
 
         mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
                                                                         'common-install.yml')
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.COMMONS_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.COMMONS_INSTALLED, "")
 
         mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
                                                                         'hadoop-install.yml')
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.HADOOP_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.HADOOP_INSTALLED, "")
 
         mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
                                                                         'kafka-install.yml')
@@ -926,7 +1085,12 @@ class TestCeleryTasks(APITestCase):
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.KAFKA_FAILED,
                             failure_message="Ansible task failed")
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.KAFKA_FAILED,
+                            "Ansible task failed")
 
+    @mock.patch('backend.central_vm_tasks.set_lambda_instance_status_central_vm')
+    @mock.patch('backend.central_vm_tasks.create_lambda_instance_central_vm')
     @mock.patch('backend.tasks._check_ansible_result')
     @mock.patch('backend.tasks.get_named_keys', return_value={'key-1': "ssh", 'key-2': "ssh2"})
     @mock.patch('backend.tasks.lambda_instance_manager')
@@ -937,7 +1101,9 @@ class TestCeleryTasks(APITestCase):
                                                mock_set_lambda_instance_status_event,
                                                mock_insert_cluster_info_event,
                                                mock_lambda_instance_manager_fokia,
-                                               mock_get_named_keys, mock_check_ansible_result):
+                                               mock_get_named_keys, mock_check_ansible_result,
+                                               mock_create_lambda_instance_central_vm,
+                                               mock_set_lambda_instance_status_central_vm):
         # Setup mock return values and side effects.
         mock_ansible_manager = mock.Mock()
         mock_provisioner_response = mock.Mock()
@@ -980,6 +1146,11 @@ class TestCeleryTasks(APITestCase):
             assert_called_with(instance_uuid=None,
                                instance_name="Lambda Instance created from Tests",
                                specs=json.dumps(specs))
+        mock_create_lambda_instance_central_vm.delay.\
+            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
+                               instance_uuid=None,
+                               instance_name="Lambda Instance created from Tests",
+                               specs=json.dumps(specs))
         mock_get_named_keys.assert_called_with(self.AUTHENTICATION_TOKEN,
                                                names=['key-1', 'key-2'])
         mock_lambda_instance_manager_fokia.create_cluster.\
@@ -992,6 +1163,8 @@ class TestCeleryTasks(APITestCase):
                                pub_keys={'key-1': "ssh", 'key-2': "ssh2"})
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.CLUSTER_CREATED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.CLUSTER_CREATED, "")
         mock_insert_cluster_info_event.delay.\
             assert_called_with(instance_uuid=None, provisioner_response=mock_provisioner_response,
                                specs=specs)
@@ -1001,24 +1174,32 @@ class TestCeleryTasks(APITestCase):
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.INIT_DONE)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.INIT_DONE, "")
 
         mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
                                                                         'common-install.yml')
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.COMMONS_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.COMMONS_INSTALLED, "")
 
         mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
                                                                         'hadoop-install.yml')
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.HADOOP_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.HADOOP_INSTALLED, "")
 
         mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
                                                                         'kafka-install.yml')
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.KAFKA_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.KAFKA_INSTALLED, "")
 
         mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
                                                                         'flink-install.yml')
@@ -1026,6 +1207,9 @@ class TestCeleryTasks(APITestCase):
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.FLINK_FAILED,
                             failure_message="Ansible task failed")
+        mock_set_lambda_instance_status_central_vm.delay.\
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.FLINK_FAILED,
+                            "Ansible task failed")
 
 
 class TestHelperFunctions(APITestCase):
