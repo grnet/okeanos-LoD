@@ -5,7 +5,6 @@ var UploadController = Ember.Controller.extend({
 
   actions : {
     upload: function() {
-    var _this = this;
 
       var host = this.store.adapterFor('upload-app').get('host'),
       namespace = this.store.adapterFor('upload-app').namespace,
