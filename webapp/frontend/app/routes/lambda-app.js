@@ -1,8 +1,9 @@
 import Ember from 'ember';
 import LoDRoute from 'frontend/routes/application';
 import ENV from 'frontend/config/environment';
+import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default LoDRoute.extend({
+export default LoDRoute.extend(AuthenticatedRouteMixin, {
 
   model: function (params) {
 
