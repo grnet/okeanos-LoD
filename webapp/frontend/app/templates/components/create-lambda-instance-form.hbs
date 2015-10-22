@@ -40,7 +40,7 @@
             <div class="row">
               <div class="form-group col-sm-6">
                 <label for="name1"> Name of Lamdba Instance: </label>
-                {{input type="text" value=instanceName placeholder="Lambda Instance name" size="50" class="form-control"}}
+                {{input type="text" value=instanceName placeholder="Lambda Instance name" size="50" class="form-control" required="true"}}
                 {{#each newLambdaInstance.errors.instanceName as |error|}}
                   <div class="alert alert-danger alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
@@ -51,7 +51,7 @@
               </div>
               <div class="form-group col-sm-6">
                 <label for="name1"> Name of Master Node: </label>
-                {{input type="text" value=masterName placeholder="Master node name" size="50" class="form-control"}}
+                {{input type="text" value=masterName placeholder="Master node name" size="50" class="form-control" required="true"}}
                 {{#each newLambdaInstance.errors.masterName as |error|}}
                   <div class="alert alert-danger alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
