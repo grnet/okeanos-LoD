@@ -89,7 +89,7 @@
       <div class="form-group col-sm-6">
       <label for="type"  class="col-sm-6">File to upload: </label>
       <div class="col-sm-6" >
-          {{input value=file type="file" name="file" id="file" required="true"}}
+          {{input value=file type="file" name="file" id="file" required="true" accept=".jar"}}
         <span id="helpBlock" class="help-block">Upload the file of the application.</span>
       </div>
       </div>
@@ -103,7 +103,7 @@
 
     {{#if wrongExt}}
       <div class="alert alert-danger col-sm-6 col-sm-offset-3">
-        <strong>File error!We only support file with jar extension for upload.</strong>.
+        File extension error.We only support file with <strong>jar</strong> extension for upload.
       </div>
     {{/if}}
 
