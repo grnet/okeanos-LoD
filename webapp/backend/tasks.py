@@ -341,7 +341,7 @@ def delete_application_from_pithos(auth_url, auth_token, container_name, filenam
         utils.delete_file_from_pithos(auth_url, auth_token, container_name, filename)
 
         events.delete_application.delay(application_uuid)
-        central_vm_tasks.delete_application_central_vm(auth_token, application_uuid)
+        central_vm_tasks.delete_application_central_vm.delay(auth_token, application_uuid)
     except ClientError as exception:
         # If the file is not found on Pithos, the entry on the database should be still
         # deleted.
@@ -384,7 +384,7 @@ def deploy_application(auth_url, auth_token, container_name, lambda_instance_uui
         events.set_application_status.delay(application_uuid, Application.FAILED,
                                             exception.message)
         central_vm_tasks.\
-            set_application_status_central_vm(auth_token, application_uuid,
+            set_application_status_central_vm.delay(auth_token, application_uuid,
                                               Application.FAILED, exception.message)
         local_file.close()
         return
