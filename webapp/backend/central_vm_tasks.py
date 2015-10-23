@@ -95,18 +95,18 @@ def create_application_central_vm(self, auth_token, application_uuid, name, desc
     # Make a Post request to send the information to Central VM. In case of a timeout, retry
     # three(3) times(default Celery retry) and then stop trying.
     try:
-        requests.delete(url="http://" + settings.CENTRAL_VM_IP + "/api/lambda_applications/",
-                        json={
-                            'uuid': application_uuid,
-                            'name': name,
-                            'description': description,
-                            'status': Application.UPLOADING,
-                            'failure_message': ""
-                        },
-                        headers={
-                            'Authorization': "Token {}".format(auth_token),
-                            'Content-Type': "application/json"
-                        })
+        requests.post(url="http://" + settings.CENTRAL_VM_IP + "/api/lambda_applications/",
+                      json={
+                          'uuid': application_uuid,
+                          'name': name,
+                          'description': description,
+                          'status': Application.UPLOADING,
+                          'failure_message': ""
+                      },
+                      headers={
+                          'Authorization': "Token {}".format(auth_token),
+                          'Content-Type': "application/json"
+                      })
     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
         self.retry(auth_token=auth_token, application_uuid=application_uuid, name=name,
                    description=description, countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
