@@ -6,8 +6,10 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 export default LoDRoute.extend(AuthenticatedRouteMixin, {
   model: function(params) {
     this.poll = Ember.run.later(this, function () {
-      this.model(params).reload();
-    }, ENV.refresh_interval);
+      this.model(params).then(function () {
+        this.store.findAll('lambda-instance', params);
+      }.bind(this));
+    }, ENV.refresh_interval+1000);
 
     return this.store.findAll('lambda-instance', params);
   }
