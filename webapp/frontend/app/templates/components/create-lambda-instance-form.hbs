@@ -1,4 +1,4 @@
-<!-- Content Header (Page header) -->
+       <!-- Content Header (Page header) -->
 <section class="content-header">
   <h1>
     Dashboard
@@ -43,8 +43,6 @@
                 {{input type="text" value=instanceName placeholder="Lambda Instance name" size="50" class="form-control" required="true"}}
                 {{#each newLambdaInstance.errors.instanceName as |error|}}
                   <div class="alert alert-danger alert-dismissable">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                    <h4><i class="icon fa fa-ban"></i> Alert!</h4>
                     {{error.message}}
                   </div>
                 {{/each}}
@@ -54,8 +52,6 @@
                 {{input type="text" value=masterName placeholder="Master node name" size="50" class="form-control" required="true"}}
                 {{#each newLambdaInstance.errors.masterName as |error|}}
                   <div class="alert alert-danger alert-dismissable">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                    <h4><i class="icon fa fa-ban"></i> Alert!</h4>
                     {{error.message}}
                   </div>
                 {{/each}}
@@ -107,9 +103,8 @@
           </div><!-- /.box-header -->
           <div class="box-body">
             <div class="row">
-              <div class="form-group col-sm-6">
-                <label for="vcpus_master" class="col-sm-6">Number of CPUs on Master Node:</label>
-                <div class="col-sm-6">
+              <div class="form-group col-sm-4">
+                <label for="vcpus_master">Number of CPUs on Master Node:</label>
                   <select name="vcpus_master" class="form-control">
                     {{#each VMParameterValues as |valuesSet|}}
                       {{#each valuesSet.vcpus as |vcpusValue|}}
@@ -124,12 +119,10 @@
                     {{/each}}
                   </select>
                   <span id="helpBlock" class="help-block">We recommend using 4 CPUs</span>
-                </div>	<!--class="col-sm-6"-->
-              </div>	<!--class="col-sm-6"-->
-              <div class="form-group col-sm-6">
-                <label for="ram_master"  class="col-sm-6">Amount or RAM memory on Master Node: </label>
-                <div class="col-sm-6">
-                  <select name="ram_master"  class="form-control">
+              </div>	<!--class="col-sm-4"-->
+              <div class="form-group col-sm-4">
+                <label for="ram_master" >Amount or RAM memory on Master Node: </label>
+                <select name="ram_master"  class="form-control">
                     {{#each VMParameterValues as |valuesSet|}}
                       {{#each valuesSet.ram as |ramValue|}}
                         {{#if (compare ramValue ">=" 2048)}}
@@ -143,11 +136,8 @@
                     {{/each}}
                   </select>
                   <span id="helpBlock" class="help-block">We recommend using 4096MB of RAM</span>
-                </div><!--class="col-sm-6"-->
               </div><!--class="form-group col-sm-6"-->
-            </div> <!--row-->
-            <div class="row">
-              <div class="form-group col-sm-6">
+              <div class="form-group col-sm-4">
                 <label for="disk_master"> Size of hard disk on Master Node: </label>
                 <select name="disk_master" class="form-control">
                   {{#each VMParameterValues as |valuesSet|}}
@@ -177,10 +167,9 @@
             <h3 class="box-title">Slaves</h3>: Slave Nodes details
           </div><!-- /.box-header -->
           <div class="box-body">
-            <div class="row">
-              <div class="form-group col-sm-6">
-                <label for="vcpus_slave" class="col-sm-6">Number of CPUs on each Slave Node:</label>
-                <div class="col-sm-6">
+             <div class="row">
+              <div class="form-group col-sm-4">
+                <label for="vcpus_slave">Number of CPUs on each Slave Node:</label>
                   <select name="vcpus_slave" class="form-control">
                     {{#each VMParameterValues as |valuesSet|}}
                       {{#each valuesSet.vcpus as |vcpusValue|}}
@@ -195,13 +184,11 @@
                     {{/each}}
                   </select>
                   <span id="helpBlock" class="help-block">We recommend using 4 CPUs</span>
-                </div>	<!--class="col-sm-6"-->
-              </div>	<!--class="col-sm-6"-->
-              <div class="form-group col-sm-6">
-                <label for="ram_slave"  class="col-sm-6">Amount or RAM memory on each Slave Node:</label>
-                <div class="col-sm-6">
-                  <select name="ram_slave"  class="form-control">
-                    {{#each VMParameterValues as |valuesSet|}}
+              </div>	<!--class="col-sm-4"-->
+              <div class="form-group col-sm-4">
+                <label for="ram_slave" >Amount or RAM memory on each Slave Node:</label>
+                <select name="ram_slave"  class="form-control">
+                	{{#each VMParameterValues as |valuesSet|}}
                       {{#each valuesSet.ram as |ramValue|}}
                         {{#if (compare ramValue ">=" 2048)}}
                           {{#if (compare ramValue "!==" 4096)}}
@@ -214,11 +201,9 @@
                     {{/each}}
                   </select>
                   <span id="helpBlock" class="help-block">We recommend using 4096MB of RAM</span>
-                </div><!--class="col-sm-6"-->
-              </div><!--class="form-group col-sm-6"-->
-            </div> <!--row-->
-            <div class="row">
-              <div class="form-group col-sm-6">
+              </div><!--class="form-group col-sm-4"-->
+
+              <div class="form-group col-sm-4">
                 <label for="disk_slave"> Size of hard disk on each Slave Node:</label>
                 <select name="disk_slave" class="form-control">
                   {{#each VMParameterValues as |valuesSet|}}
@@ -242,13 +227,15 @@
     </div><!--row-->
 
     <button type="submit" class="btn btn-primary">Submit</button>
-
+	<div class="row">
+		<div class="col-xs-12">
+			&nbsp;
+		</div>
+	</div>
   {{#if newLambdaInstance.isSaving}}
           <div class="row">
               <div class="col-xs-12">
                   <div class="alert alert-info alert-dismissable">
-                      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                      <h4><i class="icon fa fa-info"></i> Alert!</h4>
                       Your request to create a new Lambda Instance is being sent to the server...
                   </div>
               </div><!--col-xs-12-->
