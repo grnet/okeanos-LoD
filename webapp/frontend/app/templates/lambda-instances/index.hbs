@@ -1,0 +1,122 @@
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <h1>
+            Dashboard
+            <small>Lambda Instances</small>
+          </h1>
+
+        </section>
+
+        <!-- Main content -->
+       <section class="content">
+       	  <div class="row">
+       	   <div class="col-xs-12">
+       	  	  <div class="box box-primary">
+                <div class="box-header with-border">
+                  <h3 class="box-title">Lambda Instances</h3>
+                  <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                  </div>
+                </div><!-- /.box-header -->
+                <div class="box-body no-padding">
+                  <div class="row">
+                    <div class="col-md-9 col-sm-8">
+                      <div class="pad">
+                                       Mpla Mpla Mpla
+                      </div>
+                    </div><!-- /.col -->
+                    <div class="col-md-3 col-sm-4">
+				<div class="small-box bg-blue">
+                <div class="inner">
+                  <h3>{{model.length}}</h3>
+                  <p>Lambda Instances</p>
+                </div>
+                <div class="icon">
+                  <i class="fa fa-laptop"></i>
+                </div>
+
+              </div>
+
+                    </div><!-- /.col -->
+                  </div><!-- /.row -->
+                </div><!-- /.box-body -->
+              </div><!--box box-primary-->
+            </div><!--col-xs-12-->
+       	  </div>
+
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="box">
+                <div class="box-header">
+                  <h3 class="box-title">Listing Lambda Instances</h3>
+                  <div class="box-tools">
+                  	  <a href="create.html" class="btn btn-primary btn-sm" title="Create New Instance" alt="Create New Instance"><i class="fa fa-laptop"></i> Create New Instance</a>
+                  </div><!--box-tools-->
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                 <div class="row">
+          		  <div class="col-xs-12">
+                  <table  class="table table-bordered table-hover table-responsive">
+                    <thead>
+                      <tr>
+                        <th>#id</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                     <!-- <tr>
+                        <td>1</td>
+                        <td>My Lambda Instance</td>
+                        <td>
+							<a class="btn btn-social-icon btn-bitbucket" title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i></a>
+							<a class="btn btn-social-icon btn-google" title="Delete" alt="Delete"><i class="fa fa-close"></i></a>
+                        </td>
+
+
+                      </tr> -->
+                      {{#each model as |lambda-instance|}}
+                      <tr>
+                        <td>{{lambda-instance.id}}</td>
+                        <td>{{lambda-instance.name}}</td>
+                        <td><span>{{lambda-instance.status_detail}}</span></td>
+                        <td>
+                          {{#linkTo 'lambda-instance' lambda-instance.id}}
+                            <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
+                          {{/linkTo}}
+                       		<a href="start-stop.html" class="btn btn-danger btn-xs"  title="Stop The instance" alt="Stop The instance"><i class="fa fa-stop"></i> Stop</a>
+                       		<a href="app-instance.html" class="btn btn-primary btn-xs"  title="Attach an application" alt="Attach an application"><i class="fa fa-mail-reply"></i> App</a>
+							<a href="delete-instance.html" class="btn btn-danger btn-xs"  title="Delete" alt="Delete"><i class="fa fa-close"></i> Delete</a>
+						</td>
+                      </tr>
+                      {{else}}
+                        No lambda instances under ownership.
+                      {{/each}}
+
+                    </tbody>
+                </table>
+			</div><!--col-xs-12-->
+        </div><!--row-->
+        <div class="row">
+        	<div class="col-sm-6">
+        		<div>Showing 1 to 10 of 57 entries</div>
+        	</div>
+        	<div class="col-sm-6">
+				<ul class="pagination pagination-sm no-margin pull-right">
+                    <li><a href="#">«</a></li>
+                    <li><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">»</a></li>
+                  </ul>
+            </div>
+        </div><!--row-->
+
+                  </div><!--box-body-->
+        </div><!--box-->
+        	 </div><!--col-xs-12-->
+        </div><!--row-->
+        </section><!-- /.content -->
