@@ -13,6 +13,10 @@ Router.map(function () {
   this.route('create-lambda-instance');
   this.route('lambda-app', {path: '/apps'});
   this.route('lambda-app', {path: '/apps/:app_uuid'});
+  this.resource('apps', function() {
+    // /apps/upload
+    this.route('upload');
+  });
 });
 
 export default Router;
