@@ -385,7 +385,7 @@ def deploy_application(auth_url, auth_token, container_name, lambda_instance_uui
                                             exception.message)
         central_vm_tasks.\
             set_application_status_central_vm.delay(auth_token, application_uuid,
-                                              Application.FAILED, exception.message)
+                                                    Application.FAILED, exception.message)
         local_file.close()
         return
 
