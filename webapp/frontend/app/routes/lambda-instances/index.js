@@ -1,7 +1,9 @@
 import Ember from 'ember';
 import ENV from 'frontend/config/environment';
+import LoDRoute from 'frontend/routes/application';
+import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Ember.Route.extend({
+export default LoDRoute.extend(AuthenticatedRouteMixin, {
   model: function(params) {
     this.poll = Ember.run.later(this, function () {
       this.model(params).reload();
