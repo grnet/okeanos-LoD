@@ -41,6 +41,13 @@
     tags:
       - ember-install
 
+  - name: Install ember-cli-pagination
+    shell: "ember install ember-cli-pagination"
+    args:
+      chdir: "{{ install_dir }}"
+    tags:
+      - ember-install
+
   - name: Create Ember config directory
     file: path={{install_dir}}/config state=directory
 
