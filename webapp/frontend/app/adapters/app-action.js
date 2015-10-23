@@ -1,4 +1,5 @@
 import LoDAdapter from 'frontend/adapters/application';
+import DS from 'ember-data';
 
 export default LoDAdapter.extend({
   buildURL: function(type, id, record){
