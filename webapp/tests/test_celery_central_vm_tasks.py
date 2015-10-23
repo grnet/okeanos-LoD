@@ -36,11 +36,8 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.settings')
     @mock.patch('backend.central_vm_tasks.requests')
     def test_create_lambda_instance_central_vm(self, mock_requests, mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.post.CENTRAL_VM_IP = "CENTRAL_VM_IP"
 
         # Create the parameters that will be given as input to the task.
         instance_uuid = uuid.uuid4()
@@ -48,7 +45,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         specs = "specs"
 
         # Call the task.
-        central_vm_tasks.create_lambda_instance_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.create_lambda_instance_central_vm(self.AUTHENTICATION_TOKEN,
                                                            instance_uuid, instance_name, specs)
 
         # Assert that the proper mock calls have been made.
@@ -71,11 +68,8 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.settings')
     @mock.patch('backend.central_vm_tasks.requests')
     def test_create_lambda_instance_central_vm_timeout_except(self, mock_requests, mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set side effects for mocks.
-        mock_requests.side_effect = CustomTimeoutException()
+        mock_requests.post.side_effect = CustomTimeoutException()
 
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
@@ -86,7 +80,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         specs = "specs"
 
         # Call the task.
-        central_vm_tasks.create_lambda_instance_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.create_lambda_instance_central_vm(self.AUTHENTICATION_TOKEN,
                                                            instance_uuid, instance_name, specs)
 
         # Assert that the proper mock calls have been made.
@@ -120,7 +114,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         task_self = mock.Mock()
 
         # Set side effects for mocks.
-        mock_requests.side_effect = CustomConnectionError()
+        mock_requests.post.side_effect = CustomConnectionError()
 
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
@@ -131,7 +125,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         specs = "specs"
 
         # Call the task.
-        central_vm_tasks.create_lambda_instance_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.create_lambda_instance_central_vm(self.AUTHENTICATION_TOKEN,
                                                            instance_uuid, instance_name, specs)
 
         # Assert that the proper mock calls have been made.
@@ -158,9 +152,6 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.settings')
     @mock.patch('backend.central_vm_tasks.requests')
     def test_set_lambda_instance_status_central_vm(self, mock_requests, mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
 
@@ -170,7 +161,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         failure_message = "failure_message"
 
         # Call the task.
-        central_vm_tasks.set_lambda_instance_status_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.set_lambda_instance_status_central_vm(self.AUTHENTICATION_TOKEN,
                                                                instance_uuid, status,
                                                                failure_message)
 
@@ -192,11 +183,8 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.requests')
     def test_set_lambda_instance_status_central_vm_timeout_except(self, mock_requests,
                                                                   mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set side effects for mocks.
-        mock_requests.side_effect = CustomTimeoutException()
+        mock_requests.post.side_effect = CustomTimeoutException()
 
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
@@ -207,7 +195,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         failure_message = "failure_message"
 
         # Call the task.
-        central_vm_tasks.set_lambda_instance_status_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.set_lambda_instance_status_central_vm(self.AUTHENTICATION_TOKEN,
                                                                instance_uuid, status,
                                                                failure_message)
 
@@ -235,11 +223,8 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.requests')
     def test_set_lambda_instance_status_central_vm_connection_error_except(self, mock_requests,
                                                                            mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set side effects for mocks.
-        mock_requests.side_effect = CustomConnectionError()
+        mock_requests.post.side_effect = CustomConnectionError()
 
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
@@ -250,7 +235,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         failure_message = "failure_message"
 
         # Call the task.
-        central_vm_tasks.set_lambda_instance_status_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.set_lambda_instance_status_central_vm(self.AUTHENTICATION_TOKEN,
                                                                instance_uuid, status,
                                                                failure_message)
 
@@ -275,9 +260,6 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.settings')
     @mock.patch('backend.central_vm_tasks.requests')
     def test_delete_lambda_instance_central_vm(self, mock_requests, mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
 
@@ -285,7 +267,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         instance_uuid = uuid.uuid4()
 
         # Call the task.
-        central_vm_tasks.delete_lambda_instance_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.delete_lambda_instance_central_vm(self.AUTHENTICATION_TOKEN,
                                                            instance_uuid)
 
         # Assert that the proper mock calls have been made.
@@ -302,11 +284,8 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.requests')
     def test_delete_lambda_instance_central_vm_timeout_except(self, mock_requests,
                                                               mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set side effects for mocks.
-        mock_requests.side_effect = CustomTimeoutException()
+        mock_requests.delete.side_effect = CustomTimeoutException()
 
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
@@ -315,7 +294,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         instance_uuid = uuid.uuid4()
 
         # Call the task.
-        central_vm_tasks.delete_lambda_instance_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.delete_lambda_instance_central_vm(self.AUTHENTICATION_TOKEN,
                                                            instance_uuid)
 
         # Assert that the proper mock calls have been made.
@@ -337,11 +316,8 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.requests')
     def test_delete_lambda_instance_central_vm_connection_error_except(self, mock_requests,
                                                                        mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set side effects for mocks.
-        mock_requests.side_effect = CustomConnectionError()
+        mock_requests.delete.side_effect = CustomConnectionError()
 
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
@@ -350,7 +326,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         instance_uuid = uuid.uuid4()
 
         # Call the task.
-        central_vm_tasks.delete_lambda_instance_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.delete_lambda_instance_central_vm(self.AUTHENTICATION_TOKEN,
                                                            instance_uuid)
 
         # Assert that the proper mock calls have been made.
@@ -369,9 +345,6 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.settings')
     @mock.patch('backend.central_vm_tasks.requests')
     def test_create_application_central_vm(self, mock_requests, mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
 
@@ -381,7 +354,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         description = "description"
 
         # Call the task.
-        central_vm_tasks.create_application_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.create_application_central_vm(self.AUTHENTICATION_TOKEN,
                                                        application_uuid, application_name,
                                                        description)
 
@@ -405,11 +378,8 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.settings')
     @mock.patch('backend.central_vm_tasks.requests')
     def test_create_application_central_vm_timeout_except(self, mock_requests, mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set side effects for mocks.
-        mock_requests.side_effect = CustomTimeoutException()
+        mock_requests.post.side_effect = CustomTimeoutException()
 
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
@@ -420,7 +390,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         description = "description"
 
         # Call the task.
-        central_vm_tasks.create_application_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.create_application_central_vm(self.AUTHENTICATION_TOKEN,
                                                        application_uuid, application_name,
                                                        description)
 
@@ -451,11 +421,8 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.requests')
     def test_create_application_central_vm_connection_error_except(self, mock_requests,
                                                                    mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set side effects for mocks.
-        mock_requests.side_effect = CustomConnectionError()
+        mock_requests.post.side_effect = CustomConnectionError()
 
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
@@ -466,7 +433,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         description = "description"
 
         # Call the task.
-        central_vm_tasks.create_application_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.create_application_central_vm(self.AUTHENTICATION_TOKEN,
                                                        application_uuid, application_name,
                                                        description)
 
@@ -494,9 +461,6 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.settings')
     @mock.patch('backend.central_vm_tasks.requests')
     def test_set_application_status_central_vm(self, mock_requests, mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
 
@@ -506,7 +470,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         failure_message = "failure_message"
 
         # Call the task.
-        central_vm_tasks.set_application_status_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.set_application_status_central_vm(self.AUTHENTICATION_TOKEN,
                                                            application_uuid, status,
                                                            failure_message)
 
@@ -528,11 +492,8 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.requests')
     def test_set_application_status_central_vm_timeout_except(self, mock_requests,
                                                               mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set side effects for mocks.
-        mock_requests.side_effect = CustomTimeoutException()
+        mock_requests.post.side_effect = CustomTimeoutException()
 
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
@@ -543,7 +504,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         failure_message = "failure_message"
 
         # Call the task.
-        central_vm_tasks.set_application_status_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.set_application_status_central_vm(self.AUTHENTICATION_TOKEN,
                                                            application_uuid, status,
                                                            failure_message)
 
@@ -571,11 +532,8 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.requests')
     def test_set_application_status_central_vm_connection_error_except(self, mock_requests,
                                                                        mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set side effects for mocks.
-        mock_requests.side_effect = CustomConnectionError()
+        mock_requests.post.side_effect = CustomConnectionError()
 
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
@@ -586,7 +544,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         failure_message = "failure_message"
 
         # Call the task.
-        central_vm_tasks.set_application_status_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.set_application_status_central_vm(self.AUTHENTICATION_TOKEN,
                                                            application_uuid, status,
                                                            failure_message)
 
@@ -611,9 +569,6 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.settings')
     @mock.patch('backend.central_vm_tasks.requests')
     def test_delete_application_central_vm(self, mock_requests, mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
 
@@ -621,7 +576,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         application_uuid = uuid.uuid4()
 
         # Call the task.
-        central_vm_tasks.delete_application_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.delete_application_central_vm(self.AUTHENTICATION_TOKEN,
                                                        application_uuid)
 
         # Assert that the proper mock calls have been made.
@@ -637,11 +592,8 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.settings')
     @mock.patch('backend.central_vm_tasks.requests')
     def test_delete_application_central_vm_timeout_except(self, mock_requests, mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set side effects for mocks.
-        mock_requests.side_effect = CustomTimeoutException()
+        mock_requests.delete.side_effect = CustomTimeoutException()
 
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
@@ -650,7 +602,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         instance_uuid = uuid.uuid4()
 
         # Call the task.
-        central_vm_tasks.delete_lambda_instance_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.delete_lambda_instance_central_vm(self.AUTHENTICATION_TOKEN,
                                                            instance_uuid)
 
         # Assert that the proper mock calls have been made.
@@ -672,11 +624,8 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.requests')
     def test_delete_application_central_vm_connection_error_except(self, mock_requests,
                                                                    mock_settings):
-        # Create self mock object to emulate the Celery task object.
-        task_self = mock.Mock()
-
         # Set side effects for mocks.
-        mock_requests.side_effect = CustomConnectionError()
+        mock_requests.delete.side_effect = CustomConnectionError()
 
         # Set the required values for the mocks.
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
@@ -685,7 +634,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         instance_uuid = uuid.uuid4()
 
         # Call the task.
-        central_vm_tasks.delete_lambda_instance_central_vm(task_self, self.AUTHENTICATION_TOKEN,
+        central_vm_tasks.delete_lambda_instance_central_vm(self.AUTHENTICATION_TOKEN,
                                                            instance_uuid)
 
         # Assert that the proper mock calls have been made.
