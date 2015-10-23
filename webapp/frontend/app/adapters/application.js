@@ -6,7 +6,7 @@ export default DS.JSONAPIAdapter.extend(DataAdapterMixin, {
   host: ENV.host + ':80',
   namespace: 'api',
   headers: {
-    'Accept': "application/json"
+    'Accept': "application/json",
   },
   buildURL: function(type, id, record){
     return this._super(type, id, record) + '/';
