@@ -6,18 +6,18 @@ export default Ember.Component.extend({
   actions: {
     start(instance) {
       //send request to start instance
-      app.set('lambda_instance_id', this.get("instance-id"));
-      app.set('action', "start");
-      app.save();
+      instance.set('lambda_instance_id', this.get("instance-id"));
+      instance.set('action', "start");
+      instance.save();
       this.set("request", true);
       this.set("message", "Your request to start the lambda-instance was successfully sent to the server.");
       return false;
     },
     stop(instance) {
       //send request to stop instance
-      app.set('lambda_instance_id', this.get("instance-id"));
-      app.set('action', "stop");
-      app.save();
+      instance.set('lambda_instance_id', this.get("instance-id"));
+      instance.set('action', "stop");
+      instance.save();
       this.set("request", true);
       this.set("message", "Your request to stop the lambda-instance was successfully sent to the server.");
       return false;
