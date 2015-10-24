@@ -1,0 +1,70 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Dashboard
+        <small>Deploy app to lambda instances</small>
+    </h1>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <!-- TOP DATA -->
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-laptop"></i> Application {{application.name}}</h3>
+
+                    <div class="box-tools pull-right">
+                        <small>ID: {{application.id}}</small>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-9 col-sm-8">
+                            <div class="pad">
+                                Select a lambda instance to deploy the app on
+                            </div>
+                        </div>
+                        <!-- /.col -->
+
+                    </div>
+                    <!-- /.row -->
+
+                    <div class="row">
+                        <div class="col-ms-6 col-xs-4">
+                            <table class="table table-bordered table-hover table-responsive">
+                                <thead>
+                                <tr>
+                                    <th>Instance name</th>
+                                    <th>Instance ID</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#each instances as |li|}}
+                                <tr>
+                                    <td>{{li.name}}</td>
+                                    <td>{{li.id}}</td>
+                                    <td><a {{action 'deploy'}} class="btn btn-primary pull-right"
+                                       style="margin-right: 15px;"><i class="fa fa-mail-reply"></i> Deploy</a></td>
+                                </tr>
+                                {{/each}}
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <!--col-xs-12-->
+                    </div>
+                    <!--row-->
+                </div>
+                <!--box-->
+            </div>
+            <!-- box-primary -->
+        </div>
+        <!--col -->
+    </div>
+    <!--row-->
+
+</section><!-- /.content -->
