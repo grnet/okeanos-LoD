@@ -32,11 +32,11 @@ port=9092
 # Hostname the broker will advertise to producers and consumers. If not set, it uses the
 # value for "host.name" if configured.  Otherwise, it will use the value returned from
 # java.net.InetAddress.getCanonicalHostName().
-advertised.host.name={{ hostvars[groups['master'][0]]['internal_ip'] }}
+advertised.host.name={{ groups['master'][0] }}
 
 # The port to publish to ZooKeeper for clients to use. If this is not set,
 # it will publish the same port that the broker binds to.
-#advertised.port=<port accessible by clients>
+advertised.port=9092
 
 # The number of threads handling network requests
 num.network.threads=3

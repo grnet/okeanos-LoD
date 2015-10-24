@@ -18,9 +18,9 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        String zookeeper= "192.168.0.2:2181";
+        String zookeeper= "master:2181";
         String consumerGroupId = "consumer-stream";
-        String kafkaBroker = "192.168.0.2:9092,192.168.0.3:9092,192.168.0.4:9092";
+        String kafkaBroker = "master:9092";
         String inputTopic = "input";
         String outputTopic = "stream-output";
 
