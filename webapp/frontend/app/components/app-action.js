@@ -2,6 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   request : false,
+  message : "",
   actions: {
     start(app) {
       //send request to start application
@@ -10,6 +11,7 @@ export default Ember.Component.extend({
       app.set('call', "start");
       app.save();
       this.set("request", true);
+      this.set("message", "Your request to start the application was successfully sent to the server.");
       return false;
     },
     stop(app) {
@@ -19,6 +21,7 @@ export default Ember.Component.extend({
       app.set('call', "stop");
       app.save();
       this.set("request", true);
+      this.set("message", "Your request to stop the application was successfully sent to the server.");
       return false;
     },
     deploy(app) {
@@ -28,6 +31,7 @@ export default Ember.Component.extend({
       app.set('call', "deploy");
       app.save();
       this.set("request", true);
+      this.set("message", "Your request to deploy the application was successfully sent to the server.");
       return false;
     },
   }

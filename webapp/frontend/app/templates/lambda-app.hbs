@@ -133,9 +133,7 @@
                                                       application</a>
                                                   {{#if li.started_app}}
                                                     {{app-action stop=true app=model.app application-id=model.application.id instance-id=li.id}}
-                                                    {{app-action disabled=true start=true app=model.app application-id=model.application.id instance-id=li.id}}
                                                   {{else}}
-                                                    {{app-action stop=true disabled=true app=model.app application-id=model.application.id instance-id=li.id}}
                                                     {{app-action start=true app=model.app application-id=model.application.id instance-id=li.id}}
                                                   {{/if}}
                                               </td>
