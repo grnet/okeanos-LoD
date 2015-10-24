@@ -128,9 +128,7 @@
                                               <td>{{li.id}} </td>
                                               <td>{{li.started_app}}</td>
                                               <td>
-                                                  <a href="delete-instance.html" class="btn  btn-danger btn-xs"
-                                                     style="margin-right: 15px;"><i class="fa fa-close"></i> Discard
-                                                      application</a>
+                                                  {{app-action withdraw=true app=model.app application-id=model.application.id instance-id=li.id}}
                                                   {{#if li.started_app}}
                                                     {{app-action stop=true app=model.app application-id=model.application.id instance-id=li.id}}
                                                   {{else}}
