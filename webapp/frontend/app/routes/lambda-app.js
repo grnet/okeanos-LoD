@@ -15,7 +15,8 @@ export default LoDRoute.extend(AuthenticatedRouteMixin, {
 
     return Ember.RSVP.hash({
       application: this.store.findRecord('lambda-app', params.app_uuid),
-      instances: this.store.peekAll('lambda-instance')
+      instances: this.store.peekAll('lambda-instance'),
+      app: this.store.createRecord('app-action', {}),
     });
 
   },

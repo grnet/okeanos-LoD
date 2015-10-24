@@ -1,0 +1,37 @@
+{{#if start}}
+
+    <form {{action "start" app on="submit"}} method="post">
+      <button class="btn btn-success btn-xs" active type="submit"><i class="fa fa-start"></i> Start</button>
+    </form>
+
+{{else if stop}}
+    <form {{action "stop" app on="submit"}} method="post">
+    <button class="btn btn-danger btn-xs" active type="submit"><i class="fa fa-stop"></i> Stop</button>
+    </form>
+
+{{else if deploy}}
+    <form {{action "deploy" app on="submit"}} method="post">
+      <button class="btn btn-info btn-xs" active type="submit"><i class="fa fa-deploy"></i> Deploy</button>
+    </form>
+
+{{else if withdraw}}
+    <form {{action "withdraw" app on="submit"}} method="post">
+    <button class="btn btn-danger btn-xs" active type="submit"><i class="fa fa-withdraw"></i> Withdraw</button>
+    </form>
+
+{{/if}}
+
+
+{{#each app.errors as |error|}}
+      <div  class="alert alert-dismissable alert-danger">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        {{error.message}}
+      </div>
+{{/each}}
+
+{{#if request}}
+    <div  class="alert alert-dismissable alert-success">
+      <button type="button" class="close" data-dismiss="alert">×</button>
+      {{message}}
+    </div>
+{{/if}}
