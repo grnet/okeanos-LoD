@@ -7,10 +7,14 @@ export default LoDRoute.extend(AuthenticatedRouteMixin, {
   model: function(params) {
     this.poll = Ember.run.later(this, function () {
       this.model(params).then(function () {
-        this.store.findAll('lambda-instance', params);
       }.bind(this));
-    }, ENV.refresh_interval+1000);
+    }, ENV.refresh_interval);
 
     return this.store.findAll('lambda-instance', params);
+  },
+
+  deactivate: function () {
+    Ember.run.cancel(this.poll);
   }
+
 });
