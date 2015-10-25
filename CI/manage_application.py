@@ -99,7 +99,7 @@ class ApplicationManager:
                                            format(ip=self.service_vm_ip, id=application_uuid),
                                            headers={'Authorization': "Token {token}".
                                                     format(token=self.authentication_token)})
-        while len(application_details.json()['data'][0]['applications']) == 0 and max_wait > 0:
+        while len(application_details.json()['data'][0]['lambda_instances']) == 0 and max_wait > 0:
             time.sleep(sleep_time)
             application_details = requests.get("http://{ip}/api/apps/{id}/".
                                                format(ip=self.service_vm_ip, id=application_uuid),
@@ -140,7 +140,7 @@ class ApplicationManager:
                                            format(ip=self.service_vm_ip, id=application_uuid),
                                            headers={'Authorization': "Token {token}".
                                                     format(token=self.authentication_token)})
-        while (not application_details.json()['data'][0]['applications'][0]['started'])\
+        while (not application_details.json()['data'][0]['lambda_instances'][0]['started'])\
                 and (max_wait > 0):
             time.sleep(sleep_time)
             application_details = requests.get("http://{ip}/api/apps/{id}/".
