@@ -1,0 +1,73 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Dashboard
+        <small>Deploy apps to lambda instance</small>
+    </h1>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <!-- TOP DATA -->
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-laptop"></i> Lambda Instance {{instance.name}}</h3>
+
+                    <div class="box-tools pull-right">
+                        <small>ID: {{instance.id}}</small>
+                    </div>
+                </div>
+              {{#if applications}}
+                  <!-- /.box-header -->
+                  <div class="box-body">
+                      <div class="row">
+                          <div class="col-md-9 col-sm-8">
+                              <div class="pad">
+                                  Select an application to deploy on the lambda instance
+                              </div>
+                          </div>
+                          <!-- /.col -->
+
+                      </div>
+                      <!-- /.row -->
+
+                      <div class="row">
+                          <div class="col-ms-6 col-xs-4">
+                              <table class="table table-bordered table-hover table-responsive">
+                                  <thead>
+                                  <tr>
+                                      <th>Application name</th>
+                                      <th>Application ID</th>
+                                      <th>Action</th>
+                                  </tr>
+                                  </thead>
+                                  <tbody>
+                                  {{#each applications as |application|}}
+                                      <tr>
+                                          <td>{{application.name}}</td>
+                                          <td>{{application.id}}</td>
+                                        {{app-action action="deploy" deploy=true app=app application-id=application.id instance-id=instance.id}}
+                                      </tr>
+                                  {{/each}}
+
+                                  </tbody>
+                              </table>
+                          </div>
+                          <!--col-xs-12-->
+                      </div>
+                      <!--row-->
+                  </div>
+                  <!--box-->
+              {{else}}
+                  There are no applications to deploy on the lambda instance
+              {{/if}}
+            </div>
+            <!-- box-primary -->
+        </div>
+        <!--col -->
+    </div>
+    <!--row-->
+
+</section><!-- /.content -->
