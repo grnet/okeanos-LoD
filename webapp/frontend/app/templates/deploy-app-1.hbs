@@ -19,47 +19,50 @@
                         <small>ID: {{application.id}}</small>
                     </div>
                 </div>
-                <!-- /.box-header -->
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-9 col-sm-8">
-                            <div class="pad">
-                                Select a lambda instance to deploy the app on
-                            </div>
-                        </div>
-                        <!-- /.col -->
+              {{#if instances}}
+                  <!-- /.box-header -->
+                  <div class="box-body">
+                      <div class="row">
+                          <div class="col-md-9 col-sm-8">
+                              <div class="pad">
+                                  Select a lambda instance to deploy the app on
+                              </div>
+                          </div>
+                          <!-- /.col -->
 
-                    </div>
-                    <!-- /.row -->
+                      </div>
+                      <!-- /.row -->
 
-                    <div class="row">
-                        <div class="col-ms-6 col-xs-4">
-                            <table class="table table-bordered table-hover table-responsive">
-                                <thead>
-                                <tr>
-                                    <th>Instance name</th>
-                                    <th>Instance ID</th>
-                                    <th>Action</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {{#each instances as |li|}}
-                                <tr>
-                                    <td>{{li.name}}</td>
-                                    <td>{{li.id}}</td>
-                                    <td><a {{action 'deploy'}} class="btn btn-primary pull-right"
-                                       style="margin-right: 15px;"><i class="fa fa-mail-reply"></i> Deploy</a></td>
-                                </tr>
-                                {{/each}}
+                      <div class="row">
+                          <div class="col-ms-6 col-xs-4">
+                              <table class="table table-bordered table-hover table-responsive">
+                                  <thead>
+                                  <tr>
+                                      <th>Instance name</th>
+                                      <th>Instance ID</th>
+                                      <th>Action</th>
+                                  </tr>
+                                  </thead>
+                                  <tbody>
+                                  {{#each instances as |li|}}
+                                      <tr>
+                                          <td>{{li.name}}</td>
+                                          <td>{{li.id}}</td>
+                                        {{app-action action="deploy" deploy=true app=app application-id=application.id instance-id=li.id}}
+                                      </tr>
+                                  {{/each}}
 
-                                </tbody>
-                            </table>
-                        </div>
-                        <!--col-xs-12-->
-                    </div>
-                    <!--row-->
-                </div>
-                <!--box-->
+                                  </tbody>
+                              </table>
+                          </div>
+                          <!--col-xs-12-->
+                      </div>
+                      <!--row-->
+                  </div>
+                  <!--box-->
+              {{else}}
+                  There are no started Lambda Instances to deploy the application on
+              {{/if}}
             </div>
             <!-- box-primary -->
         </div>

@@ -2,8 +2,9 @@ import Ember from "ember";
 
 export default Ember.Controller.extend({
   actions: {
-    deploy() {
+    deploy(application_id, instance_id) {
       var ids = this.get('ids');
+      ids.push(instance_id);
       var instances;
       instances = this.store.filter('lambda-instance', {},
         function (li) {

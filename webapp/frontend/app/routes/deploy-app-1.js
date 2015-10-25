@@ -28,13 +28,15 @@ export default LoDRoute.extend(AuthenticatedRouteMixin, {
             }
           }
           return true;
-        })
+        }),
+      app: this.store.createRecord('app-action', {})
     });
   },
 
   setupController: function (controller, model) {
     controller.set('application', model.application);
     controller.set('instances', model.instances);
+    controller.set('app', model.app);
     controller.set('ids', ids);
   }
 
