@@ -26,8 +26,12 @@
                         <div class="col-xs-12">
                             <a href="delete-application.html" class="btn  btn-danger pull-right"
                                style="margin-right: 15px;"><i class="fa fa-close"></i> Delete</a>
-                            <a href="app-instance.html" class="btn btn-primary pull-right"
-                               style="margin-right: 15px;"><i class="fa fa-mail-reply"></i> Deploy on a lambda instance</a>
+                          {{#link-to "deploy-app-1" model.application.id}}
+                              <button class="btn btn-primary pull-right"
+                                      style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
+                                  Deploy on a lambda instance
+                              </button>
+                          {{/link-to}}
                         </div>
                     </div>
                     <div class="row">
@@ -128,12 +132,12 @@
                                               <td>{{li.id}} </td>
                                               <td>{{li.started_app}}</td>
                                               <td>
+                                                {{#if li.started_app}}
+                                                  {{app-action stop=true app=model.app application-id=model.application.id instance-id=li.id}}
+                                                {{else}}
+                                                  {{app-action start=true app=model.app application-id=model.application.id instance-id=li.id}}
                                                   {{app-action withdraw=true app=model.app application-id=model.application.id instance-id=li.id}}
-                                                  {{#if li.started_app}}
-                                                    {{app-action stop=true app=model.app application-id=model.application.id instance-id=li.id}}
-                                                  {{else}}
-                                                    {{app-action start=true app=model.app application-id=model.application.id instance-id=li.id}}
-                                                  {{/if}}
+                                                {{/if}}
                                               </td>
                                           </tr>
                                       {{/each}}
