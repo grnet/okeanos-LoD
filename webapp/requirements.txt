@@ -3,4 +3,5 @@ psycopg2
 django
 djangorestframework
 djangorestframework-xml
+mkdocs
 

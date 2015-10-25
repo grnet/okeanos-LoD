@@ -13,8 +13,14 @@
   - name: Copy Lambda sites-available configuration.
     template: src=central-service-backend.conf.j2 dest=/etc/apache2/sites-available/central-service-backend.conf
 
+  - name: Copy lambda sites-available mkdocs configuration.
+    template: src=central-service-mkdocs.conf.j2 dest=/etc/apache2/sites-available/central-service-mkdocs.conf
+
   - name: Add central-service-backend to sites-enabled.
     file: src=/etc/apache2/sites-available/central-service-backend.conf dest=/etc/apache2/sites-enabled/central-service-backend.conf state=link
+
+  - name: Add lambda-service-mkdocs to sites-enabled.
+    command: a2ensite central-service-mkdocs.conf
 
   - name: Remove default sites-enabled.
     file: name=/etc/apache2/sites-enabled/000-default.conf state=absent
