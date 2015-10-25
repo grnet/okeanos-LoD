@@ -19,22 +19,9 @@ Type | Description |
 | --- | --- | --- | --- | --- |
 | uuid | The Unique Identifier of the lamdba instance, as identified from the service vm | Yes | None |'24b8a635-8d71-4016-b8f5-c4a14348ed8f'
 | name | The name of the lamdba instance. | Yes | None | 'My first lambda instance'
-| instance_info | JSON encoded info about specifications of the lambda instance. | Yes | None | ```
-          "instance_info": {
-          "project_name": "lambda.grnet.gr",
-          "master_name": "lambda-master-2",
-          "vcpus_master": 4,
-          "network_request": 1,
-          "disk_slave": 20,
-          "slaves": 2,
-          "ram_slave": 4096,
-          "ram_master": 4096,
-          "vcpus_slave": 4,
-          "ip_allocation": "master",
-          "disk_master": 20
-        }, ``` |
+| instance_info | JSON encoded info about specifications of the lambda instance. | Yes | None | "instance_info": {...} |
 | status | The status of the lambda instance. | Yes | None | "20" |
-| failure_message | (optional) A message related to the failed status of the lamdbda instance | Yes | "" | "SSH connection timed out." |
+| failure_message | A message related to the failed status of the lamdbda instance | Yes | "" | "SSH connection timed out." |
 
 #### Headers
 
