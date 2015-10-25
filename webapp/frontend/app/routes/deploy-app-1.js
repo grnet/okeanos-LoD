@@ -7,6 +7,8 @@ var ids;
 export default LoDRoute.extend(AuthenticatedRouteMixin, {
 
   beforeModel: function () {
+    this.store.unloadAll('lambda-instance');
+    this.store.unloadAll('app-action');
     let params = this.paramsFor(this.routeName);
     return this.store.findRecord('lambda-app', params.app_uuid);
   },

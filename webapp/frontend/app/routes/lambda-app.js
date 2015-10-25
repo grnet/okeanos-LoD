@@ -5,19 +5,26 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 
 export default LoDRoute.extend(AuthenticatedRouteMixin, {
 
-  model: function (params) {
+  beforeModel: function () {
+    this.store.unloadAll('lambda-instance');
+    this.store.unloadAll('app-action');
+  },
 
+  model: function (params) {
     this.poll = Ember.run.later(this, function () {
       this.model(params).then(function () {
         this.modelFor('lambda-app').application.reload();
       }.bind(this));
     }, ENV.refresh_interval);
 
-    return Ember.RSVP.hash({
+    var hash = {
       application: this.store.findRecord('lambda-app', params.app_uuid),
-      instances: this.store.peekAll('lambda-instance'),
-      app: this.store.createRecord('app-action', {}),
-    });
+      instances: this.store.peekAll('lambda-instance')
+    };
+    if (this.store.peekAll('lambda-instance').get('length') === 0) {
+      hash.app = this.store.createRecord('app-action', {});
+    }
+    return Ember.RSVP.hash(hash);
 
   },
 
