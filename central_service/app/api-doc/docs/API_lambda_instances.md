@@ -57,7 +57,7 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 Type | Description |
 -------|-----------------|
  **Description** | update the status of the lambda instance
- **URL**         | /api/lambda_instances/[uuid]
+ **URL**         | /api/lambda_instances/[uuid]/status/
  **HTTP Method** | POST
  **Security**    | Basic Authentication
 
@@ -76,7 +76,7 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 
 ### Example API call
 
-`curl -X POST -H "Content-Type: application/json" -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" -d '{"status": "20", "failure_message": "OK"}' 'http://<hostname>/api/lambda_instances/24b8a635-8d71-4016-b8f5-c4a14348ed8f'`
+`curl -X POST -H "Content-Type: application/json" -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" -d '{"status": "20", "failure_message": "OK"}' 'http://<hostname>/api/lambda_instances/24b8a635-8d71-4016-b8f5-c4a14348ed8f/status/'`
 
 ### Response
 
