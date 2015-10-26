@@ -146,7 +146,7 @@ public class ConsumerGroupExample {
       // will read the messages from the remote Apache Kafka installation.
       // In case you want to put main thread to sleep forever until interrupted, use
       // Thread.currentThread().wait();
-      Thread.sleep(10 * 1000);
+      Thread.sleep(10 * 60 * 1000);
 
     } catch (InterruptedException ie) {
 
