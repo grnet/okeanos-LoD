@@ -97,7 +97,7 @@ def create_application_central_vm(self, auth_token, application_uuid, name, desc
     try:
         requests.post(url="http://" + settings.CENTRAL_VM_IP + "/api/lambda_applications/",
                       json={
-                          'uuid': application_uuid,
+                          'uuid': "{}".format(application_uuid),
                           'name': name,
                           'description': description,
                           'status': Application.UPLOADING,
