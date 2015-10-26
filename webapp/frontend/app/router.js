@@ -11,12 +11,10 @@ Router.map(function () {
   });
   this.resource('lambda-instance', {path: '/lambda-instance/:instance_uuid'});
   this.route('create-lambda-instance');
-  this.route('lambda-app', {path: '/apps'});
-  this.route('lambda-app', {path: '/apps/:app_uuid'});
-  this.resource('apps', function() {
-    // /apps/upload
-    this.route('upload');
+  this.resource('lambda-apps', function() {
+    this.route('upload')
   });
+  this.resource('lambda-app', {path: '/apps/:app_uuid'});
 });
 
 export default Router;
