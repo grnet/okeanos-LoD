@@ -11,7 +11,7 @@ consumer.
 
 ## Source Code
 The source code of our example, is a modified version of the example provided
-by Apache Kafka [here]. The addition we have made is to add come command line
+by Apache Kafka [here]. The addition we have made is to add some command line
 arguments processing so that the consumer can be used through the command line.
 
 ## Building
@@ -23,7 +23,7 @@ mvn clean compile
 ```
 
 We suggest you statically compile the consumer so you can use it on any machine.
-To statically compile the consumer you can run te command:
+To statically compile the consumer you can run the command:
 
 ```
 mvn clean compile assembly:assembly
@@ -54,5 +54,15 @@ java -jar consumer-1.0-jar-with-dependencies.jar
 
 Upon execution, this consumer will connect to the remote host and start fetching
 data from the specified topic. The data will be displayed on the console.
+
+
+# Notes
+You should note that, the topic you choose, should have at least one partition
+with leader the Master Node of the Lambda Instance so it can be accessible from
+the outside world.
+
+When running the consumer, you will notice that it produces a lot of logs.
+That is due to Apache Kafka and its default configuration. To change that,
+you can modify the `log4j.properties` file in `src/main/resource` directory.
 
 [here]: https://cwiki.apache.org/confluence/display/KAFKA/Consumer+Group+Example
