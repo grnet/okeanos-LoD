@@ -173,7 +173,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            url="http://CENTRAL_VM_IP/api/lambda_instances/{}".format(instance_uuid),
+            url="http://CENTRAL_VM_IP/api/lambda_instances/{}/status/".format(instance_uuid),
             json={
                 'status': status,
                 'failure_message': failure_message
@@ -211,7 +211,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            url="http://CENTRAL_VM_IP/api/lambda_instances/{}".format(instance_uuid),
+            url="http://CENTRAL_VM_IP/api/lambda_instances/{}/status/".format(instance_uuid),
             json={
                 'status': status,
                 'failure_message': failure_message
@@ -256,7 +256,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            url="http://CENTRAL_VM_IP/api/lambda_instances/{}".format(instance_uuid),
+            url="http://CENTRAL_VM_IP/api/lambda_instances/{}/status/".format(instance_uuid),
             json={
                 'status': status,
                 'failure_message': failure_message
@@ -288,7 +288,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.delete.assert_called_with(
-            url="http://CENTRAL_VM_IP/api/lambda_instances/{}".format(instance_uuid),
+            url="http://CENTRAL_VM_IP/api/lambda_instances/{}/".format(instance_uuid),
             headers={
                 'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
                 'Content-Type': "application/json"
@@ -319,7 +319,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.delete.assert_called_with(
-            url="http://CENTRAL_VM_IP/api/lambda_instances/{}".format(instance_uuid),
+            url="http://CENTRAL_VM_IP/api/lambda_instances/{}/".format(instance_uuid),
             headers={
                 'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
                 'Content-Type': "application/json"
@@ -356,7 +356,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.delete.assert_called_with(
-            url="http://CENTRAL_VM_IP/api/lambda_instances/{}".format(instance_uuid),
+            url="http://CENTRAL_VM_IP/api/lambda_instances/{}/".format(instance_uuid),
             headers={
                 'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
                 'Content-Type': "application/json"
@@ -388,10 +388,10 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.post.assert_called_with(
             url="http://CENTRAL_VM_IP/api/lambda_applications/",
             json={
-                'uuid': application_uuid,
+                'uuid': "{}".format(application_uuid),
                 'name': application_name,
                 'description': description,
-                'status': Application.UPLOADING,
+                'status': Application.UPLOADED,
                 'failure_message': ""
             },
             headers={
@@ -428,10 +428,10 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.post.assert_called_with(
             url="http://CENTRAL_VM_IP/api/lambda_applications/",
             json={
-                'uuid': application_uuid,
+                'uuid': "{}".format(application_uuid),
                 'name': application_name,
                 'description': description,
-                'status': Application.UPLOADING,
+                'status': Application.UPLOADED,
                 'failure_message': ""
             },
             headers={
@@ -476,10 +476,10 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.post.assert_called_with(
             url="http://CENTRAL_VM_IP/api/lambda_applications/",
             json={
-                'uuid': application_uuid,
+                'uuid': "{}".format(application_uuid),
                 'name': application_name,
                 'description': description,
-                'status': Application.UPLOADING,
+                'status': Application.UPLOADED,
                 'failure_message': ""
             },
             headers={
@@ -512,7 +512,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            url="http://CENTRAL_VM_IP/api/lambda_applications/{}".format(application_uuid),
+            url="http://CENTRAL_VM_IP/api/lambda_applications/{}/status/".format(application_uuid),
             json={
                 'status': status,
                 'failure_message': "failure_message"
@@ -550,7 +550,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            url="http://CENTRAL_VM_IP/api/lambda_applications/{}".format(application_uuid),
+            url="http://CENTRAL_VM_IP/api/lambda_applications/{}/status/".format(application_uuid),
             json={
                 'status': status,
                 'failure_message': "failure_message"
@@ -595,7 +595,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            url="http://CENTRAL_VM_IP/api/lambda_applications/{}".format(application_uuid),
+            url="http://CENTRAL_VM_IP/api/lambda_applications/{}/status/".format(application_uuid),
             json={
                 'status': status,
                 'failure_message': "failure_message"
@@ -627,7 +627,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.delete.assert_called_with(
-            url="http://CENTRAL_VM_IP/api/lambda_applications/{}".format(application_uuid),
+            url="http://CENTRAL_VM_IP/api/lambda_applications/{}/".format(application_uuid),
             headers={
                 'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
                 'Content-Type': "application/json"
@@ -657,7 +657,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.delete.assert_called_with(
-            url="http://CENTRAL_VM_IP/api/lambda_instances/{}".format(instance_uuid),
+            url="http://CENTRAL_VM_IP/api/lambda_instances/{}/".format(instance_uuid),
             headers={
                 'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
                 'Content-Type': "application/json"
@@ -694,7 +694,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.delete.assert_called_with(
-            url="http://CENTRAL_VM_IP/api/lambda_applications/{}".format(application_uuid),
+            url="http://CENTRAL_VM_IP/api/lambda_applications/{}/".format(application_uuid),
             headers={
                 'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
                 'Content-Type': "application/json"
