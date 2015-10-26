@@ -63,6 +63,7 @@
                 <th>#id</th>
                 <th>Name</th>
                 <th>Status</th>
+                <th>Type</th>
                 <th>Actions</th>
 
               </tr>
@@ -83,6 +84,7 @@
                 <td>{{lambda-application.id}}</td>
                 <td>{{lambda-application.name}}</td>
                 <td><span>{{lambda-application.status_detail}}</span></td>
+                <td>{{lambda-application.app_type}}</td>
                 <td>
                   {{#linkTo 'lambda-app' lambda-application.id}}
                   <a href="app-details.html" class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
@@ -104,7 +106,7 @@
     <div>Showing {{firstOfCurrentPage}} to {{lastOfCurrentPage}} of {{model.length}} entries</div>
   </div>
   <div class="col-sm-6">
-    {{page-numbers content=pagedContent currentPage=page totalPages=totalPages showFL=true}}
+    {{page-numbers content=pagedContent currentPage=page totalPages=totalPages showFL=false}}
     </div>
 </div><!--row-->
 
