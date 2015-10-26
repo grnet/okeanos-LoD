@@ -437,6 +437,12 @@ class TestApplicationsList(APITestCase):
         for application in response.data['data']:
             self.assertIn('id', application)
             self.assertIn('name', application)
+            self.assertIn('type', application)
+            self.assertIn('status', application)
+
+            self.assertIn('code', application['status'])
+            self.assertIn('message', application['status'])
+            self.assertIn('detail', application['status'])
 
     def _assert_success_request_response_content(self, response, offset=0):
         # Assert the contents of the response.
@@ -459,6 +465,16 @@ class TestApplicationsList(APITestCase):
         # names and that the sizes of these sets are equal.
         for expected_application_name in expected_application_names:
             self.assertIn(expected_application_name, returned_application_names)
+
+        # Assert that the message, the code and the detail inside application status and the type
+        # are correctly chosen.
+        for application in response.data['data']:
+            self.assertEqual(application['type'], Application.BATCH)
+            self.assertEqual(application['status']['message'],
+                             Application.status_choices[int(application['status']['code'])][1])
+            self.assertEqual(application['status']['detail'],
+                             ResponseMessages.application_status_details[
+                                 application['status']['message']])
 
         self.assertEqual(len(expected_application_names), len(returned_application_names))
 
