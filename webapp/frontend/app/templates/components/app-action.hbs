@@ -21,17 +21,17 @@
 
 {{/if}}
 
-
-{{#each app.errors as |error|}}
-      <div  class="alert alert-dismissable alert-danger">
-        <button type="button" class="close" data-dismiss="alert">×</button>
-        {{error.message}}
-      </div>
-{{/each}}
-
 {{#if request}}
-    <div  class="alert alert-dismissable alert-success">
-      <button type="button" class="close" data-dismiss="alert">×</button>
-      {{message}}
-    </div>
+    {{#each app.errors as |error|}}
+          <div  class="alert alert-dismissable alert-danger">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            {{error.message}}
+          </div>
+
+    {{else}}
+        <div  class="alert alert-dismissable alert-success">
+          <button type="button" class="close" data-dismiss="alert">×</button>
+          {{message}}
+        </div>
+    {{/each}}
 {{/if}}

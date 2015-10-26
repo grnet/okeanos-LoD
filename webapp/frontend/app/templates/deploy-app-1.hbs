@@ -26,13 +26,24 @@
                   {{#if request}}
                       <div class="row">
                           <div class="col-xs-12">
-                              <div class="alert alert-dismissable alert-success">
-                                  <button type="button" class="close" data-dismiss="alert">×</button>
-                                  Your request to deploy the application was successfully sent to the server.
-                              </div>
+
+                            {{#each app.errors as |error|}}
+                                <div class="alert alert-dismissable alert-danger">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                  {{error.message}}
+                                </div>
+
+                            {{else}}
+                                <div class="alert alert-dismissable alert-success">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    Your request to deploy the application was successfully sent to the server
+                                </div>
+                            {{/each}}
+
                           </div>
                       </div>
                   {{/if}}
+
                   {{#if instances}}
                       <div class="row">
                           <div class="col-md-9 col-sm-8">

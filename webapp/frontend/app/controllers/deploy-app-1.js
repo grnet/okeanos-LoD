@@ -6,20 +6,23 @@ export default Ember.Controller.extend({
       var ids = this.get('ids');
       ids.push(instance_id);
       var instances;
-      instances = this.store.filter('lambda-instance', {},
-        function (li) {
-          if (li.get('status_code') !== 0) {
-            return false;
-          }
-          let id = li.get('id');
-          for (var i = 0; i < ids.length; i++) {
-            if (id === ids[i]) {
+      var _this = this;
+      Ember.run.later((function () {
+        instances = _this.store.filter('lambda-instance', {},
+          function (li) {
+            if (li.get('status_code') !== 0) {
               return false;
             }
-          }
-          return true;
-        });
-      var _this = this;
+            let id = li.get('id');
+            for (var i = 0; i < ids.length; i++) {
+              if (id === ids[i]) {
+                return false;
+              }
+            }
+            return true;
+          });
+      }), 1000);
+
       _this.set("request", true);
       Ember.run.later((function () {
         _this.set("request", false);
