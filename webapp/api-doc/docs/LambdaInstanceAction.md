@@ -3,7 +3,7 @@ title: API | lambda instance action
 description: Performs a specified action on a specified lambda instance
 ---
 
-# API - lambda instance start - Description
+# API - lambda instance action - Description
 
 Lambda instance action call, given an authentication token through the header authentication,
 will firstly check the validity of the token. If the token is invalid, the API will reply with
