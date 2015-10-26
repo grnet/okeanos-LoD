@@ -469,7 +469,8 @@ class TestApplicationsList(APITestCase):
         # Assert that the message, the code and the detail inside application status and the type
         # are correctly chosen.
         for application in response.data['data']:
-            self.assertEqual(application['type'], Application.BATCH)
+            self.assertEqual(application['type'], Application.type_choices[
+                int(Application.BATCH)][1])
             self.assertEqual(application['status']['message'],
                              Application.status_choices[int(application['status']['code'])][1])
             self.assertEqual(application['status']['detail'],
