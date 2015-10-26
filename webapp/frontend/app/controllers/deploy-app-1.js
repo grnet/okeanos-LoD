@@ -19,6 +19,11 @@ export default Ember.Controller.extend({
           }
           return true;
         });
+      var _this = this;
+      _this.set("request", true);
+      Ember.run.later((function () {
+        _this.set("request", false);
+      }), 2500);
     }
   }
 });

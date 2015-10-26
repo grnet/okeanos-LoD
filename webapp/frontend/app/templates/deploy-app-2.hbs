@@ -19,9 +19,22 @@
                         <small>ID: {{instance.id}}</small>
                     </div>
                 </div>
-              {{#if applications}}
+
                   <!-- /.box-header -->
                   <div class="box-body">
+
+                    {{#if request}}
+                        <div class="row">
+                            <div class="col-xs-12">
+                        <div class="alert alert-dismissable alert-success">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            Your request to deploy the application was successfully sent to the server.
+                        </div>
+                        </div>
+                        </div>
+                    {{/if}}
+
+              {{#if applications}}
                       <div class="row">
                           <div class="col-md-9 col-sm-8">
                               <div class="pad">
@@ -34,7 +47,7 @@
                       <!-- /.row -->
 
                       <div class="row">
-                          <div class="col-ms-6 col-xs-4">
+                          <div class="col-ms-6 col-xs-6">
                               <table class="table table-bordered table-hover table-responsive">
                                   <thead>
                                   <tr>
@@ -48,7 +61,7 @@
                                       <tr>
                                           <td>{{application.name}}</td>
                                           <td>{{application.id}}</td>
-                                        {{app-action action="deploy" deploy=true app=app application-id=application.id instance-id=instance.id}}
+                                          <td>{{app-action action="deploy" deploy=true app=app application-id=application.id instance-id=instance.id}}</td>
                                       </tr>
                                   {{/each}}
 
@@ -58,11 +71,14 @@
                           <!--col-xs-12-->
                       </div>
                       <!--row-->
-                  </div>
-                  <!--box-->
+
               {{else}}
-                  There are no applications to deploy on the lambda instance
+                  <div class="box-body">
+                      There are no applications to deploy on the {{instance.name}} lambda instance
+                  </div>
               {{/if}}
+                  </div>
+                <!--box-->
             </div>
             <!-- box-primary -->
         </div>
