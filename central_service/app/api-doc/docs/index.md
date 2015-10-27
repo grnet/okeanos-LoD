@@ -17,7 +17,8 @@
 **The service vm will have to know the user's ~okeanos token.**
 
 * Destroy lambda instance **DELETE /api/lambda-instances/[uuid]**
-> The service vm will issue an API call towards the central service, deleting the lambda instance.  
+> The service vm will issue an API call towards the central service, deleting the lambda instance. The instance is the flagged
+  as deleted in its status.
 **The whole lambda cluster can be deleted from inside the kamaki API or the Web interface**  
 
 * Update lambda instance **POST /api/lambda_instances/[uuid]/status**
