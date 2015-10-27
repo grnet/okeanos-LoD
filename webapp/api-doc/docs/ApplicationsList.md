@@ -77,31 +77,74 @@ If the authentication token is correct, a sample response is
   "data": [
     {
       "name": "project.jar",
-      "id": "68e836e2-2ea4-4bb8-8b46-dcef869b3f08"
+      "id": "68e836e2-2ea4-4bb8-8b46-dcef869b3f08",
+      "type": "STREAMING",
+      "status": {
+        "message": "UPLOADED",
+        "code": "0",
+        "detail": "Application has been successfully uploaded"
+      }
     },
     {
       "name": "test_file",
-      "id": "1b9f7773-f19d-426d-bc29-5434844e4537"
+      "id": "1b9f7773-f19d-426d-bc29-5434844e4537",
+      "type": "STREAMING",
+      "status": {
+        "message": "UPLOADED",
+        "code": "0",
+        "detail": "Application has been successfully uploaded"
+      }
     },
     {
       "name": "test_file_2",
-      "id": "dddb18ae-5dab-4e9e-8914-3062b8853e24"
+      "id": "dddb18ae-5dab-4e9e-8914-3062b8853e24",
+      "type": "STREAMING",
+      "status": {
+        "message": "UPLOADED",
+        "code": "0",
+        "detail": "Application has been successfully uploaded"
+      }
     },
     {
       "name": "test_file_3",
-      "id": "b3e5d867-c882-4f5e-a5c2-75193866f44e"
+      "id": "b3e5d867-c882-4f5e-a5c2-75193866f44e",
+      "type": "BATCH",
+      "status": {
+        "message": "UPLOADING",
+        "code": "1",
+        "detail": "Application is being uploaded"
+      }
     },
     {
       "name": "test_file_4",
-      "id": "a5623a2e-7742-4299-8ca4-c05e811d2262"
+      "id": "a5623a2e-7742-4299-8ca4-c05e811d2262",
+      "type": "BATCH",
+      "status": {
+        "message": "UPLOADED",
+        "code": "0",
+        "detail": "Application has been successfully uploaded"
+      }
     },
     {
       "name": "project1.jar",
-      "id": "5bda8e92-6397-493d-9aeb-a2fcf67b19a4"
+      "id": "5bda8e92-6397-493d-9aeb-a2fcf67b19a4",
+      "type": "STREAMING",
+      "status": {
+        "message": "UPLOADED",
+        "code": "0",
+        "detail": "Application has been successfully uploaded"
+      }
     },
     {
       "name": "application.jar",
-      "id": "6fb97497-8d2c-45ed-bb7d-207e16b97c48"
+      "id": "6fb97497-8d2c-45ed-bb7d-207e16b97c48",
+      "type": "BATCH",
+      "status": {
+        "message": "FAILED",
+        "code": "2",
+        "detail": "Application upload has failed",
+        "failure_message": "Couldn't reach remote host"
+      }
     }
   ]
 }
@@ -125,11 +168,23 @@ If the authentication token is correct, a sample response is
   "data": [
     {
       "name": "test_file_3",
-      "id": "b3e5d867-c882-4f5e-a5c2-75193866f44e"
+      "id": "b3e5d867-c882-4f5e-a5c2-75193866f44e",
+      "type": "BATCH",
+      "status": {
+        "message": "UPLOADING",
+        "code": "1",
+        "detail": "Application is being uploaded"
+      }
     },
     {
       "name": "test_file_4",
-      "id": "a5623a2e-7742-4299-8ca4-c05e811d2262"
+      "id": "a5623a2e-7742-4299-8ca4-c05e811d2262",
+      "type": "BATCH",
+      "status": {
+        "message": "UPLOADED",
+        "code": "0",
+        "detail": "Application has been successfully uploaded"
+      }
     }
   ],
   "pagination": {

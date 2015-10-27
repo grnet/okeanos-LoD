@@ -640,7 +640,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         but are not wanted in a list response
         """
 
-        wanted_fields = ['uuid', 'name']
+        wanted_fields = ['uuid', 'name', 'status', 'failure_message', 'type']
         unwanted_fields = set(ApplicationSerializer.Meta.fields) - set(wanted_fields)
 
         for application in response['data']:
@@ -649,6 +649,19 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         response['status']['short_description'] = ResponseMessages.short_descriptions[
             'applications_list']
+
+        for application in response['data']:
+            application['status'] = {
+                'code': application['status'],
+                'message': Application.status_choices[int(application['status'])][1],
+                'detail': ResponseMessages.application_status_details[
+                    Application.status_choices[int(application['status'])][1]]
+            }
+            if application['failure_message'] != "":
+                application['status']['failure_message'] = application['failure_message']
+            del application['failure_message']
+
+            application['type'] = Application.type_choices[int(application['type'])][1]
 
         # Change uuid name to id
         for item in response['data']:
