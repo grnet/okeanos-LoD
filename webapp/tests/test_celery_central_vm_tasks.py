@@ -103,10 +103,7 @@ class TestCeleryCentralVMTasks(APITestCase):
             }
         )
         central_vm_tasks.create_lambda_instance_central_vm.retry.\
-            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
-                               instance_uuid=instance_uuid,
-                               instance_name=instance_name, specs=specs,
-                               countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+            assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
     @mock.patch('backend.central_vm_tasks.requests.exceptions.ConnectionError',
                 new=CustomConnectionError)
@@ -150,10 +147,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         )
 
         central_vm_tasks.create_lambda_instance_central_vm.retry.\
-            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
-                               instance_uuid=instance_uuid,
-                               instance_name=instance_name, specs=specs,
-                               countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+            assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
     @mock.patch('backend.central_vm_tasks.settings')
     @mock.patch('backend.central_vm_tasks.requests')
@@ -223,10 +217,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         )
 
         central_vm_tasks.set_lambda_instance_status_central_vm.retry\
-            .assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
-                                instance_uuid=instance_uuid, status=status,
-                                failure_message=failure_message,
-                                countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+            .assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
     @mock.patch('backend.central_vm_tasks.requests.exceptions.ConnectionError',
                 new=CustomConnectionError)
@@ -268,10 +259,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         )
 
         central_vm_tasks.set_lambda_instance_status_central_vm.retry\
-            .assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
-                                instance_uuid=instance_uuid, status=status,
-                                failure_message=failure_message,
-                                countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+            .assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
     @mock.patch('backend.central_vm_tasks.settings')
     @mock.patch('backend.central_vm_tasks.requests')
@@ -327,9 +315,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         )
 
         central_vm_tasks.delete_lambda_instance_central_vm.retry.\
-            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
-                               instance_uuid=instance_uuid,
-                               countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+            assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
     @mock.patch('backend.central_vm_tasks.requests.exceptions.ConnectionError',
                 new=CustomConnectionError)
@@ -364,9 +350,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         )
 
         central_vm_tasks.delete_lambda_instance_central_vm.retry.\
-            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
-                               instance_uuid=instance_uuid,
-                               countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+            assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
     @mock.patch('backend.central_vm_tasks.settings')
     @mock.patch('backend.central_vm_tasks.requests')
@@ -441,10 +425,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         )
 
         central_vm_tasks.create_application_central_vm.retry.\
-            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
-                               application_uuid=application_uuid,
-                               name=application_name, description=description,
-                               countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+            assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
     @mock.patch('backend.central_vm_tasks.requests.exceptions.ConnectionError',
                 new=CustomConnectionError)
@@ -489,10 +470,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         )
 
         central_vm_tasks.create_application_central_vm.retry.\
-            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
-                               application_uuid=application_uuid,
-                               name=application_name, description=description,
-                               countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+            assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
     @mock.patch('backend.central_vm_tasks.settings')
     @mock.patch('backend.central_vm_tasks.requests')
@@ -562,10 +540,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         )
 
         central_vm_tasks.set_application_status_central_vm.retry.\
-            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
-                               application_uuid=application_uuid, status=status,
-                               failure_message=failure_message,
-                               countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+            assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
     @mock.patch('backend.central_vm_tasks.requests.exceptions.ConnectionError',
                 new=CustomConnectionError)
@@ -607,10 +582,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         )
 
         central_vm_tasks.set_application_status_central_vm.retry.\
-            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
-                               application_uuid=application_uuid, status=status,
-                               failure_message=failure_message,
-                               countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+            assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
     @mock.patch('backend.central_vm_tasks.settings')
     @mock.patch('backend.central_vm_tasks.requests')
@@ -665,9 +637,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         )
 
         central_vm_tasks.delete_lambda_instance_central_vm.retry.\
-            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
-                               instance_uuid=instance_uuid,
-                               countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+            assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
     @mock.patch('backend.central_vm_tasks.requests.exceptions.ConnectionError',
                 new=CustomConnectionError)
@@ -702,6 +672,4 @@ class TestCeleryCentralVMTasks(APITestCase):
         )
 
         central_vm_tasks.delete_application_central_vm.retry.\
-            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
-                               application_uuid=application_uuid,
-                               countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+            assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)

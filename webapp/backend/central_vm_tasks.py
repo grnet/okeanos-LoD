@@ -32,8 +32,7 @@ def create_lambda_instance_central_vm(self, auth_token, instance_uuid, instance_
                           'Content-Type': "application/json"
                       })
     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-        self.retry(auth_token=auth_token, instance_uuid=instance_uuid, instance_name=instance_name,
-                   specs=specs, countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
+        self.retry(countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
 
 @shared_task(bind=True)
@@ -57,8 +56,7 @@ def set_lambda_instance_status_central_vm(self, auth_token, instance_uuid, statu
             'Content-Type': "application/json"
         })
     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-        self.retry(auth_token=auth_token, instance_uuid=instance_uuid, status=status,
-                   failure_message=failure_message, countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
+        self.retry(countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
 
 @shared_task(bind=True)
@@ -78,8 +76,7 @@ def delete_lambda_instance_central_vm(self, auth_token, instance_uuid):
             'Content-Type': "application/json"
         })
     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-        self.retry(auth_token=auth_token, instance_uuid=instance_uuid,
-                   countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
+        self.retry(countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
 
 @shared_task(bind=True)
@@ -108,8 +105,7 @@ def create_application_central_vm(self, auth_token, application_uuid, name, desc
                           'Content-Type': "application/json"
                       })
     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-        self.retry(auth_token=auth_token, application_uuid=application_uuid, name=name,
-                   description=description, countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
+        self.retry(countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
 
 @shared_task(bind=True)
@@ -135,8 +131,7 @@ def set_application_status_central_vm(self, auth_token, application_uuid, status
             'Content-Type': "application/json"
         })
     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-        self.retry(auth_token=auth_token, application_uuid=application_uuid, status=status,
-                   failure_message=failure_message, countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
+        self.retry(countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
 
 
 @shared_task(bind=True)
@@ -156,5 +151,4 @@ def delete_application_central_vm(self, auth_token, application_uuid):
             'Content-Type': "application/json"
         })
     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-        self.retry(auth_token=auth_token, application_uuid=application_uuid,
-                   countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
+        self.retry(countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
