@@ -43,7 +43,8 @@ def deleteLambdaInstance(uuid):
     :param uuid: The Unique identifier of the Lambda Instance to be deleted.
     """
     lambda_instance = LambdaInstance.objects.get(uuid=uuid)
-    lambda_instance.delete()
+    lambda_instance.status = '6'
+    lambda_instance.save()
 
 
 @shared_task

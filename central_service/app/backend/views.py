@@ -244,7 +244,7 @@ class LambdaInstanceView(mixins.ListModelMixin,
         :return: A response object according to the outcome of the call.
         """
         lambda_instances = self.get_queryset().filter(uuid=uuid)
-        if not lambda_instances.exists():
+        if not lambda_instances.exists() or lambda_instances[0].status == '6':
             raise CustomNotFoundError(CustomNotFoundError.messages['lambda_instance_not_found'])
 
         destroy_event = events.deleteLambdaInstance.delay(uuid)
