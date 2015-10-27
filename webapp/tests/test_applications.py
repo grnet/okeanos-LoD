@@ -577,8 +577,18 @@ class TestApplicationDelete(APITestCase):
         self.random_uuid = uuid.uuid4()
 
         # Save an application on the database with the specified uuid.
-        Application.objects.create(uuid=self.random_uuid, name="application.jar",
-                                   description="A description.", type=Application.BATCH)
+        self.app = Application.objects.create(uuid=self.random_uuid, name="application.jar",
+                                              description="A description.", type=Application.BATCH)
+
+        self.instance = LambdaInstance.objects.create(instance_info="{}", name="test_instance_name",
+                                                      uuid=uuid.uuid4(), failure_message="",
+                                                      status=0, started_batch=True,
+                                                      started_streaming=False)
+
+        self.conn = LambdaInstanceApplicationConnection.objects.create(
+            lambda_instance=self.instance,
+            application=self.app,
+            started=False)
 
     # Test for deleting an application.
     @mock.patch('backend.views.tasks.delete_application_from_pithos')
@@ -608,6 +618,31 @@ class TestApplicationDelete(APITestCase):
             assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
                                ApplicationViewSet.pithos_container, "application.jar",
                                "{random_uuid}".format(random_uuid=self.random_uuid))
+
+    # Test for deleting an running application.
+    @mock.patch('backend.views.tasks.delete_application_from_pithos')
+    def test_running_application_delete(self, mock_delete_application_from_pithos_task):
+
+        self.conn.started = True
+        self.conn.save()
+
+        # Make a request to delete a specific application.
+        response = self.client.delete("/api/apps/{random_uuid}/".
+                                      format(random_uuid=self.random_uuid))
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+        self.assertIn('status', response.data['errors'][0])
+        self.assertIn('detail', response.data['errors'][0])
+
+        # Assert the contents of the response
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_409_CONFLICT)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         "Can't delete application application.jar while it is running. "
+                         "Current lambda instances it is running are: test_instance_name")
 
     # Test for requesting to delete an application that doesn't exist.
     def test_non_existent_id(self):
