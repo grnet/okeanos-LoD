@@ -1,0 +1,23 @@
+- model: backend.LambdaInstance
+  pk: 1
+  fields:
+    instance_info: "{'project_name': 'lambda.grnet.gr',
+                     'instance_name': 'Lambda Instance created from tests',
+                     'network_request': 1,
+                     'master_name': 'lambda-master',
+                     'vcpus_master': 4,
+                     'vcpus_slave': 4,
+                     'ram_master': 4096,
+                     'ram_slave': 4096,
+                     'disk_master': 20,
+                     'disk_slave': 20,
+                     'slaves': 2,
+                     'ip_allocation': 'master',
+                     'public_key_name': ['key-1', 'key-2']}"
+    name: "my lambda instance"
+    uuid: "2fe7034b-daba-42db-a067-90d3165a90a9"
+    failure_message: ""
+    status: 0
+#    master_node: 1
+    started_batch: True
+    started_streaming: True

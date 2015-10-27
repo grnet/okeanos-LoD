@@ -1,0 +1,4 @@
+- model: "backend.User"
+  pk: 0
+  fields:
+    uuid: "4711d31a-d69f-49c5-b8a2-3ebd549dce5f"
