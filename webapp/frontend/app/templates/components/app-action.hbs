@@ -1,7 +1,7 @@
 {{#if start}}
 
     <form {{action "start" app on="submit"}} method="post">
-      <button class="btn btn-success btn-xs" active type="submit"><i class="fa fa-start"></i> Start</button>
+      <button class="btn btn-success btn-xs" active type="submit"><i class="fa fa-play"></i> Start</button>
     </form>
 
 {{else if stop}}
@@ -11,27 +11,75 @@
 
 {{else if deploy}}
     <form {{action "deploy" app on="submit"}} method="post">
-      <button class="btn btn-info btn-xs" active type="submit"><i class="fa fa-deploy"></i> Deploy</button>
+      <button class="btn btn-info btn-xs" active type="submit"><i class="fa-mail-reply"></i> Deploy</button>
     </form>
 
 {{else if withdraw}}
     <form {{action "withdraw" app on="submit"}} method="post">
-    <button class="btn btn-danger btn-xs" active type="submit"><i class="fa fa-withdraw"></i> Withdraw</button>
+    <button class="btn btn-danger btn-xs" active type="submit"><i class="fa fa-share"></i> Withdraw</button>
     </form>
 
 {{/if}}
 
-
-{{#each app.errors as |error|}}
-      <div  class="alert alert-dismissable alert-danger">
-        <button type="button" class="close" data-dismiss="alert">×</button>
-        {{error.message}}
-      </div>
-{{/each}}
+{{#if start}}
 
 {{#if request}}
-    <div  class="alert alert-dismissable alert-success">
-      <button type="button" class="close" data-dismiss="alert">×</button>
-      {{message}}
-    </div>
+      {{#each app.errors as |error|}}
+            <div  class="alert alert-dismissable alert-danger">
+              <button type="button" class="close" data-dismiss="alert">×</button>
+              {{error.message}}
+            </div>
+      {{/each}}
+      {{#unless app.errors}}
+          <div  class="alert alert-dismissable alert-success">
+            {{message}}
+          </div>
+      {{/unless}}
+{{/if}}
+
+{{else if stop}}
+{{#if request}}
+      {{#each app.errors as |error|}}
+            <div  class="alert alert-dismissable alert-danger">
+              <button type="button" class="close" data-dismiss="alert">×</button>
+              {{error.message}}
+            </div>
+      {{/each}}
+      {{#unless app.errors}}
+          <div  class="alert alert-dismissable alert-success">
+            {{message}}
+          </div>
+      {{/unless}}
+{{/if}}
+
+{{else if deploy}}
+{{#if request}}
+      {{#each app.errors as |error|}}
+            <div  class="alert alert-dismissable alert-danger">
+              <button type="button" class="close" data-dismiss="alert">×</button>
+              {{error.message}}
+            </div>
+      {{/each}}
+      {{#unless app.errors}}
+          <div  class="alert alert-dismissable alert-success">
+            {{message}}
+          </div>
+      {{/unless}}
+{{/if}}
+
+{{else if withdraw}}
+{{#if request}}
+      {{#each app.errors as |error|}}
+            <div  class="alert alert-dismissable alert-danger">
+              <button type="button" class="close" data-dismiss="alert">×</button>
+              {{error.message}}
+            </div>
+      {{/each}}
+      {{#unless app.errors}}
+          <div  class="alert alert-dismissable alert-success">
+            {{message}}
+          </div>
+      {{/unless}}
+{{/if}}
+
 {{/if}}
