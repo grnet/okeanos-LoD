@@ -1,9 +1,11 @@
 import mock
-
+import pytest
+from mock import patch, call, MagicMock
 from fokia import utils
+from kamaki.clients import ClientError
 
 
-@mock.patch('fokia.utils.AstakosClient')
+@patch('fokia.utils.AstakosClient')
 def test_get_user_okeanos_projects(mock_AstakosClient):
     # Define ~okeanos authentication url.
     authentication_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
@@ -31,8 +33,8 @@ def test_get_user_okeanos_projects(mock_AstakosClient):
     assert response == [{'id': 1, 'name': "name1"}, {'id': 2, 'name': "name2"}]
 
 
-@mock.patch('fokia.utils.CycladesComputeClient')
-@mock.patch('fokia.utils.AstakosClient')
+@patch('fokia.utils.CycladesComputeClient')
+@patch('fokia.utils.AstakosClient')
 def test_get_vm_parameter_values(mock_AstakosClient, mock_CycladesComputeClient):
     # Define ~okeanos authentication url.
     authentication_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
@@ -43,51 +45,31 @@ def test_get_vm_parameter_values(mock_AstakosClient, mock_CycladesComputeClient)
     cyclades_url = mock.Mock()
     mock_cyclades_compute_client = mock.Mock()
     mock_CycladesComputeClient.service_type = mock.Mock()
-    mock_cyclades_compute_client.\
-        list_flavors.return_value = [
-            {
-                u'SNF:allow_create': True,
-                u'SNF:disk_template': u'drbd',
-                u'SNF:volume_type': 1,
-                u'disk': 20,
-                u'id': 1,
-                u'links': [{u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/1',
-                            u'rel': u'self'},
-                           {u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/1',
-                            u'rel': u'bookmark'}],
-                u'name': u'C1R1024D20drbd',
-                u'ram': 2048,
-                u'vcpus': 2
-            },
-            {
-                u'SNF:allow_create': True,
-                u'SNF:disk_template': u'drbd',
-                u'SNF:volume_type': 1,
-                u'disk': 40,
-                u'id': 3,
-                u'links': [{u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/3',
-                            u'rel': u'self'},
-                           {u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/3',
-                             u'rel': u'bookmark'}],
-                u'name': u'C1R1024D40drbd',
-                u'ram': 1024,
-                u'vcpus': 4
-            },
-            {
-                u'SNF:allow_create': False,
-                u'SNF:disk_template': u'drbd',
-                u'SNF:volume_type': 1,
-                u'disk': 80,
-                u'id': 51,
-                u'links': [{u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/51',
-                            u'rel': u'self'},
-                           {u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/51',
-                            u'rel': u'bookmark'}],
-                u'name': u'C1R512D80drbd',
-                u'ram': 512,
-                u'vcpus': 1
-            }
-        ]
+    mock_cyclades_compute_client.list_flavors.return_value = [{
+        u'SNF:allow_create': True, u'SNF:disk_template': u'drbd', u'SNF:volume_type': 1,
+        u'disk':             20, u'id': 1, u'links': [{
+            u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/1', u'rel': u'self'
+        }, {
+            u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/1',
+            u'rel':  u'bookmark'
+        }], u'name':         u'C1R1024D20drbd', u'ram': 2048, u'vcpus': 2
+    }, {
+        u'SNF:allow_create': True, u'SNF:disk_template': u'drbd', u'SNF:volume_type': 1,
+        u'disk':             40, u'id': 3, u'links': [{
+            u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/3', u'rel': u'self'
+        }, {
+            u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/3',
+            u'rel':  u'bookmark'
+        }], u'name':         u'C1R1024D40drbd', u'ram': 1024, u'vcpus': 4
+    }, {
+        u'SNF:allow_create': False, u'SNF:disk_template': u'drbd', u'SNF:volume_type': 1,
+        u'disk':             80, u'id': 51, u'links': [{
+            u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/51', u'rel': u'self'
+        }, {
+            u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/flavors/51',
+            u'rel':  u'bookmark'
+        }], u'name':         u'C1R512D80drbd', u'ram': 512, u'vcpus': 1
+    }]
 
     mock_CycladesComputeClient.return_value = mock_cyclades_compute_client
 
@@ -106,3 +88,63 @@ def test_get_vm_parameter_values(mock_AstakosClient, mock_CycladesComputeClient)
 
     # Assert the contents of the response
     assert response == {'vcpus': [2, 4], 'ram': [1024, 2048], 'disk': [20, 40]}
+
+
+@patch('fokia.utils.os')
+@patch('fokia.utils.CycladesComputeClient')
+@patch('fokia.utils.AstakosClient')
+@patch('fokia.utils.PithosClient')
+def test_lambda_instance_start_stop(pithosclient, astakosclient, cycladesclient, mock_os):
+    url, token = "test_auth_url", "test_auth_token"
+    master_id = "test_master_id"
+    slave_ids = ["test_slave_id_1", "test_slave_id_2", "test_slave_id_3"]
+    utils.lambda_instance_start(url, token, master_id, slave_ids)
+    utils.lambda_instance_stop(url, token, master_id, slave_ids)
+    assert cycladesclient.return_value.start_server.call_args_list == [call('test_slave_id_1'),
+                                                                       call('test_slave_id_2'),
+                                                                       call('test_slave_id_3'),
+                                                                       call('test_master_id')]
+    assert cycladesclient.return_value.shutdown_server.call_args_list == [call('test_master_id'),
+                                                                          call('test_slave_id_1'),
+                                                                          call('test_slave_id_2'),
+                                                                          call('test_slave_id_3')]
+
+
+@patch('fokia.utils.os')
+@patch('fokia.utils.CycladesComputeClient')
+@patch('fokia.utils.AstakosClient')
+@patch('fokia.utils.PithosClient')
+def test_check_user_token(pithosclient, astakosclient, cycladesclient, mock_os):
+    url, token = "test_auth_url", "test_auth_token"
+    user_info = MagicMock()
+    astakosclient.return_value.authenticate.side_effect = [ClientError('UNAUTHORIZED'), user_info]
+    with pytest.raises(ClientError):
+        res = utils.check_auth_token(token, url)
+        assert res[0] is False
+    res = utils.check_auth_token(token, url)
+    assert res[0] is True
+    assert res[1] == user_info
+
+
+@patch('fokia.utils.os')
+@patch('fokia.utils.CycladesComputeClient')
+@patch('fokia.utils.AstakosClient')
+@patch('fokia.utils.PithosClient')
+def test_pithos_file_handling(mock_pithos, astakosclient, cycladesclient, mock_os):
+    url, token = "test_auth_url", "test_auth_token"
+    container, filename = "test_container_name", "test_filename"
+    file_obj = mock.Mock()
+    pithosclient = mock_pithos.return_value
+    mock_os.path.basename.return_value = "test_file_name"
+    utils.upload_file_to_pithos(url, token, container, "test_project_name", file_obj)
+    utils.download_file_from_pithos(url, token, container, filename, "test_destination")
+    utils.delete_file_from_pithos(url, token, container, filename)
+    pithosclient.upload_object.assert_called_with('test_file_name', file_obj)
+    pithosclient.download_object.assert_called_with('test_filename', 'test_destination')
+    pithosclient.delete_object.assert_called_with('test_filename')
+
+
+if __name__ == '__main__':
+    test_lambda_instance_start_stop()
+    test_check_user_token()
+    test_pithos_file_handling()

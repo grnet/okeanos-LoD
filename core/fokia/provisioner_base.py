@@ -12,6 +12,8 @@ from kamaki.cli.config import Config as KamakiConfig
 from fokia.utils import patch_certs
 from fokia.cluster_error_constants import *
 
+import os
+
 import abc
 
 storage_templates = ['drdb', 'ext_vlmc']
