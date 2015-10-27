@@ -1400,7 +1400,7 @@ class TestLambdaInstancesCount(APITestCase):
             LambdaInstance.objects.create(uuid=uuid.uuid4())
 
     # Test for getting the count of the lambda instances.
-    def test_lambda_instance_count(self):
+    def test_lambda_instances_count(self):
         # Make a request to get the count of the lambda instances.
         response = self.client.get("/api/lambda-instances/count/")
 
