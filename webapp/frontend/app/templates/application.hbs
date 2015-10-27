@@ -53,17 +53,17 @@
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu">
         <li class="header">MAIN NAVIGATION</li>
-        <li class="active treeview">
+        <li class={{active-treeview currentPath 'dashboard'}}>
         {{#link-to 'dashboard'}}
             <i class="fa fa-dashboard"></i> <span>Home</span>
         {{/link-to}}
         </li>
-        <li>
+        <li class={{active-treeview currentPath 'lambda-instance'}}>
         {{#link-to 'lambda-instances'}}
             <i class="fa fa-laptop"></i> <span>Instances</span>
         {{/link-to}}
         </li>
-        <li>
+        <li class={{active-treeview currentPath 'lambda-app'}}>
         {{#link-to 'lambda-apps'}}
           <i class="fa fa-th"></i> <span>Applications</span>
         {{/link-to}}
