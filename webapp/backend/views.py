@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
-from rest_framework.decorators import detail_route, api_view
+from rest_framework.decorators import detail_route, list_route, api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 
@@ -972,6 +972,24 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 del item['uuid']
 
         return response
+
+    @list_route()
+    def count(self, request, format=None):
+        # Get the number of Lambda Instance currently in database.
+        count = self.get_queryset().count()
+
+        # Return a proper message.
+        status_code = status.HTTP_200_OK
+        return Response({'status': {
+            'code': status_code,
+            'short_description': ResponseMessages.short_descriptions['lambda_instances_count']
+        },
+            'data': [
+                {
+                    'count': count
+                }
+            ]
+        }, status=status_code)
 
 
 class CreateLambdaInstance(APIView):
