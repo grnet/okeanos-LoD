@@ -84,10 +84,10 @@
                 <td>{{lambda-application.id}}</td>
                 <td>{{lambda-application.name}}</td>
                 <td><span>{{lambda-application.status_detail}}</span></td>
-                <td>{{lambda-application.app_type}}</td>
+                <td>{{lower-case lambda-application.app_type}}</td>
                 <td>
                   {{#linkTo 'lambda-app' lambda-application.id}}
-                  <a href="app-details.html" class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
+                  <button class="btn btn-info btn-xs"><i class="fa fa-file-code-o"></i> Details</button>
                   {{/linkTo}}
                   <a href="app-instance.html" class="btn btn-primary btn-xs"  title="Attach an application" alt="Attach an application"><i class="fa  fa-share"></i> Lambda Instance</a>
       <a href="delete-application.html" class="btn btn-danger btn-xs"  title="Delete" alt="Delete"><i class="fa fa-close"></i> Delete</a>
