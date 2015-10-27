@@ -240,11 +240,9 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             'code': status_code,
             'short_description': ResponseMessages.short_descriptions['applications_count']
         },
-            'data': [
-                {
-                    'count': count
-                }
-            ]
+            'data': [{
+                'count': count
+            }]
         }, status=status_code)
 
     def list(self, request, format=None):
@@ -1004,11 +1002,9 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             'code': status_code,
             'short_description': ResponseMessages.short_descriptions['lambda_instances_count']
         },
-            'data': [
-                {
-                    'count': count
-                }
-            ]
+            'data': [{
+                'count': count
+            }]
         }, status=status_code)
 
 
