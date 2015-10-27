@@ -21,7 +21,6 @@
 
 {{/if}}
 
-{{#if start}}
 
 {{#if request}}
       {{#each app.errors as |error|}}
@@ -35,51 +34,4 @@
             {{message}}
           </div>
       {{/unless}}
-{{/if}}
-
-{{else if stop}}
-{{#if request}}
-      {{#each app.errors as |error|}}
-            <div  class="alert alert-dismissable alert-danger">
-              <button type="button" class="close" data-dismiss="alert">×</button>
-              {{error.message}}
-            </div>
-      {{/each}}
-      {{#unless app.errors}}
-          <div  class="alert alert-dismissable alert-success">
-            {{message}}
-          </div>
-      {{/unless}}
-{{/if}}
-
-{{else if deploy}}
-{{#if request}}
-      {{#each app.errors as |error|}}
-            <div  class="alert alert-dismissable alert-danger">
-              <button type="button" class="close" data-dismiss="alert">×</button>
-              {{error.message}}
-            </div>
-      {{/each}}
-      {{#unless app.errors}}
-          <div  class="alert alert-dismissable alert-success">
-            {{message}}
-          </div>
-      {{/unless}}
-{{/if}}
-
-{{else if withdraw}}
-{{#if request}}
-      {{#each app.errors as |error|}}
-            <div  class="alert alert-dismissable alert-danger">
-              <button type="button" class="close" data-dismiss="alert">×</button>
-              {{error.message}}
-            </div>
-      {{/each}}
-      {{#unless app.errors}}
-          <div  class="alert alert-dismissable alert-success">
-            {{message}}
-          </div>
-      {{/unless}}
-{{/if}}
-
 {{/if}}
