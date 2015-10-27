@@ -19,7 +19,7 @@
         <div class="box-body no-padding">
           <div class="row">
             <div class="col-md-12">
-              <div class="pad"> Mpla Mpla Mpla
+              <div class="pad"> Welcome to ~okeanos Lambda on Demand project. Through these web pages you can administrate Lambda Instances, upload, deploy, start and stop Applications to them and monitor their status.
               </div>
             </div><!-- /.col -->
           </div><!-- /.row -->
@@ -48,7 +48,7 @@
             <div class="col-md-3 col-sm-4">
               <div class="small-box bg-blue">
                 <div class="inner">
-                  <h3>150</h3>
+                  <h3>{{model.lambdaInstancesCount.count}}</h3>
                   <p>Lambda Instances</p>
                 </div>
                 <div class="icon">
@@ -62,7 +62,7 @@
             <div class="col-md-3 col-sm-4">
               <div class="small-box bg-orange">
                 <div class="inner">
-                  <h3>150</h3>
+                  <h3>{{model.applicationsCount.count}}</h3>
                   <p>Applications Uploaded</p>
                 </div>
                 <div class="icon">
