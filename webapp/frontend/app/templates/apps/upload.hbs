@@ -1,0 +1,123 @@
+<!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+      Dashboard
+      <small>Upload an application</small>
+    </h1>
+
+  </section>
+
+  <!-- Main content -->
+  <section class="content">
+
+    <div class="row">
+     <div class="col-xs-12">
+        <div class="box box-warning">
+          <div class="box-header with-border">
+            <h3 class="box-title">Upload an application</h3>
+            <div class="box-tools pull-right">
+              <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+              <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div>
+          </div><!-- /.box-header -->
+          <div class="box-body no-padding">
+            <div class="row">
+              <div class="col-md-9 col-sm-8">
+                <div class="pad">
+                From this page you can upload a java application onto the Pithos storage service. Your application will be stored within the folder <i>lambda_applications</i>.
+                Each application you upload may be deployed later onto your lambda-instance(s).
+                </div>
+              </div><!-- /.col -->
+
+            </div><!-- /.row -->
+      </div><!--box-->
+    </div> <!-- box-primary -->
+    </div> <!--col -->
+  </div> <!--row-->
+  <div class="row">
+    <div class="col-xs-12">
+    </div><!--col-xs-12-->
+  </div><!--row-->
+  <form method="post" id="upload-app-form" {{action "upload" on="submit"}}>
+  <div class="row">
+          <div class="col-xs-12">
+            <div class="box box-primary">
+              <div class="box-header with-border">
+                <h3 class="box-title">Main</h3>: Select the data for your application
+                          </div><!-- /.box-header -->
+              <div class="box-body">
+               <div class="row">
+        <div class="form-group col-sm-6">
+              <label for="okeanos_project" class="col-sm-6">~okeanos Project:</label>
+              <div class="col-sm-6">
+
+
+               <select name="okeanos_project" class="form-control">
+                 {{#each model.userOkeanosProjects as |project|}}
+                   <option value={{project.name}}>{{project.name}}</option>
+                 {{/each}}
+               </select>
+
+
+            <span id="helpBlock" class="help-block">Select the project.</span>
+
+
+          </div>	<!--class="col-sm-6"-->
+          <label for="description" class="col-sm-6">Description:</label>
+              <div class="col-sm-6">
+
+          <textarea type="textarea" name="description" class="center-block form-control input-lg" id="description" placeholder="Add a small description for your application"></textarea>
+
+
+          <span id="helpBlock" class="help-block">Add a description for the file.</span>
+
+
+          </div>	<!--class="col-sm-6"-->
+
+        </div>	<!--class="col-sm-6"-->
+          <div class="form-group col-sm-6">
+              <label for="type"  class="col-sm-6">Application type: </label>
+                <div class="col-sm-6" >
+                  <select name="type" class="form-control">
+                    <option value="batch">batch</option>
+                    <option value="streaming" selected>streaming</option>
+                  </select>
+
+              <span id="helpBlock" class="help-block">Select the type of the application.<br>
+              The type you select, will define your application as streaming or batch in order to later deploy and execute it appropriately within your lambda-instance(s).</span>
+              </div><!--class="col-sm-6"-->
+           </div><!--class="form-group col-sm-6"-->
+
+      <div class="form-group col-sm-6">
+      <label for="type"  class="col-sm-6">File to upload: </label>
+      <div class="col-sm-6" >
+          {{input value=file type="file" name="file" id="file" required="true" accept=".jar"}}
+        <span id="helpBlock" class="help-block">Upload the file of the application.<br>Only jar files are accepted.</span>
+      </div>
+      </div>
+
+      <div class="progress col-sm-6 col-sm-offset-3" id="progress_bar" hidden>
+       <div class="progress-bar progress-bar-striped active" role="progressbar" id="progress"
+       aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+       </div>
+     </div>
+     <p id="progress_text" class="col-sm-6 col-sm-offset-3"></p>
+
+    {{#if wrongExt}}
+      <div class="alert alert-danger col-sm-6 col-sm-offset-3">
+        File extension error.We only support file with <strong>jar</strong> extension for upload.
+      </div>
+    {{/if}}
+
+    </div><!--row-->
+
+    </div><!--box-body-->
+    </div><!--box-->
+    </div><!--col-->
+    </div><!--row-->
+
+  <button type="submit" class="btn btn-primary">Submit</button>
+
+  </form>
+
+  </section><!-- /.content -->

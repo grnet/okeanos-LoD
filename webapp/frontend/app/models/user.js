@@ -1,8 +1,5 @@
-import DS from "ember-data";
+import DS from 'ember-data';
 
-// Information about user
-var User = DS.Model.extend({
-	token : DS.attr('string'), 			// okeanos token
+export default DS.Model.extend({
+  token: DS.attr('string'),
 });
-
-export default User;
