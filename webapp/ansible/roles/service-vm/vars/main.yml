@@ -5,4 +5,4 @@ database_user_password: change_me
 repository_download_path: /var/www
 repository_url: https://github.com/grnet/okeanos-LoD.git
 repository_branch: devel
-central_vm_ip: 127.0.0.1
+central_vm_ip: "central.service.vm"
