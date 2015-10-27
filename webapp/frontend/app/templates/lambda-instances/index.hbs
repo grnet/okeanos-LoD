@@ -88,8 +88,13 @@
                             <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
                           {{/linkTo}}
                        		<a href="start-stop.html" class="btn btn-danger btn-xs"  title="Stop The instance" alt="Stop The instance"><i class="fa fa-stop"></i> Stop</a>
-                       		<a href="app-instance.html" class="btn btn-primary btn-xs"  title="Attach an application" alt="Attach an application"><i class="fa fa-mail-reply"></i> App</a>
-							<a href="delete-instance.html" class="btn btn-danger btn-xs"  title="Delete" alt="Delete"><i class="fa fa-close"></i> Delete</a>
+                          {{#link-to "deploy-app-2" lambda-instance.id}}
+                              <button class="btn btn-primary btn-xs"
+                                      style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
+                                  Attach an application
+                              </button>
+                          {{/link-to}}
+						  	          <a href="delete-instance.html" class="btn btn-danger btn-xs"  title="Delete" alt="Delete"><i class="fa fa-close"></i> Delete</a>
 						</td>
                       </tr>
                       {{else}}

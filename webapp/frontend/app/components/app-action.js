@@ -1,8 +1,9 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  request : false,
-  message : "",
+  request: false,
+  failure: false,
+  message: "",
   actions: {
     start(app) {
       //send request to start application
@@ -26,12 +27,18 @@ export default Ember.Component.extend({
     },
     deploy(app) {
       //send request to deploy application
-      app.set('application_id', this.get("application-id"));
-      app.set('lambda_instance_id', this.get("instance-id"));
+      let application_id = this.get('application-id');
+      let instance_id = this.get('instance-id');
+      app.set('application_id', application_id);
+      app.set('lambda_instance_id', instance_id);
       app.set('call', "deploy");
-      app.save();
-      this.set("request", true);
-      this.set("message", "Your request to deploy the application was successfully sent to the server.");
+      var _this = this;
+      app.save().catch(function() {
+        _this.set('failure', true);
+      });
+      //this.set("request", true);
+      //this.set("message", "Your request to deploy the application was successfully sent to the server.");
+      this.sendAction('action', application_id, instance_id);
       return false;
     },
     withdraw(app) {
@@ -43,6 +50,6 @@ export default Ember.Component.extend({
       this.set("request", true);
       this.set("message", "Your request to withdraw the application was successfully sent to the server.");
       return false;
-    },
+    }
   }
 });

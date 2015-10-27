@@ -37,5 +37,4 @@ export default LoDSerializer.extend(DS.EmbeddedRecordsMixin, {
     }
     return this._super(store, primaryModelClass, payload, id, requestType);
   }
-  
 });

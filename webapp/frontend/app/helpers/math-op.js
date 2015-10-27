@@ -1,6 +1,6 @@
 import Ember from "ember";
 
-export default Ember.Handlebars.makeBoundHelper(function(operand1, operator, operand2) {
+export default Ember.Helper.helper(function([operand1, operator, operand2]) {
   var result;
   switch (operator) {
     case '+':

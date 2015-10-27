@@ -34,15 +34,9 @@
     tags:
       - ember-install
 
-  - name: Install ember-simple-auth
-    shell: "ember install ember-simple-auth"
-    args:
-      chdir: "{{ install_dir }}"
-    tags:
-      - ember-install
-
-  - name: Install ember-cli-pagination
-    shell: "ember install ember-cli-pagination"
+  - name: Install ember addons
+    shell: ember install "{{ item }}"
+    with_items: "{{ ember_addons }}"
     args:
       chdir: "{{ install_dir }}"
     tags:

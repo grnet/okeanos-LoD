@@ -1,5 +1,5 @@
 import Ember from "ember";
 
-export default Ember.Handlebars.makeBoundHelper(function(str) {
+export default Ember.Helper.helper(function([str]) {
   return str.toLowerCase();
 });
