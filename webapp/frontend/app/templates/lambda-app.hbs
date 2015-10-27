@@ -128,12 +128,14 @@
                                               <td>{{li.id}} </td>
                                               <td>{{li.started_app}}</td>
                                               <td>
-                                                  {{app-action withdraw=true app=model.app application-id=model.application.id instance-id=li.id}}
+                                                  <span>
+                                                  {{app-action started=li.started_app withdraw=true app=model.app application-id=model.application.id instance-id=li.id}}
                                                   {{#if li.started_app}}
-                                                    {{app-action stop=true app=model.app application-id=model.application.id instance-id=li.id}}
+                                                    {{app-action stop=true message=message app=model.app application-id=model.application.id instance-id=li.id}}
                                                   {{else}}
-                                                    {{app-action start=true app=model.app application-id=model.application.id instance-id=li.id}}
+                                                    {{app-action start=true message=message app=model.app application-id=model.application.id instance-id=li.id}}
                                                   {{/if}}
+                                                  </span>
                                               </td>
                                           </tr>
                                       {{/each}}

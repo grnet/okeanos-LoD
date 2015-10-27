@@ -4,7 +4,7 @@ import DS from 'ember-data';
 export default DS.JSONSerializer.extend({
   attrs: {
     call: {serialize: false},
-    application_id: {serialize: false}
+    application_id: {serialize: false},
   },
   extractErrors: function(store, typeClass, payload) {
     var transformedErrors = {};
