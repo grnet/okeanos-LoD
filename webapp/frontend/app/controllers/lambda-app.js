@@ -4,7 +4,10 @@ export default Ember.Controller.extend({
   actions: {
     withdraw: function()
     {
-      this.store.unloadAll('lambda-instance');
+      var _this = this;
+      Ember.run.later((function () {
+        _this.store.unloadAll('lambda-instance');
+      }), 2000);
     }
   }
 });
