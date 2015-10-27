@@ -10,9 +10,9 @@ export default Ember.Controller.extend({
       Ember.run.later((function () {
         applications = _this.store.filter('lambda-app', {},
           function (application) {
-            //if (application.get('status_code') !== 0) {
-            //  return false;
-            //}
+            if (application.get('status_code') !== 0) {
+              return false;
+            }
             let id = application.get('id');
             for (var i = 0; i < ids.length; i++) {
               if (id === ids[i]) {

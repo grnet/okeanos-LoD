@@ -62,6 +62,7 @@
                                   <thead>
                                   <tr>
                                       <th>Application name</th>
+                                      <th>Application type</th>
                                       <th>Application ID</th>
                                       <th>Action</th>
                                   </tr>
@@ -70,6 +71,7 @@
                                   {{#each applications as |application|}}
                                       <tr>
                                           <td>{{application.name}}</td>
+                                          <td>{{lower-case application.app_type}}</td>
                                           <td>{{application.id}}</td>
                                           <td>{{app-action action="deploy" deploy=true app=app application-id=application.id instance-id=instance.id}}</td>
                                       </tr>
