@@ -680,7 +680,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     authentication_classes = KamakiTokenAuthentication,
     permission_classes = IsAuthenticated,
 
-    queryset = LambdaInstance.objects.all()
+    queryset = LambdaInstance.objects.all().exclude(status='6')
     serializer_class = LambdaInstanceSerializer
 
     lookup_field = 'uuid'

@@ -289,9 +289,14 @@ class TestLambdaInstancesList(APITestCase):
     def test_lambda_instances_list(self):
         # Create some lambda instances on the database.
         number_of_lambda_instances = randint(0, 100)
+        number_of_deleted_lambda_instances = randint(0, 20)
         for i in range(number_of_lambda_instances):
             LambdaInstance.objects.create(uuid=uuid.uuid4(),
                                           name="lambda_instance_{i}".format(i=i))
+        for i in range(number_of_deleted_lambda_instances):
+            LambdaInstance.objects.create(uuid=uuid.uuid4(),
+                                          name="lambda_instance_{i}".format(i=i),
+                                          status='6')
 
         # Make a request to list the lambda instances.
         response = self.client.get("/api/lambda-instances/")
@@ -300,7 +305,8 @@ class TestLambdaInstancesList(APITestCase):
         self._assert_success_request_response_structure(response)
 
         # Assert the contents of the response.
-        self.assertEqual(len(response.data['data']), number_of_lambda_instances)
+        self.assertEqual(len(response.data['data']),
+                         number_of_lambda_instances)
 
         self._assert_success_request_response_content(response)
 
