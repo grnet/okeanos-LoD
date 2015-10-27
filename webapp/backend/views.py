@@ -367,6 +367,18 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
         serializer = ApplicationSerializer(applications[0])
 
+        # Get the instances the application is running on
+        running = filter(lambda x: x['started'], serializer.data['lambda_instances'])
+
+        # If there is any lambda instances running the application the application should not
+        # be deleted
+        if len(running) > 0:
+            raise CustomCantDoError(CustomCantDoError.messages['delete_running_app'].format(
+                name=serializer.data['name'],
+                # get the names of the lambda instances the application is running on
+                instances=', '.join(reduce(lambda y, x: y + [x['name']], running, [])),
+            ))
+
         # Create task to delete the specified application from Pithos.
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
