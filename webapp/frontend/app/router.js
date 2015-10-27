@@ -12,7 +12,7 @@ Router.map(function () {
   this.resource('lambda-instance', {path: '/lambda-instance/:instance_uuid'});
   this.route('create-lambda-instance');
   this.resource('lambda-apps', function() {
-    this.route('upload')
+    this.route('upload');
   });
   this.resource('lambda-app', {path: '/apps/:app_uuid'});
 });
