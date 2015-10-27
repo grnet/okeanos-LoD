@@ -1,6 +1,5 @@
 import inspect
 import os
-import tempfile
 import ansible
 from ansible.playbook import PlayBook
 from ansible import callbacks
@@ -68,8 +67,10 @@ class Manager:
 
         slaves_group = ansible.inventory.group.Group(name='slaves')
         slaves_group.set_variable('proxy_env',
-                                  {'http_proxy': 'http://' + self.inventory['master']['name'] + '.local:3128'})
-        # slaves_group.set_variable('http_proxy', 'http://' + self.inventory['master']['name'] + '.local:3128')
+                                  {'http_proxy': 'http://' + self.inventory['master']['name'] +
+                                                 '.local:3128'})
+        # slaves_group.set_variable('http_proxy', 'http://' + self.inventory['master']['name'] +
+        # '.local:3128')
         for host_id, host in enumerate(self.inventory['slaves'], start=1):
             ansible_host = all_ansible_hosts[host_id]
             ansible_host.set_variable('internal_ip', host['ip'])
@@ -112,22 +113,3 @@ class Manager:
         self.ansible_inventory.add_group(master_group)
         all_group.add_child_group(master_group)
         return self.ansible_inventory
-
-
-if __name__ == "__main__":
-    response = {
-        u'ips': [{u'floating_network_id': u'2186', u'floating_ip_address': u'83.212.116.49', u'id': u'688160'}],
-        u'nodes': {
-            u'master': {'internal_ip': u'192.168.0.2', u'adminPass': u'0igc3vbnSx', u'id': 666976, u'name': u'test_vm'},
-            u'slaves': [{'internal_ip': u'192.168.0.3', u'id': 666977, u'name': u'lambda-node1'}]},
-        u'vpn': {u'type': u'MAC_FILTERED', u'id': u'143713'},
-        'pk': 'Dummy pk',
-        u'subnet': {u'cidr': u'192.168.0.0/24', u'gateway_ip': u'192.168.0.1', u'id': u'142761'}}
-
-    script_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    manager = Manager(response)
-    manager.create_inventory()
-    # manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/test/testinventory.yml", tags=['hosts'])
-    # manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/test/testproxy.yml", tags=['install'])
-
-    manager.run_playbook(playbook_file=script_path + "/../../ansible/playbooks/cluster-install.yml")

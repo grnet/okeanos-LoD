@@ -2,7 +2,7 @@ from kamaki.clients import ClientError
 from fokia.provisioner_base import ProvisionerBase
 from fokia.cluster_error_constants import *
 from base64 import b64encode
-
+import os
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -33,8 +33,7 @@ class VM_Manager(ProvisionerBase):
                                       ram=kwargs['ram'],
                                       disk=kwargs['disk'])
             if not flavor:
-                msg = 'This flavor does not allow create.'
-                raise ClientError(msg, error_flavor_list)
+                raise ClientError("This flavor does not allow create.", error_flavor_list)
 
             public_ip = self.reserve_ip(project_id=project_id)
 
@@ -99,7 +98,7 @@ class VM_Manager(ProvisionerBase):
             msg = 'Cyclades ram out of limit'
             raise ClientError(msg, error_quotas_ram)
         # Check for Disk space
-        pending_cd = quotas[project_id]['cyclades.ram']['project_pending']
+        pending_cd = quotas[project_id]['cyclades.disk']['project_pending']
         limit_cd = quotas[project_id]['cyclades.disk']['project_limit']
         usage_cd = quotas[project_id]['cyclades.disk']['project_usage']
         available_cyclades_disk_gb = (limit_cd - usage_cd - pending_cd) / self.Bytes_to_GB

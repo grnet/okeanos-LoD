@@ -186,7 +186,7 @@ class Provisioner(ProvisionerBase):
             slave_obj = dict()
             slave_obj['id'] = slave['id']
             slave_obj['name'] = slave['name']
-            name = slave_obj['name']
+            # name = slave_obj['name']
             slaves.append(slave_obj)
         nodes['slaves'] = slaves
 
@@ -249,7 +249,7 @@ class Provisioner(ProvisionerBase):
             msg = 'Cyclades ram out of limit'
             raise ClientError(msg, error_quotas_ram)
         # Check for Disk space
-        pending_cd = quotas[project_id]['cyclades.ram']['project_pending']
+        pending_cd = quotas[project_id]['cyclades.disk']['project_pending']
         limit_cd = quotas[project_id]['cyclades.disk']['project_limit']
         usage_cd = quotas[project_id]['cyclades.disk']['project_usage']
         available_cyclades_disk_GB = (limit_cd - usage_cd - pending_cd) / self.Bytes_to_GB
@@ -257,7 +257,7 @@ class Provisioner(ProvisionerBase):
             msg = 'Cyclades disk out of limit'
             raise ClientError(msg, error_quotas_cyclades_disk)
         # Check for authorized IPs
-        list_float_ips = self.network_client.list_floatingips()
+        # list_float_ips = self.network_client.list_floatingips()
         pending_ips = quotas[project_id]['cyclades.floating_ip']['project_pending']
         limit_ips = quotas[project_id]['cyclades.floating_ip']['project_limit']
         usage_ips = quotas[project_id]['cyclades.floating_ip']['project_usage']
