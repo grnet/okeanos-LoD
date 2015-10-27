@@ -132,12 +132,24 @@
                                               <td>{{li.id}} </td>
                                               <td>{{li.started_app}}</td>
                                               <td>
-                                                {{#if li.started_app}}
-                                                  {{app-action stop=true app=model.app application-id=model.application.id instance-id=li.id}}
-                                                {{else}}
-                                                  {{app-action start=true app=model.app application-id=model.application.id instance-id=li.id}}
-                                                  {{app-action withdraw=true app=model.app application-id=model.application.id instance-id=li.id}}
-                                                {{/if}}
+                                                <div class="table">
+                                                    <table class="table">
+                                                        <tbody>
+                                                              {{#if li.started_app}}
+                                                                <td>
+                                                                {{app-action stop=true app=model.app application-id=model.application.id instance-id=li.id}}
+                                                              </td>
+                                                              {{else}}
+                                                              <td>
+                                                                {{app-action start=true app=model.app application-id=model.application.id instance-id=li.id}}
+                                                              </td>
+                                                              <td>
+                                                                {{app-action withdraw=true app=model.app application-id=model.application.id instance-id=li.id}}
+                                                              </td>
+                                                              {{/if}}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                               </td>
                                           </tr>
                                       {{/each}}
