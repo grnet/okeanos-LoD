@@ -43,18 +43,13 @@ export default Ember.Component.extend({
     },
     withdraw(app) {
       //send request to withdraw application
-      if (this.get("started")){
-        window.alert("You cannot withdraw the application from this lambda-instance because it is currently running.")
-      }
-      else {
-        app.set('application_id', this.get("application-id"));
-        app.set('lambda_instance_id', this.get("instance-id"));
-        app.set('call', "withdraw");
-        app.save();
-        this.set("request", true);
-        this.set("message", "Your request to withdraw the application was successfully sent to the server.");
-        this.sendAction('action');
-      }
+      app.set('application_id', this.get("application-id"));
+      app.set('lambda_instance_id', this.get("instance-id"));
+      app.set('call', "withdraw");
+      app.save();
+      this.set("request", true);
+      this.set("message", "Your request to withdraw the application was successfully sent to the server.");
+      this.sendAction('action');
       return false;
     }
   }
