@@ -51,7 +51,10 @@
                 <div class="box-header">
                   <h3 class="box-title">Listing Lambda Instances</h3>
                   <div class="box-tools">
-                  	  <a href="create-lambda-instance" class="btn btn-primary btn-sm" title="Create New Instance" alt="Create New Instance"><i class="fa fa-laptop"></i> Create New Instance</a>
+                    {{#link-to 'create-lambda-instance'}}
+                        <a class="btn btn-primary btn-sm" title="Create New Instance" alt="Create New Instance">
+                            <i class="fa fa-laptop"></i> Create New Instance</a>
+                    {{/link-to}}
                   </div><!--box-tools-->
                 </div><!-- /.box-header -->
                 <div class="box-body">
@@ -88,7 +91,7 @@
                             <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
                           {{/linkTo}}
                        		<a href="start-stop.html" class="btn btn-danger btn-xs"  title="Stop The instance" alt="Stop The instance"><i class="fa fa-stop"></i> Stop</a>
-                          {{#link-to "deploy-app-2" lambda-instance.id}}
+                          {{#link-to 'deploy-app-2' lambda-instance.id}}
                               <button class="btn btn-primary btn-xs"
                                       style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
                                   Attach an application
