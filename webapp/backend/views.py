@@ -227,6 +227,26 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         else:
             return Application.objects.all()
 
+    # Note that this method should stay on top of list method otherwise, /api/lambda-instances/
+    # will shade /api/lambda-instances/count method.
+    @list_route(url_path="count")
+    def count(self, request, format=None):
+        # Get the number of Applications currently in database.
+        count = self.get_queryset().count()
+
+        # Return a proper message.
+        status_code = status.HTTP_200_OK
+        return Response({'status': {
+            'code': status_code,
+            'short_description': ResponseMessages.short_descriptions['applications_count']
+        },
+            'data': [
+                {
+                    'count': count
+                }
+            ]
+        }, status=status_code)
+
     def list(self, request, format=None):
         """
         This method is used to get a list of all the uploaded applications. Responds to GET
