@@ -1,0 +1,117 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <h1>
+    Dashboard
+    <small>Applications</small>
+  </h1>
+
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+   <div class="col-xs-12">
+      <div class="box box-warning">
+        <div class="box-header with-border">
+          <h3 class="box-title">Applications</h3>
+          <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+          </div>
+        </div><!-- /.box-header -->
+        <div class="box-body no-padding">
+          <div class="row">
+            <div class="col-md-9 col-sm-8">
+              <div class="pad">
+                <p> From this view, you can administer your lambda applications. </p>
+              </div>
+            </div><!-- /.col -->
+            <div class="col-md-3 col-sm-4">
+<div class="small-box bg-orange">
+        <div class="inner">
+          <h3>{{model.length}}</h3>
+          <p>Applications Uploaded</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-th"></i>
+        </div>
+
+      </div>
+
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div><!-- /.box-body -->
+      </div><!--box box-primary-->
+    </div><!--col-xs-12-->
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Listing applications</h3>
+          <div class="box-tools">
+              <a href="/lambda-apps/upload" class="btn btn-primary btn-sm" title="Upload an application" alt="Upload an application"><i class="fa fa-th"></i> Upload an application</a>
+          </div><!--box-tools-->
+        </div><!-- /.box-header -->
+        <div class="box-body">
+         <div class="row">
+        <div class="col-xs-12">
+          <table  class="table table-bordered table-hover table-responsive">
+            <thead>
+              <tr>
+                <th>#id</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Type</th>
+                <th>Actions</th>
+
+              </tr>
+            </thead>
+            <tbody>
+             <!-- <tr>
+                <td>1</td>
+                <td>My Application</td>
+                <td>
+      <a class="btn btn-social-icon btn-bitbucket" title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i></a>
+      <a class="btn btn-social-icon btn-google" title="Delete" alt="Delete"><i class="fa fa-close"></i></a>
+                </td>
+
+
+              </tr> -->
+              {{#each pagedContent as |lambda-application|}}
+              <tr>
+                <td>{{lambda-application.id}}</td>
+                <td>{{lambda-application.name}}</td>
+                <td><span>{{lambda-application.status_detail}}</span></td>
+                <td>{{lower-case lambda-application.app_type}}</td>
+                <td>
+                  {{#linkTo 'lambda-app' lambda-application.id}}
+                  <button class="btn btn-info btn-xs"><i class="fa fa-file-code-o"></i> Details</button>
+                  {{/linkTo}}
+                  <a href="app-instance.html" class="btn btn-primary btn-xs"  title="Attach an application" alt="Attach an application"><i class="fa  fa-share"></i> Lambda Instance</a>
+      <a href="delete-application.html" class="btn btn-danger btn-xs"  title="Delete" alt="Delete"><i class="fa fa-close"></i> Delete</a>
+    </td>
+              </tr>
+              {{else}}
+                No lambda applications under ownership.
+              {{/each}}
+
+            </tbody>
+        </table>
+</div><!--col-xs-12-->
+</div><!--row-->
+<div class="row">
+  <div class="col-sm-6">
+    <div>Showing {{firstOfCurrentPage}} to {{lastOfCurrentPage}} of {{model.length}} entries</div>
+  </div>
+  <div class="col-sm-6">
+    {{page-numbers content=pagedContent currentPage=page totalPages=totalPages showFL=false}}
+    </div>
+</div><!--row-->
+
+          </div><!--box-body-->
+</div><!--box-->
+   </div><!--col-xs-12-->
+</div><!--row-->
+</section><!-- /.content -->
