@@ -13,6 +13,7 @@ export default Ember.Component.extend({
       app.save();
       this.set("request", true);
       this.set("message", "Your request to start the application was successfully sent to the server.");
+      this.sendAction('action');
       return false;
     },
     stop(app) {
@@ -23,6 +24,7 @@ export default Ember.Component.extend({
       app.save();
       this.set("request", true);
       this.set("message", "Your request to stop the application was successfully sent to the server.");
+      this.sendAction('action');
       return false;
     },
     deploy(app) {
@@ -49,6 +51,7 @@ export default Ember.Component.extend({
       app.save();
       this.set("request", true);
       this.set("message", "Your request to withdraw the application was successfully sent to the server.");
+      this.sendAction('action');
       return false;
     }
   }

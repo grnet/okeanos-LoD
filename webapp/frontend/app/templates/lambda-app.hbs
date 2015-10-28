@@ -117,6 +117,21 @@
 
                           <div class="col-ms-8 col-xs-8">
 
+                            {{#if request}}
+                                {{#each app.errors as |error|}}
+                                      <div  class="alert alert-dismissable alert-danger" id="alert">
+                                        <button type="button" class="close" {{action "close_alert"}}>×</button>
+                                        {{error.message}}
+                                      </div>
+
+                                {{else}}
+                                    <div  class="alert alert-dismissable alert-success" id="alert">
+                                      <button type="button" class="close" {{action "close_alert"}}>×</button>
+                                      {{message}}
+                                    </div>
+                                {{/each}}
+                            {{/if}}
+
                               <div class="table">
                                   <table class="table">
                                       <thead>
@@ -132,12 +147,24 @@
                                               <td>{{li.id}} </td>
                                               <td>{{li.started_app}}</td>
                                               <td>
-                                                {{#if li.started_app}}
-                                                  {{app-action stop=true app=model.app application-id=model.application.id instance-id=li.id}}
-                                                {{else}}
-                                                  {{app-action start=true app=model.app application-id=model.application.id instance-id=li.id}}
-                                                  {{app-action withdraw=true app=model.app application-id=model.application.id instance-id=li.id}}
-                                                {{/if}}
+                                                <div class="table">
+                                                    <table class="table">
+                                                        <tbody>
+                                                              {{#if li.started_app}}
+                                                                <td>
+                                                                {{app-action stop=true app=model.app application-id=model.application.id instance-id=li.id request=request message=message action="start_stop"}}
+                                                              </td>
+                                                              {{else}}
+                                                              <td>
+                                                                {{app-action start=true app=model.app application-id=model.application.id instance-id=li.id request=request message=message action="start_stop"}}
+                                                              </td>
+                                                              <td>
+                                                                {{app-action withdraw=true app=model.app application-id=model.application.id instance-id=li.id request=request message=message action="withdraw"}}
+                                                              </td>
+                                                              {{/if}}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                               </td>
                                           </tr>
                                       {{/each}}
