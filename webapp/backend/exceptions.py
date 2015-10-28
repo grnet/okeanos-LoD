@@ -73,7 +73,9 @@ class CustomCantDoError(APIException):
     default_detail = "Can't do."
 
     messages = {
-        'cant_do': "Can't {action} {object} while lambda instance status is {status}."
+        'cant_do': "Can't {action} {object} while lambda instance status is {status}.",
+        'delete_running_app': "Can't delete application {name} while it is running. "
+                              "Current lambda instances it is running are: {instances}",
     }
 
 

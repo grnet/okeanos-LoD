@@ -1,0 +1,12 @@
+- model: backend.Server
+  pk: 1
+  fields:
+    id: 123578123
+    hostname: "snf-test123.vm.cloud.edu"
+    cpus: 8
+    ram: 8192
+    disk: 40
+    pub_ip: "201.202.203.204"
+    pub_ip_id: 123512512
+    priv_ip: "192.168.0.2"
+    lambda_instance: 1

@@ -16,8 +16,9 @@ class ApplicationLambdaInstancesListingField(serializers.RelatedField):
     def to_representation(self, value):
         lambda_instance_id = value.lambda_instance.uuid
         started = value.started
+        name = value.lambda_instance.name
 
-        return {"id": lambda_instance_id, "started": started}
+        return {"id": lambda_instance_id, "started": started, "name": name}
 
 
 class LambdaInstanceApplicationsListingField(serializers.RelatedField):

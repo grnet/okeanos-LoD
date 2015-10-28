@@ -1,0 +1,37 @@
+- model: "backend.Application"
+  pk: 1
+  fields:
+    uuid: "efc26898-1054-46e7-bf9c-30719583f8bc"
+    name: "myapp.jar"
+    path: "/fake/path/to/app.jar"
+    description: "my app description"
+    owner: 1
+    failure_message: ""
+    status: 0
+    type: 0
+
+- model: "backend.Application"
+  pk: 2
+  fields:
+    uuid: "59a11f3a-9a4a-43f9-a1c2-9829764613e2"
+    name: "myapp2.jar"
+    path: "/fake/path/to/app2.jar"
+    description: "my app description 2"
+    owner: 1
+    failure_message: ""
+    status: 0
+    type: 0
+
+- model: "backend.LambdaInstanceApplicationConnection"
+  pk: 1
+  fields:
+    lambda_instance: 1
+    application: 1
+    started: False
+
+- model: "backend.LambdaInstanceApplicationConnection"
+  pk: 2
+  fields:
+    lambda_instance: 1
+    application: 2
+    started: True
