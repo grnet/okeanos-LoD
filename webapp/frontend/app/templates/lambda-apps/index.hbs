@@ -50,9 +50,13 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Listing applications</h3>
-          <div class="box-tools">
-              <a href="/lambda-apps/upload" class="btn btn-primary btn-sm" title="Upload an application" alt="Upload an application"><i class="fa fa-th"></i> Upload an application</a>
-          </div><!--box-tools-->
+            <div class="box-tools">
+              {{#link-to 'lambda-apps.upload'}}
+                  <a class="btn btn-primary btn-sm" title="Upload an application" alt="Upload an application">
+                      <i class="fa fa-th"></i> Upload an application</a>
+              {{/link-to}}
+            </div>
+            <!--box-tools-->
         </div><!-- /.box-header -->
         <div class="box-body">
          <div class="row">
@@ -86,10 +90,10 @@
                 <td><span>{{lambda-application.status_detail}}</span></td>
                 <td>{{lower-case lambda-application.app_type}}</td>
                 <td>
-                  {{#linkTo 'lambda-app' lambda-application.id}}
+                  {{#link-to 'lambda-app' lambda-application.id}}
                   <button class="btn btn-info btn-xs"><i class="fa fa-file-code-o"></i> Details</button>
-                  {{/linkTo}}
-                  {{#link-to "deploy-app-1" lambda-application.id}}
+                  {{/link-to}}
+                  {{#link-to 'deploy-app-1' lambda-application.id}}
                       <button class="btn btn-primary btn-xs"
                               style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
                           Attach to a lambda instance
