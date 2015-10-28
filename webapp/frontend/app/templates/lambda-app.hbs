@@ -9,22 +9,6 @@
 
 <!-- Main content -->
 <section class="content">
-
-  {{#if request}}
-      {{#each app.errors as |error|}}
-            <div  class="alert alert-dismissable alert-danger" id="alert">
-              <button type="button" class="close" {{action "close_alert"}}>×</button>
-              {{error.message}}
-            </div>
-
-      {{else}}
-          <div  class="alert alert-dismissable alert-success" id="alert">
-            <button type="button" class="close" {{action "close_alert"}}>×</button>
-            {{message}}
-          </div>
-      {{/each}}
-  {{/if}}
-
     <!-- TOP DATA -->
     <div class="row">
         <div class="col-xs-12">
@@ -132,6 +116,21 @@
                       <div class="row">
 
                           <div class="col-ms-8 col-xs-8">
+
+                            {{#if request}}
+                                {{#each app.errors as |error|}}
+                                      <div  class="alert alert-dismissable alert-danger" id="alert">
+                                        <button type="button" class="close" {{action "close_alert"}}>×</button>
+                                        {{error.message}}
+                                      </div>
+
+                                {{else}}
+                                    <div  class="alert alert-dismissable alert-success" id="alert">
+                                      <button type="button" class="close" {{action "close_alert"}}>×</button>
+                                      {{message}}
+                                    </div>
+                                {{/each}}
+                            {{/if}}
 
                               <div class="table">
                                   <table class="table">
