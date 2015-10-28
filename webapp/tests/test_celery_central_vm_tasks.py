@@ -375,7 +375,7 @@ class TestCeleryCentralVMTasks(APITestCase):
                 'uuid': "{}".format(application_uuid),
                 'name': application_name,
                 'description': description,
-                'status': Application.UPLOADED,
+                'status': Application.UPLOADING,
                 'failure_message': ""
             },
             headers={
@@ -415,7 +415,7 @@ class TestCeleryCentralVMTasks(APITestCase):
                 'uuid': "{}".format(application_uuid),
                 'name': application_name,
                 'description': description,
-                'status': Application.UPLOADED,
+                'status': Application.UPLOADING,
                 'failure_message': ""
             },
             headers={
@@ -460,7 +460,7 @@ class TestCeleryCentralVMTasks(APITestCase):
                 'uuid': "{}".format(application_uuid),
                 'name': application_name,
                 'description': description,
-                'status': Application.UPLOADED,
+                'status': Application.UPLOADING,
                 'failure_message': ""
             },
             headers={

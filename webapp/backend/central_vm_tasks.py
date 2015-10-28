@@ -97,7 +97,7 @@ def create_application_central_vm(self, auth_token, application_uuid, name, desc
                           'uuid': "{}".format(application_uuid),
                           'name': name,
                           'description': description,
-                          'status': Application.UPLOADED,
+                          'status': Application.UPLOADING,
                           'failure_message': ""
                       },
                       headers={

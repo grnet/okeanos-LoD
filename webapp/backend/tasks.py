@@ -302,6 +302,13 @@ def upload_application_to_pithos(auth_url, auth_token, container_name, project_n
     :param application_uuid: The uuid of the application to be uploaded.
     """
 
+    # The application has been created in the view that called this task. Send the information to
+    # Central VM.
+    application = Application.objects.get(uuid=application_uuid)
+    central_vm_tasks.\
+        create_application_central_vm.delay(auth_token, application_uuid, application.name,
+                                            application.description)
+
     # Open file from the local file system.
     local_file = open(local_file_path, 'r')
 
@@ -310,13 +317,14 @@ def upload_application_to_pithos(auth_url, auth_token, container_name, project_n
 
         events.set_application_status.delay(application_uuid=application_uuid,
                                             status=Application.UPLOADED)
-        application = Application.objects.get(uuid=application_uuid)
-        central_vm_tasks.\
-            create_application_central_vm.delay(auth_token, application_uuid, application.name,
-                                                application.description)
+        central_vm_tasks.set_application_status_central_vm.delay(auth_token, application_uuid,
+                                                                 Application.UPLOADED)
     except ClientError as exception:
         events.set_application_status.delay(application_uuid, Application.FAILED,
                                             exception.message)
+        central_vm_tasks.\
+            set_application_status_central_vm.delay(auth_token, application_uuid,
+                                                    Application.FAILED, exception.message)
 
     # Release local file system resources.
     local_file.close()

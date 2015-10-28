@@ -201,6 +201,7 @@ class TestCeleryTasks(APITestCase):
             assert_called_with(self.AUTHENTICATION_TOKEN, lambda_instance_uuid,
                                LambdaInstance.FAILED, "exception-message")
 
+    @mock.patch('backend.central_vm_tasks.set_application_status_central_vm')
     @mock.patch('backend.central_vm_tasks.create_application_central_vm')
     @mock.patch('backend.tasks.remove')
     @mock.patch('__builtin__.open')
@@ -209,7 +210,8 @@ class TestCeleryTasks(APITestCase):
     def test_upload_application_to_pithos(self, mock_upload_file_to_pithos_fokia,
                                           mock_set_application_status_event, mock_builtin_open,
                                           mock_os_remove,
-                                          mock_create_application_central_vm):
+                                          mock_create_application_central_vm,
+                                          mock_set_application_status_central_vm):
         # Create the database entry of the Application.
         application_name = "application_name"
         application_description = "application_description"
@@ -229,6 +231,9 @@ class TestCeleryTasks(APITestCase):
                                            container_name, project_name, local_file_path,
                                            application_uuid)
 
+        mock_create_application_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, application_uuid, application_name,
+                               application_description)
         mock_builtin_open.assert_called_with(local_file_path, 'r')
         mock_upload_file_to_pithos_fokia.assert_called_with(self.AUTHENTICATION_URL,
                                                             self.AUTHENTICATION_TOKEN,
@@ -236,12 +241,13 @@ class TestCeleryTasks(APITestCase):
                                                             mock_local_file)
         mock_set_application_status_event.delay.\
             assert_called_with(application_uuid=application_uuid, status=Application.UPLOADED)
-        mock_create_application_central_vm.delay.\
-            assert_called_with(self.AUTHENTICATION_TOKEN, application_uuid, application_name,
-                               application_description)
+        mock_set_application_status_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, application_uuid, Application.UPLOADED)
         self.assertTrue(mock_local_file.close.called)
         mock_os_remove.assert_called_with(local_file_path)
 
+    @mock.patch('backend.central_vm_tasks.set_application_status_central_vm')
+    @mock.patch('backend.central_vm_tasks.create_application_central_vm')
     @mock.patch('backend.tasks.ClientError', new=CustomClientError)
     @mock.patch('backend.tasks.remove')
     @mock.patch('__builtin__.open')
@@ -249,13 +255,22 @@ class TestCeleryTasks(APITestCase):
     @mock.patch('backend.tasks.utils.upload_file_to_pithos')
     def test_upload_application_to_pithos_except(self, mock_upload_file_to_pithos_fokia,
                                                  mock_set_application_status_event,
-                                                 mock_builtin_open, mock_os_remove):
+                                                 mock_builtin_open, mock_os_remove,
+                                                 mock_create_application_central_vm,
+                                                 mock_set_application_status_central_vm):
         mock_upload_file_to_pithos_fokia.side_effect = CustomClientError("exception-message")
 
+        # Create the database entry of the Application.
+        application_name = "application_name"
+        application_description = "application_description"
         container_name = "container_name"
         project_name = "project_name"
         local_file_path = "local_file_path"
         application_uuid = uuid.uuid4()
+
+        Application.objects.create(uuid=application_uuid, name=application_name,
+                                   path=container_name, description=application_description,
+                                   type=Application.BATCH)
 
         mock_local_file = mock.create_autospec(CustomFile())
         mock_builtin_open.return_value = mock_local_file
@@ -264,6 +279,9 @@ class TestCeleryTasks(APITestCase):
                                            container_name, project_name, local_file_path,
                                            application_uuid)
 
+        mock_create_application_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, application_uuid, application_name,
+                               application_description)
         mock_builtin_open.assert_called_with(local_file_path, 'r')
         mock_upload_file_to_pithos_fokia.assert_called_with(self.AUTHENTICATION_URL,
                                                             self.AUTHENTICATION_TOKEN,
@@ -271,6 +289,9 @@ class TestCeleryTasks(APITestCase):
                                                             mock_local_file)
         mock_set_application_status_event.delay.\
             assert_called_with(application_uuid, Application.FAILED, "exception-message")
+        mock_set_application_status_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, application_uuid, Application.FAILED,
+                               "exception-message")
         self.assertTrue(mock_local_file.close.called)
         mock_os_remove.assert_called_with(local_file_path)
 
