@@ -11,6 +11,7 @@ export default Ember.Component.extend({
       instance.save();
       this.set("request", true);
       this.set("message", "Your request to start the lambda-instance was successfully sent to the server.");
+      this.sendAction('action');
       return false;
     },
     stop(instance) {
@@ -20,6 +21,7 @@ export default Ember.Component.extend({
       instance.save();
       this.set("request", true);
       this.set("message", "Your request to stop the lambda-instance was successfully sent to the server.");
+      this.sendAction('action');
       return false;
     },
   }

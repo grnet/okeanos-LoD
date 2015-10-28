@@ -8,6 +8,21 @@
 
 <!-- Main content -->
 <section class="content">
+
+  {{#if request}}
+  {{#each instance.errors as |error|}}
+        <div  class="alert alert-dismissable alert-danger" id="alert">
+          <button type="button" class="close" {{action "close_alert"}}>×</button>
+          {{error.message}}
+        </div>
+  {{/each}}
+
+      <div  class="alert alert-dismissable alert-success" id="alert">
+        <button type="button" class="close" {{action "close_alert"}}>×</button>
+        {{message}}
+      </div>
+  {{/if}}
+
   <!-- TOP DATA -->
   <div class="row">
     <div class="col-xs-12">
@@ -28,7 +43,11 @@
                       Attach an application
                   </button>
               {{/link-to}}
-              <a href="delete-instance.html"  class="btn  btn-danger pull-right" style="margin-right: 15px;"><i class="fa fa-stop"></i> Stop</a>
+                {{#if (compare model.instance.status_code '==' '0')}}
+                  {{instance-action stop=true instance=model.instance_action instance-id=model.instance.id request=request message=message action="start_stop"}}
+                {{else if (compare model.instance.status_code '==' '1')}}
+                  {{instance-action start=true instance=model.instance_action instance-id=model.instance.id request=request message=message action="start_stop"}}
+                {{/if}}
             </div>
           </div>
           <div class="row">
@@ -146,17 +165,23 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {{#each model.apps as |app|}}
+                  {{#each model.apps as |application|}}
                   <tr class="instance-info">
-                    <td>{{app.id}}</td>
-                    <td>{{lower-case app.app_type}}</td>
-                    <td>{{app.started}}</td>
-                    <a href="delete-instance.html" class="btn  btn-danger btn-xs" style="margin-right: 15px;"><i class="fa fa-close"></i> Delete</a>
-                    {{#if app.started}}
-                    <a href="delete-instance.html" class="btn  btn-warning btn-xs" style="margin-right: 15px;"><i class="fa fa-stop"></i> Stop</a>
-                    {{else}}
-                    <a href="delete-instance.html" class="btn  btn-primary btn-xs" style="margin-right: 15px;"><i class="fa fa-play"></i> Start</a>
-                    {{/if}}
+                    <td>{{application.id}}</td>
+                    <td>{{lower-case application.app_type}}</td>
+                    <td>{{application.started}}</td>
+                    <td>
+                      <table class="table">
+                        <tbody>
+                            {{#if application.started}}
+                              <td>{{app-action stop=true app=model.app application-id=application.id instance-id=model.instance.id request=request message=message}}</td>
+                            {{else}}
+                              <td>{{app-action start=true app=model.app application-id=application.id instance-id=model.instance.id request=request message=message}}</td>
+                            {{/if}}
+                              <td><a href="delete-instance.html" class="btn btn-danger btn-xs"><i class="fa fa-close"></i> Delete</a></td>
+                        </tbody>
+                      </table>
+                  </td>
                   </tr>
                   {{/each}}
                 </tbody>

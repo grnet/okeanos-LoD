@@ -50,6 +50,21 @@
               <div class="box">
                 <div class="box-header">
                   <h3 class="box-title">Listing Lambda Instances</h3>
+
+                  {{#if request}}
+                  {{#each instance.errors as |error|}}
+                        <div  class="alert alert-dismissable alert-danger" id="alert">
+                          <button type="button" class="close" {{action "close_alert"}}>×</button>
+                          {{error.message}}
+                        </div>
+                  {{/each}}
+
+                      <div  class="alert alert-dismissable alert-success" id="alert">
+                        <button type="button" class="close" {{action "close_alert"}}>×</button>
+                        {{message}}
+                      </div>
+                  {{/if}}
+
                   <div class="box-tools">
                     {{#link-to 'create-lambda-instance'}}
                         <a class="btn btn-primary btn-sm" title="Create New Instance" alt="Create New Instance">
@@ -90,8 +105,12 @@
                           {{#linkTo 'lambda-instance' lambda-instance.id}}
                             <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
                           {{/linkTo}}
-                       		<a href="start-stop.html" class="btn btn-danger btn-xs"  title="Stop The instance" alt="Stop The instance"><i class="fa fa-stop"></i> Stop</a>
-                          {{#link-to 'deploy-app-2' lambda-instance.id}}
+                          {{#if (compare lambda-instance.status_code '==' '0')}}
+                            {{instance-action xs=true stop=true instance=model.instance_action instance-id=lambda-instance.id request=request message=message action="start_stop"}}
+                          {{else if (compare model.instance.status_code '==' '1')}}
+                            {{instance-action xs=true start=true instance=model.instance_action instance-id=lambda-instance.id request=request message=message action="start_stop"}}
+                          {{/if}}
+                          {{#link-to "deploy-app-2" lambda-instance.id}}
                               <button class="btn btn-primary btn-xs"
                                       style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
                                   Attach an application

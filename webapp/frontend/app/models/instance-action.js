@@ -4,7 +4,7 @@ import DS from 'ember-data';
 
 var inflector = Ember.Inflector.inflector;
 
-inflector.irregular('app-action', 'apps');
+inflector.irregular('instance-action', 'lambda-instances');
 
 export default DS.Model.extend({
   action: DS.attr('string'),

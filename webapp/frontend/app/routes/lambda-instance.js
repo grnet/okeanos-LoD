@@ -17,10 +17,15 @@ export default LoDRoute.extend(AuthenticatedRouteMixin, {
       }.bind(this));
     }, ENV.refresh_interval);
 
-    return Ember.RSVP.hash({
+    var hash = {
+      apps: this.store.peekAll('lambda-app'),
       instance: this.store.findRecord('lambda-instance', params.instance_uuid),
-      apps: this.store.peekAll('lambda-app')
-    });
+    };
+    if (this.store.peekAll('lambda-app').get('length') === 0) {
+      hash.app = this.store.createRecord('app-action', {});
+      hash.instance_action = this.store.createRecord('instance-action', {});
+    }
+    return Ember.RSVP.hash(hash);
 
   },
 
