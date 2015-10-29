@@ -38,6 +38,8 @@ class TestApplicationUpload(APITestCase):
     application_type_streaming = "streaming"
     # project_name
     project_name = "lambda.grnet.gr"
+    # execution_environment_name
+    execution_environment_name = "Stream"
 
     def setUp(self):
         # Create a user and force authenticate.
@@ -58,7 +60,9 @@ class TestApplicationUpload(APITestCase):
         response = self.client.post("/api/apps/", {'description': self.application_description,
                                                    'file': self.application,
                                                    'type': self.application_type_batch,
-                                                   'project_name': self.project_name})
+                                                   'project_name': self.project_name,
+                                                   'execution_environment_name':
+                                                   self.execution_environment_name})
 
         # Assert the structure of the response.
         self._assert_accepted_response_structure(response)
@@ -81,7 +85,7 @@ class TestApplicationUpload(APITestCase):
             assert_called_with(application_id, self.application.name,
                                ApplicationViewSet.pithos_container,
                                self.application_description, self.application_type_batch,
-                               self.user)
+                               self.user, self.execution_environment_name)
 
         mock_upload_application_to_pithos_task.delay.\
             assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
@@ -104,7 +108,9 @@ class TestApplicationUpload(APITestCase):
         response = self.client.post("/api/apps/", {'description': self.application_description,
                                                    'file': existing_application,
                                                    'type': self.application_type_batch,
-                                                   'project_name': self.project_name})
+                                                   'project_name': self.project_name,
+                                                   'execution_environment_name': self.\
+                                                   execution_environment_name})
 
         # Assert the structure of the response.
         self._assert_bad_request_response_structure(response)
@@ -123,7 +129,9 @@ class TestApplicationUpload(APITestCase):
         # Make a request to upload an application.
         response = self.client.post("/api/apps/", {'file': self.application,
                                                    'type': self.application_type_batch,
-                                                   'project_name': self.project_name})
+                                                   'project_name': self.project_name,
+                                                   'execution_environment_name': self.\
+                                                   execution_environment_name})
 
         # Assert the structure of the response.
         self._assert_accepted_response_structure(response)
@@ -145,7 +153,8 @@ class TestApplicationUpload(APITestCase):
         mock_create_new_application_event.delay.\
             assert_called_with(application_id, self.application.name,
                                ApplicationViewSet.pithos_container, "",
-                               self.application_type_batch, self.user)
+                               self.application_type_batch, self.user,
+                               self.execution_environment_name)
 
         mock_upload_application_to_pithos_task.delay.\
             assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
@@ -180,7 +189,9 @@ class TestApplicationUpload(APITestCase):
         response = self.client.post("/api/apps/", {'description': self.application_description,
                                                    'file': self.application,
                                                    'type': self.application_type_streaming,
-                                                   'project_name': self.project_name})
+                                                   'project_name': self.project_name,
+                                                   'execution_environment_name': self.\
+                                                   execution_environment_name})
 
         # Assert the structure of the response.
         self._assert_accepted_response_structure(response)
@@ -203,7 +214,7 @@ class TestApplicationUpload(APITestCase):
             assert_called_with(application_id, self.application.name,
                                ApplicationViewSet.pithos_container,
                                self.application_description, self.application_type_streaming,
-                               self.user)
+                               self.user, self.execution_environment_name)
 
         mock_upload_application_to_pithos_task.delay.\
             assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
@@ -252,7 +263,9 @@ class TestApplicationUpload(APITestCase):
         # Make a request to upload an application.
         response = self.client.post("/api/apps/", {'description': self.application_description,
                                                    'file': self.application,
-                                                   'type': self.application_type_batch})
+                                                   'type': self.application_type_batch,
+                                                   'execution_environment_name': self.\
+                                                   execution_environment_name})
 
         # Assert the structure of the response.
         self._assert_accepted_response_structure(response)
@@ -275,7 +288,7 @@ class TestApplicationUpload(APITestCase):
             assert_called_with(application_id, self.application.name,
                                ApplicationViewSet.pithos_container,
                                self.application_description, self.application_type_batch,
-                               self.user)
+                               self.user, self.execution_environment_name)
 
         mock_upload_application_to_pithos_task.delay.\
             assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
@@ -1248,7 +1261,8 @@ class TestApplicationStart(APITestCase):
         self.application = Application.objects.create(uuid=self.application_uuid,
                                                       name="application.jar",
                                                       description="A description.",
-                                                      type=Application.BATCH)
+                                                      type=Application.BATCH,
+                                                      execution_environment_name="Stream")
 
         self.lambda_instance = LambdaInstance.objects.create(uuid=self.lambda_instance_uuid,
                                                              name="Lambda Instance 1",
@@ -1285,7 +1299,8 @@ class TestApplicationStart(APITestCase):
                                app_uuid="{application_id}".
                                format(application_id=self.application_uuid),
                                app_action="start", app_type="batch",
-                               jar_filename="application.jar")
+                               jar_filename="application.jar",
+                               execution_environment_name="Stream")
 
     # Test for starting an application on a specified lambda instance that it is already deployed.
     @mock.patch('backend.views.tasks.start_stop_application')
@@ -1319,7 +1334,8 @@ class TestApplicationStart(APITestCase):
                                app_uuid="{application_id}".
                                format(application_id=self.application_uuid),
                                app_action="start", app_type="streaming",
-                               jar_filename="application.jar")
+                               jar_filename="application.jar",
+                               execution_environment_name="Stream")
 
     # Test for request to start an application when the lambda instance id is not provided.
     def test_no_lambda_instance_id(self):
@@ -1549,7 +1565,8 @@ class TestApplicationStop(APITestCase):
         self.application = Application.objects.create(uuid=self.application_uuid,
                                                       name="application.jar",
                                                       description="A description.",
-                                                      type=Application.BATCH)
+                                                      type=Application.BATCH,
+                                                      execution_environment_name="Stream")
 
         self.lambda_instance = LambdaInstance.objects.create(uuid=self.lambda_instance_uuid,
                                                              name="Lambda Instance 1",
@@ -1588,7 +1605,8 @@ class TestApplicationStop(APITestCase):
             assert_called_with(lambda_instance_uuid=self.lambda_instance_uuid,
                                app_uuid="{application_id}".
                                format(application_id=self.application_uuid),
-                               app_action="stop", app_type="batch")
+                               app_action="stop", app_type="batch",
+                               execution_environment_name="Stream")
 
     # Test for stopping an application on a specified lambda instance that it is already started.
     @mock.patch('backend.views.tasks.start_stop_application')
@@ -1621,7 +1639,8 @@ class TestApplicationStop(APITestCase):
             assert_called_with(lambda_instance_uuid=self.lambda_instance_uuid,
                                app_uuid="{application_id}".
                                format(application_id=self.application_uuid),
-                               app_action="stop", app_type="streaming")
+                               app_action="stop", app_type="streaming",
+                               execution_environment_name="Stream")
 
     # Test for request to stop an application when the lambda instance id is not provided.
     def test_no_lambda_instance_id(self):
