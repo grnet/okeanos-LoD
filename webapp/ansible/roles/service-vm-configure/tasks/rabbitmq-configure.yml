@@ -1,0 +1,11 @@
+---
+
+- name: Configure RabbitMQ user
+  rabbitmq_user: user=lambda password=change_me
+                 vhost=/
+                 configure_priv=.* read_priv=.* write_priv=.*
+                 state=present
+
+- name: Remove guest RabbitMQ user
+  rabbitmq_user: user=guest
+                 state=absent
