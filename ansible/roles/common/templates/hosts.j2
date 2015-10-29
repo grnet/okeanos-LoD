@@ -1,6 +1,6 @@
 127.0.0.1       localhost
 {% for master in groups["master"] %}
-{{ hostvars[master]["internal_ip"] }}	{{ master | replace(".vm.okeanos.grnet.gr",".local") }}
+{{ hostvars[master]["internal_ip"] }}	{{ master | replace(".vm.okeanos.grnet.gr",".local") }}   {{ master }}   master
 {% endfor %}
 {% for slave in groups["slaves"] %}
 {{ hostvars[slave]["internal_ip"] }}	{{ slave | replace(".vm.okeanos.grnet.gr",".local") }}
