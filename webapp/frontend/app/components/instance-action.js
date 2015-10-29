@@ -17,7 +17,6 @@ export default Ember.Component.extend({
     },
     stop(instance, apps) {
       var _this = this;
-      console.log(this.get("started_app"));
       //send request to stop instance
       if (this.get("verify"))
       {
@@ -25,7 +24,6 @@ export default Ember.Component.extend({
         if (item.get("started"))
         {
           _this.set("app_started", true);
-          console.log(item);
         }
         });
         if (this.get("app_started")){
