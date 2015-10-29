@@ -5,3 +5,5 @@ djangorestframework
 djangorestframework-xml
 pytest-django
 pytest-xdist
+mkdocs
+

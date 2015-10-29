@@ -16,11 +16,17 @@
   - name: Copy lambda sites-available frontend configuration.
     template: src=lambda-service-frontend.conf.j2 dest=/etc/apache2/sites-available/lambda-service-frontend.conf
 
+  - name: Copy lambda sites-available mkdocs configuration.
+    template: src=lambda-service-mkdocs.conf.j2 dest=/etc/apache2/sites-available/lambda-service-mkdocs.conf
+
   - name: Add lambda-service-backend to sites-enabled.
     command: a2ensite lambda-service-backend.conf
 
   - name: Add lambda-service-frontend to sites-enabled.
     command: a2ensite lambda-service-frontend.conf
+
+  - name: Add lambda-service-mkdocs to sites-enabled.
+    command: a2ensite lambda-service-mkdocs.conf
 
   - name: Remove default sites-enabled.
     command: a2dissite 000-default.conf

@@ -35,6 +35,11 @@
     notify:
       - django_dbs_migrate
 
+  - name: Build mkdocs.
+    command: mkdocs build --clean
+    args:
+      chdir: "{{ repository_download_path }}/okeanos-LoD/webapp/api-doc/"
+
   - meta: flush_handlers
 
   - name: Create user fixture

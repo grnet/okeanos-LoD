@@ -19,22 +19,9 @@ Type | Description |
 | --- | --- | --- | --- | --- |
 | uuid | The Unique Identifier of the lamdba instance, as identified from the service vm | Yes | None |'24b8a635-8d71-4016-b8f5-c4a14348ed8f'
 | name | The name of the lamdba instance. | Yes | None | 'My first lambda instance'
-| instance_info | JSON encoded info about specifications of the lambda instance. | Yes | None | ```
-          "instance_info": {
-          "project_name": "lambda.grnet.gr",
-          "master_name": "lambda-master-2",
-          "vcpus_master": 4,
-          "network_request": 1,
-          "disk_slave": 20,
-          "slaves": 2,
-          "ram_slave": 4096,
-          "ram_master": 4096,
-          "vcpus_slave": 4,
-          "ip_allocation": "master",
-          "disk_master": 20
-        }, ``` |
+| instance_info | JSON encoded info about specifications of the lambda instance. | Yes | None | "instance_info": {...} |
 | status | The status of the lambda instance. | Yes | None | "20" |
-| failure_message | (optional) A message related to the failed status of the lamdbda instance | Yes | "" | "SSH connection timed out." |
+| failure_message | A message related to the failed status of the lamdbda instance | Yes | "" | "SSH connection timed out." |
 
 #### Headers
 
@@ -70,7 +57,7 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 Type | Description |
 -------|-----------------|
  **Description** | update the status of the lambda instance
- **URL**         | /api/lambda_instances/[uuid]
+ **URL**         | /api/lambda_instances/[uuid]/status/
  **HTTP Method** | POST
  **Security**    | Basic Authentication
 
@@ -89,7 +76,7 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 
 ### Example API call
 
-`curl -X POST -H "Content-Type: application/json" -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" -d '{"status": "20", "failure_message": "OK"}' 'http://<hostname>/api/lambda_instances/24b8a635-8d71-4016-b8f5-c4a14348ed8f'`
+`curl -X POST -H "Content-Type: application/json" -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" -d '{"status": "20", "failure_message": "OK"}' 'http://<hostname>/api/lambda_instances/24b8a635-8d71-4016-b8f5-c4a14348ed8f/status/'`
 
 ### Response
 

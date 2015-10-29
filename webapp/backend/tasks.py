@@ -12,8 +12,10 @@ from fokia import utils
 from fokia import lambda_instance_manager
 from fokia.ansible_manager import Manager
 from . import events
+from . import central_vm_tasks
 from .models import LambdaInstance, Application
 from .authenticate_user import get_named_keys
+
 
 @shared_task
 def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_ids):
@@ -33,9 +35,18 @@ def lambda_instance_start(instance_uuid, auth_url, auth_token, master_id, slave_
 
         # Update lambda instance status on the database to started.
         events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STARTED)
+
+        # Update lambda instance status to Central VM.
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.STARTED, "")
     except ClientError as exception:
         events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED,
                                                 exception.message)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.FAILED,
+                                                        exception.message)
 
 
 @shared_task
@@ -57,9 +68,18 @@ def lambda_instance_stop(instance_uuid, auth_url, auth_token, master_id, slave_i
 
         # Update lambda instance status on the database to started.
         events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.STOPPED)
+
+        # Update lambda instance status to Central VM.
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.STOPPED, "")
     except ClientError as exception:
         events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED,
                                                 exception.message)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.FAILED,
+                                                        exception.message)
 
 
 @shared_task
@@ -90,9 +110,15 @@ def lambda_instance_destroy(instance_uuid, auth_token, master_id, slave_ids,
 
         # Update lambda instance status on the database to destroyed.
         events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.DESTROYED)
+
+        central_vm_tasks.delete_lambda_instance_central_vm.delay(auth_token, instance_uuid)
     except ClientError as exception:
         events.set_lambda_instance_status.delay(instance_uuid, LambdaInstance.FAILED,
                                                 exception.message)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.FAILED,
+                                                        exception.message)
 
 
 @shared_task
@@ -100,9 +126,18 @@ def create_lambda_instance(lambda_info, auth_token):
     specs = lambda_info.data
     specs_json = json.dumps(specs)
     instance_uuid = create_lambda_instance.request.id
+
+    # Create an event to create the new Lambda Instance on the database.
     events.create_new_lambda_instance.delay(instance_uuid=instance_uuid,
                                             instance_name=specs['instance_name'],
                                             specs=specs_json)
+
+    # Create a Central VM task to create the new Lambda Instance on the Central VM.
+    central_vm_tasks.\
+        create_lambda_instance_central_vm.delay(auth_token=auth_token,
+                                                instance_uuid=instance_uuid,
+                                                instance_name=specs['instance_name'],
+                                                specs=specs_json)
 
     pub_keys = []
     if specs.get('public_key_name'):
@@ -128,10 +163,17 @@ def create_lambda_instance(lambda_info, auth_token):
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.CLUSTER_FAILED,
                                                 failure_message=exception.message)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.CLUSTER_FAILED,
+                                                        exception.message)
         return
 
     events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                             status=LambdaInstance.CLUSTER_CREATED)
+    central_vm_tasks.\
+        set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                    LambdaInstance.CLUSTER_CREATED, "")
 
     events.insert_cluster_info.delay(instance_uuid=instance_uuid,
                                      specs=lambda_info.data,
@@ -143,10 +185,16 @@ def create_lambda_instance(lambda_info, auth_token):
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.INIT_FAILED,
                                                 failure_message=check)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.INIT_FAILED, check)
         return
     else:
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.INIT_DONE)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.INIT_DONE, "")
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'common-install.yml')
     check = _check_ansible_result(ansible_result)
@@ -154,10 +202,16 @@ def create_lambda_instance(lambda_info, auth_token):
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.COMMONS_FAILED,
                                                 failure_message=check)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.COMMONS_FAILED, check)
         return
     else:
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.COMMONS_INSTALLED)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.COMMONS_INSTALLED, "")
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'hadoop-install.yml')
     check = _check_ansible_result(ansible_result)
@@ -165,10 +219,16 @@ def create_lambda_instance(lambda_info, auth_token):
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.HADOOP_FAILED,
                                                 failure_message=check)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.HADOOP_FAILED, check)
         return
     else:
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.HADOOP_INSTALLED)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.HADOOP_INSTALLED, "")
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'kafka-install.yml')
     check = _check_ansible_result(ansible_result)
@@ -176,10 +236,16 @@ def create_lambda_instance(lambda_info, auth_token):
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.KAFKA_FAILED,
                                                 failure_message=check)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.KAFKA_FAILED, check)
         return
     else:
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.KAFKA_INSTALLED)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.KAFKA_INSTALLED, "")
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'flink-install.yml')
     check = _check_ansible_result(ansible_result)
@@ -187,14 +253,23 @@ def create_lambda_instance(lambda_info, auth_token):
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.FLINK_FAILED,
                                                 failure_message=check)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.FLINK_FAILED, check)
         return
     else:
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                                 status=LambdaInstance.FLINK_INSTALLED)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.FLINK_INSTALLED, "")
 
     # Set lambda instance status to started.
     events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                             status=LambdaInstance.STARTED)
+    central_vm_tasks.\
+        set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                    LambdaInstance.STARTED, "")
 
 
 def _check_ansible_result(ansible_result):
@@ -227,6 +302,13 @@ def upload_application_to_pithos(auth_url, auth_token, container_name, project_n
     :param application_uuid: The uuid of the application to be uploaded.
     """
 
+    # The application has been created in the view that called this task. Send the information to
+    # Central VM.
+    application = Application.objects.get(uuid=application_uuid)
+    central_vm_tasks.\
+        create_application_central_vm.delay(auth_token, application_uuid, application.name,
+                                            application.description)
+
     # Open file from the local file system.
     local_file = open(local_file_path, 'r')
 
@@ -235,9 +317,14 @@ def upload_application_to_pithos(auth_url, auth_token, container_name, project_n
 
         events.set_application_status.delay(application_uuid=application_uuid,
                                             status=Application.UPLOADED)
+        central_vm_tasks.set_application_status_central_vm.delay(auth_token, application_uuid,
+                                                                 Application.UPLOADED)
     except ClientError as exception:
         events.set_application_status.delay(application_uuid, Application.FAILED,
                                             exception.message)
+        central_vm_tasks.\
+            set_application_status_central_vm.delay(auth_token, application_uuid,
+                                                    Application.FAILED, exception.message)
 
     # Release local file system resources.
     local_file.close()
@@ -262,14 +349,19 @@ def delete_application_from_pithos(auth_url, auth_token, container_name, filenam
         utils.delete_file_from_pithos(auth_url, auth_token, container_name, filename)
 
         events.delete_application.delay(application_uuid)
+        central_vm_tasks.delete_application_central_vm.delay(auth_token, application_uuid)
     except ClientError as exception:
         # If the file is not found on Pithos, the entry on the database should be still
         # deleted.
         if exception.status == status.HTTP_404_NOT_FOUND:
             events.delete_application.delay(application_uuid)
+            central_vm_tasks.delete_application_central_vm.delay(auth_token, application_uuid)
         else:
             events.set_application_status.delay(application_uuid, Application.FAILED,
                                                 exception.message)
+            central_vm_tasks.\
+                set_application_status_central_vm.delay(auth_token, application_uuid,
+                                                        Application.FAILED, exception.message)
 
 
 @shared_task
@@ -299,6 +391,9 @@ def deploy_application(auth_url, auth_token, container_name, lambda_instance_uui
     except ClientError as exception:
         events.set_application_status.delay(application_uuid, Application.FAILED,
                                             exception.message)
+        central_vm_tasks.\
+            set_application_status_central_vm.delay(auth_token, application_uuid,
+                                                    Application.FAILED, exception.message)
         local_file.close()
         return
 

@@ -18,7 +18,7 @@ from rest_framework.exceptions import ValidationError
 
 from rest_framework_xml.renderers import XMLRenderer
 
-from fokia.utils import check_auth_token, get_user_okeanos_projects, get_vm_parameter_values
+from fokia.utils import get_user_okeanos_projects, get_vm_parameter_values
 
 from . import tasks, events
 from .models import Application, LambdaInstance, LambdaInstanceApplicationConnection

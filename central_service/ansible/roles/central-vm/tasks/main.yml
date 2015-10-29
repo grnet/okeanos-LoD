@@ -31,3 +31,8 @@
     template: src=settings.py.j2 dest={{ repository_download_path }}/okeanos-LoD/central_service/app/app/settings.py
     notify:
       - django_dbs_migrate
+
+  - name: Build mkdocs.
+    command: mkdocs build --clean
+    args:
+      chdir: "{{ repository_download_path }}/okeanos-LoD/central_service/app/api-doc/"

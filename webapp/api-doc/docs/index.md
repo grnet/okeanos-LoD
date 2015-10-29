@@ -16,7 +16,11 @@ description: [One line description]
   - [Upload an Application](ApplicationUpload.md)
   - [Delete an Application](ApplicationDelete.md)
   - [List Applications](ApplicationsList.md)
+  - [Details of an Application](ApplicationDetails.md)
   - [Deploy an Application](ApplicationDeploy.md)
   - [Withdraw an Application](ApplicationWithdraw.md)
   - [List Deployed Applications](ApplicationsListDeployed.md)
-
+  - [Start an Application](ApplicationStart.md)
+  - [Stop an Application](ApplicationStop.md)
+  - [Get SSH public keys on ~okeanos](UserPublicKeys.md)
+  - [Get allower VM Parameter Values](VMParameterValues.md)
