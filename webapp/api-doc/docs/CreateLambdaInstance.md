@@ -17,9 +17,9 @@ instance creation, the API will reply with the details of the cluster in creatio
 
 ## Basic Parameters
 
-Type | Description |
--------|-----------------|
- **Description** | create a new lambda instance
+Type | Description 
+-------|-----------------
+ **Description** | Create a new lambda instance
  **URL**         | /api/lambda-instance/
  **HTTP Method** | POST
  **Security**    | Basic Authentication
@@ -27,15 +27,15 @@ Type | Description |
 
 ### Headers
 
-Type | Description | Required | Default value | Example value |
-------|-------------|----------|---------------|---------------|
-Authorization | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes`    | None          | Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR
+Type | Description | Required | Default value | Example value 
+------|-------------|----------|---------------|---------------
+Authorization | ~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-> API Access) https://accounts.okeanos.grnet.gr/ui/api_access. | `Yes`    | None          | Token tJ3b3f32f23ceu...
 
 
 ### Body
 
-Type | Description | Required | Default value | Example value |
-------|-------------|----------|---------------|---------------|
+Type | Description | Required | Default value | Example value 
+------|-------------|----------|---------------|---------------
 instance_name | Name of the lambda instance | `Yes` | None | My first Lambda Instance
 master_name | Name of the master node | `Yes` | None | lambda-master
 slaves | Number of slaves | `Yes` | None | 3
@@ -57,7 +57,12 @@ In this example we are going to create a new lambda instance, using the specs sp
 The request in curl
 
 ```
-curl -X POST -H "Content-Type: application/json" -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" -d '{"project_name": "lambda.grnet.gr", "instance_name": "My first Lambda Instance", "network_request": 1, "master_name": "lambda-master", "vcpus_master": 4, "disk_slave": 40, "slaves": 1, "ram_slave": 4096, "ram_master": 4096, "vcpus_slave": 4, "ip_allocation": "master", "disk_master": 40}' 'http://<hostname>/api/lambda-instance/'
+curl -X POST -H "Content-Type: application/json" \
+ -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" \
+ -d '{"project_name": "lambda.grnet.gr", "instance_name": "My first Lambda Instance", "network_request": 1,\
+ "master_name": "lambda-master", "vcpus_master": 4, "disk_slave": 40, "slaves": 1, "ram_slave": 4096, \
+ "ram_master": 4096, "vcpus_slave": 4, "ip_allocation": "master", "disk_master": 40}' \
+ 'http://<hostname>/api/lambda-instance/'
 ```
 
 ### Response body

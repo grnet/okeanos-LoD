@@ -12,7 +12,7 @@ an "401 Unauthorized" error along with details regarding the error.
 ## Basic Parameters
 |Type             | Description
 |-----------------|--------------------------
-| **Description** | authentication token validation
+| **Description** | Authentication token validation
 | **URL**         | /api/authenticate/
 | **HTTP Method** | GET
 | **Security**    | Basic Authentication
@@ -27,7 +27,8 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 Example of simple validation of an API token
 
 ```
-curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/authenticate/'
+curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+ 'http://<hostname>/api/authenticate/'
 ```
 
 ### Response body

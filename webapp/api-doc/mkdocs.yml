@@ -1,4 +1,4 @@
-site_name: ~okeanos Lambda on Demand
+site_name: ~okeanos Lambda on Demand 
 pages:
   - Home: index.md
   - Authentication: Authentication.md
@@ -18,7 +18,5 @@ pages:
   - Stop an Application: ApplicationStop.md
   - Get SSH public keys on ~okeanos: UserPublicKeys.md
   - Get allower VM Parameter Values: VMParameterValues.md
-
-  - Template: template.md
 
 theme: readthedocs

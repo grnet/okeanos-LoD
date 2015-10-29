@@ -20,7 +20,7 @@ will reply with a "400 Bad Request" code.
 
 Type            | Description
 ----------------|--------------------------
-**Description** | lambda instances list
+**Description** | Lists all lambda instances
 **URL**         | /api/lambda-instances/
 **HTTP Method** | GET
 **Security**    | Basic Authentication
@@ -62,7 +62,8 @@ In this example we are going to list all the available lambda instances.
 The request in curl
 
 ```
-curl -X GET -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/lambda-instances/'
+curl -X GET -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+ 'http://<hostname>/api/lambda-instances/'
 ```
 
 

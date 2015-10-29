@@ -18,7 +18,7 @@ parameter with the request. The values that this parameter should have are "info
 
 Type   | Description
 -------|-----------------
-**Description** | lambda instance details
+**Description** | Get details of a specified lambda instance
 **URL**         | /api/lambda-instances/[lambda-instance-id]/
 **HTTP Method** | GET
 **Security**    | Basic Authentication
@@ -46,7 +46,8 @@ In this example we are going to get the details of the lambda instance with id 3
 The request in curl
 
 ```
-curl -X GET -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/lambda-instances/3f763964-d519-4fd2-916d-b5cfbe3b878b/'
+curl -X GET -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+ 'http://<hostname>/api/lambda-instances/3f763964-d519-4fd2-916d-b5cfbe3b878b/'
 ```
 
 

@@ -16,7 +16,7 @@ lambda instance. The available actions are start and stop.
 ## Basic Parameters
 Type | Description
 -------|-----------------
-**Description** | lambda instance start
+**Description** | Start or stop a specified lambda instance 
 **URL**         | api/lambda-instances/[lambda-instance-id]/
 **HTTP Method** | POST
 **Security**    | Basic Authentication
@@ -44,7 +44,9 @@ In this example we are going to start the lambda instance with id 9ac8e7ab-57f9-
 The request in curl
 
 ```
-curl -X POST -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" -F "action=start" 'http://<hostname>/api/lambda-instances/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/'
+curl -X POST -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+ -F "action=start" \
+ 'http://<hostname>/api/lambda-instances/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/'
 ```
 
 

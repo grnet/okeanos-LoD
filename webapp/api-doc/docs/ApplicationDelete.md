@@ -16,7 +16,7 @@ application. If the specified application does not exist, the API will reply wit
 
 |Type | Description
 ------|-------------
-**Description** | application delete
+**Description** | Delete an application 
 **URL**         | /api/apps/[application-id]/
 **HTTP Method** | DELETE
 **Security**    | Basic Authentication
@@ -43,7 +43,8 @@ In this example we are going to delete the application with id 84dfb596-3abb-401
 The request in curl
 
 ```
-curl -X DELETE -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/apps/84dfb596-3abb-401e-99fc-c6f0057dedab/'
+curl -X DELETE -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+'http://<hostname>/api/apps/84dfb596-3abb-401e-99fc-c6f0057dedab/'
 ```
 
 

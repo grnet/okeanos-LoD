@@ -15,7 +15,7 @@ public ip and private network.
 
 |Type            | Description
 |----------------|--------------------------
-| **Description** | lambda instance destroy
+| **Description** | Destroy a specified lambda instance
 | **URL**         | api/lambda-instances/[lambda-instance-id]/
 | **HTTP Method** | DELETE
 | **Security**    | Basic Authentication
@@ -42,7 +42,8 @@ In this example we are going to destroy the lambda instance with id 9ac8e7ab-57f
 The request in curl
 
 ```
-curl -X DELETE -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/lambda-instances/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/'
+curl -X DELETE -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+ 'http://<hostname>/api/lambda-instances/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/'
 ```
 
 

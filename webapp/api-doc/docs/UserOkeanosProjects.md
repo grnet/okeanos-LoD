@@ -14,7 +14,7 @@ error along with details regarding the error.
 ## Basic Parameters
 |Type             | Description
 |-----------------|--------------------------
-| **Description** | ~okeanos projects
+| **Description** | Get a list with user ~okeanos projects
 | **URL**         | /api/user-okeanos-projects/
 | **HTTP Method** | GET
 | **Security**    | Basic Authentication
