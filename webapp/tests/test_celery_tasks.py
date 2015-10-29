@@ -229,7 +229,8 @@ class TestCeleryTasks(APITestCase):
 
         tasks.upload_application_to_pithos(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
                                            container_name, project_name, local_file_path,
-                                           application_uuid)
+                                           application_uuid, application_name,
+                                           application_description)
 
         mock_create_application_central_vm.delay.\
             assert_called_with(self.AUTHENTICATION_TOKEN, application_uuid, application_name,
@@ -277,7 +278,8 @@ class TestCeleryTasks(APITestCase):
 
         tasks.upload_application_to_pithos(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
                                            container_name, project_name, local_file_path,
-                                           application_uuid)
+                                           application_uuid, application_name,
+                                           application_description)
 
         mock_create_application_central_vm.delay.\
             assert_called_with(self.AUTHENTICATION_TOKEN, application_uuid, application_name,

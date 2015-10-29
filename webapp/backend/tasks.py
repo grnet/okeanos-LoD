@@ -292,7 +292,8 @@ setattr(create_lambda_instance, 'on_failure', on_failure)
 
 @shared_task
 def upload_application_to_pithos(auth_url, auth_token, container_name, project_name,
-                                 local_file_path, application_uuid):
+                                 local_file_path, application_uuid, application_name,
+                                 application_description):
     """
     Uploads an application to Pithos.
     :param auth_url: The authentication url for ~okeanos API.
@@ -304,10 +305,9 @@ def upload_application_to_pithos(auth_url, auth_token, container_name, project_n
 
     # The application has been created in the view that called this task. Send the information to
     # Central VM.
-    application = Application.objects.get(uuid=application_uuid)
     central_vm_tasks.\
-        create_application_central_vm.delay(auth_token, application_uuid, application.name,
-                                            application.description)
+        create_application_central_vm.delay(auth_token, application_uuid, application_name,
+                                            application_description)
 
     # Open file from the local file system.
     local_file = open(local_file_path, 'r')

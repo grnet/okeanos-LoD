@@ -92,7 +92,7 @@ class TestApplicationUpload(APITestCase):
                                ApplicationViewSet.pithos_container,
                                self.project_name,
                                path.join(settings.TEMPORARY_FILE_STORAGE, self.application.name),
-                               application_id)
+                               application_id, self.application.name, self.application_description)
 
     # Test for uploading an application when all the required information are provided
     # but there is already an application with the same name uploaded.
@@ -109,7 +109,7 @@ class TestApplicationUpload(APITestCase):
                                                    'file': existing_application,
                                                    'type': self.application_type_batch,
                                                    'project_name': self.project_name,
-                                                   'execution_environment_name': self.\
+                                                   'execution_environment_name': self.
                                                    execution_environment_name})
 
         # Assert the structure of the response.
@@ -130,8 +130,8 @@ class TestApplicationUpload(APITestCase):
         response = self.client.post("/api/apps/", {'file': self.application,
                                                    'type': self.application_type_batch,
                                                    'project_name': self.project_name,
-                                                   'execution_environment_name': self.\
-                                                   execution_environment_name})
+                                                   'execution_environment_name':
+                                                       self.execution_environment_name})
 
         # Assert the structure of the response.
         self._assert_accepted_response_structure(response)
@@ -161,7 +161,49 @@ class TestApplicationUpload(APITestCase):
                                ApplicationViewSet.pithos_container,
                                self.project_name,
                                path.join(settings.TEMPORARY_FILE_STORAGE, self.application.name),
-                               application_id)
+                               application_id, self.application.name, "")
+
+    # Test for uploading an application when no execution environment name is provided.
+    # Test for uploading an application when no description is provided.
+    @mock.patch('backend.views.events.create_new_application')
+    @mock.patch('backend.views.tasks.upload_application_to_pithos')
+    def test_no_execution_environment_name(self, mock_upload_application_to_pithos_task,
+                                           mock_create_new_application_event):
+
+        # Make a request to upload an application.
+        response = self.client.post("/api/apps/", {'file': self.application,
+                                                   'type': self.application_type_batch,
+                                                   'project_name': self.project_name,
+                                                   'description': self.application_description})
+
+        # Assert the structure of the response.
+        self._assert_accepted_response_structure(response)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['status']['code'], status.HTTP_202_ACCEPTED)
+        self.assertEqual(response.data['status']['short_description'],
+                         ResponseMessages.short_descriptions['application_upload'])
+
+        self.assertIsInstance(response.data['data'][0]['id'], uuid.UUID)
+
+        self.assertRegexpMatches(response.data['data'][0]['links']['self'],
+                                 r'^http://testserver/api/apps/([^/.]+)$')
+
+        # Get the id of the uploaded application.
+        application_id = response.data['data'][0]['id']
+
+        # Assert that the proper tasks and views have been called.
+        mock_create_new_application_event.delay.\
+            assert_called_with(application_id, self.application.name,
+                               ApplicationViewSet.pithos_container, self.application_description,
+                               self.application_type_batch, self.user, "")
+
+        mock_upload_application_to_pithos_task.delay.\
+            assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
+                               ApplicationViewSet.pithos_container,
+                               self.project_name,
+                               path.join(settings.TEMPORARY_FILE_STORAGE, self.application.name),
+                               application_id, self.application.name, self.application_description)
 
     # Test for uploading an application when no file is provided.
     def test_no_file(self):
@@ -190,7 +232,7 @@ class TestApplicationUpload(APITestCase):
                                                    'file': self.application,
                                                    'type': self.application_type_streaming,
                                                    'project_name': self.project_name,
-                                                   'execution_environment_name': self.\
+                                                   'execution_environment_name': self.
                                                    execution_environment_name})
 
         # Assert the structure of the response.
@@ -221,7 +263,7 @@ class TestApplicationUpload(APITestCase):
                                ApplicationViewSet.pithos_container,
                                self.project_name,
                                path.join(settings.TEMPORARY_FILE_STORAGE, self.application.name),
-                               application_id)
+                               application_id, self.application.name, self.application_description)
 
     # Test for uploading an application when no type is provided.
     def test_no_type(self):
@@ -264,7 +306,7 @@ class TestApplicationUpload(APITestCase):
         response = self.client.post("/api/apps/", {'description': self.application_description,
                                                    'file': self.application,
                                                    'type': self.application_type_batch,
-                                                   'execution_environment_name': self.\
+                                                   'execution_environment_name': self.
                                                    execution_environment_name})
 
         # Assert the structure of the response.
@@ -294,7 +336,7 @@ class TestApplicationUpload(APITestCase):
             assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
                                ApplicationViewSet.pithos_container, "",
                                path.join(settings.TEMPORARY_FILE_STORAGE, self.application.name),
-                               application_id)
+                               application_id, self.application.name, self.application_description)
 
     def _assert_accepted_response_structure(self, response):
         # Assert the response code.

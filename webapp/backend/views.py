@@ -314,7 +314,8 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
         tasks.upload_application_to_pithos.delay(auth_url, auth_token, self.pithos_container,
-                                                 project_name, local_file_path, application_uuid)
+                                                 project_name, local_file_path, application_uuid,
+                                                 uploaded_file.name, description)
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
