@@ -1,0 +1,6 @@
+---
+
+- hosts: all
+  user: root
+  roles:
+    - service-vm-configure

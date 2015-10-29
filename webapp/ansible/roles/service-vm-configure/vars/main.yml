@@ -1,0 +1,4 @@
+---
+
+frontend_dir: /var/www/okeanos-LoD/webapp/frontend
+repository_download_path: /var/www

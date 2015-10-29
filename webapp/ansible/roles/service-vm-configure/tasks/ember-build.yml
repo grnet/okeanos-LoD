@@ -1,0 +1,12 @@
+---
+
+  - name: Create Ember config directory
+    file: path={{ frontend_dir }}/config state=directory
+
+  - name: Setup Ember configuration environment
+    template: src=environment.js.j2 dest={{ frontend_dir }}/config/environment.js
+
+  - name: Build ember for production
+    command: ember build --environment=production
+    args:
+      chdir: "{{ frontend_dir }}"

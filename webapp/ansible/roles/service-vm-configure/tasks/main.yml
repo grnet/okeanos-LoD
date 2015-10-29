@@ -1,0 +1,7 @@
+---
+
+  - name: Include apache2 configuration tasks
+    include: apache-configure.yml
+
+  - name: Include ember configuration and build tasks
+    include: ember-build.yml

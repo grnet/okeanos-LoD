@@ -1,0 +1,35 @@
+---
+
+  - name: Get the hostname of the VM
+    command: hostname
+    register: hostname
+
+  - name: Copy Lambda sites-available backend configuration
+    template: src=lambda-service-backend.conf.j2 dest=/etc/apache2/sites-available/lambda-service-backend.conf
+    notify:
+          - restart_apache2
+
+  - name: Copy lambda sites-available frontend configuration
+    template: src=lambda-service-frontend.conf.j2 dest=/etc/apache2/sites-available/lambda-service-frontend.conf
+    notify:
+          - restart_apache2
+
+  - name: Copy lambda sites-available mkdocs configuration
+    template: src=lambda-service-mkdocs.conf.j2 dest=/etc/apache2/sites-available/lambda-service-mkdocs.conf
+    notify:
+          - restart_apache2
+
+  - name: Add lambda-service-backend to sites-enabled
+    command: a2ensite lambda-service-backend.conf
+    notify:
+          - restart_apache2
+
+  - name: Add lambda-service-frontend to sites-enabled
+    command: a2ensite lambda-service-frontend.conf
+    notify:
+          - restart_apache2
+
+  - name: Add lambda-service-mkdocs to sites-enabled
+    command: a2ensite lambda-service-mkdocs.conf
+    notify:
+          - restart_apache2
