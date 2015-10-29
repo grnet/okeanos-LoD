@@ -18,8 +18,8 @@ export default LoDRoute.extend(AuthenticatedRouteMixin, {
     }, ENV.refresh_interval);
 
     var hash = {
-      apps: this.store.peekAll('lambda-app'),
       instance: this.store.findRecord('lambda-instance', params.instance_uuid),
+      apps: this.store.peekAll('lambda-app'),
     };
     if (this.store.peekAll('lambda-app').get('length') === 0) {
       hash.app = this.store.createRecord('app-action', {});

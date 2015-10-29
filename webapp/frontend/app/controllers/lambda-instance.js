@@ -15,6 +15,7 @@ export default Ember.Controller.extend({
       var _this = this;
       Ember.run.later((function () {
         _this.set("request", false);
+        _this.set("app_request", false);
       }), 4000);
     },
     withdraw: function()

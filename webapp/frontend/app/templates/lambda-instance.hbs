@@ -17,13 +17,6 @@
           </div>
     {{/each}}
 
-    {{#each app.errors as |error|}}
-          <div  class="alert alert-dismissable alert-danger" id="alert">
-            <button type="button" class="close" {{action "close_alert"}}>×</button>
-            {{error.message}}
-          </div>
-    {{/each}}
-
         <div  class="alert alert-dismissable alert-success" id="alert">
           <button type="button" class="close" {{action "close_alert"}}>×</button>
           {{message}}
@@ -152,6 +145,21 @@
     </div> <!--col -->
   </div> <!--row-->
   {{#if (compare model.apps.length "!==" 0)}}
+
+  {{#if app_request}}
+    {{#each app.errors as |error|}}
+          <div  class="alert alert-dismissable alert-danger" id="alert">
+            <button type="button" class="close" {{action "close_alert"}}>×</button>
+            {{error.message}}
+          </div>
+    {{/each}}
+
+        <div  class="alert alert-dismissable alert-success" id="alert">
+          <button type="button" class="close" {{action "close_alert"}}>×</button>
+          {{message}}
+        </div>
+  {{/if}}
+
   <div class="row">
     <div class="col-xs-12">
       <div class="box box-warning">
@@ -188,17 +196,17 @@
                                     {{#if application.started}}
                                       {{#if (compare model.instance.status_code '==' '0')}}
                                         <td>
-                                          {{app-action stop=true app=model.app application-id=application.id instance-id=model.instance.id request=request message=message action="start_stop"}}
+                                          {{app-action stop=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request message=message action="start_stop"}}
                                         </td>
                                       {{/if}}
                                     {{else}}
                                       {{#if (compare model.instance.status_code '==' '0')}}
                                         <td>
-                                          {{app-action start=true app=model.app application-id=application.id instance-id=model.instance.id request=request message=message action="start_stop"}}
+                                          {{app-action start=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request message=message action="start_stop"}}
                                         </td>
                                       {{/if}}
                                     <td>
-                                      {{app-action withdraw=true app=model.app application-id=application.id instance-id=model.instance.id request=request message=message action="withdraw"}}
+                                      {{app-action withdraw=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request message=message action="withdraw"}}
                                     </td>
                                     {{/if}}
                               </tbody>

@@ -17,14 +17,16 @@ export default Ember.Component.extend({
     },
     stop(instance, apps) {
       var _this = this;
+      console.log(this.get("started_app"));
       //send request to stop instance
       if (this.get("verify"))
       {
         apps.forEach(function(item) {
-          if (item.get("started"))
-          {
-            _this.set("app_started", true);
-          }
+        if (item.get("started"))
+        {
+          _this.set("app_started", true);
+          console.log(item);
+        }
         });
         if (this.get("app_started")){
           this.sendAction('action', true);

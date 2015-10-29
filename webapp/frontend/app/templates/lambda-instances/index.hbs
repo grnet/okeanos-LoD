@@ -108,19 +108,6 @@
                                   <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
                                 {{/linkTo}}
                               </td>
-
-                              {{#if (compare lambda-instance.status_code '==' '0')}}
-                                {{#if confirm}}
-                                  <td>{{instance-action xs=true verify=verify stop=true instance=controller.instance_action instance-id=lambda-instance.id request=request message=message action="start_stop"}}
-                                  </td>
-                                {{else}}
-                                  <td>{{instance-action xs=true apps=controller.apps verify=verify stop=true instance=controller.instance_action instance-id=lambda-instance.id request=request message=message action="verify"}}
-                                  </td>
-                                {{/if}}
-                              {{else if (compare lambda-instance.status_code '==' '1')}}
-                                <td>{{instance-action xs=true start=true instance=controller.instance_action instance-id=lambda-instance.id request=request message=message action="start_stop"}}
-                                </td>
-                              {{/if}}
                               <td><a href="delete-instance.html" class="btn btn-danger btn-xs"><i class="fa fa-close"></i> Delete</a></td>
                               <td>
                                 {{#link-to "deploy-app-2" lambda-instance.id}}

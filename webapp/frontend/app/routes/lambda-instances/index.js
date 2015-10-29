@@ -4,6 +4,11 @@ import LoDRoute from 'frontend/routes/application';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
 export default LoDRoute.extend(AuthenticatedRouteMixin, {
+  beforeModel: function () {
+    this.store.unloadAll('lambda-app');
+    this.store.unloadAll('app-action');
+  },
+
   model: function(params) {
     this.poll = Ember.run.later(this, function () {
       this.model(params).then(function () {
