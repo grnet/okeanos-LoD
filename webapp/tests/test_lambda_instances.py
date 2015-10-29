@@ -1382,3 +1382,42 @@ class TestLambdaInstanceAction(APITestCase):
         self.assertEqual(response.data['errors'][0]['status'], status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['errors'][0]['detail'],
                          CustomParseError.messages['action_value_error'])
+
+
+class TestLambdaInstancesCount(APITestCase):
+    """
+    Contains tests for Lambda Instances count API call.
+    """
+
+    def setUp(self):
+        # Create a user and force authenticate.
+        self.user = User.objects.create(uuid=uuid.uuid4())
+        self.client.force_authenticate(user=self.user)
+
+        # Save some lambda instances on the database.
+        self.number_of_lambda_instances = randint(0, 100)
+        for i in range(self.number_of_lambda_instances):
+            LambdaInstance.objects.create(uuid=uuid.uuid4())
+
+    # Test for getting the count of the lambda instances.
+    def test_lambda_instances_count(self):
+        # Make a request to get the count of the lambda instances.
+        response = self.client.get("/api/lambda-instances/count/")
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Assert the structure of the response.
+        self.assertIn('status', response.data)
+        self.assertIn('data', response.data)
+
+        self.assertIn('code', response.data['status'])
+        self.assertIn('short_description', response.data['status'])
+
+        # Assert the contents of the response.
+        self.assertEqual(len(response.data['data']), 1)
+
+        for item in response.data['data']:
+            self.assertIn('count', item)
+
+        self.assertEqual(response.data['data'][0]['count'], self.number_of_lambda_instances)

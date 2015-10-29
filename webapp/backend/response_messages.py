@@ -23,9 +23,11 @@ class ResponseMessages:
                                 " accepted",
         'application_start': "Your request to start the specified application has been accepted",
         'application_stop': "Your request to stop the specified application has been accepted",
+        'applications_count': "Number of Applications",
         'user_public_keys': "Public keys uploaded to ~okeanos",
         'user_okeanos_projects': "~okeanos projects",
         'vm_parameter_values': "Allowed values of parameters for creating a Lambda Instance",
+        'lambda_instances_count': "Number of Lambda Instances"
     }
 
     lambda_instance_status_details = {

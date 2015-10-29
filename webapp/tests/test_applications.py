@@ -1759,3 +1759,43 @@ class TestApplicationStop(APITestCase):
         for error in response.data['errors']:
             self.assertIn('status', error)
             self.assertIn('detail', error)
+
+
+class TestApplicationsCount(APITestCase):
+    """
+    Contains tests for Applications count API call.
+    """
+
+    def setUp(self):
+        # Create a user and force authenticate.
+        self.user = User.objects.create(uuid=uuid.uuid4())
+        self.client.force_authenticate(user=self.user)
+
+        # Save some applications on the database.
+        self.number_of_applications = randint(0, 100)
+        for i in range(self.number_of_applications):
+            Application.objects.create(uuid=uuid.uuid4(), type=Application.BATCH,
+                                       name="application_{}.jar".format(i))
+
+    # Test for getting the count of the applications.
+    def test_applications_count(self):
+        # Make a request to get the count of the applications.
+        response = self.client.get("/api/apps/count/")
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Assert the structure of the response.
+        self.assertIn('status', response.data)
+        self.assertIn('data', response.data)
+
+        self.assertIn('code', response.data['status'])
+        self.assertIn('short_description', response.data['status'])
+
+        # Assert the contents of the response.
+        self.assertEqual(len(response.data['data']), 1)
+
+        for item in response.data['data']:
+            self.assertIn('count', item)
+
+        self.assertEqual(response.data['data'][0]['count'], self.number_of_applications)

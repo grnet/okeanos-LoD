@@ -14,6 +14,10 @@ lambda_instances_interact = views.LambdaInstanceViewSet.as_view({
     'delete': 'destroy'
 })
 
+lambda_instances_count = views.LambdaInstanceViewSet.as_view({
+    'get': 'count'
+})
+
 # Create a router for applications. This router will generate all the needed urls based on
 # ApplicationViewSet. Format suffixes is explicitly removed from the router. It will be added
 # later to all urls.
@@ -30,6 +34,7 @@ urlpatterns = [
         name="vm parameter values"),
     url(r'^lambda-instance/?$', views.CreateLambdaInstance.as_view(),
         name='create lambda instance'),
+    url(r'^lambda-instances/count/?$', lambda_instances_count, name="lambda instances count"),
     url(r'^lambda-instances/?$', lambda_instances_list, name="lambda instances list"),
     url(r'^lambda-instances/(?P<uuid>[^/.]+)/?$', lambda_instances_interact,
         name="lambda instances interact"),
