@@ -82,6 +82,8 @@ directory=/home/flink
 command=bash run_batch_job.sh
 autostart=false
 user=flink
+stopsignal=INT
+stopasgroup=true
 stdout_logfile=/home/flink/supervisord_flink_batch_logs.log
 
 [program:flink_streaming_job]
