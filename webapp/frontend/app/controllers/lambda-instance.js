@@ -22,7 +22,7 @@ export default Ember.Controller.extend({
     {
       var _this = this;
       Ember.run.later((function () {
-        _this.store.unloadAll('lambda-instance');
+        _this.store.unloadAll('lambda-app');
         _this.set("request", false);
       }), 3000);
     },
