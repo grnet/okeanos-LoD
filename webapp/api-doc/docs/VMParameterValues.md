@@ -12,7 +12,7 @@ invalid, the API will reply with a "401 Unauthorized" error along with details r
 ## Basic Parameters
 |Type             | Description
 |-----------------|--------------------------
-| **Description** | VM parameter values
+| **Description** | Get VM parameter values.
 | **URL**         | /api/vm-parameter-values/
 | **HTTP Method** | GET
 | **Security**    | Basic Authentication
@@ -28,7 +28,8 @@ In the following example we will fetch all the allowed values of the parameters
 for creating a VM on ~okeanos.
 
 ```
-curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/vm-parameter-values/'
+curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+'http://<hostname>/api/vm-parameter-values/'
 ```
 
 ### Response body

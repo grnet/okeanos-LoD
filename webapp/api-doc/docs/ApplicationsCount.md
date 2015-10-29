@@ -14,7 +14,7 @@ If the token is invalid, the API will reply with a "401 Unauthorized" error alon
 
 |Type | Description
 ------|-------------
-| **Description** | applications count
+| **Description** | Count applications 
 | **URL**         | /api/apps/count/
 | **HTTP Method** | GET
 | **Security**    | Basic Authentication

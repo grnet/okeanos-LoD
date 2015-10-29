@@ -13,7 +13,7 @@ an "401 Unauthorized" error along with details regarding the error.
 ## Basic Parameters
 |Type             | Description
 |-----------------|--------------------------
-| **Description** | user public keys
+| **Description** | Get user public keys
 | **URL**         | /api/user-public-keys/
 | **HTTP Method** | GET
 | **Security**    | Basic Authentication
@@ -29,7 +29,8 @@ In the following example we are going to the get the keys uploaded on ~okeanos f
 a specified user.
 
 ```
-curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/user-public-keys/'
+curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+'http://<hostname>/api/user-public-keys/'
 ```
 
 ### Response body

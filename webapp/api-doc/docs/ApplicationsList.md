@@ -18,7 +18,7 @@ will reply with a "400 Bad Request" code.
 
 |Type | Description
 ------|-------------
-**Description** | applications list
+**Description** | List all applications
 **URL**         | /api/apps/
 **HTTP Method** | GET
 **Security**    | Basic Authentication
@@ -59,7 +59,8 @@ In this example we are going to list all the available applications.
 The request in curl
 
 ```
-curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/apps/'
+curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+ 'http://<hostname>/api/apps/'
 ```
 
 

@@ -14,7 +14,7 @@ and will start uploading the provided application to Pithos.
 
 |Type | Description
 ------|-------------
-**Description** | application upload
+**Description** | Upload an application
 **URL**         | api/apps/
 **HTTP Method** | POST
 **Security**    | Basic Authentication
@@ -45,7 +45,12 @@ name "test_project" and project name "lambda.grnet.gr".
 The request in curl
 
 ```
-    curl -X POST -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" -F "description=My application." -F "file=@test_project" -F "type=batch" -F "project_name=lambda.grnet.gr" 'http://<hostname>/api/apps/'
+curl -X POST -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+ -F "description=My application."  \
+ -F "file=@test_project" \
+ -F "type=batch" \
+ -F "project_name=lambda.grnet.gr" \
+ 'http://<hostname>/api/apps/'
 ```
 
 

@@ -16,7 +16,7 @@ of it along with a "200 OK" code.
 
 |Type | Description
 ------|-------------
-| **Description** | application details
+| **Description** | Details of an application
 | **URL**         | /api/apps/[application-id]/
 | **HTTP Method** | GET
 | **Security**    | Basic Authentication
@@ -43,7 +43,8 @@ In this example we are going to get the details of the application with id eb9b1
 The request in curl
 
 ```
-curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/apps/eb9b1cda-1c81-4850-92f3-897b01d4685c/'
+curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+'http://<hostname>/api/apps/eb9b1cda-1c81-4850-92f3-897b01d4685c/'
 ```
 
 

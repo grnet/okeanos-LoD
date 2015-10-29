@@ -13,7 +13,7 @@ with a "401 Unauthorized" code. If the token is valid, the API will check if the
 
 |Type | Description
 ------|-------------
-**Description** | application list deployed
+**Description** | Get a list of deployed applications
 **URL**         | /api/apps/[lambda-instance-id]/list-deployed/
 **HTTP Method** | GET
 **Security**    | Basic Authentication
@@ -42,7 +42,8 @@ with id 9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c
 The request in curl
 
 ```
-curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/apps/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/list-deployed/'
+curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+ 'http://<hostname>/api/apps/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/list-deployed/'
 ```
 
 

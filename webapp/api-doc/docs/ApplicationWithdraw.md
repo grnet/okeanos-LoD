@@ -14,7 +14,7 @@ will reply with a "202 Accepted" code and will start withdrawing the specified a
 
 |Type | Description
 ------|-------------
-**Description** | application withdraw
+**Description** | Withdraw an application from a selected lamdba instance
 **URL**         | /api/apps/[application-id]/withdraw/
 **HTTP Method** | POST
 **Security**    | Basic Authentication
@@ -43,7 +43,9 @@ In this example we are going to withdraw the application with id 7186be3f-22ca-4
 The request in curl
 
 ```
-curl -X POST -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" -F "lambda_instance_id=9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c" 'http://<hostname>/api/apps/7186be3f-22ca-4e59-8e5f-fc381e92a67c/withdraw/'
+curl -X POST -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+ -F "lambda_instance_id=9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c" \
+ 'http://<hostname>/api/apps/7186be3f-22ca-4e59-8e5f-fc381e92a67c/withdraw/'
 ```
 
 

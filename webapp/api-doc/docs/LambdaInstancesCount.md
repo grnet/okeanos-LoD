@@ -15,7 +15,7 @@ regarding the error.
 
 |Type | Description
 |------|-------------
-| **Description** | lambda instances count
+| **Description** | Count lambda instances
 | **URL**         | /api/lambda-instances/count/  
 | **HTTP Method** | GET
 | **Security**    | Basic Authentication
