@@ -275,6 +275,9 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # Get the description provided with the request.
         description = request.data.get('description', '')
 
+        # Get the execution environment name provided with the request.
+        execution_environment_name = request.data.get('execution_environment_name', '')
+
         # Get the type of the uploaded application
         app_type = request.data.get('type', '').lower()
         if app_type != 'batch' and app_type != 'streaming':
@@ -289,7 +292,8 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # Create an event to insert a new entry on the database.
         events.create_new_application.delay(application_uuid, uploaded_file.name,
                                             self.pithos_container, description,
-                                            app_type, request.user)
+                                            app_type, request.user,
+                                            execution_environment_name)
 
         # Save the uploaded file on the local file system.
         if not path.exists(settings.TEMPORARY_FILE_STORAGE):
@@ -564,13 +568,15 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                              .format(type=app_type))
 
         lambda_instance_uuid = lambda_instance.uuid
+        execution_environment_name = application.execution_environment_name
         app_action = 'start'
         filename = application.name
 
         # Create a task to start the application.
         tasks.start_stop_application.delay(lambda_instance_uuid=lambda_instance_uuid,
                                            app_uuid=uuid, app_action=app_action,
-                                           app_type=app_type, jar_filename=filename)
+                                           app_type=app_type, jar_filename=filename,
+                                           execution_environment_name=execution_environment_name)
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
@@ -608,11 +614,13 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                              .format(type=app_type))
 
         lambda_instance_uuid = lambda_instance.uuid
+        execution_environment_name = application.execution_environment_name
         app_action = 'stop'
 
         # Create a task to stop the application.
         tasks.start_stop_application.delay(lambda_instance_uuid=lambda_instance_uuid,
-                                           app_uuid=uuid, app_action=app_action, app_type=app_type)
+                                           app_uuid=uuid, app_action=app_action, app_type=app_type,
+                                           execution_environment_name=execution_environment_name)
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED

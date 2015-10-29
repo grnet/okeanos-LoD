@@ -75,7 +75,8 @@ def insert_cluster_info(instance_uuid, specs, provisioner_response):
 
 
 @shared_task
-def create_new_application(uuid, name, path, description, app_type, owner):
+def create_new_application(uuid, name, path, description, app_type, owner,
+                           execution_environment_name):
     """
     Creates a new entry of an application on the database.
     :param uuid: The uuid of the new application.
@@ -83,7 +84,7 @@ def create_new_application(uuid, name, path, description, app_type, owner):
     :param path: The path where the new application is stored on Pithos.
     :param description: The provided description of the new application.
     :param owner: The owner of the new application.
-    :param type: The type of the new application
+    :param execution_environment_name: The name given to the Apache Flink execution environment.
     """
 
     if app_type == 'batch':
@@ -92,7 +93,8 @@ def create_new_application(uuid, name, path, description, app_type, owner):
         app_type = Application.STREAMING
 
     Application.objects.create(uuid=uuid, name=name, path=path, description=description,
-                               owner=owner, type=app_type)
+                               owner=owner, type=app_type,
+                               execution_environment_name=execution_environment_name)
 
 
 @shared_task

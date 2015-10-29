@@ -61,6 +61,7 @@ class Application(models.Model):
     owner = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, null=True, blank=True)
     failure_message = models.TextField(default="", null=True, blank=True,
                                        help_text="Error message regarding this application.")
+    execution_environment_name = models.CharField(max_length=100, default="", null=True, blank=True)
 
     UPLOADED = "0"
     UPLOADING = "1"

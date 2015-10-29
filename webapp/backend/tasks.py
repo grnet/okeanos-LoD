@@ -440,12 +440,14 @@ def withdraw_application(lambda_instance_uuid, application_uuid):
 
 @shared_task
 def start_stop_application(lambda_instance_uuid, app_uuid,
-                           app_action, app_type, jar_filename=None):
+                           app_action, app_type, jar_filename=None,
+                           execution_environment_name=""):
     master_node_id = get_master_node_info(lambda_instance_uuid)[0]
     response = {'nodes': {'master': {'id': master_node_id, 'internal_ip': None}}}
     ansible_manager = Manager(response)
     ansible_manager.create_master_inventory(app_action=app_action, app_type=app_type,
-                                            jar_filename=jar_filename)
+                                            jar_filename=jar_filename,
+                                            execution_environment_name=execution_environment_name)
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'flink-apps.yml')
     check = _check_ansible_result(ansible_result)
     if check == 'Ansible successful':
