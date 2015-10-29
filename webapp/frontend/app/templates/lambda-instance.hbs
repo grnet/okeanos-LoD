@@ -17,6 +17,13 @@
         </div>
   {{/each}}
 
+  {{#each app.errors as |error|}}
+        <div  class="alert alert-dismissable alert-danger" id="alert">
+          <button type="button" class="close" {{action "close_alert"}}>×</button>
+          {{error.message}}
+        </div>
+  {{/each}}
+
       <div  class="alert alert-dismissable alert-success" id="alert">
         <button type="button" class="close" {{action "close_alert"}}>×</button>
         {{message}}

@@ -102,22 +102,32 @@
                         <td>{{lambda-instance.name}}</td>
                         <td><span>{{lambda-instance.status_detail}}</span></td>
                         <td>
-                          {{#linkTo 'lambda-instance' lambda-instance.id}}
-                            <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
-                          {{/linkTo}}
-                          {{#if (compare lambda-instance.status_code '==' '0')}}
-                            {{instance-action xs=true stop=true instance=model.instance_action instance-id=lambda-instance.id request=request message=message action="start_stop"}}
-                          {{else if (compare model.instance.status_code '==' '1')}}
-                            {{instance-action xs=true start=true instance=model.instance_action instance-id=lambda-instance.id request=request message=message action="start_stop"}}
-                          {{/if}}
-                          {{#link-to "deploy-app-2" lambda-instance.id}}
-                              <button class="btn btn-primary btn-xs"
-                                      style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
-                                  Attach an application
-                              </button>
-                          {{/link-to}}
-						  	          <a href="delete-instance.html" class="btn btn-danger btn-xs"  title="Delete" alt="Delete"><i class="fa fa-close"></i> Delete</a>
-						</td>
+                          <table class="table">
+                            <tbody>
+                              <td>
+                                {{#linkTo 'lambda-instance' lambda-instance.id}}
+                                  <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
+                                {{/linkTo}}
+                              </td>
+                              {{#if (compare lambda-instance.status_code '==' '0')}}
+                                <td>{{instance-action xs=true stop=true instance=model.instance_action instance-id=lambda-instance.id request=request message=message action="start_stop"}}
+                                </td>
+                              {{else if (compare model.instance.status_code '==' '1')}}
+                                <td>{{instance-action xs=true start=true instance=model.instance_action instance-id=lambda-instance.id request=request message=message action="start_stop"}}
+                                </td>
+                              {{/if}}
+                              <td><a href="delete-instance.html" class="btn btn-danger btn-xs"><i class="fa fa-close"></i> Delete</a></td>
+                              <td>
+                                {{#link-to "deploy-app-2" lambda-instance.id}}
+                                    <button class="btn btn-primary btn-xs"
+                                            style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
+                                        Attach an application
+                                    </button>
+                                {{/link-to}}
+                              </td>
+                            </tbody>
+                          </table>
+                        </td>
                       </tr>
                       {{else}}
                         No lambda instances under ownership.

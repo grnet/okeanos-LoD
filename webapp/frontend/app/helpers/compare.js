@@ -14,6 +14,6 @@ export default Ember.Helper.helper(function(parameters) {
     case '!==':
       return operand1 !== operand2;
     case '==':
-      return operand1 == operand2;
+      return String(operand1) === String(operand2);
   }
 });
