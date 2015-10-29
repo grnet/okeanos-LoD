@@ -98,6 +98,22 @@
     <!--row-->
 
   {{#if model.instances}}
+
+  {{#if request}}
+      {{#each app.errors as |error|}}
+            <div  class="alert alert-dismissable alert-danger" id="alert">
+              <button type="button" class="close" {{action "close_alert"}}>×</button>
+              {{error.message}}
+            </div>
+
+      {{else}}
+          <div  class="alert alert-dismissable alert-success" id="alert">
+            <button type="button" class="close" {{action "close_alert"}}>×</button>
+            {{message}}
+          </div>
+      {{/each}}
+  {{/if}}
+
       <div class="row">
           <div class="col-xs-12">
               <div class="box box-info">
@@ -116,21 +132,6 @@
                       <div class="row">
 
                           <div class="col-ms-8 col-xs-8">
-
-                            {{#if request}}
-                                {{#each app.errors as |error|}}
-                                      <div  class="alert alert-dismissable alert-danger" id="alert">
-                                        <button type="button" class="close" {{action "close_alert"}}>×</button>
-                                        {{error.message}}
-                                      </div>
-
-                                {{else}}
-                                    <div  class="alert alert-dismissable alert-success" id="alert">
-                                      <button type="button" class="close" {{action "close_alert"}}>×</button>
-                                      {{message}}
-                                    </div>
-                                {{/each}}
-                            {{/if}}
 
                               <div class="table">
                                   <table class="table">

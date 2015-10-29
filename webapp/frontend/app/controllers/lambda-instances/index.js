@@ -21,4 +21,5 @@ export default Ember.ArrayController.extend({
   pagedContent: pagedArray('content', {pageBinding: "page", perPageBinding: "perPage"}),
 
   totalPagesBinding: "pagedContent.totalPages",
+
 });
