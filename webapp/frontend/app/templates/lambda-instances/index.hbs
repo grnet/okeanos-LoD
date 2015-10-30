@@ -107,7 +107,7 @@
                                   <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
                                 {{/linkTo}}
                               </td>
-                              <td><a href="delete-instance.html" class="btn btn-danger btn-xs"><i class="fa fa-close"></i> Delete</a></td>
+                              <td>{{delete-lambda-instance lambdaInstance=lambda-instance}}</td>
                               <td>
                                 {{#link-to "deploy-app-2" lambda-instance.id}}
                                     <button class="btn btn-primary btn-xs"
