@@ -6,9 +6,10 @@ export default Ember.Component.extend({
   actions: {
     delete(lambdaApp) {
       if (confirm("Are you sure you want to delete?")) {
+        var _this = this;
         lambdaApp.deleteRecord();
         lambdaApp.save().catch(function() {
-          this.failure = true;
+          _this.failure = true;
         });
         return false;
         }
