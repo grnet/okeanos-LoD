@@ -2,14 +2,19 @@
 
 export JARFILE=example.jar
 
-execution_environment_name=0
+execution_environment_name=""
 
-/usr/local/flink/bin/flink run $JARFILE
-
-if [ $execution_environment_name != 0 ]
-then
-  id=$(/usr/local/flink/bin/flink list | grep "$execution_environment_name" | cut -f4 -d" ")
+function finish {
+  id="$(/usr/local/flink/bin/flink list | grep "$execution_environment_name" | cut -f4 -d" ")"
+  echo "$id" >> temp
 
   /usr/local/flink/bin/flink cancel $id
+}
+
+if [ "$execution_environment_name" != "" ]
+then
+  trap finish EXIT
 fi
+
+/usr/local/flink/bin/flink run $JARFILE
 
