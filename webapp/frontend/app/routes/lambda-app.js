@@ -5,7 +5,8 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 
 export default LoDRoute.extend(AuthenticatedRouteMixin, {
 
-  beforeModel: function () {
+  beforeModel: function (transition) {
+    this._super(transition);
     this.store.unloadAll('lambda-instance');
     this.store.unloadAll('app-action');
   },
