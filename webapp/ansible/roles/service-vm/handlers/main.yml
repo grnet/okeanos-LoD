@@ -13,6 +13,12 @@
 
   - name: migrate_backend_app
     django_manage: command=migrate app_path={{ repository_download_path }}/okeanos-LoD/webapp/ apps=backend
+    changed_when: True
+    notify:
+      - collect_static_files
+
+  - name: collect_static_files
+    django_manage: command=collectstatic app_path={{ repository_download_path }}/okeanos-LoD/webapp/
 
   - name: restart_apache2
     service: name=apache2 state=restarted

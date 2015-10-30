@@ -38,7 +38,8 @@ urlpatterns = [
     url(r'^lambda-instances/?$', lambda_instances_list, name="lambda instances list"),
     url(r'^lambda-instances/(?P<uuid>[^/.]+)/?$', lambda_instances_interact,
         name="lambda instances interact"),
-    url(r'^', include(application_router.urls))
+    url(r'^', include(application_router.urls)),
+    url(r'^docs/', include('rest_framework_swagger.urls', namespace="swagger"),),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
