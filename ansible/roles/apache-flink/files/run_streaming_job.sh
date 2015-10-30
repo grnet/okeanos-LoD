@@ -6,7 +6,6 @@ execution_environment_name=""
 
 function finish {
   id="$(/usr/local/flink/bin/flink list | grep "$execution_environment_name" | cut -f4 -d" ")"
-  echo "$id" >> temp
 
   /usr/local/flink/bin/flink cancel $id
 }
