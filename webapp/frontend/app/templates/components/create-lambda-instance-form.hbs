@@ -88,6 +88,11 @@
             </div> <!--row-->
             <div class="row">
               <div class="form-group col-sm-6">
+                <label for="kafka_topics" class="col-sm-6">Apache Kafka topics:</label>
+                <div class="col-sm-6">
+                  {{input type="text" value=kafkaTopics placeholder="e.g. name1,name2,name3" size="50" class="form-control" required="false"}}
+                  <span id="helpBlock" class="help-block">Names of Apache Kafka topics</span>
+                </div>  <!--class="col-sm-6"-->
               </div>
             </div><!--row-->
           </div><!--box-body-->

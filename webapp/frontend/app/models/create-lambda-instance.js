@@ -12,5 +12,6 @@ export default DS.Model.extend({
   DiskMaster: DS.attr('number',  {defaultValue: 20}),
   DiskSlave: DS.attr('number',  {defaultValue: 20}),
   ipAllocation: DS.attr('string',  {defaultValue: "master"}),
-  publicKeyName: DS.attr({defaultValue: []})
+  publicKeyName: DS.attr({defaultValue: []}),
+  kafkaTopics: DS.attr({defaultValue: []})
 });
