@@ -572,7 +572,8 @@ class TestCeleryTasks(APITestCase):
             'disk_slave': 40,
             'ip_allocation': 'master',
             'network_request': 1,
-            'project_name': "lambda.grnet.gr"
+            'project_name': "lambda.grnet.gr",
+            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -631,8 +632,9 @@ class TestCeleryTasks(APITestCase):
         mock_set_lambda_instance_status_central_vm.delay.\
             assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.HADOOP_INSTALLED, "")
 
-        mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
-                                                                        'kafka-install.yml')
+        mock_lambda_instance_manager_fokia.\
+            run_playbook.assert_any_call(mock_ansible_manager, 'kafka-install.yml', None,
+                                         {'topics': specs['kafka_topics']})
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.KAFKA_INSTALLED)
@@ -683,7 +685,8 @@ class TestCeleryTasks(APITestCase):
             'disk_slave': 40,
             'ip_allocation': 'master',
             'network_request': 1,
-            'project_name': "lambda.grnet.gr"
+            'project_name': "lambda.grnet.gr",
+            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -757,7 +760,8 @@ class TestCeleryTasks(APITestCase):
             'disk_slave': 40,
             'ip_allocation': 'master',
             'network_request': 1,
-            'project_name': "lambda.grnet.gr"
+            'project_name': "lambda.grnet.gr",
+            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -842,7 +846,8 @@ class TestCeleryTasks(APITestCase):
             'disk_slave': 40,
             'ip_allocation': 'master',
             'network_request': 1,
-            'project_name': "lambda.grnet.gr"
+            'project_name': "lambda.grnet.gr",
+            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -938,7 +943,8 @@ class TestCeleryTasks(APITestCase):
             'disk_slave': 40,
             'ip_allocation': 'master',
             'network_request': 1,
-            'project_name': "lambda.grnet.gr"
+            'project_name': "lambda.grnet.gr",
+            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -1043,7 +1049,8 @@ class TestCeleryTasks(APITestCase):
             'disk_slave': 40,
             'ip_allocation': 'master',
             'network_request': 1,
-            'project_name': "lambda.grnet.gr"
+            'project_name': "lambda.grnet.gr",
+            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -1102,8 +1109,9 @@ class TestCeleryTasks(APITestCase):
         mock_set_lambda_instance_status_central_vm.delay.\
             assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.HADOOP_INSTALLED, "")
 
-        mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
-                                                                        'kafka-install.yml')
+        mock_lambda_instance_manager_fokia.\
+            run_playbook.assert_any_call(mock_ansible_manager, 'kafka-install.yml', None,
+                                         {'topics': specs['kafka_topics']})
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.KAFKA_FAILED,
@@ -1157,7 +1165,8 @@ class TestCeleryTasks(APITestCase):
             'disk_slave': 40,
             'ip_allocation': 'master',
             'network_request': 1,
-            'project_name': "lambda.grnet.gr"
+            'project_name': "lambda.grnet.gr",
+            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -1216,8 +1225,9 @@ class TestCeleryTasks(APITestCase):
         mock_set_lambda_instance_status_central_vm.delay.\
             assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.HADOOP_INSTALLED, "")
 
-        mock_lambda_instance_manager_fokia.run_playbook.assert_any_call(mock_ansible_manager,
-                                                                        'kafka-install.yml')
+        mock_lambda_instance_manager_fokia.\
+            run_playbook.assert_any_call(mock_ansible_manager, 'kafka-install.yml', None,
+                                         {'topics': specs['kafka_topics']})
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay.\
             assert_any_call(instance_uuid=None, status=LambdaInstance.KAFKA_INSTALLED)
