@@ -8,6 +8,17 @@ Running
 ```
 ./create.sh <okeanos-token> <public_key_path> <private_key_path>
 ```
+or create a config.txt file with the following variables 
+
+```
+TOKEN= YOUR OKEANOS TOKEN
+PUBLIC_KEY_PATH= PATH TO PUBLIC KEY 
+PRIVATE_KEY_PATH= PATH TO PRIVATE KEY 
+```
+
+```
+./create_ci.sh 
+```
 
 will create a Service VM that will host the API of ~okeanos-LoD service, a Central VM that will be
 used to collect statistical data about ~okeanos-LoD service usage and a Lambda Instance through
@@ -17,6 +28,11 @@ Running
 
 ```
 ./destroy.sh <okeanos-token> <public_key_path> <private_key_path>
+```
+or if you have created the config.txt file
+
+```
+./destroy_ci.sh 
 ```
 
 will destroy everything that has been created with `create.sh` script.
