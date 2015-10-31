@@ -108,6 +108,8 @@ class LambdaInstanceInfo(serializers.Serializer):
     disk_slave = serializers.IntegerField()
     network_request = serializers.IntegerField(default=1)
     public_key_name = serializers.ListField(required=False, default=[])
+    kafka_topics = serializers.ListField(required=False, default=["input", "stream-output",
+                                                                  "batch-output"])
 
     # Allowed values for vm parameters. They will be changed dynamically in the view that will
     # be called to create a new lambda instance. These entries are kept here in case the view

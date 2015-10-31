@@ -86,9 +86,9 @@ def __delete_private_key(cluster_id, master_id, slave_ids):
     os.remove(join(expanduser('~/.ssh/lambda_instances/'), cluster_id))
 
 
-def run_playbook(ansible_manager, playbook):
+def run_playbook(ansible_manager, playbook, tags=None, extra_vars=None):
     ansible_result = ansible_manager.run_playbook(
-        playbook_file=join(ansible_path, "playbooks", playbook))
+        playbook_file=join(ansible_path, "playbooks", playbook), tags=tags, extra_vars=extra_vars)
     return ansible_result
 
 
