@@ -31,14 +31,30 @@
   - name: Copy lambda sites-available mkdocs configuration.
     template: src=central-service-mkdocs.conf.j2 dest=/etc/apache2/sites-available/central-service-mkdocs.conf
 
-  - name: Add central-service-backend to sites-enabled.
-    file: src=/etc/apache2/sites-available/central-service-backend.conf dest=/etc/apache2/sites-enabled/central-service-backend.conf state=link
+  - name: Copy lambda sites-available frontend configuration.
+    template: src=central-service-frontend.conf.j2 dest=/etc/apache2/sites-available/central-service-frontend.conf
 
-  - name: Add lambda-service-mkdocs to sites-enabled.
+  - name: Add central-service-backend to sites-enabled.
+    command: a2ensite central-service-backend.conf
+
+  - name: Add central-service-mkdocs to sites-enabled.
     command: a2ensite central-service-mkdocs.conf
+
+  - name: Add central-service-frontend to sites-enabled.
+    command: a2ensite central-service-frontend.conf
 
   - name: Remove default sites-enabled.
     file: name=/etc/apache2/sites-enabled/000-default.conf state=absent
+
+  - name: Activate Apache rewrite module.
+    apache2_module: name=rewrite state=present
+    notify:
+          - restart_apache2
+
+  - name: Activate Apache headers module.
+    apache2_module: name=headers state=present
+    notify:
+          - restart_apache2
 
   - name: Configure Apache.
     lineinfile: dest=/etc/apache2/apache2.conf line="WSGIPythonPath {{ repository_download_path }}/okeanos-LoD/central_service/app" state=present insertafter=EOF
