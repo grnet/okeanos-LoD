@@ -7,7 +7,10 @@
       - libapache2-mod-wsgi
 
   - name: Install apache ssl module
-    command: a2enmod ssl
+    apache2_module: name={{item}} state=present
+    with_items:
+      - ssl
+      - rewrite
     notify: restart_apache2
 
   - name: Create /etc/apache2/ssl directory
