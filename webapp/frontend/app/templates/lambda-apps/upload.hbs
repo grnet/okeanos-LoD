@@ -54,7 +54,7 @@
 
                <select name="okeanos_project" class="form-control">
                  {{#each model.userOkeanosProjects as |project|}}
-                   <option value={{project.name}}>{{project.name}}</option>
+                   <option value={{project.name}}>{{project.name}} (pithos_space: {{normalize-bytes project.pithos_space}})</option>
                  {{/each}}
                </select>
 

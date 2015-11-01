@@ -63,7 +63,7 @@
                 <div class="col-sm-6">
                   <select name="okeanos_project" class="form-control">
                     {{#each userOkeanosProjects as |project|}}
-                    <option value={{project.name}}>{{project.name}}</option>
+                    <option value={{project.name}}>{{project.name}} (vm: {{project.vm}}, ram: {{normalize-bytes project.ram}}, disk: {{normalize-bytes project.disk}}, floating_ip: {{project.floating_ip}}, private_network: {{project.private_network}})}}</option>
                     {{/each}}
                   </select>
                   <span id="helpBlock" class="help-block">Select a project</span>
