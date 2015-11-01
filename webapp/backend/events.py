@@ -83,6 +83,7 @@ def create_new_application(uuid, name, path, description, app_type, owner,
     :param name: The name of the new application.
     :param path: The path where the new application is stored on Pithos.
     :param description: The provided description of the new application.
+    :param app_type: The type of the new application.
     :param owner: The owner of the new application.
     :param execution_environment_name: The name given to the Apache Flink execution environment.
     """
