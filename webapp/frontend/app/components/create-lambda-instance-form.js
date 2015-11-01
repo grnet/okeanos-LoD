@@ -25,8 +25,10 @@ export default Ember.Component.extend({
       }
       newLambdaInstance.set('publicKeyName', requestedPublicKeys);
 
-      var kafkaTopicsString = this.get("kafkaTopics");
-      newLambdaInstance.set('kafkaTopics', kafkaTopicsString.split(','));
+      if (typeof this.get("kafkaTopics") !== 'undefined') {
+        var kafkaTopicsString = this.get("kafkaTopics");
+        newLambdaInstance.set('kafkaTopics', kafkaTopicsString.split(','));
+      }
 
       this.sendAction('saveAction', newLambdaInstance);
     }
