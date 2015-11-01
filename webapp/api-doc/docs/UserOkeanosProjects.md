@@ -5,9 +5,10 @@ description: Retrieve the ~okeanos to which the user is a member
 
 # API - User ~okeanos projects - Description
 User ~okeanos projects call, given an authentication token through the header Authorization,
-will connect to ~okeanos service and retrieve the project to which the user is a member.
+will connect to ~okeanos service and retrieve the projects to which the user is a member along
+with the remaining quotas in each one of them.
 If the token is valid, the API will reply with a "200 Success" code, along with all the
-project names and ids. If the token is invalid, the API will reply with a "401 Unauthorized"
+project names, ids and quotas. If the token is invalid, the API will reply with a "401 Unauthorized"
 error along with details regarding the error.
 
 
@@ -44,11 +45,25 @@ If the authentication token is correct then the response is
   "data": [
     {
       "id": "e9ccbc1b-81f9-4c46-9258-a579f9f0d030",
-      "name": "lambda.grnet.gr"
+      "name": "lambda.grnet.gr",
+      "pithos_space": 150341341,
+      "floating_ip": 10,
+      "ram": 43215423621,
+      "vm": 1,
+      "private_network": 8,
+      "disk": 435463263245,
+      "cpu": 38
     },
     {
       "id": "089c8bea-cc17-4d30-b35c-460b443d19c6",
-      "name": "system:089c8bea-cc17-4d30-b35c-460b443d19c6"
+      "name": "system:089c8bea-cc17-4d30-b35c-460b443d19c6",
+      "pithos_space": 45325324,
+      "floating_ip": 3,
+      "ram": 4321432143152,
+      "vm": 4,
+      "private_network": 3,
+      "disk": 30,
+      "cpu": 1
     }
   ]
 }
