@@ -29,8 +29,28 @@ class TestUserOkeanosProjects(APITestCase):
 
     # Test for getting the user ~okeanos projects.
     @mock.patch('backend.views.get_user_okeanos_projects', return_value=[
-        {'id': 1, 'name': "name1"},
-        {'id': 2, 'name': "name2"}])
+        {
+            'id': '1',
+            'name': "name1",
+            'vm': 7,
+            'cpu': 38,
+            'ram': 140,
+            'disk': 50,
+            'floating_ip': 0,
+            'private_network': 8,
+            'pithos_space': 40
+        },
+        {
+            'id': '2',
+            'name': "name2",
+            'vm': 7,
+            'cpu': 38,
+            'ram': 0,
+            'disk': 280,
+            'floating_ip': 0,
+            'private_network': 8,
+            'pithos_space': 400
+        }])
     def test_user_okeanos_projects(self, mock_get_user_okeanos_projects_fokia):
 
         # Make a request to get the user okeanos projects.
@@ -55,5 +75,27 @@ class TestUserOkeanosProjects(APITestCase):
         self.assertEqual(response.data['status']['short_description'],
                          ResponseMessages.short_descriptions['user_okeanos_projects'])
 
-        self.assertEqual(response.data['data'], [{'id': 1, 'name': "name1"},
-                                                 {'id': 2, 'name': "name2"}])
+        self.assertEqual(response.data['data'], [
+            {
+                'id': '1',
+                'name': "name1",
+                'vm': 7,
+                'cpu': 38,
+                'ram': 140,
+                'disk': 50,
+                'floating_ip': 0,
+                'private_network': 8,
+                'pithos_space': 40
+            },
+            {
+                'id': '2',
+                'name': "name2",
+                'vm': 7,
+                'cpu': 38,
+                'ram': 0,
+                'disk': 280,
+                'floating_ip': 0,
+                'private_network': 8,
+                'pithos_space': 400
+            }
+        ])

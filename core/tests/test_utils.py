@@ -18,8 +18,143 @@ def test_get_user_okeanos_projects(mock_AstakosClient):
     mock_AstakosClient.return_value = mock_astakos_client
 
     mock_astakos_client.get_projects.return_value = [
-        {'id': 1, 'name': "name1", 'garbage': 'garbage'},
-        {'id': 2, 'name': "name2", 'garbage2': 'garbage2'}]
+        {'id': '1', 'name': "name1", 'garbage': 'garbage'},
+        {'id': '2', 'name': "name2", 'garbage2': 'garbage2'}]
+
+    mock_astakos_client.get_quotas.return_value = {
+        '1': {
+            u'astakos.pending_app': {
+                u'limit': 0,
+                u'pending': 0,
+                u'project_limit': 0,
+                u'project_pending': 0,
+                u'project_usage': 0,
+                u'usage': 0
+            },
+            u'cyclades.cpu': {
+                u'limit': 112,
+                u'pending': 0,
+                u'project_limit': 112,
+                u'project_pending': 0,
+                u'project_usage': 74,
+                u'usage': 24
+            },
+            u'cyclades.disk': {
+                u'limit': 1073741824000,
+                u'pending': 0,
+                u'project_limit': 200,
+                u'project_pending': 0,
+                u'project_usage': 150,
+                u'usage': 171798691840
+            },
+            u'cyclades.floating_ip': {
+                u'limit': 26,
+                u'pending': 0,
+                u'project_limit': 26,
+                u'project_pending': 0,
+                u'project_usage': 26,
+                u'usage': 5
+            },
+            u'cyclades.network.private': {
+                u'limit': 20,
+                u'pending': 0,
+                u'project_limit': 20,
+                u'project_pending': 0,
+                u'project_usage': 12,
+                u'usage': 1
+            },
+            u'cyclades.ram': {
+                u'limit': 163208757248,
+                u'pending': 0,
+                u'project_limit': 500,
+                u'project_pending': 0,
+                u'project_usage': 360,
+                u'usage': 25769803776
+            },
+            u'cyclades.vm': {
+                u'limit': 28,
+                u'pending': 0,
+                u'project_limit': 28,
+                u'project_pending': 0,
+                u'project_usage': 21,
+                u'usage': 6
+            },
+            u'pithos.diskspace': {
+                u'limit': 107374182400,
+                u'pending': 0,
+                u'project_limit': 100,
+                u'project_pending': 0,
+                u'project_usage': 60,
+                u'usage': 228849836
+            }
+        },
+        '2': {
+            u'astakos.pending_app': {
+                u'limit': 0,
+                u'pending': 0,
+                u'project_limit': 0,
+                u'project_pending': 0,
+                u'project_usage': 0,
+                u'usage': 0
+            },
+            u'cyclades.cpu': {
+                u'limit': 112,
+                u'pending': 0,
+                u'project_limit': 112,
+                u'project_pending': 0,
+                u'project_usage': 74,
+                u'usage': 24
+            },
+            u'cyclades.disk': {
+                u'limit': 1073741824000,
+                u'pending': 0,
+                u'project_limit': 600,
+                u'project_pending': 0,
+                u'project_usage': 320,
+                u'usage': 171798691840
+            },
+            u'cyclades.floating_ip': {
+                u'limit': 26,
+                u'pending': 0,
+                u'project_limit': 26,
+                u'project_pending': 0,
+                u'project_usage': 26,
+                u'usage': 5
+            },
+            u'cyclades.network.private': {
+                u'limit': 20,
+                u'pending': 0,
+                u'project_limit': 20,
+                u'project_pending': 0,
+                u'project_usage': 12,
+                u'usage': 1
+            },
+            u'cyclades.ram': {
+                u'limit': 163208757248,
+                u'pending': 0,
+                u'project_limit': 500,
+                u'project_pending': 0,
+                u'project_usage': 500,
+                u'usage': 25769803776
+            },
+            u'cyclades.vm': {
+                u'limit': 28,
+                u'pending': 0,
+                u'project_limit': 28,
+                u'project_pending': 0,
+                u'project_usage': 21,
+                u'usage': 6
+            },
+            u'pithos.diskspace': {
+                u'limit': 107374182400,
+                u'pending': 0,
+                u'project_limit': 440,
+                u'project_pending': 0,
+                u'project_usage': 40,
+                u'usage': 228849836
+            }
+        },
+    }
 
     # Make a call to get_user_okeanos_projects utils method.
     response = utils.get_user_okeanos_projects(authentication_url, authentication_token)
@@ -28,9 +163,32 @@ def test_get_user_okeanos_projects(mock_AstakosClient):
     mock_AstakosClient.assert_called_with(authentication_url, authentication_token)
 
     mock_astakos_client.get_projects.assert_called_with()
+    mock_astakos_client.get_quotas.assert_called_with()
 
     # Assert the contents of the response.
-    assert response == [{'id': 1, 'name': "name1"}, {'id': 2, 'name': "name2"}]
+    assert response == [
+        {
+            'id': '1',
+            'name': "name1",
+            'vm': 7,
+            'cpu': 38,
+            'ram': 140,
+            'disk': 50,
+            'floating_ip': 0,
+            'private_network': 8,
+            'pithos_space': 40
+        },
+        {
+            'id': '2',
+            'name': "name2",
+            'vm': 7,
+            'cpu': 38,
+            'ram': 0,
+            'disk': 280,
+            'floating_ip': 0,
+            'private_network': 8,
+            'pithos_space': 400
+        }]
 
 
 @patch('fokia.utils.CycladesComputeClient')
