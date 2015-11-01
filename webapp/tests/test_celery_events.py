@@ -128,10 +128,11 @@ class TestCeleryEvents(APITestCase):
         application_description = "application_description"
         application_type = "batch"
         application_owner = User.objects.create(uuid=uuid.uuid4())
+        application_execution_environment_name = "Stream"
 
         events.create_new_application(application_uuid, application_name, application_path,
                                       application_description, application_type,
-                                      application_owner)
+                                      application_owner, application_execution_environment_name)
 
         self.assertEqual(Application.objects.all().count(), 1)
 
@@ -142,6 +143,8 @@ class TestCeleryEvents(APITestCase):
         self.assertEqual(application.owner, application_owner)
         self.assertEqual(application.status, Application.UPLOADING)
         self.assertEqual(application.type, Application.BATCH)
+        self.assertEqual(application.execution_environment_name,
+                         application_execution_environment_name)
 
     def test_delete_application(self):
         # Create an application on the database.

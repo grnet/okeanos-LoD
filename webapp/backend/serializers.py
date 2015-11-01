@@ -49,7 +49,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Application
         fields = ('uuid', 'name', 'path', 'type', 'description', 'failure_message', 'status',
-                  'lambda_instances')
+                  'lambda_instances', 'execution_environment_name')
 
 
 class ServerSerializer(serializers.ModelSerializer):

@@ -7,5 +7,12 @@
               state=present
               insertafter="^export"
 
+  - name: Set execution environment name for streaming job
+    lineinfile: destfile="/home/flink/run_streaming_job.sh"
+                regexp="^execution_environment_name"
+                line=execution_environment_name='"{{ execution_environment_name }}"'
+                state=present
+                insertafter="^execution_environment_name"
+
   - name: Start streaming job using supervisord
     supervisorctl: name='flink_streaming_job' state=started

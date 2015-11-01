@@ -22,12 +22,12 @@
       - configure
 
   - name: Copy run_batch_job script
-    copy: src=run_flink_job.sh dest="/home/flink/run_batch_job.sh" owner=flink group=flink mode=0744
+    copy: src=run_batch_job.sh dest="/home/flink/run_batch_job.sh" owner=flink group=flink mode=0744
     tags:
       - configure
 
   - name: Copy run_streaming_job script
-    copy: src=run_flink_job.sh dest="/home/flink/run_streaming_job.sh" owner=flink group=flink mode=0744
+    copy: src=run_streaming_job.sh dest="/home/flink/run_streaming_job.sh" owner=flink group=flink mode=0744
     tags:
       - configure
 

@@ -229,7 +229,8 @@ class TestCeleryTasks(APITestCase):
 
         tasks.upload_application_to_pithos(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
                                            container_name, project_name, local_file_path,
-                                           application_uuid)
+                                           application_uuid, application_name,
+                                           application_description)
 
         mock_create_application_central_vm.delay.\
             assert_called_with(self.AUTHENTICATION_TOKEN, application_uuid, application_name,
@@ -277,7 +278,8 @@ class TestCeleryTasks(APITestCase):
 
         tasks.upload_application_to_pithos(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
                                            container_name, project_name, local_file_path,
-                                           application_uuid)
+                                           application_uuid, application_name,
+                                           application_description)
 
         mock_create_application_central_vm.delay.\
             assert_called_with(self.AUTHENTICATION_TOKEN, application_uuid, application_name,
@@ -509,7 +511,7 @@ class TestCeleryTasks(APITestCase):
 
         # Make a call to start the application.
         tasks.start_stop_application(lambda_instance_uuid, application_uuid, 'start', 'batch',
-                                     'application.jar')
+                                     'application.jar', "Stream")
 
         # Assert that the proper mocks have been called.
         mock_manager_fokia.assert_called_with({
@@ -522,7 +524,7 @@ class TestCeleryTasks(APITestCase):
         })
         mock_ansible_manager.create_master_inventory.\
             assert_called_with(app_action="start", app_type="batch",
-                                            jar_filename="application.jar")
+                               jar_filename="application.jar", execution_environment_name="Stream")
         mock_lambda_instance_manager_fokia.run_playbook.\
             assert_called_with(mock_ansible_manager, "flink-apps.yml")
         mock_check_ansible_result.assert_called_with(mock_ansible_result)

@@ -96,7 +96,8 @@ class Manager:
         playbook_result = pb.run()
         return playbook_result
 
-    def create_master_inventory(self, app_action=None, app_type=None, jar_filename=None):
+    def create_master_inventory(self, app_action=None, app_type=None, jar_filename=None,
+                                execution_environment_name=None):
         master_hostname = self.inventory['master']['name'] + '.vm.okeanos.grnet.gr'
         self.ansible_inventory = ansible.inventory.Inventory(host_list=[master_hostname])
         all_group = self.ansible_inventory.get_group('all')
@@ -107,6 +108,10 @@ class Manager:
             master_host.set_variable('app_type', app_type)
             if jar_filename is not None:
                 master_host.set_variable('jarfile', jar_filename)
+
+                if execution_environment_name is not None:
+                    master_host.set_variable('execution_environment_name',
+                                             execution_environment_name)
 
         master_group = ansible.inventory.group.Group(name='master')
         master_group.add_host(master_host)
