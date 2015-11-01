@@ -1,6 +1,14 @@
 Listen 8083
+Listen 8084
 
 <VirtualHost *:8083>
+        ServerName {{ ansible_hostname }}.vm.okeanos.grnet.gr
+        RewriteEngine On
+        RewriteCond %{HTTPS} !=on
+        RewriteRule ^/?(.*) https://%{SERVER_NAME}:8084/$1 [R,L]
+</VirtualHost>
+
+<VirtualHost *:8084>
         # The ServerName directive sets the request scheme, hostname and port that
         # the server uses to identify itself. This is used when creating
         # redirection URLs. In the context of virtual hosts, the ServerName
@@ -9,10 +17,14 @@ Listen 8083
         # value is not decisive as it is used as a last resort host regardless.
         # However, you must set it for any further virtual host explicitly.
         #ServerName www.example.com
-        ServerName {{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr:8083
+        ServerName {{ ansible_hostname }}.vm.okeanos.grnet.gr:8083
 
         #ServerAdmin webmaster@localhost
         DocumentRoot {{ repository_download_path }}/okeanos-LoD/central_service/app/api-doc/site
+
+        SSLEngine ON
+        SSLCertificateFile /etc/apache2/ssl/server.crt
+        SSLCertificateKeyFile /etc/apache2/ssl/server.key
 
         # Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
         # error, crit, alert, emerg.
