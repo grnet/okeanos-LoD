@@ -3,7 +3,7 @@
   - name: Set jar file path for batch job
     lineinfile: destfile="/home/flink/run_batch_job.sh"
               regexp="^export"
-              value="export JARFILE={{ jarfile }}"
+              line="export JARFILE={{ jarfile }}"
               state=present
               insertafter="^export"
 
