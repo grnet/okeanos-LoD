@@ -1,4 +1,13 @@
+Listen 80
+Listen 443
+
 <VirtualHost *:80>
+        RewriteEngine On
+        RewriteCond %{HTTPS} !=on
+        RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
+</VirtualHost>
+
+<VirtualHost *:443>
 	# The ServerName directive sets the request scheme, hostname and port that
 	# the server uses to identify itself. This is used when creating
 	# redirection URLs. In the context of virtual hosts, the ServerName
@@ -7,7 +16,7 @@
 	# value is not decisive as it is used as a last resort host regardless.
 	# However, you must set it for any further virtual host explicitly.
 	#ServerName www.example.com
-	ServerName {{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr
+	ServerName {{ ansible_hostname }}.vm.okeanos.grnet.gr
 
 	#ServerAdmin webmaster@localhost
 	DocumentRoot {{ repository_download_path }}/okeanos-LoD/webapp/
@@ -15,7 +24,7 @@
 	WSGIScriptAlias / {{ repository_download_path }}/okeanos-LoD/webapp/webapp/wsgi.py
 	WSGIPassAuthorization On
 
-	Header always set Access-Control-Allow-Origin: "http://{{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr:4200"
+	Header always set Access-Control-Allow-Origin: "http://{{ ansible_hostname }}.vm.okeanos.grnet.gr:4200"
 	Header always set Access-Control-Allow-Credentials: true
 	Header always set Access-Control-Allow-Methods: "GET, POST, DELETE, OPTIONS"
 	Header always set Access-Control-Allow-Headers "Authorization"
@@ -24,6 +33,10 @@
 	RewriteEngine On
 	RewriteCond %{REQUEST_METHOD} OPTIONS
 	RewriteRule ^(.*)$ $1 [R=200,L]
+
+  SSLEngine ON
+  SSLCertificateFile /etc/apache2/ssl/server.crt
+  SSLCertificateKeyFile /etc/apache2/ssl/server.key
 
 	# Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
 	# error, crit, alert, emerg.
