@@ -11,7 +11,7 @@
     notify: restart_apache2
 
   - name: Create /etc/apache2/ssl directory
-    file: path=/etc/apache2/ssl state=directory owner=root group=root mode=0755
+    file: path=/etc/apache2/ssl state=directory owner=root group=root mode=0744
 
   - name: Create self-signed certificate (to become deprecated)
     command: openssl req -new -nodes -x509 -subj "/C=GR/O=GRNET S.A./OU=okeanos.grnet.gr/CN={{ ansible_hostname }}" -days 3650 -keyout /etc/apache2/ssl/server.key -out /etc/apache2/ssl/server.crt -extensions v3_ca creates=/etc/apache2/ssl/server.crt
