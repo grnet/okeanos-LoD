@@ -46,6 +46,6 @@
   - name: Set PATH environment variable for flink user
     lineinfile: destfile="/home/flink/.bashrc"
               regexp="^PATH"
-              value="PATH=$PATH:{{ flink_home }}/bin:{{ hadoop_home }}/bin"
+              line="PATH=$PATH:{{ flink_home }}/bin:{{ hadoop_home }}/bin"
               state=present
               insertafter=EOF
