@@ -1,11 +1,11 @@
 import Ember from 'ember';
-import LoDRoute from 'frontend/routes/application';
 import ENV from 'frontend/config/environment';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default LoDRoute.extend(AuthenticatedRouteMixin, {
+export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
-  beforeModel: function () {
+  beforeModel: function (transition) {
+    this._super(transition);
     this.store.unloadAll('lambda-instance');
     this.store.unloadAll('app-action');
   },
