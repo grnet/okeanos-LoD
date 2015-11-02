@@ -70,7 +70,8 @@ curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY
       "lambda_instances": [
         {
           "started": false,
-          "id": "3bc97580-45e1-4c39-90ae-0c2178431526"
+          "id": "3bc97580-45e1-4c39-90ae-0c2178431526",
+          "name": "My first Lambda Instance"
         }
       ],
       "id": "eb9b1cda-1c81-4850-92f3-897b01d4685c"

@@ -679,7 +679,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         but are not wanted in a list response
         """
 
-        wanted_fields = ['uuid', 'name', 'status', 'failure_message', 'type']
+        wanted_fields = ['uuid', 'name', 'status', 'failure_message', 'type', 'lambda_instances']
         unwanted_fields = set(ApplicationSerializer.Meta.fields) - set(wanted_fields)
 
         for application in response['data']:
@@ -701,6 +701,12 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             del application['failure_message']
 
             application['type'] = Application.type_choices[int(application['type'])][1]
+
+            if application['lambda_instances']:
+                application['deployed'] = True
+            else:
+                application['deployed'] = False
+            del application['lambda_instances']
 
         # Change uuid name to id
         for item in response['data']:
@@ -983,7 +989,7 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         but are not wanted in a list response
         """
 
-        wanted_fields = ['uuid', 'name', 'status', 'failure_message']
+        wanted_fields = ['uuid', 'name', 'status', 'failure_message', 'applications']
         unwanted_fields = set(LambdaInstanceSerializer.Meta.fields) - set(wanted_fields)
 
         for lambda_instance in response['data']:
@@ -1003,6 +1009,13 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             if lambda_instance['failure_message'] != "":
                 lambda_instance['status']['failure_message'] = lambda_instance['failure_message']
             del lambda_instance['failure_message']
+
+            lambda_instance['running_app'] = False
+            for application in lambda_instance['applications']:
+                if application['started']:
+                    lambda_instance['running_app'] = True
+                    break
+            del lambda_instance['applications']
 
         # Change uuid name to id
         for item in response['data']:
