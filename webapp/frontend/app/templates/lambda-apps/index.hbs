@@ -93,12 +93,19 @@
                   {{#link-to 'lambda-app' lambda-application.id}}
                   <button class="btn btn-info btn-xs"><i class="fa fa-file-code-o"></i> Details</button>
                   {{/link-to}}
-                  {{#link-to 'deploy-app-1' lambda-application.id}}
-                      <button class="btn btn-primary btn-xs"
+                  {{#if (compare lambda-application.status_code '==' '0')}}
+                    {{#link-to 'deploy-app-1' lambda-application.id}}
+                        <button class="btn btn-primary btn-xs"
+                                style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
+                            Deploy on a lambda instance
+                        </button>
+                    {{/link-to}}
+                  {{else}}
+                      <button class="btn btn-primary btn-xs disabled"
                               style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
-                          Attach to a lambda instance
+                          Deploy on a lambda instance
                       </button>
-                  {{/link-to}}
+                  {{/if}}
                   {{delete-lambda-app lambdaApp=lambda-application}}
                 </td>
               </tr>
