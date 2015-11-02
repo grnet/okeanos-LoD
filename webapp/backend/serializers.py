@@ -6,7 +6,7 @@ from .models import Application, LambdaInstance, Server, PrivateNetwork
 class ApplicationLambdaInstancesListingField(serializers.RelatedField):
     """
     Class that defines the way that connections between lambda instances and application will
-    be represented. Used by ApplicationSerializer to serializer lambda instances related to
+    be represented. Used by ApplicationSerializer to serialize lambda instances related to
     a specific application.
     """
 
@@ -24,7 +24,7 @@ class ApplicationLambdaInstancesListingField(serializers.RelatedField):
 class LambdaInstanceApplicationsListingField(serializers.RelatedField):
     """
     Class that defines the way that connections between lambda instances and application will
-    be represented. Used by LambdaInstanceSerializer to serializer applications related to
+    be represented. Used by LambdaInstanceSerializer to serialize applications related to
     a specific lambda instance.
     """
 
@@ -32,11 +32,13 @@ class LambdaInstanceApplicationsListingField(serializers.RelatedField):
         pass
 
     def to_representation(self, value):
+        application_name = value.application.name
         application_id = value.application.uuid
         application_type = Application.type_choices[int(value.application.type)][1]
         started = value.started
 
-        return {'id': application_id, 'started': started, 'type': application_type}
+        return {'name': application_name, 'id': application_id,
+                'started': started, 'type': application_type}
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
