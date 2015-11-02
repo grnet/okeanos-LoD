@@ -39,6 +39,12 @@ git clone -b devel https://github.com/grnet/okeanos-LoD.git
 virtualenv okeanos_lod_python_environment
 source okeanos_lod_python_environment/bin/activate
 
+# Install Fokia and its requirements.
+cd okeanos-LoD/core
+pip install -r requirements.txt
+python setup.py install
+cd ../../
+
 # Get the id of the Central VM.
 central_vm_id=$(python utils.py --get id --vm_name "Central VM master CI" --auth_token $okeanos_token)
 
