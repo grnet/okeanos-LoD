@@ -18,7 +18,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
     ids = this.store.peekAll('lambda-instance').getEach('id');
 
     return Ember.RSVP.hash({
-      application: this.store.findRecord('lambda-app', params.app_uuid),
+      application: this.store.findRecord('lambda-app', params.app_uuid,  { reload: true }),
       instances: this.store.filter('lambda-instance', {},
         function (li) {
           if (li.get('status_code') !== 0) {

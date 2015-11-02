@@ -18,7 +18,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
     }, ENV.refresh_interval);
 
     var hash = {
-      application: this.store.findRecord('lambda-app', params.app_uuid),
+      application: this.store.findRecord('lambda-app', params.app_uuid,  { reload: true }),
       instances: this.store.peekAll('lambda-instance')
     };
     if (this.store.peekAll('lambda-instance').get('length') === 0) {
