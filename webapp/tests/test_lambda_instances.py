@@ -397,6 +397,7 @@ class TestLambdaInstancesList(APITestCase):
             self.assertIn('id', lambda_instance)
             self.assertIn('name', lambda_instance)
             self.assertIn('status', lambda_instance)
+            self.assertIn('running_app', lambda_instance)
 
             self.assertIn('code', lambda_instance['status'])
             self.assertIn('message', lambda_instance['status'])

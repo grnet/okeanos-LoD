@@ -49,7 +49,7 @@ next | The URL to be used to list the next lambda instance | null
 previous | The URL to be used to list the previous lambda instance | null
 count | The number of existing lambda instances | None
 description | The description of the application | None
-path | The path on Pithos where the application is saved |
+deployed | A boolean value, specifying if the application is deployed on any lambda instance | true
 
 
 ## Example
@@ -84,7 +84,8 @@ If the authentication token is correct, a sample response is
         "message": "UPLOADED",
         "code": "0",
         "detail": "Application has been successfully uploaded"
-      }
+      },
+      "deployed": true,
     },
     {
       "name": "test_file",
@@ -94,7 +95,8 @@ If the authentication token is correct, a sample response is
         "message": "UPLOADED",
         "code": "0",
         "detail": "Application has been successfully uploaded"
-      }
+      },
+      "deployed": false,
     },
     {
       "name": "test_file_2",
@@ -104,7 +106,8 @@ If the authentication token is correct, a sample response is
         "message": "UPLOADED",
         "code": "0",
         "detail": "Application has been successfully uploaded"
-      }
+      },
+      "deployed": true,
     },
     {
       "name": "test_file_3",
@@ -114,7 +117,8 @@ If the authentication token is correct, a sample response is
         "message": "UPLOADING",
         "code": "1",
         "detail": "Application is being uploaded"
-      }
+      },
+      "deployed": false,
     },
     {
       "name": "test_file_4",
@@ -124,7 +128,8 @@ If the authentication token is correct, a sample response is
         "message": "UPLOADED",
         "code": "0",
         "detail": "Application has been successfully uploaded"
-      }
+      },
+      "deployed": true,
     },
     {
       "name": "project1.jar",
@@ -134,7 +139,8 @@ If the authentication token is correct, a sample response is
         "message": "UPLOADED",
         "code": "0",
         "detail": "Application has been successfully uploaded"
-      }
+      },
+      "deployed": true,
     },
     {
       "name": "application.jar",
@@ -145,7 +151,8 @@ If the authentication token is correct, a sample response is
         "code": "2",
         "detail": "Application upload has failed",
         "failure_message": "Couldn't reach remote host"
-      }
+      },
+      "deployed": false,
     }
   ]
 }
@@ -175,7 +182,8 @@ If the authentication token is correct, a sample response is
         "message": "UPLOADING",
         "code": "1",
         "detail": "Application is being uploaded"
-      }
+      },
+      "deployed": false,
     },
     {
       "name": "test_file_4",
@@ -185,7 +193,8 @@ If the authentication token is correct, a sample response is
         "message": "UPLOADED",
         "code": "0",
         "detail": "Application has been successfully uploaded"
-      }
+      },
+      "deployed": true,
     }
   ],
   "pagination": {

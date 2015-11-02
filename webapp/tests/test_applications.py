@@ -494,6 +494,7 @@ class TestApplicationsList(APITestCase):
             self.assertIn('name', application)
             self.assertIn('type', application)
             self.assertIn('status', application)
+            self.assertIn('deployed', application)
 
             self.assertIn('code', application['status'])
             self.assertIn('message', application['status'])

@@ -54,6 +54,7 @@ code | A code defining the state of the lambda instance| 2
 message | A literal explaining the code| PENDING
 detail | Some details for the message | Lambda instance installation is pending.
 failure_message | An optional message in case something went wrong| None
+running_app | A boolean value, specifying if the lambda instance is running any application | true
 
 ## Example
 
@@ -86,7 +87,8 @@ If the authentication token is correct, a sample response is
         "message": "STARTED",
         "code": "0",
         "detail": "Lambda instance has been started."
-      }
+      },
+      "running_app": false,
     },
     {
       "name": "Lambda Instance 1",
@@ -95,7 +97,8 @@ If the authentication token is correct, a sample response is
         "message": "STARTED",
         "code": "0",
         "detail": "Lambda instance has been started."
-      }
+      },
+      "running_app": true,
     },
     {
       "name": "Lambda Instance 2",
@@ -104,7 +107,8 @@ If the authentication token is correct, a sample response is
         "message": "STARTED",
         "code": "0",
         "detail": "Lambda instance has been started."
-      }
+      },
+      "running_app": false,
     },
     {
       "name": "Lambda Instance 3",
@@ -113,7 +117,8 @@ If the authentication token is correct, a sample response is
         "message": "STARTED",
         "code": "0",
         "detail": "Lambda instance has been started."
-      }
+      },
+      "running_app": true,
     },
     {
       "name": "Lambda Instance 4",
@@ -123,7 +128,8 @@ If the authentication token is correct, a sample response is
         "code": "17",
         "detail": "Apache Kafka installation and configuration have failed."
         "failure_message": "Ansible task failed"
-      }
+      },
+      "running_app": false,
     }
   ]
 }
@@ -155,7 +161,8 @@ If the authentication token is correct, a sample response is
         "message": "STARTED",
         "code": "0",
         "detail": "Lambda instance has been started."
-      }
+      },
+      "running_app": true,
     },
     {
       "name":"Lambda Instance 4",
@@ -165,7 +172,8 @@ If the authentication token is correct, a sample response is
         "code": "17",
         "detail": "Apache Kafka installation and configuration have failed."
         "failure_message": "Ansible task failed"
-      }
+      },
+      "running_app": false,
     }
   ],
   "status": {
