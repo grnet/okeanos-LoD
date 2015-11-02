@@ -107,10 +107,11 @@ class LambdaUsersCounterView(APIView):
                     "code": status_code,
                     "short_description": ResponseMessages.short_descriptions['lambda_users_count'],
                 },
-                "data": {
-                    "count": str(lambdaUsersCount),
-                }
-
+                "data": [
+                    {
+                        "count": str(lambdaUsersCount),
+                    }
+                ]
             },
             status=status_code)
 
@@ -312,10 +313,11 @@ class LambdaInstanceCounterView(APIView):
                     "short_description":
                         ResponseMessages.short_descriptions['lambda_instances_count'],
                 },
-                "data": {
-                    "count": str(activeLambdaInstances),
-                }
-
+                "data": [
+                    {
+                        "count": str(activeLambdaInstances),
+                    }
+                ]
             },
             status=status_code)
 
@@ -508,9 +510,10 @@ class LambdaApplicationCounterView(APIView):
                         'lambda_applications_count'
                     ],
                 },
-                "data": {
-                    "count": str(activeLambdaApplications),
-                }
-
+                "data": [
+                    {
+                        "count": str(activeLambdaApplications),
+                    }
+                ]
             },
             status=status_code)

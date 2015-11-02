@@ -512,7 +512,9 @@ class TestLambdaApplications(APITestCase):
         self.assertIn('data', response.data)
         self.assertIn('short_description', response.data['status'])
         self.assertIn('code', response.data['status'])
-        self.assertIn('count', response.data['data'])
+
+        for item in response.data['data']:
+            self.assertIn('count', item)
 
         # Content of the response assertions
         self.assertEqual(rest_status.HTTP_200_OK, response.data['status']['code'])
@@ -522,7 +524,7 @@ class TestLambdaApplications(APITestCase):
         number_of_lambda_applications = \
             LambdaApplication.objects.filter(status="0").count()
 
-        self.assertEqual(str(number_of_lambda_applications), response.data['data']['count'])
+        self.assertEqual(str(number_of_lambda_applications), response.data['data'][0]['count'])
 
     def test_count_zero(self):
         """
@@ -539,7 +541,9 @@ class TestLambdaApplications(APITestCase):
         self.assertIn('data', response.data)
         self.assertIn('short_description', response.data['status'])
         self.assertIn('code', response.data['status'])
-        self.assertIn('count', response.data['data'])
+
+        for item in response.data['data']:
+            self.assertIn('count', item)
 
         # Content of the response assertions
         self.assertEqual(rest_status.HTTP_200_OK, response.data['status']['code'])
@@ -549,4 +553,4 @@ class TestLambdaApplications(APITestCase):
         number_of_lambda_applications = \
             LambdaApplication.objects.filter(status="0").count()
 
-        self.assertEqual(str(number_of_lambda_applications), response.data['data']['count'])
+        self.assertEqual(str(number_of_lambda_applications), response.data['data'][0]['count'])

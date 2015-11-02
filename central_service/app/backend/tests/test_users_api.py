@@ -46,4 +46,4 @@ class TestUsersAPI(APITestCase):
 
         response = self.client.get("/api/users/count", format='json')
         self.assertEqual(response.status_code, rest_status.HTTP_202_ACCEPTED)
-        self.assertEqual(response.data['data']['count'], str(expected_count))
+        self.assertEqual(response.data['data'][0]['count'], str(expected_count))

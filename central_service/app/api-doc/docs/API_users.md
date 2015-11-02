@@ -22,8 +22,10 @@
     "short_description": "Lambda Users count on ~okeanos infrastructure.",
     "code": 200
   },
-  "data": {
-    "count": "count of active users"
-  }
+  "data": [
+    {
+      "count": "count of active users"
+    }
+  ]
 }
 ```

@@ -219,9 +219,11 @@ Type | Description |
     "short_description": "Lamdba applications count.",
     "code": 200
   },
-  "data": {
-    "count": "2"
-  }
+  "data": [
+    {
+      "count": "2"
+    }
+  ]
 }
 
 ```
