@@ -237,7 +237,38 @@ def get_user_okeanos_projects(auth_url, auth_token):
     okeanos_projects = list()
 
     for okeanos_project in astakos_client.get_projects():
-        okeanos_projects.append({'id': okeanos_project['id'], 'name': okeanos_project['name']})
+        project_id = okeanos_project['id']
+        project_name = okeanos_project['name']
+
+        quotas = astakos_client.get_quotas()
+
+        available_cpus = quotas[project_id]['cyclades.cpu']['project_limit'] -\
+                         quotas[project_id]['cyclades.cpu']['project_usage']
+        available_disk = quotas[project_id]['cyclades.disk']['project_limit'] -\
+                         quotas[project_id]['cyclades.disk']['project_usage']
+        available_floating_ips = quotas[project_id]['cyclades.floating_ip']['project_limit'] -\
+                                 quotas[project_id]['cyclades.floating_ip']['project_usage']
+        available_private_networks = quotas[project_id]['cyclades.network.private'][
+                                         'project_limit'] - quotas[project_id][
+                                             'cyclades.network.private']['project_usage']
+        available_ram = quotas[project_id]['cyclades.ram']['project_limit'] -\
+                        quotas[project_id]['cyclades.ram']['project_usage']
+        available_vms = quotas[project_id]['cyclades.vm']['project_limit'] -\
+                        quotas[project_id]['cyclades.vm']['project_usage']
+        available_pithos_disk_space = quotas[project_id]['pithos.diskspace']['project_limit'] -\
+                                      quotas[project_id]['pithos.diskspace']['project_usage']
+
+        okeanos_projects.append({
+            'id': project_id,
+            'name': project_name,
+            'cpu': available_cpus,
+            'disk': available_disk,
+            'floating_ip': available_floating_ips,
+            'private_network': available_private_networks,
+            'ram': available_ram,
+            'vm': available_vms,
+            'pithos_space': available_pithos_disk_space
+        })
 
     return okeanos_projects
 

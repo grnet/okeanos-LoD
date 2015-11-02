@@ -6,7 +6,7 @@ description: [One line description]
 ~okeanos Lambda on Demand project
 
 ## API Endpoints - Description
-  
+
 ### API Endpoints for lambda instances
   - [Create Lambda Instance](CreateLambdaInstance.md)
   - [List Lambda Instances](LambdaInstancesList.md)
@@ -14,7 +14,7 @@ description: [One line description]
   - [Actions on a Lambda Instance](LambdaInstanceAction.md)
   - [Destroy a Lambda Instance](LambdaInstanceDestroy.md)
 
-### API Endpoints for applications 
+### API Endpoints for applications
   - [Upload an Application](ApplicationUpload.md)
   - [Delete an Application](ApplicationDelete.md)
   - [List Applications](ApplicationsList.md)
@@ -31,3 +31,4 @@ description: [One line description]
   - [Authentication](Authentication.md)
   - [Get SSH public keys on ~okeanos](UserPublicKeys.md)
   - [Get allowed VM Parameter Values](VMParameterValues.md)
+  - [Get User ~okeanos Projects](UserOkeanosProjects.md)
