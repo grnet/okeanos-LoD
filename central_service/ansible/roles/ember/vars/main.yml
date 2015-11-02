@@ -2,6 +2,4 @@
 
 install_dir: /var/www/okeanos-LoD/central_service/app/frontend
 ember_addons:
-      - ember-simple-auth
       - ember-data-filter
-      - ember-cli-pagination

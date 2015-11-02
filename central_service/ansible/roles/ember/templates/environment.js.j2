@@ -28,13 +28,6 @@ module.exports = function(environment) {
     'connect-src': "'self' http://{{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr:80"
   }
 
-  ENV['ember-simple-auth'] = {
-    authorizer: 'authorizer:django',
-    routeAfterAuthentication: 'dashboard',
-    authenticationRoute: 'index',
-    routeIfAlreadyAuthenticated: 'dashboard'
-  };
-
   ENV.refresh_interval = 2000;
 
   if (environment === 'development') {

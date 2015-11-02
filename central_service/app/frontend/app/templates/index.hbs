@@ -1,8 +1,7 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
   <h1>
-    Dashboard
-    <small>Control panel</small>
+    Statistics
   </h1>
 </section>
 <section class="content">
@@ -10,7 +9,7 @@
     <div class="col-xs-12">
       <div class="box box-warning">
         <div class="box-header with-border">
-          <h3 class="box-title">Lambda Service</h3>
+          <h3 class="box-title">Lambda Service Statistics</h3>
           <div class="box-tools pull-right">
             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
             <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
@@ -19,7 +18,8 @@
         <div class="box-body no-padding">
           <div class="row">
             <div class="col-md-12">
-              <div class="pad"> Welcome to ~okeanos Lambda on Demand Service. Through these web pages you can administrate Lambda Instances, upload, deploy, start and stop Applications to them and monitor their status.
+              <div class="pad"> Welcome to ~okeanos Lambda on Demand Service Statistics. Through these web pages you can find statistical data regarding the usage of
+                ~okeanos Lambda on Demand Service.
               </div>
             </div><!-- /.col -->
           </div><!-- /.row -->
@@ -32,7 +32,7 @@
     <div class="col-xs-12">
       <div class="box box-info">
         <div class="box-header with-border">
-          <h3 class="box-title">Your statistics</h3>
+          <h3 class="box-title">General Statistics</h3>
           <div class="box-tools pull-right">
             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
             <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
@@ -40,9 +40,9 @@
         </div><!-- /.box-header -->
         <div class="box-body no-padding">
           <div class="row">
-            <div class="col-md-3 col-sm-4">
+            <div class="col-md-2 col-sm-4">
               <div class="pad">
-                Your statistics are
+                The General Statistics are
               </div>
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-4">
@@ -54,9 +54,6 @@
                 <div class="icon">
                   <i class="fa fa-laptop"></i>
                 </div>
-                <a href="/lambda-instances" class="small-box-footer">
-                  More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
               </div>
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-4">
@@ -68,10 +65,18 @@
                 <div class="icon">
                   <i class="fa fa-th"></i>
                 </div>
-                <a href="/lambda-apps" class="small-box-footer">
-                  More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
               </div>	<!--class="small-box bg-orange"-->
+            </div><!-- /.col -->
+            <div class="col-md-3 col-sm-4">
+              <div class="small-box bg-green">
+                <div class="inner">
+                  <h3>{{model.usersCount.count}}</h3>
+                  <p>Subscribed Users</p>
+                </div>
+                <div class="icon">
+                  <i class="fa fa-th"></i>
+                </div>
+              </div>  <!--class="small-box bg-orange"-->
             </div><!-- /.col -->
           </div><!-- /.row -->
         </div><!-- /.box-body -->
@@ -83,7 +88,7 @@
       <!-- DIRECT CHAT DANGER -->
       <div class="box box-success ">
         <div class="box-header with-border">
-          <h3 class="box-title">Lambda Application Example</h3>
+          <h3 class="box-title">Some Text</h3>
         </div><!-- /.box-header -->
         <div class="box-body">
           <div class="row">
