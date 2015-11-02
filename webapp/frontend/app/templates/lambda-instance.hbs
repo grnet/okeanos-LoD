@@ -36,6 +36,14 @@
         <div class="box-body">
           <div class="row ">
             <div class="col-xs-12">
+
+              <div class="pad">
+              This page contains information regarding the lambda instance:<strong> {{model.instance.name}} </strong><br>
+              You can view its details, <i>start, stop or delete</i> it.<br> In addition, you can browse the deployed application(s)
+              onto this lambda instance and <i>deploy, start, stop or undeploy</i> them.<br> The visible buttons represent the available
+              actions you may take depending on the <i>status</i> of the lambda instance.
+              </div>
+
               <a href="delete-instance.html"  class="btn  btn-danger pull-right" style="margin-right: 15px;"><i class="fa fa-close"></i> Delete</a>
               {{#if (compare model.instance.status_code '==' '0')}}
                 {{#link-to 'deploy-app-2' model.instance.id}}
@@ -58,6 +66,8 @@
                   {{/if}}
                 {{else if (compare model.instance.status_code '==' '1')}}
                   {{instance-action start=true instance=model.instance_action instance-id=model.instance.id request=request message=message action="start_stop"}}
+                {{else if (compare model.instance.status_code '==' '9')}}
+                  {{instance-action apps=model.apps stop=true instance=model.instance_action instance-id=model.instance.id request=request message=message action="start_stop"}}
                 {{/if}}
             </div>
           </div>
@@ -209,16 +219,17 @@
                                         <td>
                                           {{app-action stop=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request message=message action="start_stop"}}
                                         </td>
+
                                       {{/if}}
                                     {{else}}
                                       {{#if (compare model.instance.status_code '==' '0')}}
                                         <td>
                                           {{app-action start=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request message=message action="start_stop"}}
                                         </td>
+                                        <td>
+                                          {{app-action withdraw=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request message=message action="withdraw"}}
+                                        </td>
                                       {{/if}}
-                                    <td>
-                                      {{app-action withdraw=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request message=message action="withdraw"}}
-                                    </td>
                                     {{/if}}
                               </tbody>
                           </table>

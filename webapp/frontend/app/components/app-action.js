@@ -7,24 +7,42 @@ export default Ember.Component.extend({
   actions: {
     start(app) {
       //send request to start application
+      var _this = this;
       app.set('application_id', this.get("application-id"));
       app.set('lambda_instance_id', this.get("instance-id"));
       app.set('call', "start");
-      app.save();
-      this.set("request", true);
-      this.set("message", "Your request to start the application was successfully sent to the server.");
-      this.sendAction('action');
+      app.save().then(
+      function success(response) {
+        //console.log(response);
+        _this.set("request", true);
+        _this.set("message", "Your request to start the application was successfully sent to the server.");
+        _this.sendAction('action');
+      }).catch(
+      function failure(reason) {
+        console.log(reason);
+        app.set('errors', reason.errors);
+        _this.set("failure", true);
+      });
       return false;
     },
     stop(app) {
       //send request to stop application
+      var _this = this;
       app.set('application_id', this.get("application-id"));
       app.set('lambda_instance_id', this.get("instance-id"));
       app.set('call', "stop");
-      app.save();
-      this.set("request", true);
-      this.set("message", "Your request to stop the application was successfully sent to the server.");
-      this.sendAction('action');
+      app.save().then(
+      function success(response) {
+        //console.log(response);
+        _this.set("request", true);
+        _this.set("message", "Your request to stop the application was successfully sent to the server.");
+        _this.sendAction('action');
+      }).catch(
+      function failure(reason) {
+        console.log(reason);
+        app.set('errors', reason.errors);
+        _this.set("failure", true);
+      });
       return false;
     },
     deploy(app) {
@@ -44,15 +62,21 @@ export default Ember.Component.extend({
       return false;
     },
     withdraw(app) {
+      var _this = this;
       //send request to withdraw application
       app.set('application_id', this.get("application-id"));
       app.set('lambda_instance_id', this.get("instance-id"));
       app.set('call', "withdraw");
-      app.save();
-      this.set("request", true);
-      this.set("message", "Your request to withdraw the application was successfully sent to the server.");
-      this.sendAction('action');
+      app.save().catch(function() {
+        _this.set('failure', true);
+      });
+      if (!this.get('failure'))
+      {
+        this.set("request", true);
+        this.set("message", "Your request to withdraw the application was successfully sent to the server.");
+        this.sendAction('action');
+      }
       return false;
-    }
-  }
+    },
+  },
 });
