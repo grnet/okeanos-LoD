@@ -49,7 +49,8 @@ def set_lambda_instance_status_central_vm(self, auth_token, instance_uuid, statu
     # three(3) times(default Celery retry) and then stop trying.
     try:
         requests.post(verify=False,
-                      url=("https://" + settings.CENTRAL_VM_IP + "/api/lambda_instances/{}/status/").
+                      url=("https://" + settings.CENTRAL_VM_IP
+                           + "/api/lambda_instances/{}/status/").
                       format(instance_uuid), json={
             'status': status,
             'failure_message': failure_message
