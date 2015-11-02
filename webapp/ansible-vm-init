@@ -11,7 +11,7 @@ log(){
 start(){
   # Initialize VM with ansible
   log "Initializing VM with ansible"
-  ansible-playbook -i "localhost," -c local /var/www/okeanos-LoD/webapp/ansible/playbooks/configure.yml >> $LOGFILE 2>&1
+  ansible-playbook -i "localhost," -c local /var/www/okeanos-LoD/webapp/ansible/playbooks/image-configure.yml --tags "image-configure" >> $LOGFILE 2>&1
   retVal=$?
   if [ $retVal -eq 0 ]
   then
