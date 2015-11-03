@@ -172,8 +172,8 @@ if __name__ == "__main__":
     parser.add_argument('--disk_slave', type=int, dest='disk_slave', default=40,
                         help="Size of disk on Flink slave(s) (in GB) [default: 40GB]")
     parser.add_argument('--project-name', type=str, dest="project_name",
-                        default="lambda.grnet.gr",
-                        help="~okeanos Project [default: lambda.grnet.gr]")
+                        default="project.grnet.gr",
+                        help="~okeanos Project [default: project.grnet.gr]")
 
     args = parser.parse_args()
 
