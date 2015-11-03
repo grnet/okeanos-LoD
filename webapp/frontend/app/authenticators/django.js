@@ -14,7 +14,7 @@ export default Base.extend({
   },
 
   authenticate: function(token) {
-    let host = ENV.host + ':80',
+    let host = ENV.host + ':443',
       namespace = 'api/authenticate',
       authUrl = [ host, namespace ].join('/');
     return new Ember.RSVP.Promise((resolve, reject) => {
