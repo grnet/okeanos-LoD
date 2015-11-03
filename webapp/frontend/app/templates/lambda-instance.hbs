@@ -171,7 +171,7 @@
     <div class="col-xs-12">
       <div class="box box-warning">
         <div class="box-header with-border">
-          <h3 class="box-title"><i class="fa fa-th"></i> Applications uploaded to this Lambda Instance</h3>
+          <h3 class="box-title"><i class="fa fa-th"></i> Applications deployed on this Lambda Instance</h3>
         </div><!-- /.box-header -->
         <div class="box-body">
           <div class=“row”>
@@ -184,7 +184,7 @@
               <table class="table table-bordered table-hover table-responsive">
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    <th>Name</th>
                     <th>Type</th>
                     <th>Started</th>
                     <th> Actions </th>
@@ -193,7 +193,11 @@
                 <tbody>
                   {{#each model.apps as |application|}}
                   <tr class="instance-info">
-                    <td>{{application.id}}</td>
+                    <td>
+                      {{#link-to 'lambda-app' application.id tooltipContent=application.id}}
+                        {{application.name}}
+                      {{/link-to}}
+                    </td>
                     <td>{{lower-case application.app_type}}</td>
                     <td>{{application.started}}</td>
                     <td>
