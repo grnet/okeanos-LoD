@@ -32,60 +32,60 @@ def test_get_user_okeanos_projects(mock_AstakosClient):
                 u'usage': 0
             },
             u'cyclades.cpu': {
-                u'limit': 112,
-                u'pending': 0,
-                u'project_limit': 112,
-                u'project_pending': 0,
-                u'project_usage': 74,
-                u'usage': 24
-            },
-            u'cyclades.disk': {
-                u'limit': 1073741824000,
-                u'pending': 0,
-                u'project_limit': 200,
-                u'project_pending': 0,
-                u'project_usage': 150,
-                u'usage': 171798691840
-            },
-            u'cyclades.floating_ip': {
-                u'limit': 26,
-                u'pending': 0,
-                u'project_limit': 26,
-                u'project_pending': 0,
-                u'project_usage': 26,
-                u'usage': 5
-            },
-            u'cyclades.network.private': {
                 u'limit': 20,
-                u'pending': 0,
-                u'project_limit': 20,
-                u'project_pending': 0,
-                u'project_usage': 12,
-                u'usage': 1
-            },
-            u'cyclades.ram': {
-                u'limit': 163208757248,
-                u'pending': 0,
-                u'project_limit': 500,
-                u'project_pending': 0,
-                u'project_usage': 360,
-                u'usage': 25769803776
-            },
-            u'cyclades.vm': {
-                u'limit': 28,
-                u'pending': 0,
-                u'project_limit': 28,
-                u'project_pending': 0,
-                u'project_usage': 21,
-                u'usage': 6
-            },
-            u'pithos.diskspace': {
-                u'limit': 107374182400,
                 u'pending': 0,
                 u'project_limit': 100,
                 u'project_pending': 0,
-                u'project_usage': 60,
-                u'usage': 228849836
+                u'project_usage': 95,
+                u'usage': 4
+            },
+            u'cyclades.disk': {
+                u'limit': 200,
+                u'pending': 0,
+                u'project_limit': 1000,
+                u'project_pending': 0,
+                u'project_usage': 150,
+                u'usage': 150
+            },
+            u'cyclades.floating_ip': {
+                u'limit': 5,
+                u'pending': 0,
+                u'project_limit': 30,
+                u'project_pending': 0,
+                u'project_usage': 26,
+                u'usage': 4
+            },
+            u'cyclades.network.private': {
+                u'limit': 50,
+                u'pending': 0,
+                u'project_limit': 50,
+                u'project_pending': 0,
+                u'project_usage': 40,
+                u'usage': 49
+            },
+            u'cyclades.ram': {
+                u'limit': 100,
+                u'pending': 0,
+                u'project_limit': 1000,
+                u'project_pending': 0,
+                u'project_usage': 400,
+                u'usage': 50
+            },
+            u'cyclades.vm': {
+                u'limit': 1000,
+                u'pending': 0,
+                u'project_limit': 10000,
+                u'project_pending': 0,
+                u'project_usage': 9999,
+                u'usage': 0
+            },
+            u'pithos.diskspace': {
+                u'limit': 1000,
+                u'pending': 0,
+                u'project_limit': 1000,
+                u'project_pending': 0,
+                u'project_usage': 50,
+                u'usage': 0
             }
         },
         '2': {
@@ -98,60 +98,60 @@ def test_get_user_okeanos_projects(mock_AstakosClient):
                 u'usage': 0
             },
             u'cyclades.cpu': {
-                u'limit': 112,
+                u'limit': 1,
                 u'pending': 0,
-                u'project_limit': 112,
+                u'project_limit': 100,
                 u'project_pending': 0,
-                u'project_usage': 74,
-                u'usage': 24
-            },
-            u'cyclades.disk': {
-                u'limit': 1073741824000,
-                u'pending': 0,
-                u'project_limit': 600,
-                u'project_pending': 0,
-                u'project_usage': 320,
-                u'usage': 171798691840
-            },
-            u'cyclades.floating_ip': {
-                u'limit': 26,
-                u'pending': 0,
-                u'project_limit': 26,
-                u'project_pending': 0,
-                u'project_usage': 26,
-                u'usage': 5
-            },
-            u'cyclades.network.private': {
-                u'limit': 20,
-                u'pending': 0,
-                u'project_limit': 20,
-                u'project_pending': 0,
-                u'project_usage': 12,
+                u'project_usage': 75,
                 u'usage': 1
             },
+            u'cyclades.disk': {
+                u'limit': 200,
+                u'pending': 0,
+                u'project_limit': 200,
+                u'project_pending': 0,
+                u'project_usage': 200,
+                u'usage': 10
+            },
+            u'cyclades.floating_ip': {
+                u'limit': 0,
+                u'pending': 0,
+                u'project_limit': 100,
+                u'project_pending': 0,
+                u'project_usage': 25,
+                u'usage': 0
+            },
+            u'cyclades.network.private': {
+                u'limit': 100,
+                u'pending': 0,
+                u'project_limit': 100,
+                u'project_pending': 0,
+                u'project_usage': 100,
+                u'usage': 0
+            },
             u'cyclades.ram': {
-                u'limit': 163208757248,
+                u'limit': 0,
                 u'pending': 0,
                 u'project_limit': 500,
                 u'project_pending': 0,
-                u'project_usage': 500,
-                u'usage': 25769803776
+                u'project_usage': 0,
+                u'usage': 0
             },
             u'cyclades.vm': {
-                u'limit': 28,
+                u'limit': 100,
                 u'pending': 0,
-                u'project_limit': 28,
+                u'project_limit': 100,
                 u'project_pending': 0,
-                u'project_usage': 21,
-                u'usage': 6
+                u'project_usage': 20,
+                u'usage': 21
             },
             u'pithos.diskspace': {
-                u'limit': 107374182400,
+                u'limit': 0,
                 u'pending': 0,
-                u'project_limit': 440,
+                u'project_limit': 0,
                 u'project_pending': 0,
-                u'project_usage': 40,
-                u'usage': 228849836
+                u'project_usage': 0,
+                u'usage': 0
             }
         },
     }
@@ -170,24 +170,24 @@ def test_get_user_okeanos_projects(mock_AstakosClient):
         {
             'id': '1',
             'name': "name1",
-            'vm': 7,
-            'cpu': 38,
-            'ram': 140,
+            'vm': 1,
+            'cpu': 5,
+            'ram': 50,
             'disk': 50,
-            'floating_ip': 0,
-            'private_network': 8,
-            'pithos_space': 40
+            'floating_ip': 1,
+            'private_network': 1,
+            'pithos_space': 950
         },
         {
             'id': '2',
             'name': "name2",
-            'vm': 7,
-            'cpu': 38,
+            'vm': 79,
+            'cpu': 0,
             'ram': 0,
-            'disk': 280,
+            'disk': 0,
             'floating_ip': 0,
-            'private_network': 8,
-            'pithos_space': 400
+            'private_network': 0,
+            'pithos_space': 0
         }]
 
 
