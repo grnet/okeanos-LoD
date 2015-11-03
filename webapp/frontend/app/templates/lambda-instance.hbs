@@ -37,12 +37,19 @@
           <div class="row ">
             <div class="col-xs-12">
               <a href="delete-instance.html"  class="btn  btn-danger pull-right" style="margin-right: 15px;"><i class="fa fa-close"></i> Delete</a>
-              {{#link-to 'deploy-app-2' model.instance.id}}
+              {{#if (compare model.instance.status_code '==' '0')}}
+                {{#link-to 'deploy-app-2' model.instance.id}}
                   <button class="btn btn-primary pull-right"
                           style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
-                      Attach an application
+                      Deploy an application
                   </button>
-              {{/link-to}}
+                {{/link-to}}
+              {{else}}
+                <button class="btn btn-primary pull-right disabled"
+                        style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
+                    Deploy an application
+                </button>
+              {{/if}}
                 {{#if (compare model.instance.status_code '==' '0')}}
                   {{#if confirm}}
                     {{instance-action apps=model.apps verify=verify stop=true instance=model.instance_action instance-id=model.instance.id request=request message=message action="start_stop"}}
