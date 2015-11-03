@@ -4,4 +4,4 @@ scala_version: "2.10"
 version: "0.8.2.1"
 download_path: "/root"
 installation_path: "/usr/local"
-
+topics: ["input", "stream-output", "batch-output"]

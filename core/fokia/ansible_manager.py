@@ -82,17 +82,17 @@ class Manager:
         # print self.ansible_inventory.groups_list()
         return self.ansible_inventory
 
-    def run_playbook(self, playbook_file, tags=None):
+    def run_playbook(self, playbook_file, tags=None, extra_vars=None):
         """
-        Run the playbook_file using created inventory and tags specified
-        :return:
+        Run the playbook_file using created inventory, tags and extra variables specified
+        :return: The results of the playbook run
         """
         stats = callbacks.AggregateStats()
         playbook_cb = callbacks.PlaybookCallbacks(verbose=utils.VERBOSITY)
         runner_cb = callbacks.PlaybookRunnerCallbacks(stats, verbose=utils.VERBOSITY)
         pb = PlayBook(playbook=playbook_file, inventory=self.ansible_inventory, stats=stats,
                       callbacks=playbook_cb,
-                      runner_callbacks=runner_cb, only_tags=tags)
+                      runner_callbacks=runner_cb, only_tags=tags, extra_vars=extra_vars)
         playbook_result = pb.run()
         return playbook_result
 

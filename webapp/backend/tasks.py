@@ -230,7 +230,8 @@ def create_lambda_instance(lambda_info, auth_token):
             set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
                                                         LambdaInstance.HADOOP_INSTALLED, "")
 
-    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'kafka-install.yml')
+    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'kafka-install.yml',
+                                                          None, {'topics': specs['kafka_topics']})
     check = _check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
