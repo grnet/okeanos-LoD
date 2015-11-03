@@ -25,6 +25,7 @@ var UploadController = Ember.Controller.extend({
       var progress = document.getElementById('progress');
       var progress_text = document.getElementById('progress_text');
       var progress_bar = document.getElementById('progress_bar');
+      var submit_button = document.getElementById('submit-button');
       progress.innerHTML =  '';
       progress.style.width = 0;
       progress_text.innerHTML = '';
@@ -50,6 +51,7 @@ var UploadController = Ember.Controller.extend({
         xhr: function()
         {
           var xhr = new window.XMLHttpRequest();
+          submit_button.disabled = true;
           //Upload progress
           xhr.upload.addEventListener("progress", function(evt){
             if (evt.lengthComputable) {
@@ -60,22 +62,24 @@ var UploadController = Ember.Controller.extend({
           }, false);
           return xhr;
         },
-
         success: function(){
           progress.className = "progress-bar progress-bar-success";
           progress.innerHTML =  'Success.Your request to upload the application has been sent.';
+          submit_button.disabled = false;
         },
         statusCode: {
           400: function() {
             progress.className = "progress-bar progress-bar-danger";
             progress.innerHTML =  'Failure. Your request to upload the application has failed.Try another application';
             progress_text.innerHTML =  '';
+            submit_button.disabled = false;
           }
         },
         error: function() {
           progress.className = "progress-bar progress-bar-danger";
           progress.innerHTML =  'Your request to application the file has been rejected.Please try again later.';
           progress_text.innerHTML =  '';
+          submit_button.disabled = false;
         }
       });
       }
