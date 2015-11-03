@@ -242,21 +242,68 @@ def get_user_okeanos_projects(auth_url, auth_token):
 
         quotas = astakos_client.get_quotas()
 
-        available_cpus = quotas[project_id]['cyclades.cpu']['project_limit'] -\
-                         quotas[project_id]['cyclades.cpu']['project_usage']
-        available_disk = quotas[project_id]['cyclades.disk']['project_limit'] -\
-                         quotas[project_id]['cyclades.disk']['project_usage']
-        available_floating_ips = quotas[project_id]['cyclades.floating_ip']['project_limit'] -\
-                                 quotas[project_id]['cyclades.floating_ip']['project_usage']
-        available_private_networks = quotas[project_id]['cyclades.network.private'][
-                                         'project_limit'] - quotas[project_id][
-                                             'cyclades.network.private']['project_usage']
-        available_ram = quotas[project_id]['cyclades.ram']['project_limit'] -\
-                        quotas[project_id]['cyclades.ram']['project_usage']
-        available_vms = quotas[project_id]['cyclades.vm']['project_limit'] -\
-                        quotas[project_id]['cyclades.vm']['project_usage']
-        available_pithos_disk_space = quotas[project_id]['pithos.diskspace']['project_limit'] -\
-                                      quotas[project_id]['pithos.diskspace']['project_usage']
+        project_available_cpus = quotas[project_id]['cyclades.cpu']['project_limit'] -\
+                                 quotas[project_id]['cyclades.cpu']['project_usage']
+        project_available_disk = quotas[project_id]['cyclades.disk']['project_limit'] -\
+                                 quotas[project_id]['cyclades.disk']['project_usage']
+        project_available_floating_ips = quotas[project_id]['cyclades.floating_ip']['project_limit']\
+                                         -\
+                                         quotas[project_id]['cyclades.floating_ip']['project_usage']
+        project_available_private_networks = quotas[project_id]['cyclades.network.private'][
+                                                 'project_limit'] -\
+                                             quotas[project_id]['cyclades.network.private'][
+                                                 'project_usage']
+        project_available_ram = quotas[project_id]['cyclades.ram']['project_limit'] -\
+                                quotas[project_id]['cyclades.ram']['project_usage']
+        project_available_vms = quotas[project_id]['cyclades.vm']['project_limit'] -\
+                                quotas[project_id]['cyclades.vm']['project_usage']
+        project_available_pithos_disk_space = quotas[project_id]['pithos.diskspace'][
+                                                  'project_limit'] -\
+                                              quotas[project_id]['pithos.diskspace'][
+                                                  'project_usage']
+
+        user_available_cpus = quotas[project_id]['cyclades.cpu']['limit'] -\
+                              quotas[project_id]['cyclades.cpu']['usage']
+        user_available_disk = quotas[project_id]['cyclades.disk']['limit'] -\
+                              quotas[project_id]['cyclades.disk']['usage']
+        user_available_floating_ips = quotas[project_id]['cyclades.floating_ip']['limit'] -\
+                                      quotas[project_id]['cyclades.floating_ip']['usage']
+        user_available_private_networks = quotas[project_id]['cyclades.network.private']['limit'] -\
+                                          quotas[project_id]['cyclades.network.private']['usage']
+        user_available_ram = quotas[project_id]['cyclades.ram']['limit'] -\
+                             quotas[project_id]['cyclades.ram']['usage']
+        user_available_vms = quotas[project_id]['cyclades.vm']['limit'] -\
+                             quotas[project_id]['cyclades.vm']['usage']
+        user_available_pithos_disk_space = quotas[project_id]['pithos.diskspace']['limit'] -\
+                                           quotas[project_id]['pithos.diskspace']['usage']
+
+        available_cpus = user_available_cpus
+        if user_available_cpus > project_available_cpus:
+            available_cpus = project_available_cpus
+
+        available_disk = user_available_disk
+        if user_available_disk > project_available_disk:
+            available_disk = project_available_disk
+
+        available_floating_ips = user_available_floating_ips
+        if user_available_floating_ips > project_available_floating_ips:
+            available_floating_ips = project_available_floating_ips
+
+        available_private_networks = user_available_private_networks
+        if user_available_private_networks > project_available_private_networks:
+            available_private_networks = project_available_private_networks
+
+        available_ram = user_available_ram
+        if user_available_ram > project_available_ram:
+            available_ram = project_available_ram
+
+        available_vms = user_available_vms
+        if user_available_vms > project_available_vms:
+            available_vms = project_available_vms
+
+        available_pithos_disk_space = user_available_pithos_disk_space
+        if user_available_pithos_disk_space > project_available_pithos_disk_space:
+            available_pithos_disk_space = project_available_pithos_disk_space
 
         okeanos_projects.append({
             'id': project_id,
