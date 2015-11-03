@@ -17,8 +17,7 @@ export default Ember.Component.extend({
         _this.set("message", "Your request to start the application was successfully sent to the server.");
         _this.sendAction('action');
       }).catch(
-      function failure(reason) {
-        app.set('errors', reason.errors);
+      function failure() {
         _this.set("failure", true);
       });
       return false;
@@ -35,8 +34,7 @@ export default Ember.Component.extend({
         _this.set("message", "Your request to stop the application was successfully sent to the server.");
         _this.sendAction('action');
       }).catch(
-      function failure(reason) {
-        app.set('errors', reason.errors);
+      function failure() {
         _this.set("failure", true);
       });
       return false;
@@ -67,8 +65,7 @@ export default Ember.Component.extend({
         _this.set("message", "Your request to undeploy the application was successfully sent to the server.");
         _this.sendAction('action');
       }).catch(
-      function failure(reason) {
-        app.set('errors', reason.errors);
+      function failure() {
         _this.set("failure", true);
       });
       return false;

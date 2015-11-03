@@ -117,7 +117,7 @@
   {{#if model.instances}}
 
   {{#if failure}}
-      {{#each app.errors as |error|}}
+      {{#each model.app.errors as |error|}}
             <div  class="alert alert-dismissable alert-danger" id="alert">
               <button type="button" class="close" {{action "close_alert"}}>×</button>
               {{error.message}}
@@ -156,6 +156,7 @@
                                       <thead>
                                       <tr>
                                           <th>Instance Name</th>
+                                          <th>Instance Status</th>
                                           <th>App started</th>
                                           <th>Actions</th>
                                       </tr>
@@ -168,16 +169,27 @@
                                                   {{li.name}}
                                                 {{/link-to}}
                                               </td>
+                                              <td>{{li.status_details}}</td>
                                               <td>{{li.started_app}}</td>
                                               <td>
                                                 <div class="table">
                                                     <table class="table">
                                                         <tbody>
+                                                          {{#if (compare li.status_code '==' '0')}}
                                                               {{#if li.started_app}}
-                                                                <td>
+                                                              <td>
                                                                 {{app-action stop=true app=model.app request=request application-id=model.application.id instance-id=li.id failure=failure message=message action="start_stop"}}
                                                               </td>
+                                                              <td>
+                                                                {{app-action start=true disabled=true}}
+                                                              </td>
+                                                              <td>
+                                                                {{app-action withdraw=true disabled=true}}
+                                                              </td>
                                                               {{else}}
+                                                              <td>
+                                                                {{app-action stop=true disabled=true}}
+                                                              </td>
                                                               <td>
                                                                 {{app-action start=true app=model.app request=request application-id=model.application.id instance-id=li.id failure=failure message=message action="start_stop"}}
                                                               </td>
@@ -185,6 +197,17 @@
                                                                 {{app-action withdraw=true app=model.app request=request application-id=model.application.id instance-id=li.id failure=failure message=message action="withdraw"}}
                                                               </td>
                                                               {{/if}}
+                                                            {{else}}
+                                                              <td>
+                                                                {{app-action stop=true disabled=true}}
+                                                              </td>
+                                                              <td>
+                                                                {{app-action start=true disabled=true}}
+                                                              </td>
+                                                              <td>
+                                                                {{app-action withdraw=true disabled=true}}
+                                                              </td>
+                                                            {{/if}}
                                                         </tbody>
                                                     </table>
                                                 </div>

@@ -1,8 +1,6 @@
 import Ember from "ember";
 
 export default Ember.Controller.extend({
-  verify: true,
-  confirm: false,
   actions: {
     close_alert: function()
     {
@@ -11,7 +9,6 @@ export default Ember.Controller.extend({
     },
     start_stop: function()
     {
-      this.set("confirm", false);
       var _this = this;
       Ember.run.later((function () {
         _this.set("request", false);
@@ -24,6 +21,7 @@ export default Ember.Controller.extend({
       Ember.run.later((function () {
         _this.store.unloadAll('lambda-app');
         _this.set("request", false);
+        _this.set("app_request", false);
       }), 3000);
     },
   }

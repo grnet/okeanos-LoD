@@ -9,14 +9,15 @@
 <!-- Main content -->
 <section class="content">
 
+  {{#if failure}}
+      {{#each model.instance_action.errors as |error|}}
+            <div  class="alert alert-dismissable alert-danger" id="alert">
+              <button type="button" class="close" {{action "close_alert"}}>×</button>
+              {{error.message}}
+            </div>
+      {{/each}}
+  {{/if}}
   {{#if request}}
-    {{#each model.instance_action.errors as |error|}}
-          <div  class="alert alert-dismissable alert-danger" id="alert">
-            <button type="button" class="close" {{action "close_alert"}}>×</button>
-            {{error.message}}
-          </div>
-    {{/each}}
-
         <div  class="alert alert-dismissable alert-success" id="alert">
           <button type="button" class="close" {{action "close_alert"}}>×</button>
           {{message}}
@@ -59,17 +60,19 @@
                 </button>
               {{/if}}
                 {{#if (compare model.instance.status_code '==' '0')}}
-                  {{#if confirm}}
-                    {{instance-action apps=model.apps verify=verify stop=true instance=model.instance_action instance-id=model.instance.id request=request message=message action="start_stop"}}
-                  {{else}}
-                    {{instance-action apps=model.apps verify=verify stop=true instance=model.instance_action instance-id=model.instance.id request=request message=message action="verify"}}
-                  {{/if}}
+                  {{instance-action start=true disabled=true}}
+                  {{instance-action apps=model.apps stop=true instance=model.instance_action failure=failure instance-id=model.instance.id request=request message=message action="start_stop"}}
                 {{else if (compare model.instance.status_code '==' '1')}}
-                  {{instance-action start=true instance=model.instance_action instance-id=model.instance.id request=request message=message action="start_stop"}}
+                  {{instance-action stop=true disabled=true}}
+                  {{instance-action start=true instance=model.instance_action instance-id=model.instance.id failure=failure request=request message=message action="start_stop"}}
                 {{else if (compare model.instance.status_code '==' '9')}}
-                  {{instance-action apps=model.apps stop=true instance=model.instance_action instance-id=model.instance.id request=request message=message action="start_stop"}}
-                {{/if}}
-            </div>
+                  {{instance-action start=true disabled=true}}
+                  {{instance-action apps=model.apps stop=true instance=model.instance_action instance-id=model.instance.id failure=failure request=request message=message action="start_stop"}}
+                {{else}}
+                  {{instance-action start=true disabled=true}}
+                  {{instance-action stop=true disabled=true}}
+             {{/if}}
+             </div>
           </div>
           <div class="row">
             <div class="col-md-9 col-sm-8">
@@ -163,14 +166,16 @@
   </div> <!--row-->
   {{#if (compare model.apps.length "!==" 0)}}
 
-  {{#if app_request}}
-    {{#each app.errors as |error|}}
+{{#if app_failure}}
+    {{#each model.app.errors as |error|}}
           <div  class="alert alert-dismissable alert-danger" id="alert">
             <button type="button" class="close" {{action "close_alert"}}>×</button>
             {{error.message}}
           </div>
     {{/each}}
+{{/if}}
 
+  {{#if app_request}}
         <div  class="alert alert-dismissable alert-success" id="alert">
           <button type="button" class="close" {{action "close_alert"}}>×</button>
           {{message}}
@@ -214,22 +219,38 @@
                       <div class="table">
                           <table class="table">
                               <tbody>
+                                {{#if (compare model.instance.status_code '==' '0')}}
                                     {{#if application.started}}
-                                      {{#if (compare model.instance.status_code '==' '0')}}
                                         <td>
-                                          {{app-action stop=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request message=message action="start_stop"}}
+                                          {{app-action stop=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop"}}
                                         </td>
-
+                                        <td>
+                                          {{app-action start=true disabled=true}}
+                                        </td>
+                                        <td>
+                                          {{app-action withdraw=true disabled=true}}
+                                        </td>
+                                    {{else}}
+                                      <td>
+                                        {{app-action stop=true disabled=true}}
+                                      </td>
+                                        <td>
+                                          {{app-action start=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop"}}
+                                        </td>
+                                        <td>
+                                          {{app-action withdraw=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="withdraw"}}
+                                        </td>
                                       {{/if}}
                                     {{else}}
-                                      {{#if (compare model.instance.status_code '==' '0')}}
                                         <td>
-                                          {{app-action start=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request message=message action="start_stop"}}
+                                          {{app-action stop=true disabled=true}}
                                         </td>
                                         <td>
-                                          {{app-action withdraw=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request message=message action="withdraw"}}
+                                          {{app-action start=true disabled=true}}
                                         </td>
-                                      {{/if}}
+                                        <td>
+                                          {{app-action withdraw=true disabled=true}}
+                                        </td>
                                     {{/if}}
                               </tbody>
                           </table>
