@@ -5,3 +5,4 @@ ember_addons:
       - ember-simple-auth
       - ember-data-filter
       - ember-cli-pagination
+      - ember-tooltips

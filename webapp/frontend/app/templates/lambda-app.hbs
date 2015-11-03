@@ -137,7 +137,7 @@
                                   <table class="table">
                                       <thead>
                                       <tr>
-                                          <th>Instance ID</th>
+                                          <th>Instance Name</th>
                                           <th>App started</th>
                                           <th>Actions</th>
                                       </tr>
@@ -145,7 +145,11 @@
                                       <tbody>
                                       {{#each model.instances as |li|}}
                                           <tr>
-                                              <td>{{li.id}} </td>
+                                              <td>
+                                                {{#link-to 'lambda-instance' li.id tooltipContent=li.id}}
+                                                  {{li.name}}
+                                                {{/link-to}}
+                                              </td>
                                               <td>{{li.started_app}}</td>
                                               <td>
                                                 <div class="table">

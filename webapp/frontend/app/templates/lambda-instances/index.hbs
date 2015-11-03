@@ -76,7 +76,6 @@
                   <table  class="table table-bordered table-hover table-responsive">
                     <thead>
                       <tr>
-                        <th>#id</th>
                         <th>Name</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -96,8 +95,11 @@
                       </tr> -->
                       {{#each pagedContent as |lambda-instance|}}
                       <tr>
-                        <td>{{lambda-instance.id}}</td>
-                        <td>{{lambda-instance.name}}</td>
+                        <td>
+                          {{#link-to 'lambda-instance' lambda-instance.id tooltipContent=lambda-instance.id}}
+                            {{lambda-instance.name}}
+                          {{/link-to}}
+                        </td>
                         <td><span>{{lambda-instance.status_detail}}</span></td>
                         <td>
                           <table class="table">
