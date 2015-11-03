@@ -17,8 +17,9 @@ class ApplicationLambdaInstancesListingField(serializers.RelatedField):
         lambda_instance_id = value.lambda_instance.uuid
         started = value.started
         name = value.lambda_instance.name
+        status = value.lambda_instance.status
 
-        return {"id": lambda_instance_id, "started": started, "name": name}
+        return {"id": lambda_instance_id, "started": started, "name": name, "status": status}
 
 
 class LambdaInstanceApplicationsListingField(serializers.RelatedField):
