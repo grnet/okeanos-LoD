@@ -86,9 +86,10 @@ def __delete_private_key(cluster_id, master_id, slave_ids):
     os.remove(join(expanduser('~/.ssh/lambda_instances/'), cluster_id))
 
 
-def run_playbook(ansible_manager, playbook, tags=None, extra_vars=None):
+def run_playbook(ansible_manager, playbook, only_tags=None, skip_tags=None, extra_vars=None):
     ansible_result = ansible_manager.run_playbook(
-        playbook_file=join(ansible_path, "playbooks", playbook), tags=tags, extra_vars=extra_vars)
+        playbook_file=join(ansible_path, "playbooks", playbook),
+        only_tags=only_tags, skip_tags=skip_tags, extra_vars=extra_vars)
     return ansible_result
 
 
@@ -195,8 +196,9 @@ if __name__ == "__main__":
                                                            disk_master=args.disk_master,
                                                            disk_slave=args.disk_slave,
                                                            project_name=args.project_name)
+    skip_tags = ['image-configure']
     run_playbook(ansible_manager, 'initialize.yml')
-    run_playbook(ansible_manager, 'common-install.yml')
-    run_playbook(ansible_manager, 'hadoop-install.yml')
-    run_playbook(ansible_manager, 'kafka-install.yml')
-    run_playbook(ansible_manager, 'flink-install.yml')
+    run_playbook(ansible_manager, 'common-install.yml', skip_tags=skip_tags)
+    run_playbook(ansible_manager, 'hadoop-install.yml', skip_tags=skip_tags)
+    run_playbook(ansible_manager, 'kafka-install.yml', skip_tags=skip_tags)
+    run_playbook(ansible_manager, 'flink-install.yml', skip_tags=skip_tags)
