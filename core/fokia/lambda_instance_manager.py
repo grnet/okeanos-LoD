@@ -149,28 +149,33 @@ def lambda_instance_destroy(instance_uuid, auth_token,
 
 
 if __name__ == "__main__":
-    # parser = argparse.ArgumentParser(description="Okeanos VM provisioning")
-    # parser.add_argument('--cloud', type=str, dest="cloud", default="lambda")
-    # parser.add_argument('--project-name', type=str, dest="project_name",
-    #                     default="lambda.grnet.gr")
-    #
-    # parser.add_argument('--slaves', type=int, dest='slaves', default=2)
-    # parser.add_argument('--vcpus_master', type=int, dest='vcpus_master', default=4)
-    # parser.add_argument('--vcpus_slave', type=int, dest='vcpus_slave', default=4)
-    # parser.add_argument('--ram_master', type=int, dest='ram_master', default=4096)  # in MB
-    # parser.add_argument('--ram_slave', type=int, dest='ram_slave', default=4096)  # in MB
-    # parser.add_argument('--disk_master', type=int, dest='disk_master', default=40)  # in GB
-    # parser.add_argument('--disk_slave', type=int, dest='disk_slave', default=40)  # in GB
-    # parser.add_argument('--ip_allocation', type=str, dest='ip_allocation', default="master",
-    #                     help="Choose between none, master, all")
-    # parser.add_argument('--network_request', type=int, dest='network_request', default=1)
-    # parser.add_argument('--image_name', type=str, dest='image_name', default='debian')
-    # parser.add_argument('--action', type=str, dest='action', default='create')
-    # parser.add_argument('--cluster_id', type=int, dest='cluster_id', default=0)
-    #
-    # args = parser.parse_args()
 
+    import argparse
     import uuid
+
+    parser = argparse.ArgumentParser(description="Okeanos VM provisioning")
+    parser.add_argument('--master-name', type=str, dest="master_name",
+                        default="lambda-master",
+                        help="Name of Flink master VM [default: lambda-master]")
+    parser.add_argument('--slaves', type=int, dest='slaves', default=1,
+                        help="Number of Flink slaves [default: 1]")
+    parser.add_argument('--vcpus_master', type=int, dest='vcpus_master', default=4,
+                        help="Number of CPUs on Flink master [default: 4]")
+    parser.add_argument('--vcpus_slave', type=int, dest='vcpus_slave', default=4,
+                        help="Number of CPUs on Flink slave(s) [default: 4]")
+    parser.add_argument('--ram_master', type=int, dest='ram_master', default=4096,
+                        help="Size of RAM on Flink master (in MB) [default: 4096MB]")
+    parser.add_argument('--ram_slave', type=int, dest='ram_slave', default=4096,
+                        help="Size of RAM on Flink slave(s) (in MB) [default: 4096MB]")
+    parser.add_argument('--disk_master', type=int, dest='disk_master', default=40,
+                        help="Size of disk on Flink master (in GB) [default: 40GB]")
+    parser.add_argument('--disk_slave', type=int, dest='disk_slave', default=40,
+                        help="Size of disk on Flink slave(s) (in GB) [default: 40GB]")
+    parser.add_argument('--project-name', type=str, dest="project_name",
+                        default="lambda.grnet.gr",
+                        help="~okeanos Project [default: lambda.grnet.gr]")
+
+    args = parser.parse_args()
 
     keys_folder = expanduser('~/.ssh/lambda_instances/')
     if not os.path.exists(keys_folder):
@@ -179,7 +184,16 @@ if __name__ == "__main__":
                            " (Y/n)?".format(keys_folder))
         if choice.lower() in ["", "y", "yes"]:
             os.mkdir(keys_folder, 0o755)
-    ansible_manager, provisioner_response = create_cluster(cluster_id=uuid.uuid4())
+
+    ansible_manager, provisioner_response = create_cluster(cluster_id=uuid.uuid4(),
+                                                           master_name=args.master_name,
+                                                           slaves=args.slaves,
+                                                           vcpus_master=args.vcpus_master,
+                                                           vcpus_slave=args.vcpus_slave,
+                                                           ram_master=args.ram_master,
+                                                           ram_slave=args.ram_slave,
+                                                           disk_master=args.disk_master,
+                                                           project_name=args.project_name)
     run_playbook(ansible_manager, 'initialize.yml')
     run_playbook(ansible_manager, 'common-install.yml')
     run_playbook(ansible_manager, 'hadoop-install.yml')
