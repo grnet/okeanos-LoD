@@ -1,21 +1,21 @@
 ---
-    # Example group command from Ansible Playbooks
+
     - name: Create lambda group
       group: name=lambda state=present
       tags:
         - users
 
     - name: Create hduser user
-      user: name=hduser uid=2010 groups="lambda" shell=/bin/bash generate_ssh_key=yes
+      user: name=hduser uid=2010 groups="lambda" shell=/bin/bash
       tags:
         - users
 
     - name: Create flink user
-      user: name=flink uid=2011 groups="lambda" shell=/bin/bash generate_ssh_key=yes
+      user: name=flink uid=2011 groups="lambda" shell=/bin/bash
       tags:
         - users
 
     - name: Create kafka user
-      user: name=kafka uid=2012 groups="lambda" shell=/bin/bash generate_ssh_key=yes
+      user: name=kafka uid=2012 groups="lambda" shell=/bin/bash
       tags:
         - users

@@ -1,4 +1,5 @@
 ---
+
   - name: Copy Apache HDFS init script.
     template: src=hdfs-init.j2 dest=/etc/init.d/hdfs-init owner=hduser group=lambda mode=0740
 
@@ -9,43 +10,52 @@
     command: su - hduser -c "yes | {{ installation_path }}/hadoop/bin/hadoop namenode -format"
     tags:
       - format-hdfs
+      - image-configure
 
   - name: Start Apache HDFS.
     command: /etc/init.d/hdfs-init start > /dev/null
     tags:
       - start-hdfs
+      - image-configure
 
   - name: Wait for Apache HDFS to become available.
     wait_for: host="{{ hostvars[inventory_hostname]["internal_ip"] }}" port=9000
     tags:
       - start-hdfs
+      - image-configure
 
   - name: Start Apache Yarn.
     command: /etc/init.d/yarn-init start > /dev/null
     tags:
       - start-yarn
+      - image-configure
 
   - name: Wait for Apache Yarn to become available.
     wait_for: host="{{ hostvars[inventory_hostname]["internal_ip"] }}" port=8050 # 8050 is the port of the resource manager.
     tags:
       - start-yarn
+      - image-configure
 
   - name: Create Apache HDFS user directory.
     command: "{{ installation_path }}/hadoop/bin/hadoop fs -mkdir /user"
     tags:
       - create-dirs
+      - image-configure
 
   - name: Create Apache HDFS user/hduser directory. 
     command: "{{ installation_path }}/hadoop/bin/hadoop fs -mkdir /user/hduser"
     tags:
       - create-dirs
+      - image-configure
 
   - name: Create Apache HDFS user/flink directory. 
     command: "{{ installation_path }}/hadoop/bin/hdfs dfs -mkdir /user/flink"
     tags:
       - create-dirs
+      - image-configure
 
   - name: Create Apache HDFS user/flink/input directory. 
     command: "{{ installation_path }}/hadoop/bin/hdfs dfs -mkdir /user/flink/input"
     tags:
       - create-dirs
+      - image-configure
