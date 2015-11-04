@@ -30,7 +30,7 @@ a specified user.
 
 ```
 curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
-'http://<hostname>/api/user-public-keys/'
+'https://<hostname>/api/user-public-keys/'
 ```
 
 ### Response body

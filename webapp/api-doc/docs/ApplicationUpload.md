@@ -8,7 +8,7 @@ description: Upload an application
 Application upload call, given an authentication token through the header authentication,
 will firstly check the validity of the token. If the token is invalid, the API will reply with
 a "401 Unauthorized" code. If the token is valid, the API will reply with a "202 ACCEPTED" code
-and will start uploading the provided application to Pithos.
+and will start uploading the provided application to Pithos+.
 
 ## Basic Parameters
 
@@ -34,7 +34,7 @@ Name | Description | Required | Default value | Example value
 description  | A description of the application | `No` |None|
 file | The application file | `Yes` | None
 type | The application type (batch/streaming) | `Yes` | None
-project_name | The ~okeanos project name that has the needed quotas on Pithos | `No` | None
+project_name | The ~okeanos project name that has the needed quotas on Pithos+ | `No` | None
 
 
 ## Example
@@ -46,11 +46,12 @@ The request in curl
 
 ```
 curl -X POST -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
- -F "description=My application."  \
- -F "file=@test_project" \
+ -F "description=My application"  \
+ -F "file=@batch-1.0-jar-with-dependencies.jar" \
  -F "type=batch" \
  -F "project_name=lambda.grnet.gr" \
- 'http://<hostname>/api/apps/'
+ -F "execution_environment_name=Batch" \
+ 'https://<hostname>/api/apps/'
 ```
 
 
@@ -68,7 +69,7 @@ If the authentication token is correct, a sample response would be
     {
       "id": "84dfb596-3abb-401e-99fc-c6f0057dedab",
       "links": {
-        "self": "http://<hostname>/api/apps/84dfb596-3abb-401e-99fc-c6f0057dedab"
+        "self": "https://<hostname>/api/apps/84dfb596-3abb-401e-99fc-c6f0057dedab"
       }
     }
   ]

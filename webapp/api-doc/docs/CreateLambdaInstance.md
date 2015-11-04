@@ -62,7 +62,7 @@ curl -X POST -H "Content-Type: application/json" \
  -d '{"project_name": "lambda.grnet.gr", "instance_name": "My first Lambda Instance", "network_request": 1,\
  "master_name": "lambda-master", "vcpus_master": 4, "disk_slave": 40, "slaves": 1, "ram_slave": 4096, \
  "ram_master": 4096, "vcpus_slave": 4, "ip_allocation": "master", "disk_master": 40}' \
- 'http://<hostname>/api/lambda-instance/'
+ 'https://<hostname>/api/lambda-instance/'
 ```
 
 ### Response body
@@ -79,7 +79,7 @@ If the authentication token and url is correct, and all the headers are given co
     {
       "id": "dd0c8d65-0c52-4338-bcc1-6f82e57f2d37",
       "links": {
-        "self": "http://<hostname>/api/lambda-instances/dd0c8d65-0c52-4338-bcc1-6f82e57f2d37"
+        "self": "https://<hostname>/api/lambda-instances/dd0c8d65-0c52-4338-bcc1-6f82e57f2d37"
       }
     }
   ]

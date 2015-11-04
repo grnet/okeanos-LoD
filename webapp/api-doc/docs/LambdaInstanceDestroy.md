@@ -42,8 +42,8 @@ In this example we are going to destroy the lambda instance with id 9ac8e7ab-57f
 The request in curl
 
 ```
-curl -X DELETE -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
- 'http://<hostname>/api/lambda-instances/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/'
+curl -X DELETE -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+ 'https://<hostname>/api/lambda-instances/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/'
 ```
 
 

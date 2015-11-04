@@ -35,7 +35,7 @@ In this example we are going to get the count of the lambda instances
 The request in curl
 
 ```
-curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://83.212.118.81/api/lambda-instances/count/'
+curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'https://83.212.118.81/api/lambda-instances/count/'
 ```
 
 

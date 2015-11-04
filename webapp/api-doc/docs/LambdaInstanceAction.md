@@ -6,12 +6,12 @@ description: Performs a specified action on a specified lambda instance
 # API - lambda instance action - Description
 
 Lambda instance action call, given an authentication token through the header authentication,
-will firstly check the validity of the token. If the token is invalid, the API will reply with
+will first check the validity of the token. If the token is invalid, the API will reply with
 a "401 Unauthorized" code. If the token is valid, the API will search for the specified lambda
 instance. If the specified lambda instance does not exist, the API will reply with a
 "404 Not Found" code. If the specified lambda instance exists, the API will reply with a
 "202 ACCEPTED" code and will also begin to perform the specified action on the specified
-lambda instance. The available actions are start and stop.
+lambda instance. The available actions are `start` and `stop`.
 
 ## Basic Parameters
 Type | Description
@@ -44,9 +44,9 @@ In this example we are going to start the lambda instance with id 9ac8e7ab-57f9-
 The request in curl
 
 ```
-curl -X POST -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+curl -X POST -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
  -F "action=start" \
- 'http://<hostname>/api/lambda-instances/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/'
+ 'https://<hostname>/api/lambda-instances/9ac8e7ab-57f9-48a6-af18-ef8a749b1e8c/'
 ```
 
 
