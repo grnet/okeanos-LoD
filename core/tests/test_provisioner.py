@@ -29,7 +29,7 @@ test_flavors = [{
 
 test_images = [{
     u'created': u'2015-06-26T11:29:59+00:00',
-    u'id': u'0035ac89-a86e-4108-93e8-93e294b74a3d', u'is_snapshot': False,
+    u'id': u'c6f5adce-21ad-4ce3-8591-acfe7eb73c02', u'is_snapshot': False,
     u'links': [
         {u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/images/1232', u'rel': u'self'}, {
             u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/images/234d',
@@ -183,7 +183,7 @@ def test_find_flavor():
         provisioner.astakos.get_projects.return_value = test_projects
         provisioner.cyclades.list_images.return_value = test_images
         provisioner.cyclades.list_flavors.return_value = test_flavors
-
+        provisioner.image_id = u'c6f5adce-21ad-4ce3-8591-acfe7eb73c02'
         provisioner.create_vm(vm_name="tost", project_name="lambda.grnet.gr",
                               project_mode="supahpower", image_name="archlinux", net_id="12345",
                               flavor={'id': 3})
@@ -237,6 +237,8 @@ def test_create_vpn():
 
         # Call the functions to set up a network
         provisioner = Provisioner(None, "lambda")
+        provisioner.image_id = u'c6f5adce-21ad-4ce3-8591-acfe7eb73c02'
+
         provisioner.network_client.create_network.return_value = test_ip
         provisioner.reserve_ip('6ff62e8e-0ce9-41f7-ad99-13a18ecada5f')
         provisioner.create_vpn('test_net_name', 'test_project_id')
@@ -268,7 +270,7 @@ def test_create_vm():
             {'name': 'test_image_name', 'id': 'test_image_id', }]
 
         # Execute the function with some test parameters
-        provisioner.create_vm(vm_name="test_name", image_id="image_id", flavor={'id': 'flavor_id'},
+        provisioner.create_vm(vm_name="test_name", flavor={'id': 'flavor_id'},
                               image_name='test_image_name')
 
         # Check that the correct arguements were used in the create server call
