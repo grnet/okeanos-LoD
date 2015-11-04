@@ -51,7 +51,8 @@ class LambdaInstanceManager:
                                  headers={'Content-Type': 'application/json',
                                           'Authorization': "Token {token}".
                                  format(token=self.authentication_token)},
-                                 json=self.lambda_instance_information)
+                                 json=self.lambda_instance_information,
+                                 verify=False)
 
         # Print the response for logging purposes.
         response_json = response.json()
@@ -64,13 +65,14 @@ class LambdaInstanceManager:
         lambda_instances = requests.get("http://{ip}/api/lambda-instances/".
                                         format(ip=self.service_vm_ip),
                                         headers={'Authorization': "Token {token}".
-                                                 format(token=self.authentication_token)})
+                                                 format(token=self.authentication_token)},
+                                        verify=False)
         while len(lambda_instances.json()['data']) == 0 and max_wait > 0:
             time.sleep(sleep_time)
             lambda_instances = requests.\
                 get("http://{ip}/api/lambda-instances/".format(ip=self.service_vm_ip),
                     headers={'Authorization': "Token {token}".
-                    format(token=self.authentication_token)})
+                    format(token=self.authentication_token)}, verify=False)
             max_wait -= 1
 
         # Wait for the lambda instance to be created and started.
@@ -84,14 +86,15 @@ class LambdaInstanceManager:
         lambda_instances = requests.get("http://{ip}/api/lambda-instances/".
                                         format(ip=self.service_vm_ip),
                                         headers={'Authorization': "Token {token}".
-                                                 format(token=self.authentication_token)})
+                                                 format(token=self.authentication_token)},
+                                        verify=False)
         lambda_instance_uuid = lambda_instances.json()['data'][0]['id']
 
         # Send a request to the service vm to destroy the lambda instance.
         requests.delete("http://{ip}/api/lambda-instances/{id}/".
                         format(ip=self.service_vm_ip, id=lambda_instance_uuid),
                         headers={'Authorization': "Token {token}".
-                                 format(token=self.authentication_token)})
+                                 format(token=self.authentication_token)}, verify=False)
 
         # Wait for the lambda instance to be destroyed.
         self._wait_for_lambda_instance_status("DESTROYED", lambda_instance_uuid, 60, 5)
@@ -113,7 +116,8 @@ class LambdaInstanceManager:
                                                format(ip=self.service_vm_ip,
                                                       id=lambda_instance_uuid),
                                                headers={'Authorization': "Token {token}".
-                                                        format(token=self.authentication_token)})
+                                                        format(token=self.authentication_token)},
+                                               verify=False)
         lambda_instance_status = lambda_instance_details.json()['data'][0]['status']['message']
         pprint("Lambda Instance status is {lambda_instance_status}. Waiting...".
                format(lambda_instance_status=lambda_instance_status))
@@ -125,7 +129,8 @@ class LambdaInstanceManager:
                                                           id=lambda_instance_uuid),
                                                    headers={'Authorization': "Token {token}".
                                                             format(token=self.
-                                                                   authentication_token)})
+                                                                   authentication_token)},
+                                                   verify=False)
             lambda_instance_status = lambda_instance_details.json()['data'][0]['status']['message']
             pprint("Lambda Instance status is {lambda_instance_status}. Waiting...".
                    format(lambda_instance_status=lambda_instance_status))
