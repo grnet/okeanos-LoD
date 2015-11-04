@@ -47,7 +47,7 @@ class LambdaInstanceManager:
         """
 
         # Send a request to the service vm to create a lambda instance.
-        response = requests.post("http://{ip}/api/lambda-instance/".format(ip=self.service_vm_ip),
+        response = requests.post("https://{ip}/api/lambda-instance/".format(ip=self.service_vm_ip),
                                  headers={'Content-Type': 'application/json',
                                           'Authorization': "Token {token}".
                                  format(token=self.authentication_token)},
@@ -62,7 +62,7 @@ class LambdaInstanceManager:
         lambda_instance_uuid = response_json['data'][0]['id']
 
         # Wait until the entry of the lambda instance on the API database has been created.
-        lambda_instances = requests.get("http://{ip}/api/lambda-instances/".
+        lambda_instances = requests.get("https://{ip}/api/lambda-instances/".
                                         format(ip=self.service_vm_ip),
                                         headers={'Authorization': "Token {token}".
                                                  format(token=self.authentication_token)},
@@ -70,7 +70,7 @@ class LambdaInstanceManager:
         while len(lambda_instances.json()['data']) == 0 and max_wait > 0:
             time.sleep(sleep_time)
             lambda_instances = requests.\
-                get("http://{ip}/api/lambda-instances/".format(ip=self.service_vm_ip),
+                get("https://{ip}/api/lambda-instances/".format(ip=self.service_vm_ip),
                     headers={'Authorization': "Token {token}".
                     format(token=self.authentication_token)}, verify=False)
             max_wait -= 1
@@ -83,7 +83,7 @@ class LambdaInstanceManager:
         Method for destroying a Lambda Instance.
         """
 
-        lambda_instances = requests.get("http://{ip}/api/lambda-instances/".
+        lambda_instances = requests.get("https://{ip}/api/lambda-instances/".
                                         format(ip=self.service_vm_ip),
                                         headers={'Authorization': "Token {token}".
                                                  format(token=self.authentication_token)},
@@ -91,7 +91,7 @@ class LambdaInstanceManager:
         lambda_instance_uuid = lambda_instances.json()['data'][0]['id']
 
         # Send a request to the service vm to destroy the lambda instance.
-        requests.delete("http://{ip}/api/lambda-instances/{id}/".
+        requests.delete("https://{ip}/api/lambda-instances/{id}/".
                         format(ip=self.service_vm_ip, id=lambda_instance_uuid),
                         headers={'Authorization': "Token {token}".
                                  format(token=self.authentication_token)}, verify=False)
@@ -112,7 +112,7 @@ class LambdaInstanceManager:
                          state.
         """
 
-        lambda_instance_details = requests.get("http://{ip}/api/lambda-instances/{id}/".
+        lambda_instance_details = requests.get("https://{ip}/api/lambda-instances/{id}/".
                                                format(ip=self.service_vm_ip,
                                                       id=lambda_instance_uuid),
                                                headers={'Authorization': "Token {token}".
@@ -124,7 +124,7 @@ class LambdaInstanceManager:
 
         while lambda_instance_status != status and max_wait > 0:
             time.sleep(sleep_time)
-            lambda_instance_details = requests.get("http://{ip}/api/lambda-instances/{id}/".
+            lambda_instance_details = requests.get("https://{ip}/api/lambda-instances/{id}/".
                                                    format(ip=self.service_vm_ip,
                                                           id=lambda_instance_uuid),
                                                    headers={'Authorization': "Token {token}".
