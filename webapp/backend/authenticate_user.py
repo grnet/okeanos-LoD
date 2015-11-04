@@ -44,6 +44,9 @@ class KamakiTokenAuthentication(TokenAuthentication):
                     token.key = hashed_token_key
                     token.creation_date = timezone.now()
                     token.save()
+                if not user.name:
+                    user.name = info['access']['user']['name']
+                    user.save()
             else:
                 raise CustomAuthenticationFailed()
         return token.user, token

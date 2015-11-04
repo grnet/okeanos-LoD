@@ -37,7 +37,8 @@ If the authentication token is correct then the response is
 ```
 {
   "status": 200,
-  "result": "Success"
+  "result": "Success",
+  "data": {"name":"Lambda User"}
 }
 ```
 
