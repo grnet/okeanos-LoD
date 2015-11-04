@@ -365,6 +365,14 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 data['status']['failure_message'] = data['failure_message']
                 del data['failure_message']
 
+        for lambda_instance in data['lambda_instances']:
+            lambda_instance['status'] = {
+                'code': lambda_instance['status'],
+                'message': LambdaInstance.status_choices[int(lambda_instance['status'])][1],
+                'detail': ResponseMessages.lambda_instance_status_details[
+                    LambdaInstance.status_choices[int(lambda_instance['status'])][1]]
+            }
+
         # Return an appropriate response.
         status_code = status.HTTP_200_OK
         response = dict({"status":

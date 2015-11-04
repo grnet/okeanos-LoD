@@ -33,7 +33,7 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 
 Name  | Description | Required | Default value | Example value
 ------|-------------|----------|---------------|---------------
-lambda-instance-id  | The id of the specified lambda instance. For more information see [List Lambda instances page](LambdaInstancesList.md) . |`Yes` |None| 3f763964-d519-4fd2-916d-b5cfbe3b878b
+application-id  | The id of the specified lambda application. For more information see [List applications page](ApplicationsList.md) . |`Yes` |None| eb9b1cda-1c81-4850-92f3-897b01d4685c
 
 
 ## Example
@@ -72,6 +72,11 @@ curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY
           "started": false,
           "id": "3bc97580-45e1-4c39-90ae-0c2178431526",
           "name": "My first Lambda Instance"
+          "status": {
+            "message": "STARTED",
+            "code": "0",
+            "detail": "Lambda instance has been started"
+          },
         }
       ],
       "id": "eb9b1cda-1c81-4850-92f3-897b01d4685c"

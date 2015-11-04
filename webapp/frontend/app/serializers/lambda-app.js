@@ -11,11 +11,16 @@ export default LoDSerializer.extend(DS.EmbeddedRecordsMixin, {
       payload.data[0].attributes[key] = payload.data[0].attributes.status[k];
     }
     let li;
+    let s, key;
     for (k in payload.data[0].attributes.lambda_instances) {
       li = payload.data[0].attributes.lambda_instances[k];
       li.type = 'lambda-instance';
       li.attributes = Ember.$.extend(true, {}, li);
       li.attributes.started_app = li.attributes.started;
+      for (s in li.attributes.status) {
+        key = 'status_' + s;
+        li.attributes[key] = li.attributes.status[s];
+       }
     }
     payload.included = payload.data[0].attributes.lambda_instances;
     delete payload.data[0].attributes.lambda_instances;
