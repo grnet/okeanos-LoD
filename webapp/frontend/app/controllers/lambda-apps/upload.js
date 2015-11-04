@@ -3,10 +3,11 @@ import Ember from "ember";
 var UploadController = Ember.Controller.extend({
   session: Ember.inject.service('session'),
   wrongExt: false,
+  userHasEnteredData: false,
 
   actions : {
     upload: function() {
-
+      var _this = this;
       this.setProperties({
         wrongExt: false,
       });
@@ -47,39 +48,44 @@ var UploadController = Ember.Controller.extend({
         processData: false,
         contentType: false,
         data: data,
-
         xhr: function()
         {
           var xhr = new window.XMLHttpRequest();
-          submit_button.disabled = true;
+          _this.set("userHasEnteredData", true);
+          submit_button.setAttribute("disabled", "disabled");
           //Upload progress
           xhr.upload.addEventListener("progress", function(evt){
             if (evt.lengthComputable) {
               var percentComplete = evt.loaded / evt.total;
               progress.style.width = percentComplete * 100 + '%';
               progress_text.innerHTML =  Math.floor(percentComplete * 100) + '%';
+              if (percentComplete === 1)
+              {
+                submit_button.removeAttribute("disabled");
+                _this.set("userHasEnteredData", false);
+              }
             }
           }, false);
           return xhr;
         },
-        success: function(){
+        success: function(response){
+          console.log(response.data);
+          console.log(response.data[0].id);
           progress.className = "progress-bar progress-bar-success";
           progress.innerHTML =  'Success.Your request to upload the application has been sent.';
-          submit_button.disabled = false;
+          //self.transitionToRoute('lambda-apps', newLambdaInstance.get('id'));
         },
         statusCode: {
           400: function() {
             progress.className = "progress-bar progress-bar-danger";
             progress.innerHTML =  'Failure. Your request to upload the application has failed.Try another application';
             progress_text.innerHTML =  '';
-            submit_button.disabled = false;
           }
         },
         error: function() {
           progress.className = "progress-bar progress-bar-danger";
           progress.innerHTML =  'Your request to application the file has been rejected.Please try again later.';
           progress_text.innerHTML =  '';
-          submit_button.disabled = false;
         }
       });
       }
