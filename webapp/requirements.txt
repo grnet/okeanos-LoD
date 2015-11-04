@@ -3,5 +3,6 @@ psycopg2
 django
 djangorestframework
 djangorestframework-xml
+django-rest-swagger
 mkdocs
 

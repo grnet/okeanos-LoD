@@ -1045,6 +1045,8 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 class CreateLambdaInstance(APIView):
     """
     Creates a new lambda instance
+
+
     """
 
     authentication_classes = KamakiTokenAuthentication,
@@ -1052,8 +1054,15 @@ class CreateLambdaInstance(APIView):
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
     parser_classes = (JSONParser,)
+    # serializer_class = LambdaInstanceInfo
+    # request_serializer = LambdaInstanceInfo
+    # model = LambdaInstance
 
     def post(self, request, format=None):
+        """
+         ---
+        request_serializer: LambdaInstanceInfo
+        """
 
         # Get okeanos authentication token
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]

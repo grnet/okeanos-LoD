@@ -18,8 +18,14 @@
   	#ServerAdmin webmaster@localhost
   	DocumentRoot {{ repository_download_path }}/okeanos-LoD/webapp/
 
-  	WSGIScriptAlias / {{ repository_download_path }}/okeanos-LoD/webapp/webapp/wsgi.py
-  	WSGIPassAuthorization On
+	Alias /static/ {{ repository_download_path }}/okeanos-LoD/webapp/static/
+
+	<Directory {{ repository_download_path }}/okeanos-LoD/webapp/static>
+	Require all granted
+	</Directory>
+
+	WSGIScriptAlias / {{ repository_download_path }}/okeanos-LoD/webapp/webapp/wsgi.py
+	WSGIPassAuthorization On
 
   	Header always set Access-Control-Allow-Origin: "https://{{ ansible_hostname }}.vm.okeanos.grnet.gr:4201"
   	Header always set Access-Control-Allow-Credentials: true
