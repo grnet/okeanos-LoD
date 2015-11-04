@@ -17,12 +17,15 @@ if not ansible_path:
 
 
 def create_cluster(cluster_id, auth_token=None, master_name='lambda-master',
+                   master_image_id=None, slave_image_id=None,
                    slaves=1, vcpus_master=4, vcpus_slave=4,
                    ram_master=4096, ram_slave=4096, disk_master=40, disk_slave=40,
                    ip_allocation='master', network_request=1, project_name='lambda.grnet.gr',
                    pub_keys=None):
     provisioner = Provisioner(auth_token=auth_token)
     provisioner.create_lambda_cluster(vm_name=master_name,
+                                      master_image_id=master_image_id,
+                                      slave_image_id=slave_image_id,
                                       slaves=slaves,
                                       vcpus_master=vcpus_master,
                                       vcpus_slave=vcpus_slave,
@@ -153,6 +156,8 @@ if __name__ == "__main__":
 
     import argparse
     import uuid
+    image_creation = False
+    use_images = True
 
     parser = argparse.ArgumentParser(description="Okeanos VM provisioning")
     parser.add_argument('--master-name', type=str, dest="master_name",
@@ -186,7 +191,15 @@ if __name__ == "__main__":
         if choice.lower() in ["", "y", "yes"]:
             os.mkdir(keys_folder, 0o755)
 
+    if use_images:
+        master_image_id = 'ef4d0aec-896a-4df1-80f5-b7c31b475499'
+        slave_image_id = '3ac53ab3-4d3c-4fb9-8816-525bdd9ab975'
+    else:
+        master_image_id = None
+        slave_image_id = None
     ansible_manager, provisioner_response = create_cluster(cluster_id=uuid.uuid4(),
+                                                           master_image_id=master_image_id,
+                                                           slave_image_id=slave_image_id,
                                                            master_name=args.master_name,
                                                            slaves=args.slaves,
                                                            vcpus_master=args.vcpus_master,
@@ -196,9 +209,27 @@ if __name__ == "__main__":
                                                            disk_master=args.disk_master,
                                                            disk_slave=args.disk_slave,
                                                            project_name=args.project_name)
-    skip_tags = ['image-configure']
-    run_playbook(ansible_manager, 'initialize.yml')
-    run_playbook(ansible_manager, 'common-install.yml', skip_tags=skip_tags)
-    run_playbook(ansible_manager, 'hadoop-install.yml', skip_tags=skip_tags)
-    run_playbook(ansible_manager, 'kafka-install.yml', skip_tags=skip_tags)
-    run_playbook(ansible_manager, 'flink-install.yml', skip_tags=skip_tags)
+
+    if not image_creation:
+        # Create lambda instance
+        only_tags = None
+        if use_images:
+            only_tags = ['common-configure']
+        run_playbook(ansible_manager, 'initialize.yml', only_tags=only_tags)
+        if use_images:
+            only_tags = ['common-configure', 'image-configure']
+        run_playbook(ansible_manager, 'common-install.yml', only_tags=only_tags)
+        if use_images:
+            only_tags = ['image-configure']
+        run_playbook(ansible_manager, 'hadoop-install.yml', only_tags=only_tags)
+        run_playbook(ansible_manager, 'kafka-install.yml', only_tags=only_tags)
+        run_playbook(ansible_manager, 'flink-install.yml', only_tags=only_tags)
+
+    else:
+        # Used for image creation, does not configure or start lambda instance
+        skip_tags = ['image-configure']
+        run_playbook(ansible_manager, 'initialize.yml')
+        run_playbook(ansible_manager, 'common-install.yml', skip_tags=skip_tags)
+        run_playbook(ansible_manager, 'hadoop-install.yml', skip_tags=skip_tags)
+        run_playbook(ansible_manager, 'kafka-install.yml', skip_tags=skip_tags)
+        run_playbook(ansible_manager, 'flink-install.yml', skip_tags=skip_tags)

@@ -126,6 +126,8 @@ def create_lambda_instance(lambda_info, auth_token):
     specs = lambda_info.data
     specs_json = json.dumps(specs)
     instance_uuid = create_lambda_instance.request.id
+    use_images = True
+    ansible_tags = None
 
     # Create an event to create the new Lambda Instance on the database.
     events.create_new_lambda_instance.delay(instance_uuid=instance_uuid,
@@ -143,11 +145,20 @@ def create_lambda_instance(lambda_info, auth_token):
     if specs.get('public_key_name'):
         pub_keys = get_named_keys(auth_token, names=specs['public_key_name'])
 
+    if use_images:
+        master_image_id = 'ef4d0aec-896a-4df1-80f5-b7c31b475499'
+        slave_image_id = '3ac53ab3-4d3c-4fb9-8816-525bdd9ab975'
+    else:
+        master_image_id = None
+        slave_image_id = None
+
     try:
         ansible_manager, provisioner_response = \
             lambda_instance_manager.create_cluster(cluster_id=instance_uuid,
                                                    auth_token=auth_token,
                                                    master_name=specs['master_name'],
+                                                   master_image_id=master_image_id,
+                                                   slave_image_id=slave_image_id,
                                                    slaves=specs['slaves'],
                                                    vcpus_master=specs['vcpus_master'],
                                                    vcpus_slave=specs['vcpus_slave'],
@@ -179,7 +190,10 @@ def create_lambda_instance(lambda_info, auth_token):
                                      specs=lambda_info.data,
                                      provisioner_response=provisioner_response)
 
-    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'initialize.yml')
+    if use_images:
+        ansible_tags = ['common-configure']
+    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'initialize.yml',
+                                                          only_tags=ansible_tags)
     check = _check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
@@ -196,7 +210,10 @@ def create_lambda_instance(lambda_info, auth_token):
             set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
                                                         LambdaInstance.INIT_DONE, "")
 
-    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'common-install.yml')
+    if use_images:
+        ansible_tags = ['common-configure', 'image-configure']
+    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'common-install.yml',
+                                                          only_tags=ansible_tags)
     check = _check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
@@ -213,7 +230,10 @@ def create_lambda_instance(lambda_info, auth_token):
             set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
                                                         LambdaInstance.COMMONS_INSTALLED, "")
 
-    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'hadoop-install.yml')
+    if use_images:
+        ansible_tags = ['image-configure']
+    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'hadoop-install.yml',
+                                                          only_tags=ansible_tags)
     check = _check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
@@ -231,7 +251,9 @@ def create_lambda_instance(lambda_info, auth_token):
                                                         LambdaInstance.HADOOP_INSTALLED, "")
 
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'kafka-install.yml',
-                                                          None, {'topics': specs['kafka_topics']})
+                                                          only_tags=ansible_tags,
+                                                          extra_vars={
+                                                              'topics': specs['kafka_topics']})
     check = _check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
@@ -248,7 +270,8 @@ def create_lambda_instance(lambda_info, auth_token):
             set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
                                                         LambdaInstance.KAFKA_INSTALLED, "")
 
-    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'flink-install.yml')
+    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'flink-install.yml',
+                                                          only_tags=ansible_tags)
     check = _check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,

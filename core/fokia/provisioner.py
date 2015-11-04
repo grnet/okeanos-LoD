@@ -30,9 +30,15 @@ class Provisioner(ProvisionerBase):
     CREATE RESOURCES
     """
 
-    def create_lambda_cluster(self, vm_name, wait=True, **kwargs):
+    def create_lambda_cluster(self, vm_name,
+                              master_image_id=None,
+                              slave_image_id=None,
+                              wait=True, **kwargs):
         """
         :param vm_name: hostname of the master
+        :param master_image_id: image id for lambda master
+        :param slave_image_id: image id for lambda nodes
+        :param wait: specifies, if program must wait for cluster creation to finish
         :param kwargs: contains specifications of the vms.
         :return: dictionary object with the nodes of the cluster if it was successfully created
         """
@@ -105,7 +111,9 @@ class Provisioner(ProvisionerBase):
 
             self.ips = [ip for ip in [master_ip] + slave_ips if ip]
 
-            self.master = self.create_vm(vm_name=vm_name, ip=master_ip,
+            self.master = self.create_vm(vm_name=vm_name,
+                                         image_id=master_image_id,
+                                         ip=master_ip,
                                          flavor=master_flavor,
                                          personality=master_personality,
                                          net_id=vpn_id,
@@ -116,6 +124,7 @@ class Provisioner(ProvisionerBase):
             for i in range(kwargs['slaves']):
                 slave_name = 'lambda-node' + str(i + 1)
                 slave = self.create_vm(vm_name=slave_name,
+                                       image_id=slave_image_id,
                                        ip=slave_ips[i],
                                        flavor=slave_flavor,
                                        personality=slave_personality,
