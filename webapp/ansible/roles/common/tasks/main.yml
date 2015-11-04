@@ -1,4 +1,5 @@
 ---
+
   - name: Fix locale problem.
     command: update-locale LANGUAGE="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 
@@ -6,7 +7,7 @@
     copy: src=sources.list dest=/etc/apt/sources.list owner=root group=root mode=0640
 
   - name: Upgrade packages.
-    apt: update_cache=yes
+    apt: upgrade=dist update_cache=yes
 
   - name: Install python-pip.
     apt: name=python-pip force=yes
