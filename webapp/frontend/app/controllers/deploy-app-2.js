@@ -3,11 +3,12 @@ import Ember from "ember";
 export default Ember.Controller.extend({
   actions: {
     deploy(application_id) {
-      var ids = this.get('ids');
-      ids.push(application_id);
       var applications;
       var _this = this;
       Ember.run.later((function () {
+        this.store.unloadAll('lambda-app');
+        this.modelFor('lambda-instance').application.reload();
+        let ids = this.store.peekAll('lambda-app').getEach('id');
         applications = _this.store.filter('lambda-app', {},
           function (application) {
             if (application.get('status_code') !== 0) {
