@@ -37,13 +37,14 @@ class ApplicationManager:
 
         # Send a request to the service vm to upload the application.
         with open(self.application, 'r') as application_file:
-            response = requests.post("http://{ip}/api/apps/".format(ip=self.service_vm_ip),
+            response = requests.post("https://{ip}/api/apps/".format(ip=self.service_vm_ip),
                                      headers={'Authorization': "Token {token}".
                                      format(token=self.authentication_token)},
                                      files={'file': application_file},
                                      data={'description': "Stream Word Count",
                                            'project_name': "lambda.grnet.gr",
-                                           'type': "streaming"})
+                                           'type': "streaming"},
+                                     verify=False)
 
         # Print the response for logging purposes.
         response_json = response.json()
@@ -53,14 +54,16 @@ class ApplicationManager:
         application_uuid = response_json['data'][0]['id']
 
         # Wait until the entry of the application on the API database has been created.
-        applications = requests.get("http://{ip}/api/apps/".format(ip=self.service_vm_ip),
+        applications = requests.get("https://{ip}/api/apps/".format(ip=self.service_vm_ip),
                                     headers={'Authorization': "Token {token}".
-                                             format(token=self.authentication_token)})
+                                             format(token=self.authentication_token)},
+                                    verify=False)
         while len(applications.json()['data']) == 0 and max_wait > 0:
             time.sleep(sleep_time)
-            applications = requests.get("http://{ip}/api/apps/".format(ip=self.service_vm_ip),
+            applications = requests.get("https://{ip}/api/apps/".format(ip=self.service_vm_ip),
                                         headers={'Authorization': "Token {token}".
-                                                 format(token=self.authentication_token)})
+                                                 format(token=self.authentication_token)},
+                                        verify=False)
             max_wait -= 1
 
         # Wait for the application to be uploaded.
@@ -75,36 +78,41 @@ class ApplicationManager:
         """
 
         # Get the uuid of the lambda instance.
-        lambda_instances = requests.get("http://{ip}/api/lambda-instances/".
+        lambda_instances = requests.get("https://{ip}/api/lambda-instances/".
                                         format(ip=self.service_vm_ip),
                                         headers={'Authorization': "Token {token}".
-                                                 format(token=self.authentication_token)})
+                                                 format(token=self.authentication_token)},
+                                        verify=False)
         lambda_instance_uuid = lambda_instances.json()['data'][0]['id']
 
         # Get the uuid of the application.
-        applications = requests.get("http://{ip}/api/apps/".format(ip=self.service_vm_ip),
+        applications = requests.get("https://{ip}/api/apps/".format(ip=self.service_vm_ip),
                                     headers={'Authorization': "Token {token}".
-                                             format(token=self.authentication_token)})
+                                             format(token=self.authentication_token)},
+                                    verify=False)
         application_uuid = applications.json()['data'][0]['id']
 
         # Send a request to the service vm to deploy the application.
-        requests.post("http://{ip}/api/apps/{application_id}/deploy/".
+        requests.post("https://{ip}/api/apps/{application_id}/deploy/".
                       format(ip=self.service_vm_ip, application_id=application_uuid),
                       headers={'Authorization': "Token {token}".
                                format(token=self.authentication_token)},
-                      json={'lambda_instance_id': lambda_instance_uuid})
+                      json={'lambda_instance_id': lambda_instance_uuid},
+                      verify=False)
 
         # Wait for the application to be deployed.
-        application_details = requests.get("http://{ip}/api/apps/{id}/".
+        application_details = requests.get("https://{ip}/api/apps/{id}/".
                                            format(ip=self.service_vm_ip, id=application_uuid),
                                            headers={'Authorization': "Token {token}".
-                                                    format(token=self.authentication_token)})
+                                                    format(token=self.authentication_token)},
+                                           verify=False)
         while len(application_details.json()['data'][0]['lambda_instances']) == 0 and max_wait > 0:
             time.sleep(sleep_time)
-            application_details = requests.get("http://{ip}/api/apps/{id}/".
+            application_details = requests.get("https://{ip}/api/apps/{id}/".
                                                format(ip=self.service_vm_ip, id=application_uuid),
                                                headers={'Authorization': "Token {token}".
-                                                        format(token=self.authentication_token)})
+                                                        format(token=self.authentication_token)},
+                                               verify=False)
             max_wait -= 1
 
     def start(self, sleep_time=10, max_wait=6):
@@ -116,37 +124,42 @@ class ApplicationManager:
         """
 
         # Get the uuid of the lambda instance.
-        lambda_instances = requests.get("http://{ip}/api/lambda-instances/".
+        lambda_instances = requests.get("https://{ip}/api/lambda-instances/".
                                         format(ip=self.service_vm_ip),
                                         headers={'Authorization': "Token {token}".
-                                                 format(token=self.authentication_token)})
+                                                 format(token=self.authentication_token)},
+                                        verify=False)
         lambda_instance_uuid = lambda_instances.json()['data'][0]['id']
 
         # Get the uuid of the application.
-        applications = requests.get("http://{ip}/api/apps/".format(ip=self.service_vm_ip),
+        applications = requests.get("https://{ip}/api/apps/".format(ip=self.service_vm_ip),
                                     headers={'Authorization': "Token {token}".
-                                             format(token=self.authentication_token)})
+                                             format(token=self.authentication_token)},
+                                    verify=False)
         application_uuid = applications.json()['data'][0]['id']
 
         # Send a request to the service vm to start the application.
-        requests.post("http://{ip}/api/apps/{application_id}/start/".
+        requests.post("https://{ip}/api/apps/{application_id}/start/".
                       format(ip=self.service_vm_ip, application_id=application_uuid),
                       headers={'Authorization': "Token {token}".
                                format(token=self.authentication_token)},
-                      json={'lambda_instance_id': lambda_instance_uuid})
+                      json={'lambda_instance_id': lambda_instance_uuid},
+                      verify=False)
 
         # Wait for the application to be started.
-        application_details = requests.get("http://{ip}/api/apps/{id}/".
+        application_details = requests.get("https://{ip}/api/apps/{id}/".
                                            format(ip=self.service_vm_ip, id=application_uuid),
                                            headers={'Authorization': "Token {token}".
-                                                    format(token=self.authentication_token)})
+                                                    format(token=self.authentication_token)},
+                                           verify=False)
         while (not application_details.json()['data'][0]['lambda_instances'][0]['started'])\
                 and (max_wait > 0):
             time.sleep(sleep_time)
-            application_details = requests.get("http://{ip}/api/apps/{id}/".
+            application_details = requests.get("https://{ip}/api/apps/{id}/".
                                                format(ip=self.service_vm_ip, id=application_uuid),
                                                headers={'Authorization': "Token {token}".
-                                                        format(token=self.authentication_token)})
+                                                        format(token=self.authentication_token)},
+                                               verify=False)
             max_wait -= 1
 
     def _wait_for_application_status(self, status, application_uuid, sleep_time=60, max_wait=5):
@@ -161,20 +174,22 @@ class ApplicationManager:
                          state.
         """
 
-        application_details = requests.get("http://{ip}/api/apps/{id}/".
+        application_details = requests.get("https://{ip}/api/apps/{id}/".
                                            format(ip=self.service_vm_ip, id=application_uuid),
                                            headers={'Authorization': "Token {token}".
-                                                    format(token=self.authentication_token)})
+                                                    format(token=self.authentication_token)},
+                                           verify=False)
         application_status = application_details.json()['data'][0]['status']['message']
         pprint("Application status is {application_status}. Waiting...".
                format(application_status=application_status))
 
         while application_status != status and max_wait > 0:
             time.sleep(sleep_time)
-            application_details = requests.get("http://{ip}/api/apps/{id}/".
+            application_details = requests.get("https://{ip}/api/apps/{id}/".
                                                format(ip=self.service_vm_ip, id=application_uuid),
                                                headers={'Authorization': "Token {token}".
-                                                        format(token=self.authentication_token)})
+                                                        format(token=self.authentication_token)},
+                                               verify=False)
             application_status = application_details.json()['data'][0]['status']['message']
             pprint("Application status is {application_status}. Waiting...".
                    format(application_status=application_status))
