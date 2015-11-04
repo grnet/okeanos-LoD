@@ -126,7 +126,7 @@ def create_lambda_instance(lambda_info, auth_token):
     specs = lambda_info.data
     specs_json = json.dumps(specs)
     instance_uuid = create_lambda_instance.request.id
-    use_images = True
+    use_images = False
     ansible_tags = None
 
     # Create an event to create the new Lambda Instance on the database.
