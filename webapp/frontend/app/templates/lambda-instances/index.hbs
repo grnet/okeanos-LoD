@@ -45,19 +45,6 @@
             </div><!--col-xs-12-->
        	  </div>
 
-          {{#if request}}
-          {{#each controller.instance_action.errors as |error|}}
-                <div  class="alert alert-dismissable alert-danger" id="alert">
-                  <button type="button" class="close" {{action "close_alert"}}>×</button>
-                  {{error.message}}
-                </div>
-          {{/each}}
-              <div  class="alert alert-dismissable alert-success" id="alert">
-                <button type="button" class="close" {{action "close_alert"}}>×</button>
-                {{message}}
-              </div>
-          {{/if}}
-
           <div class="row">
             <div class="col-xs-12">
               <div class="box">

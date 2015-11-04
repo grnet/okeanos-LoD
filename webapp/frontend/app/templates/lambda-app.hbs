@@ -24,7 +24,17 @@
                 <div class="box-body">
                     <div class="row ">
                         <div class="col-xs-12">
-                            <a href="delete-application.html" class="btn  btn-danger pull-right"
+
+                          <div class="pad">
+                          This page contains information regarding your lambda application:<strong> {{model.application.name}} </strong><br>
+                          You can view its details, <i>deploy it on a lambda instance</i> or <i>delete</i> it.
+                          <br>On the tab below, you can browse the lambda instance(s)
+                          onto which this application is deployed and <i>start, stop or undeploy</i> it.
+                          <br> The visible buttons represent the available
+                          actions you may take depending on the <i>status</i> of the application.
+                          </div>
+
+                          <a href="delete-application.html" class="btn  btn-danger pull-right"
                                style="margin-right: 15px;"><i class="fa fa-close"></i> Delete</a>
                           {{#if (compare model.application.status_code '==' '0')}}
                             {{#link-to 'deploy-app-1' model.application.id}}
@@ -106,19 +116,20 @@
 
   {{#if model.instances}}
 
-  {{#if request}}
-      {{#each app.errors as |error|}}
+  {{#if failure}}
+      {{#each model.app.errors as |error|}}
             <div  class="alert alert-dismissable alert-danger" id="alert">
               <button type="button" class="close" {{action "close_alert"}}>×</button>
               {{error.message}}
             </div>
+      {{/each}}
+  {{/if}}
 
-      {{else}}
+  {{#if request}}
           <div  class="alert alert-dismissable alert-success" id="alert">
             <button type="button" class="close" {{action "close_alert"}}>×</button>
             {{message}}
           </div>
-      {{/each}}
   {{/if}}
 
       <div class="row">
@@ -133,7 +144,7 @@
                   <div class="box-body">
                       <div class="row">
                           <div class="col-ms-12 col-xs-12">
-                              Here, you can view all the lambda instances the application is deployed on
+                              Here, you can view all the lambda instance(s) the application is deployed on
                           </div>
                       </div>
                       <div class="row">
@@ -145,6 +156,7 @@
                                       <thead>
                                       <tr>
                                           <th>Instance Name</th>
+                                          <th>Instance Status</th>
                                           <th>App started</th>
                                           <th>Actions</th>
                                       </tr>
@@ -157,23 +169,45 @@
                                                   {{li.name}}
                                                 {{/link-to}}
                                               </td>
+                                              <td>{{li.status_details}}</td>
                                               <td>{{li.started_app}}</td>
                                               <td>
                                                 <div class="table">
                                                     <table class="table">
                                                         <tbody>
+                                                          {{#if (compare li.status_code '==' '0')}}
                                                               {{#if li.started_app}}
-                                                                <td>
-                                                                {{app-action stop=true app=model.app application-id=model.application.id instance-id=li.id request=request message=message action="start_stop"}}
+                                                              <td>
+                                                                {{app-action stop=true app=model.app request=request application-id=model.application.id instance-id=li.id failure=failure message=message action="start_stop"}}
+                                                              </td>
+                                                              <td>
+                                                                {{app-action start=true disabled=true}}
+                                                              </td>
+                                                              <td>
+                                                                {{app-action withdraw=true disabled=true}}
                                                               </td>
                                                               {{else}}
                                                               <td>
-                                                                {{app-action start=true app=model.app application-id=model.application.id instance-id=li.id request=request message=message action="start_stop"}}
+                                                                {{app-action stop=true disabled=true}}
                                                               </td>
                                                               <td>
-                                                                {{app-action withdraw=true app=model.app application-id=model.application.id instance-id=li.id request=request message=message action="withdraw"}}
+                                                                {{app-action start=true app=model.app request=request application-id=model.application.id instance-id=li.id failure=failure message=message action="start_stop"}}
+                                                              </td>
+                                                              <td>
+                                                                {{app-action withdraw=true app=model.app request=request application-id=model.application.id instance-id=li.id failure=failure message=message action="withdraw"}}
                                                               </td>
                                                               {{/if}}
+                                                            {{else}}
+                                                              <td>
+                                                                {{app-action stop=true disabled=true}}
+                                                              </td>
+                                                              <td>
+                                                                {{app-action start=true disabled=true}}
+                                                              </td>
+                                                              <td>
+                                                                {{app-action withdraw=true disabled=true}}
+                                                              </td>
+                                                            {{/if}}
                                                         </tbody>
                                                     </table>
                                                 </div>

@@ -2,18 +2,34 @@
 
     <form {{action "start" instance on="submit"}} method="post">
       {{#if xs}}
+        {{#if disabled}}
+        <button class="btn btn-success btn-xs" disabled type="submit"><i class="fa fa-play"></i> Start</button>
+        {{else}}
         <button class="btn btn-success btn-xs" active type="submit"><i class="fa fa-play"></i> Start</button>
+        {{/if}}
       {{else}}
+        {{#if disabled}}
+        <button class="btn btn-success pull-right" disabled type="submit" style="margin-right: 15px;"><i class="fa fa-play"></i> Start</button>
+        {{else}}
         <button class="btn btn-success pull-right" active type="submit" style="margin-right: 15px;"><i class="fa fa-play"></i> Start</button>
+        {{/if}}
       {{/if}}
     </form>
 
 {{else if stop}}
   <form {{action "stop" instance apps on="submit"}} method="post">
   {{#if xs}}
+    {{#if disabled}}
+    <button class="btn btn-danger btn-xs" disabled type="submit"><i class="fa fa-stop"></i> Stop</button>
+    {{else}}
     <button class="btn btn-danger btn-xs" active type="submit"><i class="fa fa-stop"></i> Stop</button>
+    {{/if}}
   {{else}}
+    {{#if disabled}}
+    <button class="btn btn-danger pull-right" disabled type="submit" style="margin-right: 15px;"><i class="fa fa-stop"></i> Stop</button>
+    {{else}}
     <button class="btn btn-danger pull-right" active type="submit" style="margin-right: 15px;"><i class="fa fa-stop"></i> Stop</button>
+    {{/if}}
   {{/if}}
   </form>
 {{/if}}
