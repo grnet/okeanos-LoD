@@ -25,7 +25,9 @@
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="user-menu">
-              <li role="presentation"> <a {{action 'invalidateSession'}}>Logout</a></li>
+              <li role="presentation"> <button class="btn btn-primary" style="width:100%"
+              {{action 'invalidateSession'}}>Logout <b>{{session.data.authenticated.username}}</b>
+              </button></li>
             </ul>
           </li>
         </ul>
@@ -45,6 +47,7 @@
           <img src="assets/img/default_blogger.png" class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
+        {{session.data.authenticated.username}}<br>
         {{#link-to 'dashboard'}}
           <i class="fa fa-circle text-success"></i> Online
         {{/link-to}}

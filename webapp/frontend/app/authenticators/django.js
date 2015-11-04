@@ -23,10 +23,11 @@ export default Base.extend({
         method: 'GET',
         dataType: 'json',
         headers: {'Authorization': "Token " + token},
-      }).then(function() {
+      }).then(function(response) {
         Ember.run(function() {
           resolve({
-            token: token
+            token: token,
+            username: response.data.name
           });
         });
       }, function(xhr) {
