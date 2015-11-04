@@ -44,11 +44,20 @@
 
   - name: Create Ember config directory
     file: path={{install_dir}}/config state=directory
+    tags:
+      - ember-install
+      - image-configure
 
   - name: Setup Ember configuration environment.
     template: src=environment.js.j2 dest={{ install_dir }}/config/environment.js
+    tags:
+      - ember-install
+      - image-configure
 
   - name: Build ember for production.
     command: ember build --environment=production
     args:
       chdir: "{{ install_dir }}"
+    tags:
+      - ember-install
+      - image-configure

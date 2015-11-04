@@ -1,0 +1,8 @@
+---
+
+- hosts: all
+  user: root
+  roles:
+    - service-vm
+    - rabbitmq
+    - ember

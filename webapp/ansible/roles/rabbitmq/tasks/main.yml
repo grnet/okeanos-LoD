@@ -12,9 +12,11 @@
                  state=present
   tags:
       - celery-install
+      - image-configure
 
 - name: Remove guest RabbitMQ user
   rabbitmq_user: user=guest
                  state=absent
   tags:
       - celery-install
+      - image-configure

@@ -1,4 +1,5 @@
 ---
+
   - name: Install apache2, apache2-dev and libapache2-mod-wsgi packages.
     apt: name={{ item }} state=latest
     with_items:
@@ -6,11 +7,12 @@
       - apache2-dev
       - libapache2-mod-wsgi
 
-  - name: Install apache ssl module
+  - name: Install apache modules
     apache2_module: name={{item}} state=present
     with_items:
       - ssl
       - rewrite
+      - headers
     notify: restart_apache2
 
   - name: Create /etc/apache2/ssl directory
@@ -18,38 +20,63 @@
 
   - name: Create self-signed certificate
     command: openssl req -new -nodes -x509 -subj "/C=GR/O=GRNET S.A./OU=okeanos.grnet.gr/CN={{ ansible_hostname }}.vm.okeanos.grnet.gr" -days 3650 -keyout /etc/apache2/ssl/server.key -out /etc/apache2/ssl/server.crt -extensions v3_ca creates=/etc/apache2/ssl/server.crt
+    tags:
+      - image-configure
 
   - name: Change permissions of private key
     file: path=/etc/apache2/ssl/server.key mode=600 owner=root group=root
+    tags:
+      - image-configure
 
   - name: Change permissions of certificate
     file: path=/etc/apache2/ssl/server.crt mode=600 owner=root group=root
+    tags:
+      - image-configure
 
   - name: Copy Lambda sites-available backend configuration.
     template: src=lambda-service-backend.conf.j2 dest=/etc/apache2/sites-available/lambda-service-backend.conf
+    notify:
+          - restart_apache2
+    tags:
+      - image-configure
 
   - name: Copy lambda sites-available frontend configuration.
     template: src=lambda-service-frontend.conf.j2 dest=/etc/apache2/sites-available/lambda-service-frontend.conf
+    notify:
+          - restart_apache2
+    tags:
+      - image-configure
 
   - name: Copy lambda sites-available mkdocs configuration.
     template: src=lambda-service-mkdocs.conf.j2 dest=/etc/apache2/sites-available/lambda-service-mkdocs.conf
+    notify:
+          - restart_apache2
+    tags:
+      - image-configure
 
   - name: Add lambda-service-backend to sites-enabled.
     command: a2ensite lambda-service-backend.conf
+    notify:
+          - restart_apache2
+    tags:
+      - image-configure
 
   - name: Add lambda-service-frontend to sites-enabled.
     command: a2ensite lambda-service-frontend.conf
+    notify:
+          - restart_apache2
+    tags:
+      - image-configure
 
   - name: Add lambda-service-mkdocs to sites-enabled.
     command: a2ensite lambda-service-mkdocs.conf
+    notify:
+          - restart_apache2
+    tags:
+      - image-configure
 
   - name: Remove default sites-enabled.
     command: a2dissite 000-default.conf
-
-  - name: Activate Apache headers module.
-    apache2_module: name=headers state=present
-    notify:
-          - restart_apache2
 
   - name: Configure Apache.
     lineinfile: dest=/etc/apache2/apache2.conf line="WSGIPythonPath {{ repository_download_path }}/okeanos-LoD/webapp" state=present insertafter=EOF
