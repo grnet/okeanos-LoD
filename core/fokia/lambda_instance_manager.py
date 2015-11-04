@@ -193,6 +193,7 @@ if __name__ == "__main__":
                                                            ram_master=args.ram_master,
                                                            ram_slave=args.ram_slave,
                                                            disk_master=args.disk_master,
+                                                           disk_slave=args.disk_slave,
                                                            project_name=args.project_name)
     run_playbook(ansible_manager, 'initialize.yml')
     run_playbook(ansible_manager, 'common-install.yml')
