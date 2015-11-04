@@ -3,10 +3,8 @@
   - name: Create users for each application.
     include: users.yml
 
-  - name: Generate ssh key for hduser.
-    shell: cat /dev/zero | ssh-keygen -q -N ""
-    args:
-      creates: /home/hduser/.ssh/id_rsa.pub
+  - name: Generate ssh key for hduser
+    user: name=hduser generate_ssh_key=yes
     tags:
       - image-configure
 
@@ -15,10 +13,8 @@
     tags:
       - image-configure
 
-  - name: Generate ssh key for flink user.
-    shell: cat /dev/zero | ssh-keygen -q -N ""
-    args:
-      creates: /home/flink/.ssh/id_rsa.pub
+  - name: Generate ssh key for flink user
+    user: name=flink generate_ssh_key=yes
     tags:
       - image-configure
 
