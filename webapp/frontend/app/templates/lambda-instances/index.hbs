@@ -45,6 +45,29 @@
             </div><!--col-xs-12-->
        	  </div>
 
+          {{#if failure}}
+              {{#each model.instance_action.errors as |error|}}
+                    <div  class="alert alert-dismissable alert-danger" id="alert">
+                      <button type="button" class="close" {{action "close_alert"}}>×</button>
+                      {{error.message}}
+                    </div>
+              {{/each}}
+          {{/if}}
+          {{#if delete_failure}}
+              {{#each lambdaInstance.errors as |error|}}
+                    <div  class="alert alert-dismissable alert-danger" id="alert">
+                      <button type="button" class="close" {{action "close_alert"}}>×</button>
+                      {{error.message}}
+                    </div>
+              {{/each}}
+          {{/if}}
+          {{#if request}}
+                <div  class="alert alert-dismissable alert-success" id="alert">
+                  <button type="button" class="close" {{action "close_alert"}}>×</button>
+                  {{message}}
+                </div>
+          {{/if}}
+
           <div class="row">
             <div class="col-xs-12">
               <div class="box">
@@ -77,9 +100,8 @@
 							<a class="btn btn-social-icon btn-bitbucket" title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i></a>
 							<a class="btn btn-social-icon btn-google" title="Delete" alt="Delete"><i class="fa fa-close"></i></a>
                         </td>
-
-
                       </tr> -->
+
                       {{#each pagedContent as |lambda-instance|}}
                       <tr>
                         <td>

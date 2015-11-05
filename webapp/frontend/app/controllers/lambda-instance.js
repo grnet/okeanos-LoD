@@ -7,6 +7,11 @@ export default Ember.Controller.extend({
       var alert = document.getElementById('alert');
       alert.hidden=true;
     },
+    close_app_alert: function()
+    {
+      var alert = document.getElementById('app_alert');
+      alert.hidden=true;
+    },
     start_stop: function()
     {
       var _this = this;
