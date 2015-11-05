@@ -11,21 +11,25 @@
     template: src=master-server.properties.j2 dest="{{ installation_path }}/kafka/config/server.properties" owner=kafka group=lambda mode=0644
     tags:
       - configure-kafka
+      - image-configure
 
   - name: Start Apache Zookeeper server.
     supervisorctl: name=apache_zookeeper state=started
     tags:
       - start-zookeeper
+      - image-configure
 
   - name: Wait for Apache Zookeeper to become available.
     wait_for: port=2181
     tags:
       - start-zookeeper
+      - image-configure
 
   - name: Start Apache Kafka server.
     supervisorctl: name=apache_kafka state=started
     tags:
       - start-kafka
+      - image-configure
 
   - name: Wait for Apache Kafka server to become available.
     wait_for: port=9092 timeout=30
@@ -34,3 +38,4 @@
       - create topics
     tags:
       - start-kafka
+      - image-configure

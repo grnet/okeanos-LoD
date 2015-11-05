@@ -100,13 +100,11 @@ class ProvisionerBase:
                 return flavor
         return None
 
-    def find_image(self, **kwargs):
+    def find_image(self, image_name):
         """
         :param image_name: Name of the image to filter by
-        :param kwargs:
         :return: first image object that matches the name criteria
         """
-        image_name = kwargs['image_name']
 
         logger.info("Retrieving image")
         for image in self.cyclades.list_images(detail=True):
@@ -132,7 +130,7 @@ class ProvisionerBase:
     CREATE RESOURCES
     """
 
-    def create_vm(self, vm_name=None, image_id=None,
+    def create_vm(self, vm_name=None, image_id=None, image_name=None,
                   ip=None, personality=None, flavor=None, **kwargs):
         """
         :param vm_name: Name of the virtual machine to create
@@ -142,10 +140,12 @@ class ProvisionerBase:
         """
         flavor_id = flavor['id']
         # Get image
-        if image_id is None:
-            image_id = self.image_id
-        else:
-            image_id = self.find_image(**kwargs)['id']
+        if not image_id:
+            if image_name:
+                image_id = self.find_image(image_name)['id']
+            else:
+                image_id = self.image_id
+
         project_id = self.find_project_id(**kwargs)['id']
         networks = list()
         if ip:

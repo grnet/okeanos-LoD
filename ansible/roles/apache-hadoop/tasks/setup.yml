@@ -1,4 +1,5 @@
 ---
+
   - name: Download Apache Hadoop.
     get_url: url="{{ mirror_url }}/hadoop-{{ version }}/hadoop-{{ version }}.tar.gz" dest="{{ download_path }}/hadoop-{{ version }}.tar.gz"
     environment: proxy_env
@@ -14,17 +15,27 @@
 
   - name: Configure slaves.
     template: src=slaves.j2 dest="{{ installation_path }}/hadoop/etc/hadoop/slaves" owner=hduser group=lambda mode=0644
+    tags:
+      - image-configure
 
   - name: Configure core.
     template: src=core-site.xml.j2 dest="{{ installation_path }}/hadoop/etc/hadoop/core-site.xml" owner=hduser group=lambda mode=0644
+    tags:
+      - image-configure
 
   - name: Configure Apache HDFS for master node.
     template: src=hdfs-site-master.xml.j2 dest="{{ installation_path }}/hadoop/etc/hadoop/hdfs-site.xml" backup=no owner=hduser group=lambda mode=0644
     when: "'master' in group_names"
+    tags:
+      - image-configure
 
   - name: Configure Apache HDFS for slave nodes.
     template: src=hdfs-site-slave.xml.j2 dest="{{ installation_path }}/hadoop/etc/hadoop/hdfs-site.xml" backup=no owner=hduser group=lambda mode=0644
     when: "'slaves' in group_names"
+    tags:
+      - image-configure
 
   - name: Configure Apache Yarn.
     template: src=yarn-site.xml.j2 dest="{{ installation_path }}/hadoop/etc/hadoop/yarn-site.xml" owner=hduser group=lambda mode=0644
+    tags:
+      - image-configure

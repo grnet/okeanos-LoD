@@ -20,6 +20,7 @@
     template: src=flink-conf.j2 dest="{{ installation_path }}/flink/conf/flink-conf.yaml" owner=flink group=lambda mode=0644
     tags:
       - configure
+      - image-configure
 
   - name: Copy run_batch_job script
     copy: src=run_batch_job.sh dest="/home/flink/run_batch_job.sh" owner=flink group=flink mode=0744
@@ -35,3 +36,4 @@
     supervisorctl: name=apache_flink state=started
     tags:
       - start
+      - image-configure

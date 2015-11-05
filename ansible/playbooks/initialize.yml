@@ -4,7 +4,7 @@
     user: root
     gather_facts: no
     roles:
-      - wait_for_ssh
+      - { role: wait_for_ssh, tags: [ 'common-configure' ] }
 
   - hosts: master
     user: root
