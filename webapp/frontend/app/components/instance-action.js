@@ -7,6 +7,9 @@ export default Ember.Component.extend({
   failure: false,
   actions: {
     start(instance) {
+      if (this.get('disabled')) {
+        return false;
+      }
       var _this = this;
       //send request to start instance
       instance.set('lambda_instance_id', this.get("instance-id"));
@@ -23,6 +26,9 @@ export default Ember.Component.extend({
       return false;
     },
     stop(instance, apps) {
+      if (this.get('disabled')) {
+        return false;
+      }
       var _this = this;
       //send request to stop instance
       apps.forEach(function(item) {
