@@ -144,7 +144,6 @@ def create_lambda_instance(lambda_info, auth_token):
     if specs.get('public_key_name'):
         pub_keys = get_named_keys(auth_token, names=specs['public_key_name'])
 
-
     master_image_id = settings.MASTER_IMAGE_ID
     slave_image_id = settings.SLAVE_IMAGE_ID
 
