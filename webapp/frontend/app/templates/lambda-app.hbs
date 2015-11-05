@@ -91,6 +91,10 @@
                                     </tr>
                                 {{/if}}
                                 <tr>
+                                    <th>Execution environment name</th>
+                                    <td>{{model.application.execution_environment_name}}</td>
+                                </tr>
+                                <tr>
                                     <th>Status</th>
                                     <td>{{lower-case model.application.status_message}}</td>
                                 </tr>
@@ -102,6 +106,12 @@
                                     <th>Status detail</th>
                                     <td>{{model.application.status_detail}}</td>
                                 </tr>
+                                {{#if model.application.status_failure_message}}
+                                    <tr>
+                                        <th>Application failure message</th>
+                                        <td>{{model.application.status_failure_message}}</td>
+                                    </tr>
+                                {{/if}}
 
                                 </tbody>
                             </table>
