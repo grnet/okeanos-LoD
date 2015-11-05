@@ -215,7 +215,8 @@
                   {{#each model.apps as |application|}}
                   <tr class="instance-info">
                     <td>
-                      {{#link-to 'lambda-app' application.id tooltipContent=application.id}}
+                      {{#link-to 'lambda-app' application.id
+                      tooltipContent=(concat "<center>" application.id "</center>")}}
                         {{application.name}}
                       {{/link-to}}
                     </td>

@@ -83,7 +83,8 @@
                       {{#each pagedContent as |lambda-instance|}}
                       <tr>
                         <td>
-                          {{#link-to 'lambda-instance' lambda-instance.id tooltipContent=lambda-instance.id}}
+                          {{#link-to 'lambda-instance' lambda-instance.id
+                          tooltipContent=(concat "<center>" lambda-instance.id "</center>")}}
                             {{lambda-instance.name}}
                           {{/link-to}}
                         </td>

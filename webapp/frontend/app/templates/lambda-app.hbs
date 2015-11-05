@@ -169,7 +169,8 @@
                                       {{#each model.instances as |li|}}
                                           <tr>
                                               <td>
-                                                {{#link-to 'lambda-instance' li.id tooltipContent=li.id}}
+                                                {{#link-to 'lambda-instance' li.id
+                                                tooltipContent=(concat "<center>" li.id "</center>")}}
                                                   {{li.name}}
                                                 {{/link-to}}
                                               </td>

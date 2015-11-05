@@ -85,7 +85,8 @@
               {{#each pagedContent as |lambda-application|}}
               <tr>
                 <td>
-                  {{#link-to 'lambda-app' lambda-application.id tooltipContent=lambda-application.id}}
+                  {{#link-to 'lambda-app' lambda-application.id
+                  tooltipContent=(concat "<center>" lambda-application.id "</center>")}}
                     {{lambda-application.name}}
                   {{/link-to}}
                 </td>
