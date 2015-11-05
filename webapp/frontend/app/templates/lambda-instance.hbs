@@ -89,7 +89,7 @@
           </div><!-- /.row -->
 
           <div class="row">
-            <div class="col-ms-6 col-xs-5">
+            <div class="col-ms-9 col-xs-9">
               <table  class="table table-bordered table-hover table-responsive">
                 <thead>
                   <tr>
@@ -169,6 +169,63 @@
                 </tbody>
               </table>
             </div><!--col-xs-12-->
+            <!-- About Instance -->
+    <div class="col-md-3 pull-right">
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title"><i class="fa  fa-bullhorn"></i> About The Instance</h3>
+          <span style='margin-left:10px;'>
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "BUILDING")}}
+            <i class="fa fa-circle text-warning "></i>
+            {{/if}}
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STOPPED")}}
+            <i class="fa fa-circle text-danger "></i>
+            {{/if}}
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "FAILED")}}
+            <i class="fa fa-circle text-danger "></i>
+            {{/if}}
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STARTED")}}
+            <i class="fa fa-circle text-running "></i>
+            {{/if}}
+            {{lambda-instance-state model.instance.status_message}}
+          </span>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+          <strong><i class="fa fa-pencil margin-r-5"></i> Status</strong>
+          <p>
+            <ul class="timeline">
+              <!-- timeline time label -->
+              <li class="time-label">
+                <span class="bg-orange">Status: {{lambda-instance-state model.instance.status_message}}</span>
+              </li>
+              <li>
+                <i class="fa fa-clock-o bg-gray"></i>
+                <div class="timeline-item">
+                  <span class="time"><i class="fa fa-clock-o"></i> Now </span>
+                  <h3 class="timeline-header"><strong>{{model.instance.status_message}}</strong> </h3>
+                  <div class="timeline-body">{{lambda-instance-state-flow model.instance.status_message}} {{model.instance.status_detail}}</div> <!-- class="timeline-body"-->
+                </div> <!-- class="timeline-item" -->
+              </li>
+            </ul>
+          </p>
+          <strong><i class="fa fa-file-text-o margin-r-5"></i> Notes</strong>
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "BUILDING")}}
+            <p>Your lambda instance is being built. This might take a while...</p>
+            {{/if}}
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STOPPED")}}
+            <p>Your lambda instance has been stopped. You need to start it in order to run an application.</p>
+            {{/if}}
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "FAILED")}}
+            <p>Your lambda instance has failed. You can delete it an try creating a new one.</p>
+            {{/if}}
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STARTED")}}
+            <p>Your lambda instance is up and running. You can deploy an run application on it.</p>
+            {{/if}}
+        </div> <!-- /.box-body -->
+      </div><!-- /.box -->
+    </div> <!--col-md-3 pull-right -->
+    <!-- About Instance -->
           </div><!--row-->
         </div><!--box-->
       </div> <!-- box-primary -->
