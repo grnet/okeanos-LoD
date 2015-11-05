@@ -9,5 +9,17 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
       userOkeanosProjects: this.store.findAll('user-okeanos-project'),
       VMParameterValues: this.store.findAll('vm-parameter-value')
     });
+  },
+  afterModel: function(model) {
+    for (var i = 0;i < model.userOkeanosProjects.get('length');i++){
+    	if (model.userOkeanosProjects.objectAt(i).get('vm') >= 2 &&
+    	    model.userOkeanosProjects.objectAt(i).get('cpu') >= 4 &&
+    	    model.userOkeanosProjects.objectAt(i).get('ram') >= 4294967296 &&
+    	    model.userOkeanosProjects.objectAt(i).get('disk') >= 21474836480 &&
+    	    model.userOkeanosProjects.objectAt(i).get('floating_ip') >= 1 &&
+    	    model.userOkeanosProjects.objectAt(i).get('private_network') >= 1) {
+    		this.controllerFor('create-lambda-instance').set('enoughQuotas', true);
+    	}
+    }
   }
 });

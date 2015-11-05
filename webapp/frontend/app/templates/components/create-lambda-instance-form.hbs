@@ -29,6 +29,20 @@
       </div> <!-- box-primary -->
     </div> <!--col -->
   </div> <!--row-->
+
+  {{#unless enoughQuotas}}
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="alert alert-warning alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <h4><i class="icon fa fa-warning"></i> Alert! - No resources available to create a new lambda instance!</h4>
+        Based on the ~okeanos projects we found on your ~okeanos profile, you don't have the resources needed to create a lambda instance.
+        A lambda instance requires at least <ul><li> 1 public ips</li> <li>2 vms</li><li>4 CPU's per VM </li> <li>4096MB of RAM per VM </li><li> 20GB of hard disk per VM</li></ul>Please join a project or create your own project and ask for resources so as to create a lambda Instance. In order to join or create an ~okeanos project follow this <a href="https://accounts.okeanos.grnet.gr/ui/projects" target="_blank">link</a>!.
+      </div> <!-- class="alert alert-warning alert-dismissable" -->
+    </div> <!-- col-xs-12 -->
+  </div><!-- row -->
+  {{/unless}}
+
   <form {{action "create" newLambdaInstance on="submit"}} method="post">
     <div class="row">
       <div class="col-xs-12">
@@ -37,9 +51,15 @@
             <h3 class="box-title">Main</h3>: Lambda Instance details
           </div><!-- /.box-header -->
           <div class="box-body">
+
+            <div class="row">
+              <div class="col-sm-12">
+                <p><i class="fa fa-info"></i>  All inputs marked with (*) are required. </p>
+            </div>
+          </div>
             <div class="row">
               <div class="form-group col-sm-6">
-                <label for="name1"> Name of Lamdba Instance: </label>
+                <label for="name1"> Name of Lamdba Instance (*): </label>
                 {{input type="text" value=instanceName placeholder="Lambda Instance name" size="50" class="form-control" required="true"}}
                 {{#each newLambdaInstance.errors.instanceName as |error|}}
                   <div class="alert alert-danger alert-dismissable">
@@ -48,7 +68,7 @@
                 {{/each}}
               </div>
               <div class="form-group col-sm-6">
-                <label for="name1"> Name of Master Node: </label>
+                <label for="name1"> Name of Master Node (*): </label>
                 {{input type="text" value=masterName placeholder="Master node name" size="50" class="form-control" required="true"}}
                 {{#each newLambdaInstance.errors.masterName as |error|}}
                   <div class="alert alert-danger alert-dismissable">
@@ -59,11 +79,11 @@
             </div>
             <div class="row">
               <div class="form-group col-sm-6">
-                <label for="okeanos_project" class="col-sm-6">~okeanos Project:</label>
+                <label for="okeanos_project" class="col-sm-6">~okeanos Project (*):</label>
                 <div class="col-sm-6">
                   <select name="okeanos_project" class="form-control">
                     {{#each userOkeanosProjects as |project|}}
-                    <option value={{project.name}}>{{project.name}} (vm: {{project.vm}}, ram: {{normalize-bytes project.ram}}, disk: {{normalize-bytes project.disk}}, floating_ip: {{project.floating_ip}}, private_network: {{project.private_network}})</option>
+                    <option value={{project.name}}>{{project.name}} (VMs: {{project.vm}}, CPUs: {{project.cpu}}, RAM: {{normalize-bytes project.ram}}, Disk: {{normalize-bytes project.disk}}, Floating IPs: {{project.floating_ip}}, Private Networks: {{project.private_network}})</option>
                     {{/each}}
                   </select>
                   <span id="helpBlock" class="help-block">Select a project</span>
@@ -75,9 +95,9 @@
                 </div>	<!--class="col-sm-6"-->
               </div>	<!--class="col-sm-6"-->
               <div class="form-group col-sm-6">
-                <label for="public_key_name"  class="col-sm-6">Public SSH keys:</label>
+                <label for="public_key_name"  class="col-sm-6">Public SSH keys (*):</label>
                 <div class="col-sm-6">
-                  <select multiple name="public_key_name" class="form-control">
+                  <select required="required" multiple name="public_key_name" class="form-control">
                     {{#each userPublicKeys as |publicKey|}}
                     <option value={{publicKey.name}}>{{publicKey.name}}</option>
                     {{/each}}
@@ -90,7 +110,7 @@
               <div class="form-group col-sm-6">
                 <label for="kafka_topics" class="col-sm-6">Apache Kafka topics:</label>
                 <div class="col-sm-6">
-                  {{input type="text" value=kafkaTopics placeholder="e.g. name1,name2,name3" size="50" class="form-control" required="false"}}
+                  {{input type="text" value=kafkaTopics placeholder="e.g. name1,name2,name3" size="50" class="form-control"}}
                   <span id="helpBlock" class="help-block">Names of Apache Kafka topics</span>
                 </div>  <!--class="col-sm-6"-->
               </div>
