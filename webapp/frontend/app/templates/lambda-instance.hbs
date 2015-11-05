@@ -142,10 +142,14 @@
                     <th>Size of each slave node HDD</th>
                     <td>{{model.instance.disk_slave}}GB</td>
                   </tr>
-                  {{#if lambda-instance.public_key_name}}
+                  <tr>
+                      <th>Kafka topics</th>
+                      <td>{{model.instance.kafka_topics}}</td>
+                  </tr>
+                  {{#if model.instance.public_key_name}}
                   <tr>
                     <th>Authorized public keys</th>
-                    <td>{{lambda-instance.public_key_name}}</td>
+                    <td>{{model.instance.public_key_name}}</td>
                   </tr>
                   {{/if}}
                   <tr>
@@ -156,10 +160,10 @@
                     <th>Instance status details</th>
                     <td>{{model.instance.status_detail}}</td>
                   </tr>
-                  {{#if lambda-instance.status_failure_message}}
+                  {{#if model.instance.status_failure_message}}
                   <tr>
                     <th>Instance failure message</th>
-                    <td>{{lambda-instance.status_failure_message}}</td>
+                    <td>{{model.instance.status_failure_message}}</td>
                   </tr>
                   {{/if}}
                 </tbody>
@@ -226,6 +230,7 @@
                       <div class="table">
                           <table class="table">
                               <tbody>
+                              {{#tool-tip}}
                                 {{#if (compare model.instance.status_code '==' '0')}}
                                     {{#if application.started}}
                                         <td>
@@ -267,7 +272,8 @@
                                           tool-tip-message=(concat "the lambda instance's status
                                           is " (lower-case model.instance.status_message))}}
                                         </td>
-                                    {{/if}}
+                                {{/if}}
+                              {{/tool-tip}}
                               </tbody>
                           </table>
                       </div>
