@@ -37,7 +37,7 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.requests')
     def test_create_lambda_instance_central_vm(self, mock_requests, mock_settings):
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
 
         # Create the parameters that will be given as input to the task.
         instance_uuid = uuid.uuid4()
@@ -50,8 +50,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_instances/",
+            url="CENTRAL_VM_API/lambda_instances/",
             json={
                 'uuid': instance_uuid,
                 'name': instance_name,
@@ -73,7 +72,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.post.side_effect = CustomTimeoutException()
 
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
 
         # Create the parameters that will be given as input to the task.
@@ -90,8 +89,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_instances/",
+            url="CENTRAL_VM_API/lambda_instances/",
             json={
                 'uuid': instance_uuid,
                 'name': instance_name,
@@ -117,7 +115,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.post.side_effect = CustomConnectionError()
 
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
 
         # Create the parameters that will be given as input to the task.
@@ -134,8 +132,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_instances/",
+            url="CENTRAL_VM_API/lambda_instances/",
             json={
                 'uuid': instance_uuid,
                 'name': instance_name,
@@ -156,7 +153,7 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.requests')
     def test_set_lambda_instance_status_central_vm(self, mock_requests, mock_settings):
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
 
         # Create the parameters that will be given as input to the task.
         instance_uuid = uuid.uuid4()
@@ -170,8 +167,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_instances/{}/status/".format(instance_uuid),
+            url="CENTRAL_VM_API/lambda_instances/{}/status/".format(instance_uuid),
             json={
                 'status': status,
                 'failure_message': failure_message
@@ -191,7 +187,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.post.side_effect = CustomTimeoutException()
 
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
 
         # Create the parameters that will be given as input to the task.
@@ -209,8 +205,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_instances/{}/status/".format(instance_uuid),
+            url="CENTRAL_VM_API/lambda_instances/{}/status/".format(instance_uuid),
             json={
                 'status': status,
                 'failure_message': failure_message
@@ -234,7 +229,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.post.side_effect = CustomConnectionError()
 
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
 
         # Create the parameters that will be given as input to the task.
@@ -252,8 +247,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_instances/{}/status/".format(instance_uuid),
+            url="CENTRAL_VM_API/lambda_instances/{}/status/".format(instance_uuid),
             json={
                 'status': status,
                 'failure_message': failure_message
@@ -271,7 +265,7 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.requests')
     def test_delete_lambda_instance_central_vm(self, mock_requests, mock_settings):
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
 
         # Create the parameters that will be given as input to the task.
         instance_uuid = uuid.uuid4()
@@ -282,8 +276,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.delete.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_instances/{}/".format(instance_uuid),
+            url="CENTRAL_VM_API/lambda_instances/{}/".format(instance_uuid),
             headers={
                 'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
                 'Content-Type': "application/json"
@@ -299,7 +292,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.delete.side_effect = CustomTimeoutException()
 
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
 
         # Create the parameters that will be given as input to the task.
@@ -314,8 +307,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.delete.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_instances/{}/".format(instance_uuid),
+            url="CENTRAL_VM_API/lambda_instances/{}/".format(instance_uuid),
             headers={
                 'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
                 'Content-Type': "application/json"
@@ -335,7 +327,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.delete.side_effect = CustomConnectionError()
 
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
 
         # Create the parameters that will be given as input to the task.
@@ -350,8 +342,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.delete.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_instances/{}/".format(instance_uuid),
+            url="CENTRAL_VM_API/lambda_instances/{}/".format(instance_uuid),
             headers={
                 'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
                 'Content-Type': "application/json"
@@ -365,7 +356,7 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.requests')
     def test_create_application_central_vm(self, mock_requests, mock_settings):
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
 
         # Create the parameters that will be given as input to the task.
         application_uuid = uuid.uuid4()
@@ -379,8 +370,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_applications/",
+            url="CENTRAL_VM_API/lambda_applications/",
             json={
                 'uuid': "{}".format(application_uuid),
                 'name': application_name,
@@ -402,7 +392,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.post.side_effect = CustomTimeoutException()
 
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
 
         # Create the parameters that will be given as input to the task.
@@ -420,8 +410,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_applications/",
+            url="CENTRAL_VM_API/lambda_applications/",
             json={
                 'uuid': "{}".format(application_uuid),
                 'name': application_name,
@@ -448,7 +437,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.post.side_effect = CustomConnectionError()
 
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
 
         # Create the parameters that will be given as input to the task.
@@ -466,8 +455,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_applications/",
+            url="CENTRAL_VM_API/lambda_applications/",
             json={
                 'uuid': "{}".format(application_uuid),
                 'name': application_name,
@@ -488,7 +476,7 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.requests')
     def test_set_application_status_central_vm(self, mock_requests, mock_settings):
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
 
         # Create the parameters that will be given as input to the task.
         application_uuid = uuid.uuid4()
@@ -502,8 +490,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_applications/{}/status/".format(application_uuid),
+            url="CENTRAL_VM_API/lambda_applications/{}/status/".format(application_uuid),
             json={
                 'status': status,
                 'failure_message': "failure_message"
@@ -523,7 +510,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.post.side_effect = CustomTimeoutException()
 
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
 
         # Create the parameters that will be given as input to the task.
@@ -541,8 +528,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_applications/{}/status/".format(application_uuid),
+            url="CENTRAL_VM_API/lambda_applications/{}/status/".format(application_uuid),
             json={
                 'status': status,
                 'failure_message': "failure_message"
@@ -566,7 +552,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.post.side_effect = CustomConnectionError()
 
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
 
         # Create the parameters that will be given as input to the task.
@@ -584,8 +570,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.post.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_applications/{}/status/".format(application_uuid),
+            url="CENTRAL_VM_API/lambda_applications/{}/status/".format(application_uuid),
             json={
                 'status': status,
                 'failure_message': "failure_message"
@@ -603,7 +588,7 @@ class TestCeleryCentralVMTasks(APITestCase):
     @mock.patch('backend.central_vm_tasks.requests')
     def test_delete_application_central_vm(self, mock_requests, mock_settings):
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
 
         # Create the parameters that will be given as input to the task.
         application_uuid = uuid.uuid4()
@@ -614,8 +599,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.delete.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_applications/{}/".format(application_uuid),
+            url="CENTRAL_VM_API/lambda_applications/{}/".format(application_uuid),
             headers={
                 'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
                 'Content-Type': "application/json"
@@ -630,7 +614,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.delete.side_effect = CustomTimeoutException()
 
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
 
         # Create the parameters that will be given as input to the task.
@@ -645,8 +629,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.delete.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_instances/{}/".format(instance_uuid),
+            url="CENTRAL_VM_API/lambda_instances/{}/".format(instance_uuid),
             headers={
                 'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
                 'Content-Type': "application/json"
@@ -666,7 +649,7 @@ class TestCeleryCentralVMTasks(APITestCase):
         mock_requests.delete.side_effect = CustomConnectionError()
 
         # Set the required values for the mocks.
-        mock_settings.CENTRAL_VM_IP = "CENTRAL_VM_IP"
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
         mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
 
         # Create the parameters that will be given as input to the task.
@@ -681,8 +664,7 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         # Assert that the proper mock calls have been made.
         mock_requests.delete.assert_called_with(
-            verify=False,
-            url="https://CENTRAL_VM_IP/api/lambda_applications/{}/".format(application_uuid),
+            url="CENTRAL_VM_API/lambda_applications/{}/".format(application_uuid),
             headers={
                 'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
                 'Content-Type': "application/json"
