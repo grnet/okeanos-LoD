@@ -1,6 +1,7 @@
 import Ember from "ember";
 
 export default Ember.Controller.extend({
+  enoughQuotas: false,
   actions: {
     saveLambdaInstance: function(newLambdaInstance){
       var self = this;
