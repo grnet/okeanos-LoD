@@ -53,14 +53,6 @@
                     </div>
               {{/each}}
           {{/if}}
-          {{#if delete_failure}}
-              {{#each lambdaInstance.errors as |error|}}
-                    <div  class="alert alert-dismissable alert-danger" id="alert">
-                      <button type="button" class="close" {{action "close_alert"}}>×</button>
-                      {{error.message}}
-                    </div>
-              {{/each}}
-          {{/if}}
           {{#if request}}
                 <div  class="alert alert-dismissable alert-success" id="alert">
                   <button type="button" class="close" {{action "close_alert"}}>×</button>
@@ -119,15 +111,49 @@
                                   <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
                                 {{/link-to}}
                               </td>
-                              <td>
                                 {{#if (compare lambda-instance.status_code '==' '0')}}
+                                <td>
+                                  {{instance-action stop=true apps=apps instance=instance_action instance-id=lambda-instance.id
+                                    failure=failure request=request message=message action="start_stop" xs=true}}
+                                </td>
+                                <td>
+                                  {{instance-action start=true disabled=true xs=true}}
+                                </td>
+                                <td>
                                   {{#link-to "deploy-app-2" lambda-instance.id}}
                                       <button class="btn btn-primary btn-xs"
                                               style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
                                           Deploy an application
                                       </button>
                                   {{/link-to}}
+                                </td>
+                                {{else if (compare lambda-instance.status_code '==' '1')}}
+                                  <td>
+                                    {{instance-action stop=true disabled=true xs=true}}
+                                  </td>
+                                  <td>
+                                    {{instance-action start=true instance=instance_action instance-id=lambda-instance.id
+                                      failure=failure request=request message=message action="start_stop" xs=true}}
+                                  </td>
+                                  <td>
+                                    {{#tool-tip}}
+                                      <button class="btn btn-primary btn-xs disabled  has-tooltip"
+                                                    data-tooltip-content="<center>Cannot deploy an application, while lambda instance
+                                                    status is {{lower-case lambda-instance.status_message}}!</center>"
+                                                    style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
+                                          Deploy an application
+                                      </button>
+                                    {{/tool-tip}}
+                                  </td>
                                 {{else}}
+                                <td>
+                                  {{instance-action stop=true disabled=true xs=true}}
+                                </td>
+                                <td>
+                                  {{instance-action start=true instance=instance_action instance-id=lambda-instance.id
+                                    failure=failure request=request message=message action="start_stop" xs=true}}
+                                </td>
+                                <td>
                                   {{#tool-tip}}
                                           <button class="btn btn-primary btn-xs disabled  has-tooltip"
                                                   data-tooltip-content="<center>Cannot deploy an application, while lambda instance
@@ -136,8 +162,8 @@
                                         Deploy an application
                                     </button>
                                   {{/tool-tip}}
+                                </td>
                                 {{/if}}
-                              </td>
                               <td>{{delete-lambda-instance lambdaInstance=lambda-instance}}</td>
                             </tbody>
                           </table>
