@@ -49,14 +49,19 @@ export default Ember.Component.extend({
       //send request to deploy application
       let application_id = this.get('application-id');
       let instance_id = this.get('instance-id');
+      var _this = this;
       app.set('application_id', application_id);
       app.set('lambda_instance_id', instance_id);
       app.set('call', "deploy");
-      var _this = this;
-      app.save().catch(function() {
-        _this.set('failure', true);
-      });
-      this.sendAction('action', application_id, instance_id);
+      app.save().then(
+        function success() {
+          _this.set("request", true);
+          _this.set("message", "Your request to deploy the application was successfully sent to the server.");
+          _this.sendAction('action', application_id, instance_id);
+        }).catch(
+        function () {
+          _this.set('failure', true);
+        });
       return false;
     },
     withdraw(app) {

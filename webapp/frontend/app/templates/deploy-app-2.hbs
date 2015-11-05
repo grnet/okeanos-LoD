@@ -2,7 +2,7 @@
 <section class="content-header">
     <h1>
         Dashboard
-        <small>Deploy Applications onto Lambda Instance(s)</small>
+        <small>Deploy Application(s) onto Lambda Instance</small>
     </h1>
 </section>
 
@@ -23,24 +23,19 @@
                 <!-- /.box-header -->
                 <div class="box-body">
 
+                  {{#if failure}}
+                    {{#each app.errors as |error|}}
+                        <div  class="alert alert-dismissable alert-danger" id="alert">
+                            <button type="button" class="close" {{action "close_alert"}}>×</button>
+                          {{error.message}}
+                        </div>
+                    {{/each}}
+                  {{/if}}
+
                   {{#if request}}
-                      <div class="row">
-                          <div class="col-xs-12">
-
-                            {{#each app.errors as |error|}}
-                                <div class="alert alert-dismissable alert-danger">
-                                    <button type="button" class="close" data-dismiss="alert">×</button>
-                                  {{error.message}}
-                                </div>
-
-                            {{else}}
-                                <div class="alert alert-dismissable alert-success">
-                                    <button type="button" class="close" data-dismiss="alert">×</button>
-                                    Your request to deploy the application was successfully sent to the server
-                                </div>
-                            {{/each}}
-
-                          </div>
+                      <div  class="alert alert-dismissable alert-success" id="alert">
+                          <button type="button" class="close" {{action "close_alert"}}>×</button>
+                        {{message}}
                       </div>
                   {{/if}}
 
@@ -73,7 +68,9 @@
                                           <td>{{application.name}}</td>
                                           <td>{{lower-case application.app_type}}</td>
                                           <td>{{application.id}}</td>
-                                          <td>{{app-action action="deploy" deploy=true app=app application-id=application.id instance-id=instance.id}}</td>
+                                          <td>{{app-action action="deploy" deploy=true app=app
+                                          application-id=application.id instance-id=instance.id
+                                          failure=failure request=request message=message}}</td>
                                       </tr>
                                   {{/each}}
 
@@ -86,7 +83,11 @@
 
                   {{else}}
                       <div class="box-body">
-                          There are no available applications to deploy onto the {{instance.name}} Lambda Instance
+                          There are no available applications to deploy onto the
+                        {{#link-to 'lambda-instance' instance.id tooltipContent=instance.id}}
+                          {{instance.name}}
+                        {{/link-to}}
+                          Lambda Instance
                       </div>
                   {{/if}}
                 </div>
