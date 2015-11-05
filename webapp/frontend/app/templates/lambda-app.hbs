@@ -26,12 +26,12 @@
                         <div class="col-xs-12">
 
                           <div class="pad">
-                          This page contains information regarding your lambda application:<strong> {{model.application.name}} </strong><br>
-                          You can view its details, <i>deploy it on a lambda instance</i> or <i>delete</i> it.
-                          <br>On the tab below, you can browse the lambda instance(s)
-                          onto which this application is deployed and <i>start, stop or undeploy</i> it.
+                          This page contains information regarding your Lambda Application:<strong> {{model.application.name}} </strong><br>
+                          You can view its details, <i>deploy</i> it on a Lambda Instance or <i>delete</i> it.
+                          <br>On tab below, you can browse the Lambda Instance(s)
+                          onto which this application has been deployed and <i>start, stop or undeploy</i> it.
                           <br> The visible buttons represent the available
-                          actions you may take depending on the <i>status</i> of the application.
+                          actions you may take depending on the <i>status</i> of the Application.
                           </div>
 
                           <a href="delete-application.html" class="btn  btn-danger pull-right"
@@ -58,7 +58,7 @@
                     <div class="row">
                         <div class="col-md-9 col-sm-8">
                             <div class="pad">
-                                Details of your application
+                                Lambda Application Details
                             </div>
                         </div>
                         <!-- /.col -->
@@ -77,11 +77,11 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <th>Pithos path</th>
+                                    <th>Pithos+ path</th>
                                     <td>{{model.application.path}}/{{model.application.name}}</td>
                                 </tr>
                                 <tr>
-                                    <th>Type</th>
+                                    <th>Application Type</th>
                                     <td>{{lower-case model.application.app_type}}</td>
                                 </tr>
                                 {{#if model.application.description}}
@@ -91,7 +91,7 @@
                                     </tr>
                                 {{/if}}
                                 <tr>
-                                    <th>Status message</th>
+                                    <th>Status</th>
                                     <td>{{lower-case model.application.status_message}}</td>
                                 </tr>
                                 <tr>
@@ -140,7 +140,7 @@
           <div class="col-xs-12">
               <div class="box box-info">
                   <div class="box-header with-border">
-                      <h3 class="box-title"><i class="fa fa-th"></i> Lambda instances the application is deployed on
+                      <h3 class="box-title"><i class="fa fa-th"></i> Lambda instances the application has been deployed onto
                       </h3>
                   </div>
                   <!-- /.box-header -->
@@ -148,7 +148,7 @@
                   <div class="box-body">
                       <div class="row">
                           <div class="col-ms-12 col-xs-12">
-                              Here, you can view all the lambda instance(s) the application is deployed on
+                              List of Lambda Instances the Application has been deployed on
                           </div>
                       </div>
                       <div class="row">
