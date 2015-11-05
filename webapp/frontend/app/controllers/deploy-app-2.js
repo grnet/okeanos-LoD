@@ -1,4 +1,5 @@
-import Ember from "ember";
+import Ember from 'ember';
+import ENV from 'frontend/config/environment';
 
 export default Ember.Controller.extend({
   actions: {
@@ -8,7 +9,7 @@ export default Ember.Controller.extend({
         Ember.run.later((function () {
           _this.set("request", false);
           _this.transitionToRoute('lambda-app', application_id);
-        }), 3000);
+        }), ENV.redirect_delay);
       }
     }
   }
