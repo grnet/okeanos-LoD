@@ -230,6 +230,7 @@
                       <div class="table">
                           <table class="table">
                               <tbody>
+                              {{#tool-tip}}
                                 {{#if (compare model.instance.status_code '==' '0')}}
                                     {{#if application.started}}
                                         <td>
@@ -271,7 +272,8 @@
                                           tool-tip-message=(concat "the lambda instance's status
                                           is " (lower-case model.instance.status_message))}}
                                         </td>
-                                    {{/if}}
+                                {{/if}}
+                              {{/tool-tip}}
                               </tbody>
                           </table>
                       </div>
