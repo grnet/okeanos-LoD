@@ -29,7 +29,7 @@ for creating a VM on ~okeanos.
 
 ```
 curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
-'http://<hostname>/api/vm-parameter-values/'
+'https://<hostname>/api/vm-parameter-values/'
 ```
 
 ### Response body

@@ -30,7 +30,7 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
 In the following example we will request the ~okeanos projects of a specified user.
 
 ```
-curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/user-okeanos-projects/'
+curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'https://<hostname>/api/user-okeanos-projects/'
 ```
 
 ### Response body

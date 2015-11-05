@@ -63,8 +63,8 @@ In this example we are going to list all the available lambda instances.
 The request in curl
 
 ```
-curl -X GET -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
- 'http://<hostname>/api/lambda-instances/'
+curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+ 'https://<hostname>/api/lambda-instances/'
 ```
 
 
@@ -142,7 +142,7 @@ In this example we are going to list a limit of 2 lambda instances, starting fro
 The request in curl
 
 ```
-curl -X GET -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/backend/lambda-instances/?limit=2&offset=3'
+curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'https://<hostname>/api/lambda-instances/?limit=2&offset=3'
 ```
 
 If the authentication token is correct, a sample response is
@@ -152,7 +152,7 @@ If the authentication token is correct, a sample response is
   "pagination": {
     "count":5,
     "next":null,
-    "previous":"http://<hostname>/api/lambda-instances/?limit=2&offset=1",
+    "previous":"https://<hostname>/api/lambda-instances/?limit=2&offset=1",
   },
   "data":[{
       "name":"Lambda Instance 3",

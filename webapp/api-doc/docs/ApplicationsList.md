@@ -60,7 +60,7 @@ The request in curl
 
 ```
 curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
- 'http://<hostname>/api/apps/'
+ 'https://<hostname>/api/apps/'
 ```
 
 
@@ -166,7 +166,7 @@ application.
 The request in url
 
 ```
-curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/apps/?limit=2&offset=3'
+curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'https://<hostname>/api/apps/?limit=2&offset=3'
 ```
 
 If the authentication token is correct, a sample response is
@@ -199,8 +199,8 @@ If the authentication token is correct, a sample response is
   ],
   "pagination": {
     "count": 7,
-    "next": "http://<hostname>/api/apps/?limit=2&offset=5",
-    "previous": "http://<hostname>/api/apps/?limit=2&offset=1"
+    "next": "https://<hostname>/api/apps/?limit=2&offset=5",
+    "previous": "https://<hostname>/api/apps/?limit=2&offset=1"
   },
   "status": {
     "short_description": "Applications.",

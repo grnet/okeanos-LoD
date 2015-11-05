@@ -46,8 +46,8 @@ In this example we are going to get the details of the lambda instance with id 3
 The request in curl
 
 ```
-curl -X GET -H "Authentication:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
- 'http://<hostname>/api/lambda-instances/3f763964-d519-4fd2-916d-b5cfbe3b878b/'
+curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
+ 'https://<hostname>/api/lambda-instances/3f763964-d519-4fd2-916d-b5cfbe3b878b/'
 ```
 
 
@@ -105,7 +105,7 @@ In this example we are going to get only the status details of the lambda instan
 The request in curl
 
 ```
-curl -X GET -H "Authentication: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://<hostname>/api/lambda-instances/3f763964-d519-4fd2-916d-b5cfbe3b878b/?filter=status'
+curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'https://<hostname>/api/lambda-instances/3f763964-d519-4fd2-916d-b5cfbe3b878b/?filter=status'
 ```
 
 

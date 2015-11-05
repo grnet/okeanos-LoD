@@ -34,7 +34,7 @@ In this example we are going to get the count of the applications
 The request in curl
 
 ```
-curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'http://83.212.118.81/api/apps/count/'
+curl -X GET -H "Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" 'https://<hostname>/api/apps/count/'
 ```
 
 

@@ -10,6 +10,7 @@ description: [One line description]
 ### API Endpoints for lambda instances
   - [Create Lambda Instance](CreateLambdaInstance.md)
   - [List Lambda Instances](LambdaInstancesList.md)
+  - [Count Lambda Instances](LambdaInstancesCount.md)
   - [Details of a Lambda Instance](LambdaInstanceDetails.md)
   - [Actions on a Lambda Instance](LambdaInstanceAction.md)
   - [Destroy a Lambda Instance](LambdaInstanceDestroy.md)
@@ -18,6 +19,7 @@ description: [One line description]
   - [Upload an Application](ApplicationUpload.md)
   - [Delete an Application](ApplicationDelete.md)
   - [List Applications](ApplicationsList.md)
+  - [Count Applications](ApplicationsCount.md)
   - [Details of an Application](ApplicationDetails.md)
 
 ### API Endpoints for applications on a specified lambda instance

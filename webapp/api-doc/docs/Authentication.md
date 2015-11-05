@@ -28,7 +28,7 @@ Example of simple validation of an API token
 
 ```
 curl -X GET -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY" \
- 'http://<hostname>/api/authenticate/'
+ 'https://<hostname>/api/authenticate/'
 ```
 
 ### Response body
