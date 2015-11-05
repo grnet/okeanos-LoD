@@ -24,12 +24,12 @@
       - image-configure
 
   - name: Change permissions of private key
-    file: path=/etc/apache2/ssl/server.key mode=600 owner=root group=root
+    file: path=/etc/apache2/ssl/server.key mode=400 owner=root group=root
     tags:
       - image-configure
 
   - name: Change permissions of certificate
-    file: path=/etc/apache2/ssl/server.crt mode=600 owner=root group=root
+    file: path=/etc/apache2/ssl/server.crt mode=644 owner=root group=root
     tags:
       - image-configure
 
