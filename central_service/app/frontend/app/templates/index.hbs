@@ -82,13 +82,67 @@
       <!-- DIRECT CHAT DANGER -->
       <div class="box box-success ">
         <div class="box-header with-border">
-          <h3 class="box-title">Some Text</h3>
+          <h3 class="box-title">Short guide on using the Lambda on Demand service</h3>
         </div><!-- /.box-header -->
         <div class="box-body">
           <div class="row">
             <div class="col-md-12">
               <!-- Conversations are loaded here -->
+              <p>The Lambda on Demand service runs on top of GRNET's ~okeanos IaaS public cloud. Users of the ~okeanos service can use the Lambda on Demand service in order to instantiate and manage their own Lambda Instances (clusters of VMs utilizing the <a href="http://lambda-architecture.net/">λ (lambda) architectural prototype</a>) with ease and comfort.</p>
 
+              <p>The Lambda on Demand service utilizes Apache Flink on a backend YARN/HDFS installation and Apache Kafka as the data ingestion layer.</p>
+
+              <p>In order to use the Lambda on Demand (LoD for brevity) service an ~okeanos user will first need to spin up a LoD service VM using the publicly available Lambda Service VM image file.<i>We recommend using at least 4 CPUs, 4GB of RAM and 40GB disk size for the LoD service VM.</i></p>
+
+              <p><img src="assets/img/service_vm_image.png" alt="service_vm_image.png" width="500"></p>
+
+              <p>Once the LoD service VM is up and running the user may direct his/her browser to the login page available at the following link:</p>
+
+              <p><b>https://&#123;&#123;hostname&#125;&#125;/</b></p>
+
+              <p><i>Note that one will need to replace the "&#123;&#123;hostname&#125;&#125;" above with the hostname given by the ~okeanos service (usually something of the form snf-XXXXXX.vm.okeanos.grnet.gr) for the LoD service VM.</i></p>
+
+              <h1>Lambda Instance Creation</h1>
+
+              <p>The images below will guide you step by step in the creation of your first Lambda Instance.</p>
+
+              <p><img src="assets/img/usage1-6.png" alt="usage1-6.png" width="750"></p>
+
+              <ol>
+                <li>Login the service dashboard using your ~okeanos token</li>
+                <li>Select Instances from the upper left menu of options</li>
+                <li>On the main window select the button "Create New Instance"</li>
+                <li>Fill your Lambda Instance specification in the form provided and select "Submit" when ready</li>
+                <li>Note the status of your new Lambda Instance change while it is being deployed and configured</li>
+                <li>At the end your Lambda Instance will be ready to use</li>
+              </ol>
+
+              <p>On the <a href="https://cyclades.okeanos.grnet.gr/ui/">Cyclades web interface</a> of the ~okeanos service you should now be able to see the new VMs that have been utilized as a full blown Lambda Instance.</p>
+
+              <h1>Lambda Applications</h1>
+
+              <p>One may find an excellent guide on writing Lambda Applications on the landing page of the LoD service. The source code exhibited through that example is available on <a href="https://github.com/grnet/okeanos-LoD/tree/master/example">github</a>.</p>
+
+              <p>In order to upload, deploy and start running a Lambda Application on top of a Lambda Instance the user of the service will go through the workflow shown below, again using the Web UI of the LoD service VM.</p>
+
+              <p><img src="assets/img/usage7-12.png" alt="usage7-12.png" width="750"></p>
+
+              <ol start="7">
+                <li>Select Applications from the upper left menu of options</li>
+                <li>On the main window select the button "Upload an Application"</li>
+                <li>Fill in the form, select the jar file to upload and press "Submit" when ready</li>
+                <li>Note the progress bar as the application uploads</li>
+                <li>Upload is completed</li>
+                <li>On the Applications page select the Application you have just uploaded (click on its name)</li>
+              </ol>
+
+              <p><img src="assets/img/usage13-15.png" alt="usage13-15.png" width="750"></p>
+
+              <ol start="13">
+                <li>Select the "Deploy on a Lambda Instance" button</li>
+                <li>On the list of Lambda Instances available select the one you want to use for running this specific application and</li>
+                <li>Select to start your application once it has been deployed on the Lambda Instance</li>
+              </ol>
             </div><!--col-->
           </div><!--row-->
         </div><!--class="box-body"-->
