@@ -83,7 +83,7 @@
                 <div class="col-sm-6">
                   <select name="okeanos_project" class="form-control">
                     {{#each userOkeanosProjects as |project|}}
-                    <option value={{project.name}}>{{project.name}} (vm: {{project.vm}}, ram: {{normalize-bytes project.ram}}, disk: {{normalize-bytes project.disk}}, floating_ip: {{project.floating_ip}}, private_network: {{project.private_network}})</option>
+                    <option value={{project.name}}>{{project.name}} (VMs: {{project.vm}}, CPUs: {{project.cpu}}, RAM: {{normalize-bytes project.ram}}, Disk: {{normalize-bytes project.disk}}, Floating IPs: {{project.floating_ip}}, Private Networks: {{project.private_network}})</option>
                     {{/each}}
                   </select>
                   <span id="helpBlock" class="help-block">Select a project</span>
@@ -110,7 +110,7 @@
               <div class="form-group col-sm-6">
                 <label for="kafka_topics" class="col-sm-6">Apache Kafka topics:</label>
                 <div class="col-sm-6">
-                  {{input type="text" value=kafkaTopics placeholder="e.g. name1,name2,name3" size="50" class="form-control" required="false"}}
+                  {{input type="text" value=kafkaTopics placeholder="e.g. name1,name2,name3" size="50" class="form-control"}}
                   <span id="helpBlock" class="help-block">Names of Apache Kafka topics</span>
                 </div>  <!--class="col-sm-6"-->
               </div>

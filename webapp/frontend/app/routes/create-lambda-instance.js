@@ -10,7 +10,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
       VMParameterValues: this.store.findAll('vm-parameter-value')
     });
   },
-  afterModel: function(model, transition) {
+  afterModel: function(model) {
     for (var i = 0;i < model.userOkeanosProjects.get('length');i++){
     	if (model.userOkeanosProjects.objectAt(i).get('vm') >= 2 &&
     	    model.userOkeanosProjects.objectAt(i).get('cpu') >= 4 &&
