@@ -24,8 +24,8 @@
             <div class="row">
               <div class="col-md-9 col-sm-8">
                 <div class="pad">
-                From this page you can upload a java application onto the Pithos storage service. Your application will be stored within the folder <i>lambda_applications</i>.
-                Each application you upload may be deployed later onto your lambda-instance(s).
+                From this page you can upload a Java or Scala application on the Pithos+ storage service. Your Application will be stored within the folder <i>lambda_applications</i>.
+                Each application you upload may be deployed later onto your Lambda Instance(s).
                 </div>
               </div><!-- /.col -->
 
@@ -59,17 +59,17 @@
                </select>
 
 
-            <span id="helpBlock" class="help-block">Select the project.</span>
+            <span id="helpBlock" class="help-block">Select an ~okeanos project</span>
 
 
           </div>	<!--class="col-sm-6"-->
           <label for="description" class="col-sm-6">Description:</label>
               <div class="col-sm-6">
 
-          <textarea type="textarea" name="description" class="center-block form-control input-lg" id="description" placeholder="Add a small description for your application" style="font-size: 14px;"></textarea>
+          <textarea type="textarea" name="description" class="center-block form-control input-lg" id="description" placeholder="Add a small description of your application" style="font-size: 14px;"></textarea>
 
 
-          <span id="helpBlock" class="help-block">Add a description for the file.</span>
+          <span id="helpBlock" class="help-block">Add a small description of your application</span>
           </div>
 
           <label for="description" class="col-sm-6">Execution Environment Name:</label>
@@ -78,7 +78,7 @@
           <textarea type="textarea" name="execution_environment_name" class="center-block form-control input-lg" id="execution_environment_name" style="font-size: 14px;" placeholder="Add the name used for the Apache Flink Execution Environment"></textarea>
 
 
-          <span id="helpBlock" class="help-block">Add the name of the Execution Environment.</span>
+          <span id="helpBlock" class="help-block">Add the name used for the Apache Flink Execution Environment</span>
 
 
           </div>	<!--class="col-sm-6"-->
@@ -92,8 +92,8 @@
                     <option value="streaming" selected>streaming</option>
                   </select>
 
-              <span id="helpBlock" class="help-block">Select the type of the application.<br>
-              The type you select, will define your application as streaming or batch in order to later deploy and execute it appropriately within your lambda-instance(s).</span>
+              <span id="helpBlock" class="help-block">Select the type of your Application.<br>
+              The type you select, will define your Application as streaming or batch in order to later deploy and execute it appropriately within your Lambda Instance(s).</span>
               </div><!--class="col-sm-6"-->
            </div><!--class="form-group col-sm-6"-->
 
@@ -114,7 +114,7 @@
 
     {{#if wrongExt}}
       <div class="alert alert-danger col-sm-6 col-sm-offset-3">
-        File extension error.We only support file with <strong>jar</strong> extension for upload.
+        File extension error. Only <strong>jar</strong> files may be uploaded
       </div>
     {{/if}}
 

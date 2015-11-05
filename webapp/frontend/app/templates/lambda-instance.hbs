@@ -83,7 +83,7 @@
           <div class="row">
             <div class="col-md-9 col-sm-8">
               <div class="pad">
-                Details of your lambda Instance.
+                Details for this Lambda Instance.
               </div>
             </div><!-- /.col -->
           </div><!-- /.row -->
@@ -119,27 +119,27 @@
                     {{/if}}
                   </tr>
                   <tr>
-                    <th>Number of master node cpus</th>
+                    <th>Number of CPUs on master node</th>
                     <td>{{model.instance.vcpus_master}}</td>
                   </tr>
                   <tr>
-                    <th>Number of each slave node cpus</th>
+                    <th>Number of CPUs on each slave node</th>
                     <td>{{model.instance.vcpus_slave}}</td>
                   </tr>
                   <tr>
-                    <th>Size of master node RAM</th>
+                    <th>Size of RAM on master node</th>
                     <td>{{model.instance.ram_master}}MB</td>
                   </tr>
                   <tr>
-                    <th>Size of each slave node RAM</th>
+                    <th>Size of RAM on each slave node</th>
                     <td>{{model.instance.ram_slave}}MB</td>
                   </tr>
                   <tr>
-                    <th>Size of master node HDD</th>
+                    <th>Size of disk (HDD) on master node</th>
                     <td>{{model.instance.disk_master}}GB</td>
                   </tr>
                   <tr>
-                    <th>Size of each slave node HDD</th>
+                    <th>Size of disk (HDD) on each slave node</th>
                     <td>{{model.instance.disk_slave}}GB</td>
                   </tr>
                   <tr>
@@ -153,7 +153,7 @@
                   </tr>
                   {{/if}}
                   <tr>
-                    <th>Instance status message</th>
+                    <th>Instance status</th>
                     <td>{{model.instance.status_message}}</td>
                   </tr>
                   <tr>
@@ -201,7 +201,7 @@
         <div class="box-body">
           <div class=“row”>
             <div class="col-xs-12">
-              These are the Applications that are currently deployed on the current Lambda Instance.
+              List of Applications currently deployed on this Lambda Instance.
             </div>
           </div>
           <div class=“row”>
