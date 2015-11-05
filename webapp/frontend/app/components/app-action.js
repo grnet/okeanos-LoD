@@ -6,6 +6,9 @@ export default Ember.Component.extend({
   message: "",
   actions: {
     start(app) {
+      if (this.get('disabled')) {
+        return false;
+      }
       //send request to start application
       var _this = this;
       app.set('application_id', this.get("application-id"));
@@ -23,6 +26,9 @@ export default Ember.Component.extend({
       return false;
     },
     stop(app) {
+      if (this.get('disabled')) {
+        return false;
+      }
       //send request to stop application
       var _this = this;
       app.set('application_id', this.get("application-id"));
@@ -54,6 +60,9 @@ export default Ember.Component.extend({
       return false;
     },
     withdraw(app) {
+      if (this.get('disabled')) {
+        return false;
+      }
       var _this = this;
       //send request to withdraw application
       app.set('application_id', this.get("application-id"));
