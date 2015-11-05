@@ -106,11 +106,13 @@ def authenticate(request):
     # If something is wrong with the given token, authenticate credentials will throw an exception
     # which will be correctly handled by the exception handler.
     authenticator = KamakiTokenAuthentication()
-    authenticator.authenticate_credentials(auth_token)
+    user = authenticator.authenticate_credentials(auth_token)[0]
 
     status_code = status.HTTP_200_OK
     return Response({"status": status_code,
-                     "result": "Success"}, status=status_code)
+                     "result": "Success",
+                     "data": {"name": user.name}},
+                    status=status_code)
 
 
 class UserPublicKeysView(APIView):

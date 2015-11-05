@@ -16,6 +16,7 @@ class User(models.Model):
     uuid = models.CharField("uuid", null=False, blank=False,
                             unique=True, default="", max_length=255,
                             help_text="Unique user id asign by Astakos")
+    name = models.CharField("name", max_length=200, default="", null=True, blank=True)
 
     def __unicode__(self):
         info = "User id: " + str(self.id)
