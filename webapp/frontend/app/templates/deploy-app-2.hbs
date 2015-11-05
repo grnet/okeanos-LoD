@@ -83,7 +83,11 @@
 
                   {{else}}
                       <div class="box-body">
-                          There are no available applications to deploy onto the {{instance.name}} Lambda Instance
+                          There are no available applications to deploy onto the
+                        {{#link-to 'lambda-instance' instance.id tooltipContent=instance.id}}
+                          {{instance.name}}
+                        {{/link-to}}
+                          Lambda Instance
                       </div>
                   {{/if}}
                 </div>
