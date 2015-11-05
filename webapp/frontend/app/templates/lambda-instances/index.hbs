@@ -1,145 +1,199 @@
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-          <h1>
-            Dashboard
-            <small>Lambda Instances Overview</small>
-          </h1>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <h1>
+    Dashboard
+    <small>Lambda Instances Overview</small>
+  </h1>
 
-        </section>
+</section>
 
-        <!-- Main content -->
-       <section class="content">
-       	  <div class="row">
-       	   <div class="col-xs-12">
-       	  	  <div class="box box-primary">
-                <div class="box-header with-border">
-                  <h3 class="box-title">Lambda Instances Usage</h3>
-                  <div class="box-tools pull-right">
-                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                    <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                  </div>
-                </div><!-- /.box-header -->
-                <div class="box-body no-padding">
-                  <div class="row">
-                    <div class="col-md-9 col-sm-8">
-                      <div class="pad">
-                          <p>Your Lambda Instances in numbers</p>
-                      </div>
-                    </div><!-- /.col -->
-                    <div class="col-md-3 col-sm-4">
-				<div class="small-box bg-blue">
-                <div class="inner">
-                  <h3>{{model.length}}</h3>
-                  <p>Lambda Instances</p>
-                </div>
-                <div class="icon">
-                  <i class="fa fa-laptop"></i>
-                </div>
-
-              </div>
-
-                    </div><!-- /.col -->
-                  </div><!-- /.row -->
-                </div><!-- /.box-body -->
-              </div><!--box box-primary-->
-            </div><!--col-xs-12-->
-       	  </div>
-
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+   <div class="col-xs-12">
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title">Lambda Instances</h3>
+          <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+          </div>
+        </div><!-- /.box-header -->
+        <div class="box-body no-padding">
           <div class="row">
-            <div class="col-xs-12">
-              <div class="box">
-                <div class="box-header">
-                  <h3 class="box-title">List of Lambda Instances</h3>
-                  <div class="box-tools">
-                    {{#link-to 'create-lambda-instance'}}
-                        <a class="btn btn-primary btn-sm" title="Create New Instance" alt="Create New Instance">
-                            <i class="fa fa-laptop"></i> Create New Instance</a>
-                    {{/link-to}}
-                  </div><!--box-tools-->
-                </div><!-- /.box-header -->
-                <div class="box-body">
-                 <div class="row">
-          		  <div class="col-xs-12">
-                  <table  class="table table-bordered table-hover table-responsive">
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+            <div class="col-md-9 col-sm-8">
+              <div class="pad">
+                  <p>Your Lambda Instances in numbers</p>
+              </div>
+            </div><!-- /.col -->
+            <div class="col-md-3 col-sm-4">
+<div class="small-box bg-blue">
+        <div class="inner">
+          <h3>{{model.length}}</h3>
+          <p>Lambda Instances</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-laptop"></i>
+        </div>
 
-                      </tr>
-                    </thead>
+      </div>
+
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div><!-- /.box-body -->
+      </div><!--box box-primary-->
+    </div><!--col-xs-12-->
+  </div>
+
+  {{#if failure}}
+      {{#each instance_action.errors as |error|}}
+            <div  class="alert alert-dismissable alert-danger" id="alert">
+              <button type="button" class="close" {{action "close_alert"}}>×</button>
+              {{error.message}}
+            </div>
+      {{/each}}
+  {{/if}}
+  {{#if request}}
+        <div  class="alert alert-dismissable alert-success" id="alert">
+          <button type="button" class="close" {{action "close_alert"}}>×</button>
+          {{message}}
+        </div>
+  {{/if}}
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">List of Lambda Instances</h3>
+          <div class="box-tools">
+            {{#link-to 'create-lambda-instance'}}
+                <a class="btn btn-primary btn-sm" title="Create New Instance" alt="Create New Instance">
+                    <i class="fa fa-laptop"></i> Create New Instance</a>
+            {{/link-to}}
+          </div><!--box-tools-->
+        </div><!-- /.box-header -->
+        <div class="box-body">
+         <div class="row">
+        <div class="col-xs-12">
+          <table  class="table table-bordered table-hover table-responsive">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Actions</th>
+
+              </tr>
+            </thead>
+            <tbody>
+             <!-- <tr>
+                <td>1</td>
+                <td>My Lambda Instance</td>
+                <td>
+      <a class="btn btn-social-icon btn-bitbucket" title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i></a>
+      <a class="btn btn-social-icon btn-google" title="Delete" alt="Delete"><i class="fa fa-close"></i></a>
+                </td>
+
+
+              </tr> -->
+              {{#each pagedContent as |lambda-instance|}}
+              <tr>
+                <td>
+                  {{#link-to 'lambda-instance' lambda-instance.id
+                  tooltipContent=(concat "<center>" lambda-instance.id "</center>")}}
+                    {{lambda-instance.name}}
+                  {{/link-to}}
+                </td>
+                <td><span>{{lambda-instance.status_detail}}</span></td>
+                <td>
+                  <table class="table">
                     <tbody>
-                     <!-- <tr>
-                        <td>1</td>
-                        <td>My Lambda Instance</td>
+                      <td>
+                        {{#link-to 'lambda-instance' lambda-instance.id}}
+                          <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
+                        {{/link-to}}
+                      </td>
+                      <td>{{delete-lambda-instance lambdaInstance=lambda-instance}}</td>
+                        {{#if (compare lambda-instance.status_code '==' '0')}}
+                        {{#tool-tip}}
                         <td>
-							<a class="btn btn-social-icon btn-bitbucket" title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i></a>
-							<a class="btn btn-social-icon btn-google" title="Delete" alt="Delete"><i class="fa fa-close"></i></a>
+                          {{instance-action start=true xs=true disabled=true status_message=lambda-instance.status_message}}
                         </td>
-
-
-                      </tr> -->
-                      {{#each pagedContent as |lambda-instance|}}
-                      <tr>
+                        {{/tool-tip}}
                         <td>
-                          {{#link-to 'lambda-instance' lambda-instance.id
-                          tooltipContent=(concat "<center>" lambda-instance.id "</center>")}}
-                            {{lambda-instance.name}}
+                          {{instance-action apps=apps xs=true stop=true instance=instance_action failure=failure instance-id=lambda-instance.id request=request message=message action="start_stop"}}
+                        </td>
+                        <td>
+                          {{#link-to "deploy-app-2" lambda-instance.id}}
+                              <button class="btn btn-primary btn-xs"
+                                      style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
+                                  Deploy an application
+                              </button>
                           {{/link-to}}
                         </td>
-                        <td><span>{{lambda-instance.status_detail}}</span></td>
+                        {{else if (compare lambda-instance.status_code '==' '1')}}
+                          {{#tool-tip}}
+                            <td>
+                              {{instance-action stop=true xs=true disabled=true status_message=lambda-instance.status_message}}
+                            </td>
+                          {{/tool-tip}}
+                          <td>
+                            {{instance-action start=true xs=true instance=instance_action instance-id=lambda-instance.id failure=failure request=request message=message action="start_stop"}}
+                          </td>
                         <td>
-                          <table class="table">
-                            <tbody>
-                              <td>
-                                {{#link-to 'lambda-instance' lambda-instance.id}}
-                                  <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
-                                {{/link-to}}
-                              </td>
-                              <td>
-                                {{#if (compare lambda-instance.status_code '==' '0')}}
-                                  {{#link-to "deploy-app-2" lambda-instance.id}}
-                                      <button class="btn btn-primary btn-xs"
-                                              style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
-                                          Deploy an application
-                                      </button>
-                                  {{/link-to}}
-                                {{else}}
-                                  {{#tool-tip}}
-                                          <button class="btn btn-primary btn-xs disabled  has-tooltip"
-                                                  data-tooltip-content="<center>Cannot deploy an application, while lambda instance
-                                                  status is {{lower-case lambda-instance.status_message}}!</center>"
-                                                  style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
-                                        Deploy an application
-                                    </button>
-                                  {{/tool-tip}}
-                                {{/if}}
-                              </td>
-                              <td>{{delete-lambda-instance lambdaInstance=lambda-instance}}</td>
-                            </tbody>
-                          </table>
+                          {{#tool-tip}}
+                              <button class="btn btn-primary btn-xs disabled  has-tooltip"
+                                            data-tooltip-content="<center>Cannot deploy an application, while lambda instance
+                                            status is {{lower-case lambda-instance.status_message}}!</center>"
+                                            style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
+                                  Deploy an application
+                              </button>
+                          {{/tool-tip}}
                         </td>
-                      </tr>
-                      {{else}}
-                        No lambda instances under ownership.
-                      {{/each}}
-
+                        {{else}}
+                        <td>
+                        {{#tool-tip}}
+                          {{instance-action stop=true xs=true disabled=true status_message=lambda-instance.status_message}}
+                        {{/tool-tip}}
+                        </td>
+                        <td>
+                        {{#tool-tip}}
+                          {{instance-action start=true xs=true disabled=true status_message=lambda-instance.status_message}}
+                          {{/tool-tip}}
+                        </td>
+                        <td>
+                          {{#tool-tip}}
+                                    <button class="btn btn-primary btn-xs disabled  has-tooltip"
+                                            data-tooltip-content="<center>Cannot deploy an application, while lambda instance
+                                            status is {{lower-case lambda-instance.status_message}}!</center>"
+                                            style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
+                                  Deploy an application
+                              </button>
+                            {{/tool-tip}}
+                          </td>
+                        {{/if}}
                     </tbody>
-                </table>
-			</div><!--col-xs-12-->
-        </div><!--row-->
-        <div class="row">
-        	<div class="col-sm-6">
-        		<div>Showing {{firstOfCurrentPage}} to {{lastOfCurrentPage}} of {{model.length}} entries</div>
-        	</div>
-        	<div class="col-sm-6">
-				{{page-numbers content=pagedContent currentPage=page totalPages=totalPages showFL=false}}
-            </div>
-        </div><!--row-->
+                  </table>
+                </td>
+              </tr>
+              {{else}}
+                No lambda instances under ownership.
+              {{/each}}
 
-                  </div><!--box-body-->
-        </div><!--box-->
-        	 </div><!--col-xs-12-->
-        </div><!--row-->
-        </section><!-- /.content -->
+            </tbody>
+        </table>
+</div><!--col-xs-12-->
+</div><!--row-->
+<div class="row">
+  <div class="col-sm-6">
+    <div>Showing {{firstOfCurrentPage}} to {{lastOfCurrentPage}} of {{model.length}} entries</div>
+  </div>
+  <div class="col-sm-6">
+{{page-numbers content=pagedContent currentPage=page totalPages=totalPages showFL=false}}
+    </div>
+</div><!--row-->
+
+          </div><!--box-body-->
+</div><!--box-->
+   </div><!--col-xs-12-->
+</div><!--row-->
+</section><!-- /.content -->

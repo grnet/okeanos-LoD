@@ -70,9 +70,6 @@
                 {{else if (compare model.instance.status_code '==' '1')}}
                   {{instance-action stop=true disabled=true status_message=model.instance.status_message}}
                   {{instance-action start=true instance=model.instance_action instance-id=model.instance.id failure=failure request=request message=message action="start_stop"}}
-                {{else if (compare model.instance.status_code '==' '9')}}
-                  {{instance-action start=true disabled=true status_message=model.instance.status_message}}
-                  {{instance-action apps=model.apps stop=true instance=model.instance_action instance-id=model.instance.id failure=failure request=request message=message action="start_stop"}}
                 {{else}}
                   {{instance-action start=true disabled=true status_message=model.instance.status_message}}
                   {{instance-action stop=true disabled=true status_message=model.instance.status_message}}
@@ -178,16 +175,16 @@
 
 {{#if app_failure}}
     {{#each model.app.errors as |error|}}
-          <div  class="alert alert-dismissable alert-danger" id="alert">
-            <button type="button" class="close" {{action "close_alert"}}>×</button>
+          <div  class="alert alert-dismissable alert-danger" id="app_alert">
+            <button type="button" class="close" {{action "close_app_alert"}}>×</button>
             {{error.message}}
           </div>
     {{/each}}
 {{/if}}
 
   {{#if app_request}}
-        <div  class="alert alert-dismissable alert-success" id="alert">
-          <button type="button" class="close" {{action "close_alert"}}>×</button>
+        <div  class="alert alert-dismissable alert-success" id="app_alert">
+          <button type="button" class="close" {{action "close_app_alert"}}>×</button>
           {{message}}
         </div>
   {{/if}}
@@ -230,50 +227,68 @@
                       <div class="table">
                           <table class="table">
                               <tbody>
-                              {{#tool-tip}}
                                 {{#if (compare model.instance.status_code '==' '0')}}
                                     {{#if application.started}}
                                         <td>
+                                          {{#tool-tip}}
                                           {{app-action stop=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop"}}
+                                        {{/tool-tip}}
                                         </td>
                                         <td>
+                                          {{#tool-tip}}
                                           {{app-action start=true disabled=true
                                           tool-tip-message="it is started!"}}
+                                          {{/tool-tip}}
                                         </td>
                                         <td>
+                                          {{#tool-tip}}
                                           {{app-action withdraw=true disabled=true
                                           tool-tip-message="it is started!"}}
+                                          {{/tool-tip}}
                                         </td>
                                     {{else}}
                                       <td>
+                                        {{#tool-tip}}
                                           {{app-action stop=true disabled=true
                                           tool-tip-message="it is already stopped!"}}
+                                          {{/tool-tip}}
                                       </td>
                                         <td>
+                                        {{#tool-tip}}
                                           {{app-action start=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop"}}
+                                        {{/tool-tip}}
                                         </td>
                                         <td>
+                                      {{#tool-tip}}
                                           {{app-action withdraw=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="withdraw"}}
+                                      {{/tool-tip}}
                                         </td>
                                     {{/if}}
                                 {{else}}
                                         <td>
+                                        {{#tool-tip}}
                                           {{app-action stop=true disabled=true
                                           tool-tip-message=(concat "the lambda instance's status
                                           is " (lower-case model.instance.status_message))}}
+                                        {{/tool-tip}}
                                         </td>
+
                                         <td>
+                                          {{#tool-tip}}
                                           {{app-action start=true disabled=true
                                           tool-tip-message=(concat "the lambda instance's status
                                           is " (lower-case model.instance.status_message))}}
+                                          {{/tool-tip}}
                                         </td>
+
                                         <td>
+                                          {{#tool-tip}}
                                           {{app-action withdraw=true disabled=true
                                           tool-tip-message=(concat "the lambda instance's status
                                           is " (lower-case model.instance.status_message))}}
+                                          {{/tool-tip}}
                                         </td>
                                 {{/if}}
-                              {{/tool-tip}}
                               </tbody>
                           </table>
                       </div>

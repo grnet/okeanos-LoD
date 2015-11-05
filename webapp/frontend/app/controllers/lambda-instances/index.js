@@ -22,4 +22,19 @@ export default Ember.ArrayController.extend({
 
   totalPagesBinding: "pagedContent.totalPages",
 
+  actions: {
+    start_stop: function()
+    {
+      var _this = this;
+      Ember.run.later((function () {
+        _this.set("request", false);
+      }), 4000);
+    },
+    close_alert: function()
+    {
+      var alert = document.getElementById('alert');
+      alert.hidden=true;
+    },
+  },
+
 });
