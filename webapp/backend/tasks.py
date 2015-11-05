@@ -126,7 +126,6 @@ def create_lambda_instance(lambda_info, auth_token):
     specs = lambda_info.data
     specs_json = json.dumps(specs)
     instance_uuid = create_lambda_instance.request.id
-    use_images = False
     ansible_tags = None
 
     # Create an event to create the new Lambda Instance on the database.
@@ -145,12 +144,9 @@ def create_lambda_instance(lambda_info, auth_token):
     if specs.get('public_key_name'):
         pub_keys = get_named_keys(auth_token, names=specs['public_key_name'])
 
-    if use_images:
-        master_image_id = 'ef4d0aec-896a-4df1-80f5-b7c31b475499'
-        slave_image_id = '3ac53ab3-4d3c-4fb9-8816-525bdd9ab975'
-    else:
-        master_image_id = None
-        slave_image_id = None
+
+    master_image_id = settings.MASTER_IMAGE_ID
+    slave_image_id = settings.SLAVE_IMAGE_ID
 
     try:
         ansible_manager, provisioner_response = \
@@ -190,7 +186,7 @@ def create_lambda_instance(lambda_info, auth_token):
                                      specs=lambda_info.data,
                                      provisioner_response=provisioner_response)
 
-    if use_images:
+    if master_image_id and slave_image_id:
         ansible_tags = ['common-configure']
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'initialize.yml',
                                                           only_tags=ansible_tags)
@@ -210,7 +206,7 @@ def create_lambda_instance(lambda_info, auth_token):
             set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
                                                         LambdaInstance.INIT_DONE, "")
 
-    if use_images:
+    if master_image_id and slave_image_id:
         ansible_tags = ['common-configure', 'image-configure']
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'common-install.yml',
                                                           only_tags=ansible_tags)
@@ -230,7 +226,7 @@ def create_lambda_instance(lambda_info, auth_token):
             set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
                                                         LambdaInstance.COMMONS_INSTALLED, "")
 
-    if use_images:
+    if master_image_id and slave_image_id:
         ansible_tags = ['image-configure']
     ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'hadoop-install.yml',
                                                           only_tags=ansible_tags)
