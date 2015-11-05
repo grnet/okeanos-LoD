@@ -143,6 +143,15 @@
                 <li>On the list of Lambda Instances available select the one you want to use for running this specific application and</li>
                 <li>Select to start your application once it has been deployed on the Lambda Instance</li>
               </ol>
+
+              <h1>Notes and advisories</h1>
+
+              <p>Each LoD Service VM a user instantiates ships with a self signed certificate key pair. We strongly recommend users of the LoD Service VM to replace the self signed key pair with one they may obtain from a Certificate Authority they trust. The files that should be replaced are <code>/etc/apache2/ssl/server.key</code> (private key) and <code>/etc/apache2/ssl/server.crt</code> (public certificate) respectively. Once the change is applied the apache web service should be restarted in order for the changes to take effect:</p>
+
+              <pre>
+# service apache2 restart
+              </pre>
+
             </div><!--col-->
           </div><!--row-->
         </div><!--class="box-body"-->
