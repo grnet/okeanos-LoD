@@ -55,7 +55,7 @@
 		Allow from all
 	</Directory>
 
-	Header always set Access-Control-Allow-Origin: "https://{{ ansible_hostname }}.vm.okeanos.grnet.gr:4201"
+	Header always set Access-Control-Allow-Origin: "https://{{ ansible_hostname }}.vm.okeanos.grnet.gr:443"
 	Header always set Access-Control-Allow-Credentials: true
 	Header always set Access-Control-Allow-Methods: "GET, POST, DELETE, OPTIONS"
 	Header always set Access-Control-Allow-Headers "Authorization"
