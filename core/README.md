@@ -70,10 +70,23 @@ Note that you may retrieve your ~okeanos API token, after logging into the servi
 ## Usage
 
 
-To create a lambda instance, one must run `python lambda_instance_manager.py` from within the `core/fokia` directory. To change the default settings (one master instance and one slave instance) one has to edit the `lambda_instance_manager.py` script prior to executing it.
+To create a lambda instance, one must execute:
+```
+python lambda_instance_manager.py --project-name {{~okeanos project name}}
+```
 
-**Note:** The intended use described above is **only** for when run from the service vm.
-For development purposes, uncomment the `script_path` commented out and import `os` and `inspect` libs.
+from within the `core/fokia` directory. To change the default settings (one master and one slave VM) use the following command line flags:
+
+```
+  --master-name MASTER_NAME    Name of Flink master VM [default: lambda-master]
+  --slaves SLAVES              Number of Flink slaves [default: 1]
+  --vcpus_master VCPUS_MASTER  Number of CPUs on Flink master [default: 4]
+  --vcpus_slave VCPUS_SLAVE    Number of CPUs on Flink slave(s) [default: 4]
+  --ram_master RAM_MASTER      Size of RAM on Flink master (in MB) [default: 4096MB]
+  --ram_slave RAM_SLAVE        Size of RAM on Flink slave(s) (in MB) [default: 4096MB]
+  --disk_master DISK_MASTER    Size of disk on Flink master (in GB) [default: 40GB]
+  --disk_slave DISK_SLAVE      Size of disk on Flink slave(s) (in GB) [default: 40GB]
+```
 
 
 ## Testing
