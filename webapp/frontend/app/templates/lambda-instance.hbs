@@ -178,6 +178,15 @@
             {{#if (compare (lambda-instance-state model.instance.status_message) "===" "BUILDING")}}
             <i class="fa fa-circle text-warning "></i>
             {{/if}}
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STARTING")}}
+            <i class="fa fa-circle text-warning "></i>
+            {{/if}}
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STOPPING")}}
+            <i class="fa fa-circle text-warning "></i>
+            {{/if}}
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "DESTROYING")}}
+            <i class="fa fa-circle text-warning "></i>
+            {{/if}}
             {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STOPPED")}}
             <i class="fa fa-circle text-danger "></i>
             {{/if}}
@@ -185,7 +194,7 @@
             <i class="fa fa-circle text-danger "></i>
             {{/if}}
             {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STARTED")}}
-            <i class="fa fa-circle text-running "></i>
+            <i class="fa fa-circle text-success "></i>
             {{/if}}
             {{lambda-instance-state model.instance.status_message}}
           </span>
@@ -197,7 +206,27 @@
             <ul class="timeline">
               <!-- timeline time label -->
               <li class="time-label">
+                {{#if (compare (lambda-instance-state model.instance.status_message) "===" "BUILDING")}}
                 <span class="bg-orange">Status: {{lambda-instance-state model.instance.status_message}}</span>
+                {{/if}}
+                {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STARTING")}}
+                <span class="bg-orange">Status: {{lambda-instance-state model.instance.status_message}}</span>
+                {{/if}}
+                {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STOPPING")}}
+                <span class="bg-orange">Status: {{lambda-instance-state model.instance.status_message}}</span>
+                {{/if}}
+                {{#if (compare (lambda-instance-state model.instance.status_message) "===" "DESTROYING")}}
+                <span class="bg-orange">Status: {{lambda-instance-state model.instance.status_message}}</span>
+                {{/if}}
+                {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STOPPED")}}
+                <span class="bg-red">Status: {{lambda-instance-state model.instance.status_message}}</span>
+                {{/if}}
+                {{#if (compare (lambda-instance-state model.instance.status_message) "===" "FAILED")}}
+                <span class="bg-red">Status: {{lambda-instance-state model.instance.status_message}}</span>
+                {{/if}}
+                {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STARTED")}}
+                <span class="bg-green">Status: {{lambda-instance-state model.instance.status_message}}</span>
+                {{/if}}
               </li>
               <li>
                 <i class="fa fa-clock-o bg-gray"></i>
@@ -212,6 +241,15 @@
           <strong><i class="fa fa-file-text-o margin-r-5"></i> Notes</strong>
             {{#if (compare (lambda-instance-state model.instance.status_message) "===" "BUILDING")}}
             <p>Your lambda instance is being built. This might take a while...</p>
+            {{/if}}
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STARTING")}}
+            <p>Your lambda instance is being started! Please wait...</p>
+            {{/if}}
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STOPPING")}}
+            <p>Your lambda instance is being stopped! Please wait...</p>
+            {{/if}}
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "DESTROYING")}}
+            <p>Your lambda instance is being destroyed! Please wait...</p>
             {{/if}}
             {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STOPPED")}}
             <p>Your lambda instance has been stopped. You need to start it in order to run an application.</p>

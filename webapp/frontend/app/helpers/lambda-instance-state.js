@@ -17,9 +17,6 @@ export default Ember.Helper.helper(function(parameters) {
     case "STOPPED":
       return "STOPPED";
     case "PENDING":
-    case "STARTING":
-    case "STOPPING":
-    case "DESTROYING":
     case "CLUSTER_CREATED":
     case "INIT_DONE":
     case "COMMONS_INSTALLED":
@@ -27,5 +24,9 @@ export default Ember.Helper.helper(function(parameters) {
     case "KAFKA_INSTALLED":
     case "FLINK_INSTALLED":
       return "BUILDING";
+    case "STOPPING":
+    case "STARTING":
+    case "DESTROYING":
+      return status_message;
   }
 });
