@@ -54,7 +54,7 @@ export default Ember.Controller.extend({
             _this.set("success_delete", true);
             Ember.run.later((function () {
               _this.set("success_delete", false);
-              _this.transitionToRoute('lambda-apps');
+              _this.transitionToRoute('dashboard');
             }), 3000);
           },
           statusCode: {
