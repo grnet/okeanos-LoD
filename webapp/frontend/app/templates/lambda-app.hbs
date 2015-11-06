@@ -1,14 +1,29 @@
 <!-- Content Header (Page header) -->
-<section class="content-header">
-    <h1>
-        Dashboard
-        <small>Lambda Application Details</small>
-    </h1>
-</section>
 
 
 <!-- Main content -->
 <section class="content">
+
+  <section class="content-header">
+      <h1>
+          Dashboard
+          <small>Lambda Application Details</small>
+      </h1>
+  </section>
+
+  {{#if failed_delete}}
+      <div  class="alert alert-dismissable alert-danger" id="alert">
+        <button type="button" class="close" {{action "close_alert"}}>×</button>
+        {{message}}
+      </div>
+  {{/if}}
+  {{#if success_delete}}
+      <div  class="alert alert-dismissable alert-success" id="alert">
+        <button type="button" class="close" {{action "close_alert"}}>×</button>
+        {{message}}
+      </div>
+  {{/if}}
+
     <!-- TOP DATA -->
     <div class="row">
         <div class="col-xs-12">
@@ -20,6 +35,7 @@
                         <small>ID: {{model.application.id}}</small>
                     </div>
                 </div>
+
                 <!-- /.box-header -->
                 <div class="box-body">
                     <div class="row ">
@@ -34,8 +50,7 @@
                           actions you may take depending on the <i>status</i> of the Application.
                           </div>
 
-                          <a href="delete-application.html" class="btn  btn-danger pull-right"
-                               style="margin-right: 15px;"><i class="fa fa-close"></i> Delete</a>
+                          <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right" {{action "delete_app" model.application.id}}>Delete</button>
                           {{#if (compare model.application.status_code '==' '0')}}
                             {{#link-to 'deploy-app-1' model.application.id}}
                                 <button class="btn btn-primary pull-right"

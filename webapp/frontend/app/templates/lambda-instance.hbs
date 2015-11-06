@@ -23,6 +23,18 @@
           {{message}}
         </div>
   {{/if}}
+  {{#if failed_delete}}
+      <div  class="alert alert-dismissable alert-danger" id="alert">
+        <button type="button" class="close" {{action "close_alert"}}>×</button>
+        {{message}}
+      </div>
+  {{/if}}
+  {{#if success_delete}}
+      <div  class="alert alert-dismissable alert-success" id="alert">
+        <button type="button" class="close" {{action "close_alert"}}>×</button>
+        {{message}}
+      </div>
+  {{/if}}
 
   <!-- TOP DATA -->
   <div class="row">
@@ -45,7 +57,8 @@
               actions you may take depending on the <i>status</i> of the lambda instance.
               </div>
 
-              <a href="delete-instance.html"  class="btn  btn-danger pull-right" style="margin-right: 15px;"><i class="fa fa-close"></i> Delete</a>
+
+            <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right" {{action "delete_instance" model.instance.id}}>Delete</button>
               {{#if (compare model.instance.status_code '==' '0')}}
                 {{#link-to 'deploy-app-2' model.instance.id}}
                   <button class="btn btn-primary pull-right"
