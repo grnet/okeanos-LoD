@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import pagedArray from 'ember-cli-pagination/computed/paged-array';
+import ENV from 'frontend/config/environment';
 
 export default Ember.ArrayController.extend({
   queryParams: ["page", "perPage"],
@@ -28,7 +29,7 @@ export default Ember.ArrayController.extend({
       var _this = this;
       Ember.run.later((function () {
         _this.set("request", false);
-      }), 4000);
+      }), ENV.message_dismiss);
     },
     close_alert: function()
     {

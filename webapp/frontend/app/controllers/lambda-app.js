@@ -1,4 +1,5 @@
 import Ember from "ember";
+import ENV from 'frontend/config/environment';
 
 export default Ember.Controller.extend({
   failure: false,
@@ -9,14 +10,14 @@ export default Ember.Controller.extend({
       Ember.run.later((function () {
         _this.store.unloadAll('lambda-instance');
         _this.set("request", false);
-      }), 2000);
+      }), ENV.message_dismiss);
     },
     start_stop: function()
     {
       var _this = this;
       Ember.run.later((function () {
         _this.set("request", false);
-      }), 4000);
+      }), ENV.message_dismiss);
     },
     close_alert: function()
     {

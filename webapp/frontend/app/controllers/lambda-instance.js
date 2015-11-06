@@ -1,4 +1,5 @@
 import Ember from "ember";
+import ENV from 'frontend/config/environment';
 
 export default Ember.Controller.extend({
   actions: {
@@ -18,7 +19,7 @@ export default Ember.Controller.extend({
       Ember.run.later((function () {
         _this.set("request", false);
         _this.set("app_request", false);
-      }), 4000);
+      }), ENV.message_dismiss);
     },
     withdraw: function()
     {
@@ -27,7 +28,7 @@ export default Ember.Controller.extend({
         _this.store.unloadAll('lambda-app');
         _this.set("request", false);
         _this.set("app_request", false);
-      }), 3000);
+      }), ENV.message_dismiss);
     },
   }
 });
