@@ -8,6 +8,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
     this._super(transition);
     this.store.unloadAll('instance-action');
     this.store.unloadAll('lambda-instance');
+    this.store.unloadAll('lambda-app');
   },
 
   model: function(params) {
