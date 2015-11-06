@@ -45,33 +45,33 @@
     </div><!--col-xs-12-->
   </div>
 
-  {{#if failure}}
-      {{#each instance_action.errors as |error|}}
-            <div  class="alert alert-dismissable alert-danger" id="alert">
-              <button type="button" class="close" {{action "close_alert"}}>×</button>
-              {{error.message}}
-            </div>
-      {{/each}}
-  {{/if}}
-  {{#if request}}
+    {{#if failure}}
+        {{#each instance_action.errors as |error|}}
+              <div  class="alert alert-dismissable alert-danger" id="alert">
+                <button type="button" class="close" {{action "close_alert"}}>×</button>
+                {{error.message}}
+              </div>
+        {{/each}}
+    {{/if}}
+    {{#if request}}
+          <div  class="alert alert-dismissable alert-success" id="alert">
+            <button type="button" class="close" {{action "close_alert"}}>×</button>
+            {{message}}
+          </div>
+    {{/if}}
+    {{#if failed_delete}}
+        <div  class="alert alert-dismissable alert-danger" id="alert">
+          <button type="button" class="close" {{action "close_alert"}}>×</button>
+          {{message}}
+        </div>
+    {{/if}}
+
+    {{#if success_delete}}
         <div  class="alert alert-dismissable alert-success" id="alert">
           <button type="button" class="close" {{action "close_alert"}}>×</button>
           {{message}}
         </div>
-  {{/if}}
-          {{#if failed_delete}}
-              <div  class="alert alert-dismissable alert-danger" id="alert">
-                <button type="button" class="close" {{action "close_alert"}}>×</button>
-                {{message}}
-              </div>
-          {{/if}}
-
-          {{#if success_delete}}
-              <div  class="alert alert-dismissable alert-success" id="alert">
-                <button type="button" class="close" {{action "close_alert"}}>×</button>
-                {{message}}
-              </div>
-          {{/if}}
+    {{/if}}
 
 
   <div class="row">
@@ -126,7 +126,9 @@
                           <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
                         {{/link-to}}
                       </td>
-                      <td>{{delete-lambda-instance lambdaInstance=lambda-instance}}</td>
+                        <td>
+                          <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_instance" lambda-instance.id}}>Delete</button>
+                        </td>
                         {{#if (compare lambda-instance.status_code '==' '0')}}
                         {{#tool-tip}}
                         <td>
@@ -185,8 +187,6 @@
                             {{/tool-tip}}
                           </td>
                         {{/if}}
-                              <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_instance" lambda-instance.id}}>Delete</button>
-                            </td>
                     </tbody>
                   </table>
                 </td>

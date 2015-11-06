@@ -27,6 +27,7 @@ export default Ember.ArrayController.extend({
   totalPagesBinding: "pagedContent.totalPages",
 
   actions: {
+
     start_stop: function()
     {
       var _this = this;
@@ -34,14 +35,7 @@ export default Ember.ArrayController.extend({
         _this.set("request", false);
       }), 4000);
     },
-    close_alert: function()
-    {
-      var alert = document.getElementById('alert');
-      alert.hidden=true;
-    },
-  },
 
-  actions:{
     delete_instance: function(instance_id) {
       if (confirm("Are you sure you want to delete this lambda instance?")) {
         var _this = this;
@@ -75,6 +69,7 @@ export default Ember.ArrayController.extend({
         });
       }
     },
+    
     close_alert: function()
     {
       var alert = document.getElementById('alert');

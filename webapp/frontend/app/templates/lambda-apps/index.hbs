@@ -116,9 +116,6 @@
                   {{/link-to}}
                 </td>
                   <td>
-                    {{delete-lambda-app lambdaApp=lambda-application}}
-                  </td>
-                  <td>
                   {{#if (compare lambda-application.status_code '==' '0')}}
                     {{#link-to 'deploy-app-1' lambda-application.id}}
                         <button class="btn btn-primary btn-xs"
