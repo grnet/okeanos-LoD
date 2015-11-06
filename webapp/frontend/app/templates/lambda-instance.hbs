@@ -211,15 +211,19 @@
               <li class="time-label">
                 {{#if (compare (lambda-instance-state model.instance.status_message) "===" "BUILDING")}}
                 <span class="bg-orange">Status: {{lambda-instance-state model.instance.status_message}}</span>
+                <div class="spinner-loader" style="position: absolute;top:0;bottom: 0;left: 15%;right: 0;margin: auto;"></div>
                 {{/if}}
                 {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STARTING")}}
                 <span class="bg-orange">Status: {{lambda-instance-state model.instance.status_message}}</span>
+                <div class="spinner-loader" style="position: absolute;top:0;bottom: 0;left: 15%;right: 0;margin: auto;"></div>
                 {{/if}}
                 {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STOPPING")}}
                 <span class="bg-orange">Status: {{lambda-instance-state model.instance.status_message}}</span>
+                <div class="spinner-loader" style="position: absolute;top:0;bottom: 0;left: 15%;right: 0;margin: auto;"></div>
                 {{/if}}
                 {{#if (compare (lambda-instance-state model.instance.status_message) "===" "DESTROYING")}}
                 <span class="bg-orange">Status: {{lambda-instance-state model.instance.status_message}}</span>
+                <div class="spinner-loader" style="position: absolute;top:0;bottom: 0;left: 15%;right: 0;margin: auto;"></div>
                 {{/if}}
                 {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STOPPED")}}
                 <span class="bg-red">Status: {{lambda-instance-state model.instance.status_message}}</span>
