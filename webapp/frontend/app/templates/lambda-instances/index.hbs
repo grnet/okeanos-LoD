@@ -136,7 +136,7 @@
                         </td>
                         {{/tool-tip}}
                         <td>
-                          {{instance-action apps=apps xs=true stop=true instance=instance_action failure=failure instance-id=lambda-instance.id request=request message=message action="start_stop"}}
+                          {{instance-action apps=apps xs=true stop=true started_app=lambda-instance.running_app instance=instance_action failure=failure instance-id=lambda-instance.id request=request message=message action="start_stop"}}
                         </td>
                         <td>
                           {{#link-to "deploy-app-2" lambda-instance.id}}
@@ -153,7 +153,7 @@
                             </td>
                           {{/tool-tip}}
                           <td>
-                            {{instance-action start=true xs=true instance=instance_action instance-id=lambda-instance.id failure=failure request=request message=message action="start_stop"}}
+                            {{instance-action start=true xs=true check_apps=false instance=instance_action instance-id=lambda-instance.id failure=failure request=request message=message action="start_stop"}}
                           </td>
                         <td>
                           {{#tool-tip}}

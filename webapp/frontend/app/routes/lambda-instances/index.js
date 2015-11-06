@@ -8,7 +8,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
     this._super(transition);
     this.store.unloadAll('instance-action');
     this.store.unloadAll('lambda-instance');
-    this.store.unloadAll('lambda-app');
   },
 
   model: function(params) {
@@ -19,7 +18,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
     var hash = {
       instances: this.store.findAll('lambda-instance', params, { reload: true }),
-      apps: this.store.peekAll('lambda-app'),
     };
     if (this.store.peekAll('instance-action').get('length') === 0) {
       hash.instance_action = this.store.createRecord('instance-action', {});
@@ -31,7 +29,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
   setupController: function(controller, model) {
       controller.set('content', model.instances);
       controller.set('instance_action', model.instance_action);
-      controller.set('apps', model.apps);
   },
 
   deactivate: function () {
