@@ -72,6 +72,7 @@
             </div>
             <!--box-tools-->
         </div><!-- /.box-header -->
+        {{#if model.length}}
         <div class="box-body">
          <div class="row">
         <div class="col-xs-12">
@@ -135,8 +136,6 @@
                   {{/if}}
                   </td>
               </tr>
-              {{else}}
-                No lambda applications under ownership.
               {{/each}}
 
             </tbody>
@@ -153,6 +152,9 @@
 </div><!--row-->
 
           </div><!--box-body-->
+        {{else}}
+            <div class="pad">No lambda applications under ownership.</div>
+        {{/if}}
 </div><!--box-->
    </div><!--col-xs-12-->
 </div><!--row-->

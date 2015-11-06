@@ -1,4 +1,5 @@
 import Ember from "ember";
+import ENV from 'frontend/config/environment';
 
 export default Ember.Controller.extend({
   session: Ember.inject.service('session'),
@@ -23,7 +24,7 @@ export default Ember.Controller.extend({
       Ember.run.later((function () {
         _this.set("request", false);
         _this.set("app_request", false);
-      }), 4000);
+      }), ENV.message_dismiss);
     },
     withdraw: function()
     {
@@ -32,7 +33,7 @@ export default Ember.Controller.extend({
         _this.store.unloadAll('lambda-app');
         _this.set("request", false);
         _this.set("app_request", false);
-      }), 3000);
+      }), ENV.message_dismiss);
     },
     delete_instance: function(instance_id) {
       if (confirm("Are you sure you want to delete this lambda instance?")) {

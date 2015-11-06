@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import pagedArray from 'ember-cli-pagination/computed/paged-array';
+import ENV from 'frontend/config/environment';
 
 export default Ember.ArrayController.extend({
   success_delete: false,
@@ -33,7 +34,7 @@ export default Ember.ArrayController.extend({
       var _this = this;
       Ember.run.later((function () {
         _this.set("request", false);
-      }), 4000);
+      }), ENV.message_dismiss);
     },
 
     delete_instance: function(instance_id) {

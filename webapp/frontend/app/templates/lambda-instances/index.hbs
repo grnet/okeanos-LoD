@@ -86,6 +86,7 @@
             {{/link-to}}
           </div><!--box-tools-->
         </div><!-- /.box-header -->
+        {{#if model.length}}
         <div class="box-body">
          <div class="row">
         <div class="col-xs-12">
@@ -191,8 +192,6 @@
                   </table>
                 </td>
               </tr>
-              {{else}}
-                No lambda instances under ownership.
               {{/each}}
 
             </tbody>
@@ -209,6 +208,9 @@
 </div><!--row-->
 
           </div><!--box-body-->
+        {{else}}
+            <div class="pad">No lambda instances under ownership.</div>
+        {{/if}}
 </div><!--box-->
    </div><!--col-xs-12-->
 </div><!--row-->
