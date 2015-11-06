@@ -62,14 +62,19 @@ export default Ember.Controller.extend({
             }), 3000);
           },
           statusCode: {
-            500: function() {
+            404: function(xhr) {
               _this.set('failed_delete', true);
-              _this.set('message', "Your request to delete the instance was rejected.Please try again later when the status of the instance has changed.");
+              _this.set('message', xhr.responseJSON.errors[0].detail);
+            },
+            409: function(xhr) {
+              _this.set('failed_delete', true);
+              _this.set('message', xhr.responseJSON.errors[0].detail);
             }
           },
-          error: function(response) {
+          error: function(xhr) {
+            var error = 'Error ' + xhr.status + '.Your request to delete the instance was rejected.Please try again later or after the status of the instance has changed.'
             _this.set('failed_delete', true);
-            _this.set('message', response.responseJSON.errors[0].detail);
+            _this.set('message', error);
           }
         });
       }
