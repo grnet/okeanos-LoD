@@ -30,13 +30,20 @@ export default Ember.Component.extend({
         return false;
       }
       var _this = this;
-      //send request to stop instance
-      apps.forEach(function(item) {
-      if (item.get("started"))
+      if (this.get('check_apps'))
       {
-        _this.set("app_started", true);
+        apps.forEach(function(item) {
+        if (item.get("started"))
+        {
+          _this.set("app_started", true);
+        }
+        });
       }
-      });
+      else if (this.get("started_app"))
+      {
+        this.set("app_started", true);
+      }
+      //send request to stop instance
       if (this.get("app_started")){
         if (confirm("There is a deployed application currently running on this lambda-instance.\nAre you sure you want to stop this lambda instance?")) {
             instance.set('lambda_instance_id', this.get("instance-id"));
