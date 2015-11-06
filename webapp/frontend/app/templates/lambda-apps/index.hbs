@@ -45,6 +45,20 @@
     </div><!--col-xs-12-->
   </div>
 
+  {{#if failed_delete}}
+      <div  class="alert alert-dismissable alert-danger" id="alert">
+        <button type="button" class="close" {{action "close_alert"}}>×</button>
+        {{message}}
+      </div>
+  {{/if}}
+
+  {{#if success_delete}}
+      <div  class="alert alert-dismissable alert-success" id="alert">
+        <button type="button" class="close" {{action "close_alert"}}>×</button>
+        {{message}}
+      </div>
+  {{/if}}
+
   <div class="row">
     <div class="col-xs-12">
       <div class="box">
@@ -93,6 +107,9 @@
                 <td>{{lambda-application.status_detail}}</td>
                 <td>{{lower-case lambda-application.app_type}}</td>
 
+                <td>
+                  <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_app" lambda-application.id}}>Delete</button>
+                </td>
                 <td>
                   {{#link-to 'lambda-app' lambda-application.id}}
                   <button class="btn btn-info btn-xs"><i class="fa fa-file-code-o"></i> Details</button>

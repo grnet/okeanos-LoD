@@ -59,6 +59,20 @@
           {{message}}
         </div>
   {{/if}}
+          {{#if failed_delete}}
+              <div  class="alert alert-dismissable alert-danger" id="alert">
+                <button type="button" class="close" {{action "close_alert"}}>×</button>
+                {{message}}
+              </div>
+          {{/if}}
+
+          {{#if success_delete}}
+              <div  class="alert alert-dismissable alert-success" id="alert">
+                <button type="button" class="close" {{action "close_alert"}}>×</button>
+                {{message}}
+              </div>
+          {{/if}}
+
 
   <div class="row">
     <div class="col-xs-12">
@@ -171,6 +185,8 @@
                             {{/tool-tip}}
                           </td>
                         {{/if}}
+                              <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_instance" lambda-instance.id}}>Delete</button>
+                            </td>
                     </tbody>
                   </table>
                 </td>

@@ -2,6 +2,11 @@ import Ember from 'ember';
 import pagedArray from 'ember-cli-pagination/computed/paged-array';
 
 export default Ember.ArrayController.extend({
+  success_delete: false,
+  failed_delete: false,
+  message: '',
+  error: false,
+  session: Ember.inject.service('session'),
   queryParams: ["page", "perPage"],
 
   page: 1,
@@ -21,4 +26,48 @@ export default Ember.ArrayController.extend({
   pagedContent: pagedArray('content', {pageBinding: "page", perPageBinding: "perPage"}),
 
   totalPagesBinding: "pagedContent.totalPages",
+
+  actions:{
+    delete_app: function(app_id) {
+      if (confirm("Are you sure you want to delete this application?")) {
+        var _this = this;
+
+        var host = this.store.adapterFor('upload-app').get('host'),
+        namespace = this.store.adapterFor('upload-app').namespace,
+        postUrl = [ host, namespace].join('/');
+        postUrl = postUrl + app_id + '/';
+        const headers = {};
+
+        this.get('session').authorize('authorizer:django', (headerName, headerValue) => {
+        headers[headerName] = headerValue;
+        });
+
+        Ember.$.ajax({
+          url: postUrl,
+          headers: headers,
+          method: 'DELETE',
+          processData: false,
+          contentType: false,
+          success: function(){
+            _this.set('success_delete', true);
+            _this.set('message', 'Your request to delete the application was successfully sent to the server.');
+            _this.store.unloadAll('lambda-app');
+            Ember.run.later((function () {
+              _this.set("success_delete", false);
+            }), 4000);
+          },
+          error: function(response) {
+            _this.set('failed_delete', true);
+            _this.set('message', response.responseJSON.errors[0].detail);
+          }
+        });
+      }
+    },
+    close_alert: function()
+    {
+      var alert = document.getElementById('alert');
+      alert.hidden=true;
+      this.set('failed_delete', false);
+    }
+  },
 });
