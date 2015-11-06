@@ -67,7 +67,7 @@ export default Ember.ArrayController.extend({
             }
           },
           error: function(xhr) {
-            var error = 'Error ' + xhr.status + '.Your request to delete the application was rejected.Please try again later or after the status of the instance has changed.'
+            var error = 'Error ' + xhr.status + '. Your request to delete the application was rejected. Please try again later or after the status of the instance has changed.';
             _this.set('failed_delete', true);
             _this.set('message', error);
           }
