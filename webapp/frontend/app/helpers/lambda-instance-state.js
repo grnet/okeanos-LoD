@@ -6,6 +6,7 @@ export default Ember.Helper.helper(function(parameters) {
     case "STARTED":
       return "STARTED";
     case "DESTROYED":
+      return "DESTROYED";
     case "FAILED":
     case "CLUSTER_FAILED":
     case "INIT_FAILED":

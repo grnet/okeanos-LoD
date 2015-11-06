@@ -193,6 +193,9 @@
             {{#if (compare (lambda-instance-state model.instance.status_message) "===" "FAILED")}}
             <i class="fa fa-circle text-danger "></i>
             {{/if}}
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "DESTROYED")}}
+            <i class="fa fa-circle text-danger "></i>
+            {{/if}}
             {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STARTED")}}
             <i class="fa fa-circle text-success "></i>
             {{/if}}
@@ -222,6 +225,9 @@
                 <span class="bg-red">Status: {{lambda-instance-state model.instance.status_message}}</span>
                 {{/if}}
                 {{#if (compare (lambda-instance-state model.instance.status_message) "===" "FAILED")}}
+                <span class="bg-red">Status: {{lambda-instance-state model.instance.status_message}}</span>
+                {{/if}}
+                {{#if (compare (lambda-instance-state model.instance.status_message) "===" "DESTROYED")}}
                 <span class="bg-red">Status: {{lambda-instance-state model.instance.status_message}}</span>
                 {{/if}}
                 {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STARTED")}}
@@ -256,6 +262,9 @@
             {{/if}}
             {{#if (compare (lambda-instance-state model.instance.status_message) "===" "FAILED")}}
             <p>Your lambda instance has failed. You can delete it an try creating a new one.</p>
+            {{/if}}
+            {{#if (compare (lambda-instance-state model.instance.status_message) "===" "DESTROYED")}}
+            <p>Your lambda instance has been destroyed. There is nothing else you can do with it!</p>
             {{/if}}
             {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STARTED")}}
             <p>Your lambda instance is up and running. You can deploy an run application on it.</p>
