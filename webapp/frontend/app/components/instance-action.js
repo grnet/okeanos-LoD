@@ -39,7 +39,7 @@ export default Ember.Component.extend({
         }
         });
       }
-      else (this.get("started_app"))
+      else if (this.get("started_app"))
       {
         this.set("app_started", true);
       }
