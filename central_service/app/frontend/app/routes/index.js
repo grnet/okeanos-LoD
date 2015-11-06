@@ -1,11 +1,18 @@
 import Ember from "ember";
 
 export default Ember.Route.extend({
-  model() {
+  model: function() {
+  	this.poll = Ember.run.later(this, function () {
+	    this.model();
+	}, 100);
+
     return Ember.RSVP.hash({
-      lambdaInstancesCount: this.store.findRecord('lambda-instances-count'),
-      applicationsCount: this.store.findRecord('applications-count'),
-      usersCount: this.store.findRecord('users-count')
+      lambdaInstancesCount: this.store.findAll('lambda-instances-count'),
+      applicationsCount: this.store.findAll('applications-count'),
+      usersCount: this.store.findAll('users-count')
     });
+  },
+  deactivate: function () {
+    Ember.run.cancel(this.poll);
   }
 });

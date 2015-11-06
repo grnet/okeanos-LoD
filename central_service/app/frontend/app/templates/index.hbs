@@ -42,7 +42,9 @@
             <div class="col-md-4 col-sm-4">
               <div class="small-box bg-blue">
                 <div class="inner">
-                  <h3>{{model.lambdaInstancesCount.count}}</h3>
+                  {{#each model.lambdaInstancesCount as |lambdaInstancesCount|}}
+                  <h3>{{lambdaInstancesCount.count}}</h3>
+                  {{/each}}
                   <p>Lambda Instances</p>
                 </div>
                 <div class="icon">
@@ -53,7 +55,9 @@
             <div class="col-md-4 col-sm-4">
               <div class="small-box bg-orange">
                 <div class="inner">
-                  <h3>{{model.applicationsCount.count}}</h3>
+                  {{#each model.applicationsCount as |applicationsCount|}}
+                  <h3>{{applicationsCount.count}}</h3>
+                  {{/each}}
                   <p>Applications Uploaded</p>
                 </div>
                 <div class="icon">
@@ -64,7 +68,9 @@
             <div class="col-md-4 col-sm-4">
               <div class="small-box bg-green">
                 <div class="inner">
-                  <h3>{{model.usersCount.count}}</h3>
+                  {{#each model.usersCount as |usersCount|}}
+                  <h3>{{usersCount.count}}</h3>
+                  {{/each}}
                   <p>Subscribed Users</p>
                 </div>
                 <div class="icon">
