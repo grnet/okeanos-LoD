@@ -61,6 +61,12 @@ export default Ember.Controller.extend({
               _this.transitionToRoute('lambda-instances');
             }), 3000);
           },
+          statusCode: {
+            500: function() {
+              _this.set('failed_delete', true);
+              _this.set('message', "Your request to delete the instance was rejected.Please try again later when the status of the instance has changed.");
+            }
+          },
           error: function(response) {
             _this.set('failed_delete', true);
             _this.set('message', response.responseJSON.errors[0].detail);

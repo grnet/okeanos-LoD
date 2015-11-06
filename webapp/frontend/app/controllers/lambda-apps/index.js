@@ -56,6 +56,12 @@ export default Ember.ArrayController.extend({
               _this.set("success_delete", false);
             }), 4000);
           },
+          statusCode: {
+            500: function() {
+              _this.set('failed_delete', true);
+              _this.set('message', "Your request to delete the application was rejected.Please try again later when the status of the instance has changed.");
+            }
+          },
           error: function(response) {
             _this.set('failed_delete', true);
             _this.set('message', response.responseJSON.errors[0].detail);
