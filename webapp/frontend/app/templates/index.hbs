@@ -23,7 +23,7 @@
       <!-- lockscreen credentials (contains the form) -->
       <form class="lockscreen-credentials" {{action "authenticate" on="submit"}}>
         <div class="input-group">
-          {{input value=token placeholder="token" type="password" class="form-control" id="token"}}
+          {{input value=token placeholder="~okeanos token" type="password" class="form-control" id="token"}}
           <div class="input-group-btn">
             <button class="btn"><i class="fa fa-arrow-right text-muted"></i></button>
           </div>
@@ -32,7 +32,7 @@
 
     </div><!-- /.lockscreen-item -->
       <div class="help-block text-center">
-        Enter your token to retrieve your session
+        Enter your ~okeanos token to retrieve your session
       </div>
              {{#if loginFailed}}
         <div id="id_alert_wrongtoken" class="alert alert-dismissable alert-danger">
