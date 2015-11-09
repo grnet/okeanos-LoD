@@ -125,8 +125,16 @@
     </div><!--col-->
     </div><!--row-->
 
-  <button type="submit" class="btn btn-primary" id="submit-button">Submit</button>
+    {{#unless submitDisabled}}
+      <button type="submit" class="btn btn-primary" id="submit-button">Submit</button>
+    {{else}}
+      {{#tool-tip}}
+          <button type="submit" class="btn btn-primary has-tooltip"
+                  data-tooltip-content="<center>An application is already uploading!</center>"
+                  id="submit-button">Submit</button>
+      {{/tool-tip}}
+    {{/unless}}
 
-  </form>
+      </form>
 
   </section><!-- /.content -->
