@@ -82,7 +82,8 @@
                   {{else}}
                       <div class="box-body">
                           There are no started Lambda Instances to deploy the application
-                        {{#link-to 'lambda-app' application.id tooltipContent=application.id}}
+                        {{#link-to 'lambda-app' application.id
+                        tooltipContent=(concat "<center>" application.id "</center>")}}
                           {{application.name}}
                         {{/link-to}}
                           on
