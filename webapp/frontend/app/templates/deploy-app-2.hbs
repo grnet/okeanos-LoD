@@ -84,7 +84,8 @@
                   {{else}}
                       <div class="box-body">
                           There are no available applications to deploy onto the
-                        {{#link-to 'lambda-instance' instance.id tooltipContent=instance.id}}
+                        {{#link-to 'lambda-instance' instance.id
+                        tooltipContent=(concat "<center>" instance.id "</center>")}}
                           {{instance.name}}
                         {{/link-to}}
                           Lambda Instance

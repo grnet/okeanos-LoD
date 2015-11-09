@@ -100,16 +100,7 @@
               </tr>
             </thead>
             <tbody>
-             <!-- <tr>
-                <td>1</td>
-                <td>My Lambda Instance</td>
-                <td>
-      <a class="btn btn-social-icon btn-bitbucket" title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i></a>
-      <a class="btn btn-social-icon btn-google" title="Delete" alt="Delete"><i class="fa fa-close"></i></a>
-                </td>
 
-
-              </tr> -->
               {{#each pagedContent as |lambda-instance|}}
               <tr>
                 <td>
@@ -127,18 +118,17 @@
                           <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
                         {{/link-to}}
                       </td>
-                        <td>
-                          <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_instance" lambda-instance.id}}><i class="fa fa-times"></i> Delete</button>
-                        </td>
+
                         {{#if (compare lambda-instance.status_code '==' '0')}}
+                        <td>
+                          {{#tool-tip}}
+                              {{instance-action start=true xs=true disabled=true status_message=lambda-instance.status_message}}
+                          {{/tool-tip}}
+                        </td>
+
                         <td>
                           {{instance-action apps=apps xs=true stop=true check_apps=false started_app=lambda-instance.running_app instance=instance_action failure=failure instance-id=lambda-instance.id request=request message=message action="start_stop"}}
                         </td>
-                        {{#tool-tip}}
-                        <td>
-                          {{instance-action start=true xs=true disabled=true status_message=lambda-instance.status_message}}
-                        </td>
-                        {{/tool-tip}}
                         <td>
                           {{#link-to "deploy-app-2" lambda-instance.id}}
                               <button class="btn btn-primary btn-xs"
@@ -148,13 +138,13 @@
                           {{/link-to}}
                         </td>
                         {{else if (compare lambda-instance.status_code '==' '1')}}
-                          {{#tool-tip}}
-                            <td>
-                              {{instance-action stop=true xs=true disabled=true status_message=lambda-instance.status_message}}
-                            </td>
-                          {{/tool-tip}}
                           <td>
                             {{instance-action start=true xs=true instance=instance_action instance-id=lambda-instance.id failure=failure request=request message=message action="start_stop"}}
+                          </td>
+                          <td>
+                            {{#tool-tip}}
+                              {{instance-action stop=true xs=true disabled=true status_message=lambda-instance.status_message}}
+                            {{/tool-tip}}
                           </td>
                         <td>
                           {{#tool-tip}}
@@ -168,13 +158,13 @@
                         </td>
                         {{else}}
                         <td>
-                        {{#tool-tip}}
-                          {{instance-action stop=true xs=true disabled=true status_message=lambda-instance.status_message}}
-                        {{/tool-tip}}
+                          {{#tool-tip}}
+                            {{instance-action start=true xs=true disabled=true status_message=lambda-instance.status_message}}
+                          {{/tool-tip}}
                         </td>
                         <td>
-                        {{#tool-tip}}
-                          {{instance-action start=true xs=true disabled=true status_message=lambda-instance.status_message}}
+                          {{#tool-tip}}
+                            {{instance-action stop=true xs=true disabled=true status_message=lambda-instance.status_message}}
                           {{/tool-tip}}
                         </td>
                         <td>
@@ -188,6 +178,9 @@
                             {{/tool-tip}}
                           </td>
                         {{/if}}
+                      <td>
+                          <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_instance" lambda-instance.id}}><i class="fa fa-times"></i> Delete</button>
+                      </td>
                     </tbody>
                   </table>
                 </td>

@@ -162,20 +162,6 @@
                     <td>{{model.instance.public_key_name}}</td>
                   </tr>
                   {{/if}}
-                  <tr>
-                    <th>Instance status</th>
-                    <td>{{model.instance.status_message}}</td>
-                  </tr>
-                  <tr>
-                    <th>Instance status details</th>
-                    <td>{{model.instance.status_detail}}</td>
-                  </tr>
-                  {{#if model.instance.status_failure_message}}
-                  <tr>
-                    <th>Instance failure message</th>
-                    <td>{{model.instance.status_failure_message}}</td>
-                  </tr>
-                  {{/if}}
                 </tbody>
               </table>
             </div><!--col-xs-12-->
@@ -276,6 +262,9 @@
             {{/if}}
             {{#if (compare (lambda-instance-state model.instance.status_message) "===" "FAILED")}}
             <p>Your lambda instance has failed. You can delete it an try creating a new one.</p>
+              {{#if model.instance.status_failure_message}}
+                  <p><b>Reason of failure:</b> {{model.instance.status_failure_message}}</p>
+              {{/if}}
             {{/if}}
             {{#if (compare (lambda-instance-state model.instance.status_message) "===" "DESTROYED")}}
             <p>Your lambda instance has been destroyed. There is nothing else you can do with it!</p>
@@ -352,13 +341,13 @@
                                     {{#if application.started}}
                                         <td>
                                           {{#tool-tip}}
-                                          {{app-action stop=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop"}}
-                                        {{/tool-tip}}
+                                          {{app-action start=true disabled=true
+                                          tool-tip-message="it is started!"}}
+                                          {{/tool-tip}}
                                         </td>
                                         <td>
                                           {{#tool-tip}}
-                                          {{app-action start=true disabled=true
-                                          tool-tip-message="it is started!"}}
+                                            {{app-action stop=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop"}}
                                           {{/tool-tip}}
                                         </td>
                                         <td>
@@ -368,16 +357,16 @@
                                           {{/tool-tip}}
                                         </td>
                                     {{else}}
-                                      <td>
-                                        {{#tool-tip}}
-                                          {{app-action stop=true disabled=true
-                                          tool-tip-message="it is already stopped!"}}
-                                          {{/tool-tip}}
-                                      </td>
                                         <td>
                                         {{#tool-tip}}
                                           {{app-action start=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop"}}
                                         {{/tool-tip}}
+                                        </td>
+                                        <td>
+                                          {{#tool-tip}}
+                                            {{app-action stop=true disabled=true
+                                            tool-tip-message="it is already stopped!"}}
+                                          {{/tool-tip}}
                                         </td>
                                         <td>
                                       {{#tool-tip}}
@@ -387,21 +376,19 @@
                                     {{/if}}
                                 {{else}}
                                         <td>
-                                        {{#tool-tip}}
-                                          {{app-action stop=true disabled=true
-                                          tool-tip-message=(concat "the lambda instance's status
-                                          is " (lower-case model.instance.status_message))}}
-                                        {{/tool-tip}}
-                                        </td>
-
-                                        <td>
                                           {{#tool-tip}}
                                           {{app-action start=true disabled=true
                                           tool-tip-message=(concat "the lambda instance's status
                                           is " (lower-case model.instance.status_message))}}
                                           {{/tool-tip}}
                                         </td>
-
+                                        <td>
+                                          {{#tool-tip}}
+                                            {{app-action stop=true disabled=true
+                                            tool-tip-message=(concat "the lambda instance's status
+                                          is " (lower-case model.instance.status_message))}}
+                                          {{/tool-tip}}
+                                        </td>
                                         <td>
                                           {{#tool-tip}}
                                           {{app-action withdraw=true disabled=true

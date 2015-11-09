@@ -4,6 +4,7 @@ var UploadController = Ember.Controller.extend({
   session: Ember.inject.service('session'),
   wrongExt: false,
   userHasEnteredData: false,
+  submitDisabled: false,
 
   actions : {
     upload: function() {
@@ -53,6 +54,7 @@ var UploadController = Ember.Controller.extend({
           var xhr = new window.XMLHttpRequest();
           _this.set("userHasEnteredData", true);
           submit_button.setAttribute("disabled", "disabled");
+          _this.set("submitDisabled", true);
           //Upload progress
           xhr.upload.addEventListener("progress", function(evt){
             if (evt.lengthComputable) {
@@ -62,6 +64,7 @@ var UploadController = Ember.Controller.extend({
               if (percentComplete === 1)
               {
                 submit_button.removeAttribute("disabled");
+                _this.set("submitDisabled", false);
                 _this.set("userHasEnteredData", false);
               }
             }
