@@ -109,7 +109,7 @@
                 <td>{{lower-case lambda-application.app_type}}</td>
 
                 <td>
-                  <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_app" lambda-application.id}}>Delete</button>
+                  <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_app" lambda-application.id}}><i class="fa fa-times"></i>Delete</button>
                 </td>
                 <td>
                   {{#link-to 'lambda-app' lambda-application.id}}

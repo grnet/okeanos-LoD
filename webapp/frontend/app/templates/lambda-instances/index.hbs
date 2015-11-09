@@ -128,17 +128,17 @@
                         {{/link-to}}
                       </td>
                         <td>
-                          <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_instance" lambda-instance.id}}>Delete</button>
+                          <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_instance" lambda-instance.id}}><i class="fa fa-times"></i>Delete</button>
                         </td>
                         {{#if (compare lambda-instance.status_code '==' '0')}}
+                        <td>
+                          {{instance-action apps=apps xs=true stop=true check_apps=false started_app=lambda-instance.running_app instance=instance_action failure=failure instance-id=lambda-instance.id request=request message=message action="start_stop"}}
+                        </td>
                         {{#tool-tip}}
                         <td>
                           {{instance-action start=true xs=true disabled=true status_message=lambda-instance.status_message}}
                         </td>
                         {{/tool-tip}}
-                        <td>
-                          {{instance-action apps=apps xs=true stop=true check_apps=false started_app=lambda-instance.running_app instance=instance_action failure=failure instance-id=lambda-instance.id request=request message=message action="start_stop"}}
-                        </td>
                         <td>
                           {{#link-to "deploy-app-2" lambda-instance.id}}
                               <button class="btn btn-primary btn-xs"

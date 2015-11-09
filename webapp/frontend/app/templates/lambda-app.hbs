@@ -50,7 +50,7 @@
                           actions you may take depending on the <i>status</i> of the Application.
                           </div>
 
-                          <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right" {{action "delete_app" model.application.id}}>Delete</button>
+                          <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right" {{action "delete_app" model.application.id}}><i class="fa fa-times"></i>Delete</button>
                           {{#if (compare model.application.status_code '==' '0')}}
                             {{#link-to 'deploy-app-1' model.application.id}}
                                 <button class="btn btn-primary pull-right"

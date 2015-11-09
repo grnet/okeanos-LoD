@@ -58,7 +58,7 @@
               </div>
 
 
-            <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right" {{action "delete_instance" model.instance.id}}>Delete</button>
+            <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right" {{action "delete_instance" model.instance.id}}><i class="fa fa-times"></i>Delete</button>
               {{#if (compare model.instance.status_code '==' '0')}}
                 {{#link-to 'deploy-app-2' model.instance.id}}
                   <button class="btn btn-primary pull-right"
@@ -78,14 +78,14 @@
               {{/if}}
               {{#tool-tip}}
                 {{#if (compare model.instance.status_code '==' '0')}}
-                  {{instance-action start=true disabled=true status_message=model.instance.status_message}}
                   {{instance-action apps=model.apps check_apps=true stop=true instance=model.instance_action failure=failure instance-id=model.instance.id request=request message=message action="start_stop"}}
+                  {{instance-action start=true disabled=true status_message=model.instance.status_message}}
                 {{else if (compare model.instance.status_code '==' '1')}}
                   {{instance-action stop=true disabled=true status_message=model.instance.status_message}}
                   {{instance-action start=true instance=model.instance_action instance-id=model.instance.id failure=failure request=request message=message action="start_stop"}}
                 {{else}}
-                  {{instance-action start=true disabled=true status_message=model.instance.status_message}}
                   {{instance-action stop=true disabled=true status_message=model.instance.status_message}}
+                  {{instance-action start=true disabled=true status_message=model.instance.status_message}}
                 {{/if}}
                 {{/tool-tip}}
              </div>
