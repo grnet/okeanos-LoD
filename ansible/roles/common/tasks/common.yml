@@ -18,6 +18,16 @@
     tags:
       - common-configure
 
+  - name: Configure apt proxy
+    lineinfile: destfile="/etc/apt/apt.conf" regexp="^Acquire::http::Proxy"
+                line='Acquire::http::Proxy "{{ proxy_env['http_proxy'] }}";'
+                insertafter=EOF
+                state=present
+                create=yes
+    when: "'slaves' in group_names"
+    tags:
+      - image-configure
+
   - name: Upgrade packages.
     apt: upgrade=dist update_cache=yes
     environment: proxy_env
