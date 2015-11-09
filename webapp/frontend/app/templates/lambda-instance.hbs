@@ -58,7 +58,7 @@
               </div>
 
 
-            <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right" {{action "delete_instance" model.instance.id}}><i class="fa fa-times"></i>Delete</button>
+            <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right" {{action "delete_instance" model.instance.id}}><i class="fa fa-times"></i> Delete</button>
               {{#if (compare model.instance.status_code '==' '0')}}
                 {{#link-to 'deploy-app-2' model.instance.id}}
                   <button class="btn btn-primary pull-right"
