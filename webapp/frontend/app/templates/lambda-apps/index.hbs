@@ -87,16 +87,7 @@
               </tr>
             </thead>
             <tbody>
-             <!-- <tr>
-                <td>1</td>
-                <td>My Application</td>
-                <td>
-      <a class="btn btn-social-icon btn-bitbucket" title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i></a>
-      <a class="btn btn-social-icon btn-google" title="Delete" alt="Delete"><i class="fa fa-close"></i></a>
-                </td>
 
-
-              </tr> -->
               {{#each pagedContent as |lambda-application|}}
               <tr>
                 <td>
@@ -108,9 +99,7 @@
                 <td>{{lambda-application.status_detail}}</td>
                 <td>{{lower-case lambda-application.app_type}}</td>
 
-                <td>
-                  <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_app" lambda-application.id}}><i class="fa fa-times"></i> Delete</button>
-                </td>
+
                 <td>
                   {{#link-to 'lambda-app' lambda-application.id}}
                   <button class="btn btn-info btn-xs"><i class="fa fa-file-code-o"></i> Details</button>
@@ -134,6 +123,9 @@
                         </button>
                     {{/tool-tip}}
                   {{/if}}
+                  </td>
+                  <td>
+                      <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_app" lambda-application.id}}><i class="fa fa-times"></i> Delete</button>
                   </td>
               </tr>
               {{/each}}

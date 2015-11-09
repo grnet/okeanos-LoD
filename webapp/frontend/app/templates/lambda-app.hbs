@@ -209,14 +209,14 @@
                                                               {{#if li.started_app}}
                                                               <td>
                                                               {{#tool-tip}}
-                                                                {{app-action stop=true app=model.app request=request application-id=model.application.id instance-id=li.id failure=failure message=message action="start_stop"}}
-                                                              {{/tool-tip}}
-                                                              </td>
-                                                              <td>
-                                                              {{#tool-tip}}
                                                                 {{app-action start=true disabled=true
                                                                 tool-tip-message="it is started!"}}
                                                               {{/tool-tip}}
+                                                              </td>
+                                                              <td>
+                                                                {{#tool-tip}}
+                                                                  {{app-action stop=true app=model.app request=request application-id=model.application.id instance-id=li.id failure=failure message=message action="start_stop"}}
+                                                                {{/tool-tip}}
                                                               </td>
                                                               <td>
                                                               {{#tool-tip}}
@@ -227,14 +227,14 @@
                                                               {{else}}
                                                               <td>
                                                               {{#tool-tip}}
-                                                                {{app-action stop=true disabled=true
-                                                                tool-tip-message="it is already stopped!"}}
+                                                                {{app-action start=true app=model.app request=request application-id=model.application.id instance-id=li.id failure=failure message=message action="start_stop"}}
                                                               {{/tool-tip}}
                                                               </td>
                                                               <td>
-                                                              {{#tool-tip}}
-                                                                {{app-action start=true app=model.app request=request application-id=model.application.id instance-id=li.id failure=failure message=message action="start_stop"}}
-                                                              {{/tool-tip}}
+                                                                {{#tool-tip}}
+                                                                  {{app-action stop=true disabled=true
+                                                                  tool-tip-message="it is already stopped!"}}
+                                                                {{/tool-tip}}
                                                               </td>
                                                               <td>
                                                               {{#tool-tip}}
@@ -245,17 +245,17 @@
                                                           {{else}}
                                                               <td>
                                                               {{#tool-tip}}
-                                                                {{app-action stop=true disabled=true
+                                                                {{app-action start=true disabled=true
                                                                 tool-tip-message=(concat "the lambda instance's status
                                                                 is " (lower-case li.status_message))}}
                                                               {{/tool-tip}}
                                                               </td>
                                                               <td>
-                                                              {{#tool-tip}}
-                                                                {{app-action start=true disabled=true
-                                                                tool-tip-message=(concat "the lambda instance's status
+                                                                {{#tool-tip}}
+                                                                  {{app-action stop=true disabled=true
+                                                                  tool-tip-message=(concat "the lambda instance's status
                                                                 is " (lower-case li.status_message))}}
-                                                              {{/tool-tip}}
+                                                                {{/tool-tip}}
                                                               </td>
                                                               <td>
                                                               {{#tool-tip}}
