@@ -34,6 +34,16 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
   deactivate: function () {
     Ember.run.cancel(this.poll);
+  },
+
+  actions: {
+    error: function(error) {
+      if (error && error.errors[0].status === 404) {
+        this.deactivate();
+        return this.transitionTo('lambda-instances.index');
+      }
+      return false;
+    }
   }
 
 });

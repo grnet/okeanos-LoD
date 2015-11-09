@@ -5,7 +5,7 @@ export default Ember.Component.extend({
     create(newLambdaInstance) {
       newLambdaInstance.set('instanceName', this.get('instanceName'));
       newLambdaInstance.set('masterName', this.get('masterName'));
-      
+
       newLambdaInstance.set('slaves', this.$("input[name='slaves']")[0].value);
 
       newLambdaInstance.set('projectName', this.$("select[name='okeanos_project']")[0].value);
@@ -25,8 +25,8 @@ export default Ember.Component.extend({
       }
       newLambdaInstance.set('publicKeyName', requestedPublicKeys);
 
-      if (typeof this.get("kafkaTopics") !== 'undefined') {
-        var kafkaTopicsString = this.get("kafkaTopics");
+      var kafkaTopicsString = this.get("kafkaTopics");
+      if (kafkaTopicsString) {
         newLambdaInstance.set('kafkaTopics', kafkaTopicsString.split(','));
       }
 
