@@ -14,7 +14,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
   model: function (params) {
     this.poll = Ember.run.later(this, function () {
       this.model(params).then(function () {
-        this.modelFor('lambda-instance').instance.reload();
       }.bind(this));
     }, ENV.refresh_interval);
 
