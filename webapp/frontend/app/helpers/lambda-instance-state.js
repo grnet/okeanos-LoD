@@ -14,6 +14,7 @@ export default Ember.Helper.helper(function(parameters) {
     case "HADOOP_FAILED":
     case "KAFKA_FAILED":
     case "FLINK_FAILED":
+    case "FLUME_FAILED":
       return "FAILED";
     case "STOPPED":
       return "STOPPED";
@@ -24,6 +25,7 @@ export default Ember.Helper.helper(function(parameters) {
     case "HADOOP_INSTALLED":
     case "KAFKA_INSTALLED":
     case "FLINK_INSTALLED":
+    case "FLUME_INSTALLED":
       return "BUILDING";
     case "STOPPING":
     case "STARTING":
