@@ -93,6 +93,15 @@ autostart=false
 user=flink
 stdout_logfile=/home/flink/supervisord_flink_streaming_logs.log
 
+[program:apache_flume]
+directory={{ flume_home }}
+command=bin/flume-ng agent --conf conf -f conf/flume-conf.properties -n flume_agent
+autostart=false
+user=flume
+stopasgroup=true
+stderr_logfile={{ flume_home }}/supervisord_flume_stderr_logs.log
+stdout_logfile={{ flume_home }}/supervisord_flume_stdout_logs.log
+
 ;[program:theprogramname]
 ;command=/bin/cat              ; the program (relative uses PATH, can take args)
 ;process_name=%(program_name)s ; process_name expr (default %(program_name)s)

@@ -3,5 +3,6 @@ java_home: "/usr"
 hadoop_home: "/usr/local/hadoop"
 kafka_home: "/usr/local/kafka"
 flink_home: "/usr/local/flink"
+flume_home: "/usr/local/flume"
 flink_number_of_task_managers: "{{ groups['slaves']|count }}"
 flink_ram_per_task_manager: 768
