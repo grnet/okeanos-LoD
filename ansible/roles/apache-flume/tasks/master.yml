@@ -1,0 +1,16 @@
+---
+  - name: Download Apache Flume.
+    get_url: url="{{ mirror_url }}/{{ version }}/apache-flume-{{ version }}-bin.tar.gz" dest="{{ download_path }}/apache-flume-{{ version }}-bin.tar.gz"
+    environment: proxy_env
+
+  - name: Uncompress Apache Flume.
+    unarchive: src="{{ download_path }}/apache-flume-{{ version }}-bin.tar.gz" dest="{{ installation_path }}" copy=no owner=flume group=lambda
+
+  - name: Create softlink for Apache Flume.
+    file: src="{{ installation_path }}/apache-flume-{{ version }}-bin" dest="{{ installation_path }}/flume" state=link
+
+  - name: Configure Apache Flume.
+    template: src=flume-conf.properties.j2 dest="{{ installation_path }}/flume/conf/flume-conf.properties" owner=flume group=lambda mode=0644
+
+  - name: Start Apache Flume.
+    supervisorctl: name=apache_flume state=started

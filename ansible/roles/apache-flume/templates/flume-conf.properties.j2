@@ -1,0 +1,38 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+agent.sources = {% for topic in vars["topics"] %} {{ topic }}Source {% endfor %}
+agent.channels = {% for topic in vars["topics"] %} {{ topic }}Channel {% endfor %}
+agent.sinks = {% for topic in vars["topics"] %} {{ topic }}Sink {% endfor %}
+
+{% for topic in vars["topics"] %}
+
+agent.sources.{{ topic }}Source.type = org.apache.flume.source.kafka.KafkaSource
+agent.sources.{{ topic }}Source.zookeeperConnect = master:2181
+agent.sources.{{ topic }}Source.topic = {{ topic }}
+agent.sources.{{ topic }}Source.groupId = flume
+agent.sources.{{ topic }}Source.kafka.consumer.timeout.ms = 100
+agent.sources.{{ topic }}Source.channel = {{ topic }}Channel
+
+agent.channels.{{ topic }}Channel.type = memory
+
+agent.sinks.{{ topic }}Sink.type = hdfs
+agent.sinks.{{ topic }}Sink.hdfs.path = /user/flume/{{ topic }}
+agent.sinks.{{ topic }}Sink.hdfs.fileType = DataStream
+agent.sinks.{{ topic }}Sink.channel = {{ topic }}Channel
+
+{% endfor %}
