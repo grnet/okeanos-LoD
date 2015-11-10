@@ -283,6 +283,24 @@ def create_lambda_instance(lambda_info, auth_token):
             set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
                                                         LambdaInstance.FLINK_INSTALLED, "")
 
+    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'flume-install.yml',
+                                                          only_tags=ansible_tags)
+    check = _check_ansible_result(ansible_result)
+    if check != 'Ansible successful':
+        events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                                status=LambdaInstance.FLUME_FAILED,
+                                                failure_message=check)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.FLUME_FAILED, check)
+        return
+    else:
+        events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
+                                                status=LambdaInstance.FLUME_INSTALLED)
+        central_vm_tasks.\
+            set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
+                                                        LambdaInstance.FLUME_INSTALLED, "")
+
     # Set lambda instance status to started.
     events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
                                             status=LambdaInstance.STARTED)

@@ -159,6 +159,8 @@ class LambdaInstance(models.Model):
     KAFKA_FAILED = "19"
     FLINK_INSTALLED = "20"
     FLINK_FAILED = "21"
+    FLUME_INSTALLED = "22"
+    FLUME_FAILED = "23"
     status_choices = (
         (STARTED, 'STARTED'),
         (STOPPED, 'STOPPED'),
@@ -182,6 +184,8 @@ class LambdaInstance(models.Model):
         (KAFKA_FAILED, 'KAFKA_FAILED'),
         (FLINK_INSTALLED, 'FLINK_INSTALLED'),
         (FLINK_FAILED, 'FLINK_FAILED'),
+        (FLUME_INSTALLED, 'FLUME_INSTALLED'),
+        (FLUME_FAILED, 'FLUME_FAILED')
     )
     status = models.CharField(max_length=10, choices=status_choices, default=PENDING,
                               help_text="The status of this instance.")
