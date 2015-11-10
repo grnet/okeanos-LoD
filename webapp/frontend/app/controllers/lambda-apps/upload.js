@@ -34,7 +34,7 @@ var UploadController = Ember.Controller.extend({
       progress.className = "progress-bar progress-bar-striped active";
       progress_bar.hidden=true;
 
-      var res = this.get("file").split(".");
+      var res = document.getElementById("file").value.split(".");
       var ext = res[res.length-1];
       if (ext !== "jar")
       {
