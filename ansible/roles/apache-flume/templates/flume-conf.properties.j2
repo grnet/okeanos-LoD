@@ -15,9 +15,11 @@
 # specific language governing permissions and limitations
 # under the License.
 
-agent.sources = {% for topic in vars["topics"] %} {{ topic }}Source {% endfor %}
-agent.channels = {% for topic in vars["topics"] %} {{ topic }}Channel {% endfor %}
-agent.sinks = {% for topic in vars["topics"] %} {{ topic }}Sink {% endfor %}
+agent.sources ={% for topic in vars["topics"] %} {{ topic }}Source {% endfor %}
+
+agent.channels ={% for topic in vars["topics"] %} {{ topic }}Channel {% endfor %}
+
+agent.sinks ={% for topic in vars["topics"] %} {{ topic }}Sink {% endfor %}
 
 {% for topic in vars["topics"] %}
 
@@ -26,7 +28,7 @@ agent.sources.{{ topic }}Source.zookeeperConnect = master:2181
 agent.sources.{{ topic }}Source.topic = {{ topic }}
 agent.sources.{{ topic }}Source.groupId = flume
 agent.sources.{{ topic }}Source.kafka.consumer.timeout.ms = 100
-agent.sources.{{ topic }}Source.channel = {{ topic }}Channel
+agent.sources.{{ topic }}Source.channels = {{ topic }}Channel
 
 agent.channels.{{ topic }}Channel.type = memory
 

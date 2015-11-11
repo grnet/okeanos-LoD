@@ -95,12 +95,13 @@ stdout_logfile=/home/flink/supervisord_flink_streaming_logs.log
 
 [program:apache_flume]
 directory={{ flume_home }}
-command=bash bin/flume-ng agent --conf conf -f conf/flume-conf.properties -n flume_agent
+command=bash bin/flume-ng agent --conf conf -f conf/flume-conf.properties -n agent
 autostart=false
 user=flume
 stopasgroup=true
 stderr_logfile=/home/flume/supervisord_flume_stderr_logs.log
 stdout_logfile=/home/flume/supervisord_flume_stdout_logs.log
+environment=JAVA_HOME="/usr",HADOOP_HOME="/usr/local/hadoop",HADOOP_CONF_DIR="/usr/local/hadoop/etc/hadoop/"
 
 ;[program:theprogramname]
 ;command=/bin/cat              ; the program (relative uses PATH, can take args)

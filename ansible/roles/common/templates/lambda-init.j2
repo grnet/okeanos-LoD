@@ -231,7 +231,7 @@ stop(){
 
   # Stop Apache Flume.
   supervisorctl stop apache_flume
-  apache_flume_status=$(supervisorctl status flume_zookeeper | tr -s ' ' | cut -f2 -d' ')
+  apache_flume_status=$(supervisorctl status apache_flume | tr -s ' ' | cut -f2 -d' ')
   if [ "$apache_flume_status" == "STOPPED" ]
   then
     log "Apache Flume has been stopped!"
