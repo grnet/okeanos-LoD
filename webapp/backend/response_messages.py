@@ -52,7 +52,9 @@ class ResponseMessages:
         'KAFKA_INSTALLED': "Apache Kafka has been successfully installed and configured",
         'KAFKA_FAILED': "Apache Kafka installation and configuration have failed",
         'FLINK_INSTALLED': "Apache Flink has been successfully installed and configured",
-        'FLINK_FAILED': "Apache Flink installation and configuration have failed"
+        'FLINK_FAILED': "Apache Flink installation and configuration have failed",
+        'FLUME_INSTALLED': "Apache Flume has been successfully installed and configured",
+        'FLUME_FAILED': "Apache Flume installation and configuration have failed"
     }
 
     application_status_details = {
