@@ -55,7 +55,7 @@
 		Allow from all
 	</Directory>
 
-	SetEnvIf Origin "https://({{ ansible_all_ipv4_addresses[0] }})$" AccessControlAllowOrigin=$0
+	SetEnvIf Origin "https://({{ ansible_default_ipv4.address }})$" AccessControlAllowOrigin=$0
 	Header always set Access-Control-Allow-Origin %{AccessControlAllowOrigin}e env=AccessControlAllowOrigin
 	Header always set Access-Control-Allow-Credentials: true
 	Header always set Access-Control-Allow-Methods: "GET, POST, DELETE, OPTIONS"
