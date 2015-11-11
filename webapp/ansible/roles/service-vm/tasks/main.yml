@@ -44,6 +44,8 @@
 
   - name: Create user fixture
     template: src=users.yaml.j2 dest={{ repository_download_path}}/okeanos-LoD/webapp/backend/fixtures/users.yaml
+    tags: create-user
 
   - name: Load user from fixtures
     django_manage: command=loaddata app_path={{ repository_download_path }}/okeanos-LoD/webapp/ fixtures=users.yaml
+    tags: create-user

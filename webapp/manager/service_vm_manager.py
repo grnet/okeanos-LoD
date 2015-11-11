@@ -37,7 +37,8 @@ class ServiceVMManager(object):
     def service_vm_create(self, vm_name='Service VM',
                           vcpus=4, ram=4096, disk=40,
                           project_name='lambda.grnet.gr',
-                          private_key_path=None, public_key_path=None):
+                          private_key_path=None, public_key_path=None,
+                          only_tags=None, skip_tags=None):
         """
         Creates the service vm and installs the relevant s/w.
         :return: ansible result
@@ -54,7 +55,8 @@ class ServiceVMManager(object):
         self._patch_auth_token_ansible()
         ansible_manager = Manager(hostname, group, private_key_path)
         ansible_result = ansible_manager.run_playbook(
-            playbook_file=os.path.join(ansible_path, 'playbooks', 'setup.yml'))
+            playbook_file=os.path.join(ansible_path, 'playbooks', 'setup.yml'),
+            only_tags=only_tags, skip_tags=skip_tags)
 
         self._clean_up_token_ansible_patch()
         return ansible_result
@@ -122,7 +124,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Lambda service VM provisioning')
     parser.add_argument('--action', type=str, dest='action', required=True,
-                        choices=['create', 'start', 'stop', 'destroy'])
+                        choices=['create', 'start', 'stop', 'destroy', 'image_creation'])
     parser.add_argument('--auth_token', type=str, dest='auth_token', required=False)
     parser.add_argument('--vm_id', type=int, dest='vm_id')
     parser.add_argument('--vm_name', type=str, dest='vm_name', required=False,
@@ -145,6 +147,13 @@ if __name__ == "__main__":
                              project_name=args.project_name,
                              private_key_path=args.private_key_path,
                              public_key_path=args.public_key_path)
+    elif args.action == 'image_creation':
+        sm.service_vm_create(vm_name=args.vm_name,
+                             vcpus=args.vcpus, ram=args.ram, disk=args.disk,
+                             project_name=args.project_name,
+                             private_key_path=args.private_key_path,
+                             public_key_path=args.public_key_path,
+                             skip_tags=['image-configure', 'create-user'])
     elif args.vm_id is None:
         raise ValueError("VM id must be specified")
     else:
