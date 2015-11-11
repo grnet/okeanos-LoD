@@ -4,7 +4,10 @@
     environment: proxy_env
 
   - name: Uncompress Apache Flume.
-    unarchive: src="{{ download_path }}/apache-flume-{{ version }}-bin.tar.gz" dest="{{ installation_path }}" copy=no owner=flume group=lambda
+    unarchive: src="{{ download_path }}/apache-flume-{{ version }}-bin.tar.gz" dest="{{ installation_path }}" copy=no
+
+  - name: Make sure the directory has the right owner and group.
+    file: path="{{ installation_path }}/apache-flume-{{ version }}-bin" owner=flume group=lambda
 
   - name: Create softlink for Apache Flume.
     file: src="{{ installation_path }}/apache-flume-{{ version }}-bin" dest="{{ installation_path }}/flume" state=link
