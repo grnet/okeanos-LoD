@@ -153,8 +153,12 @@
                     <td>{{model.instance.disk_slave}}GB</td>
                   </tr>
                   <tr>
-                      <th>Kafka topics</th>
-                      <td>{{model.instance.kafka_topics}}</td>
+                      <th>Kafka input topics(broker port: 9092)</th>
+                      <td>{{model.instance.kafka_input_topics}}</td>
+                  </tr>
+                  <tr>
+                      <th>Kafka output topics(zookeeper port: 2181)</th>
+                      <td>{{model.instance.kafka_output_topics}}</td>
                   </tr>
                   {{#if model.instance.public_key_name}}
                   <tr>
