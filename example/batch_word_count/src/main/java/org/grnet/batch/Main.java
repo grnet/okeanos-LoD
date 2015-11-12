@@ -32,7 +32,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws Exception {
         // HDFS configuration.
-        String inputHDFSDirectory = "hdfs:///user/flink/input";
+        String inputHDFSDirectory = "hdfs:///user/flume/input";
         String outputHDFSDirectory = "hdfs:///user/flink/output";
 
         // Apache Kafka configuration.
