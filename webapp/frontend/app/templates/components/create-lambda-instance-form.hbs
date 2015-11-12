@@ -79,42 +79,46 @@
               </div>
             </div>
             <div class="row">
-              <div class="form-group col-sm-6">
+              <div class="form-group col-sm-8">
                 <label for="okeanos_project" class="col-sm-6">~okeanos Project (*):</label>
-                <div class="col-sm-6">
                   <select name="okeanos_project" class="form-control">
                     {{#each userOkeanosProjects as |project|}}
                     <option value={{project.name}}>{{project.name}} (VMs: {{project.vm}}, CPUs: {{project.cpu}}, RAM: {{normalize-bytes project.ram}}, Disk: {{normalize-bytes project.disk}}, Floating IPs: {{project.floating_ip}}, Private Networks: {{project.private_network}})</option>
                     {{/each}}
                   </select>
-                  <span id="helpBlock" class="help-block">Select a project</span>
-                </div>	<!--class="col-sm-6"-->
-                <label for="slaves" class="col-sm-6">Number of slaves:</label>
-                <div class="col-sm-6">
-                  <input type="number" min="1" value="2" name="slaves">
-                  <span id="helpBlock" class="help-block">Select the number of slaves</span>
-                </div>	<!--class="col-sm-6"-->
+                <span id="helpBlock" class="help-block">Select a project</span>
               </div>	<!--class="col-sm-6"-->
+              <div class="form-group col-sm-3">
+                <label for="slaves">Number of slaves:</label>
+                  <input type="number" min="1" value="2" name="slaves" class="form-control">
+                  <span id="helpBlock" class="help-block">Select the number of slaves</span>
+              </div>	<!--class="form-group col-sm-3"-->
+            </div>
+            <div class="row">
               <div class="form-group col-sm-6">
-                <label for="public_key_name"  class="col-sm-6">Public SSH keys (*):</label>
-                <div class="col-sm-6">
+                <label for="kafka_topics">Apache Kafka input topics:</label>
+                  {{input type="text" value=kafkaInputTopics placeholder="e.g. name1,name2,name3" size="50" class="form-control"}}
+                  <span id="helpBlock" class="help-block">Names of Apache Kafka input topics</span>
+              </div>
+              <div class="form-group col-sm-6 pull-right">
+                <label for="kafka_topics">Apache Kafka output topics:</label>
+                  {{input type="text" value=kafkaOutputTopics placeholder="e.g. name1,name2,name3" size="50" class="form-control"}}
+                  <span id="helpBlock" class="help-block">Names of Apache Kafka output topics</span>
+              </div>
+            </div><!--row-->
+            <div class="row">
+              <div class="form-group col-sm-3">
+                <label for="public_key_name">Public SSH keys (*):</label>
                   <select required="required" multiple name="public_key_name" class="form-control">
                     {{#each userPublicKeys as |publicKey|}}
                     <option value={{publicKey.name}}>{{publicKey.name}}</option>
                     {{/each}}
                   </select>
-                  <span id="helpBlock" class="help-block">Select the public SSH keys to upload</span>
-                </div><!--class="col-sm-6"-->
-              </div><!--class="form-group col-sm-6"-->
-            </div> <!--row-->
-            <div class="row">
-              <div class="form-group col-sm-6">
-                <label for="kafka_topics" class="col-sm-6">Apache Kafka topics:</label>
-                <div class="col-sm-6">
-                  {{input type="text" value=kafkaTopics placeholder="e.g. name1,name2,name3" size="50" class="form-control"}}
-                  <span id="helpBlock" class="help-block">Names of Apache Kafka topics</span>
-                </div>  <!--class="col-sm-6"-->
               </div>
+              <div class="form-group col-sm-2">
+              <br/>
+                  <span id="helpBlock" class="help-block">Select the public SSH keys to upload to the lamdba instance vms. By selecting ssh keys, you will get access to these vms.</span>
+              </div><!--class="form-group col-sm-6"-->
             </div><!--row-->
           </div><!--box-body-->
         </div><!--box-->

@@ -245,10 +245,12 @@ def create_lambda_instance(lambda_info, auth_token):
             set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
                                                         LambdaInstance.HADOOP_INSTALLED, "")
 
-    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'kafka-install.yml',
-                                                          only_tags=ansible_tags,
-                                                          extra_vars={
-                                                              'topics': specs['kafka_topics']})
+    ansible_result = lambda_instance_manager.\
+        run_playbook(ansible_manager, 'kafka-install.yml', only_tags=ansible_tags,
+                     extra_vars={
+                         'topics': list(set(specs['kafka_input_topics'] +
+                                            specs['kafka_output_topics']))
+                     })
     check = _check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
@@ -283,8 +285,11 @@ def create_lambda_instance(lambda_info, auth_token):
             set_lambda_instance_status_central_vm.delay(auth_token, instance_uuid,
                                                         LambdaInstance.FLINK_INSTALLED, "")
 
-    ansible_result = lambda_instance_manager.run_playbook(ansible_manager, 'flume-install.yml',
-                                                          only_tags=ansible_tags)
+    ansible_result = lambda_instance_manager.\
+        run_playbook(ansible_manager, 'flume-install.yml', only_tags=ansible_tags,
+                     extra_vars={
+                         'topics': list(set(specs['kafka_input_topics']))
+                     })
     check = _check_ansible_result(ansible_result)
     if check != 'Ansible successful':
         events.set_lambda_instance_status.delay(instance_uuid=instance_uuid,
