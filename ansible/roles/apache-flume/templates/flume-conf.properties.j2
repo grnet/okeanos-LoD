@@ -15,13 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-agent.sources ={% for topic in vars["topics"] %} {{ topic }}Source {% endfor %}
+agent.sources ={% for topic in topics %} {{ topic }}Source {% endfor %}
 
-agent.channels ={% for topic in vars["topics"] %} {{ topic }}Channel {% endfor %}
+agent.channels ={% for topic in topics %} {{ topic }}Channel {% endfor %}
 
-agent.sinks ={% for topic in vars["topics"] %} {{ topic }}Sink {% endfor %}
+agent.sinks ={% for topic in topics %} {{ topic }}Sink {% endfor %}
 
-{% for topic in vars["topics"] %}
+{% for topic in topics %}
 
 agent.sources.{{ topic }}Source.type = org.apache.flume.source.kafka.KafkaSource
 agent.sources.{{ topic }}Source.zookeeperConnect = master:2181
