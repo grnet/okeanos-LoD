@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Refresh" content="20; url=/">
+    <!--<meta http-equiv="Refresh" content="20; url=/">-->
     <title>λambda Project</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -40,69 +40,54 @@
             </a>
         </nav>
     </header>
-    <!-- Left side column. contains the logo and sidebar -->
-    <aside class="main-sidebar">
-        <!-- sidebar: style can be found in sidebar.less -->
-        <section class="sidebar">
-            <!-- Sidebar user panel -->
-            <div class="user-panel">
-                <div class="pull-left image">
-                    <img src="files/img/default_blogger.png" class="img-circle" alt="User Image">
-                </div>
-                <div class="pull-left info">
-                    <a href="/"><i class="fa fa-circle text-warning"></i> Initializing</a>
-                </div>
-            </div>
 
-            <!-- sidebar menu: : style can be found in sidebar.less -->
-            <ul class="sidebar-menu">
-                <li class="header">MAIN NAVIGATION</li>
-                <li class="active treeview">
-                    <a href="/">
-                        <i class="fa fa-dashboard"></i> <span>Home</span>
-                    </a>
-                </li>
-            </ul>
-        </section>
-        <!-- /.sidebar -->
-    </aside>
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                Lambda Service VM
-                <small>Initializing <i class="fa fa-cog fa-spin"></i></small>
+                Dashboard
+                <small>Login</small>
+            </h1>
+            <h1>
+                Initializing
+                <small><i class="fa fa-cog fa-spin"></i></small>
             </h1>
         </section>
 
         <!-- Main content -->
         <section class="content">
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="box box-warning">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Lambda Project</h3>
+            <div class="lockscreen-wrapper">
+                <div class="lockscreen-logo">
+                    <span class="logo-lg"> <img src="files/img/okeanos-ico.png" alt="Okeanos"
+                                                style="margin-bottom:5px;margin-right: 3px;"><b>λambda</b></span>
+                </div>
+                <!-- User name -->
 
-                            <div class="box-tools pull-right">
-                                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                                </button>
-                                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i>
-                                </button>
+                <!-- START LOCK SCREEN ITEM -->
+                <div class="lockscreen-item">
+                    <!-- lockscreen image -->
+                    <div class="lockscreen-image">
+                        <img src="files/img/default_blogger.png" alt="User Image">
+                    </div>
+                    <!-- /.lockscreen-image -->
+
+                    <!-- lockscreen credentials (contains the form) -->
+                    <form class="lockscreen-credentials">
+                        <div class="input-group">
+                            ~okeanos token
+                            <div class="input-group-btn">
+                                <button class="btn"><i class="fa fa-arrow-right text-muted"></i></button>
                             </div>
-                        </div><!-- /.box-header -->
-                        <div class="box-body no-padding">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="pad"> Your Service VM is initializing. Please wait...
-                                    </div>
-                                </div><!-- /.col -->
-                            </div><!-- /.row -->
-                        </div><!-- /.box-body -->
-                    </div><!--box box-primary-->
-                </div><!--col-xs-12-->
-            </div><!--row -->
+                        </div>
+                    </form><!-- /.lockscreen credentials -->
+
+                </div><!-- /.lockscreen-item -->
+                <div class="help-block text-center">
+                    Enter your ~okeanos token to retrieve your session
+                </div>
+            </div>
         </section><!-- /.content -->
     </div><!-- /.content-wrapper -->
 
@@ -145,6 +130,34 @@
 <!-- AdminLTE App -->
 <script src="files/js/app.min.js"></script>
 
+<script src="files/js/jquery.plainoverlay.min.js"></script>
+<script>
+    $(function () {
+        $('body').plainOverlay('show');
+    })
+</script>
+
+<style>
+    .jQuery-plainOverlay-progress {
+        border-color: #3c8dbc;
+    }
+</style>
+
+<!-- Reload after initialization -->
+<script>
+    $(document).ready(function () {
+        setInterval(function () {
+            $.ajax({
+                url: '/',
+                type: 'GET',
+                error: function () {
+                    // Error is thrown when https ember site comes up, due to cross-origin request
+                    location.href = '/';
+                }
+            });
+        }, 6000);
+    });
+</script>
 
 </body>
 </html>
