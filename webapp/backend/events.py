@@ -36,6 +36,14 @@ def set_lambda_instance_status(instance_uuid, status, failure_message=""):
     lambda_instance.failure_message = failure_message
     lambda_instance.save()
 
+    if (LambdaInstance.status_choices[int(status)][1] == 'STOPPING'):
+        LambdaInstanceApplicationConnection.objects.filter(
+            lambda_instance=lambda_instance).update(started=False)
+
+    if (LambdaInstance.status_choices[int(status)][1] == 'DESTROYING'):
+        LambdaInstanceApplicationConnection.objects.filter(
+            lambda_instance=lambda_instance).delete()
+
 
 @shared_task
 def insert_cluster_info(instance_uuid, specs, provisioner_response):

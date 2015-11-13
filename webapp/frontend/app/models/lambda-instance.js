@@ -19,7 +19,8 @@ var LambdaInstance = DS.Model.extend({
   status_detail: DS.attr(),                 // status detail of lambda instance
   status_failure_message: DS.attr(),        // failure message
   applications: DS.hasMany('lambda-app'),   // deployed applications
-  running_app: DS.attr('boolean'),          // is specific app started?
+  started_app: DS.attr('boolean'),          // is specific app started?
+  running_app: DS.attr('boolean'),          // is any app running on the lambda instance?
   kafka_topics: DS.attr()                   // kafka topics of lambda instance
 });
 
