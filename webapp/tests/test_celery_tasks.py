@@ -578,7 +578,8 @@ class TestCeleryTasks(APITestCase):
             'ip_allocation': 'master',
             'network_request': 1,
             'project_name': "lambda.grnet.gr",
-            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -648,7 +649,10 @@ class TestCeleryTasks(APITestCase):
         mock_lambda_instance_manager_fokia. \
             run_playbook.assert_any_call(mock_ansible_manager, 'kafka-install.yml',
                                          only_tags=['image-configure'],
-                                         extra_vars={'topics': specs['kafka_topics']})
+                                         extra_vars={
+                                             'topics': list(set(specs['kafka_input_topics'] +
+                                                                specs['kafka_output_topics']))
+                                         })
 
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay. \
@@ -710,7 +714,8 @@ class TestCeleryTasks(APITestCase):
             'ip_allocation': 'master',
             'network_request': 1,
             'project_name': "lambda.grnet.gr",
-            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -791,7 +796,8 @@ class TestCeleryTasks(APITestCase):
             'ip_allocation': 'master',
             'network_request': 1,
             'project_name': "lambda.grnet.gr",
-            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -885,7 +891,8 @@ class TestCeleryTasks(APITestCase):
             'ip_allocation': 'master',
             'network_request': 1,
             'project_name': "lambda.grnet.gr",
-            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -992,7 +999,8 @@ class TestCeleryTasks(APITestCase):
             'ip_allocation': 'master',
             'network_request': 1,
             'project_name': "lambda.grnet.gr",
-            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -1112,7 +1120,8 @@ class TestCeleryTasks(APITestCase):
             'ip_allocation': 'master',
             'network_request': 1,
             'project_name': "lambda.grnet.gr",
-            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -1181,12 +1190,10 @@ class TestCeleryTasks(APITestCase):
         mock_lambda_instance_manager_fokia. \
             run_playbook.assert_any_call(mock_ansible_manager, 'kafka-install.yml',
                                          only_tags=['image-configure'],
-                                         extra_vars={'topics': specs['kafka_topics']})
-
-        mock_lambda_instance_manager_fokia. \
-            run_playbook.assert_any_call(mock_ansible_manager, 'kafka-install.yml',
-                                         only_tags=['image-configure'],
-                                         extra_vars={'topics': specs['kafka_topics']})
+                                         extra_vars={
+                                             'topics': list(set(specs['kafka_input_topics'] +
+                                                                specs['kafka_output_topics']))
+                                         })
 
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay. \
@@ -1249,7 +1256,8 @@ class TestCeleryTasks(APITestCase):
             'ip_allocation': 'master',
             'network_request': 1,
             'project_name': "lambda.grnet.gr",
-            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -1318,7 +1326,10 @@ class TestCeleryTasks(APITestCase):
         mock_lambda_instance_manager_fokia. \
             run_playbook.assert_any_call(mock_ansible_manager, 'kafka-install.yml',
                                          only_tags=['image-configure'],
-                                         extra_vars={'topics': specs['kafka_topics']})
+                                         extra_vars={
+                                             'topics': list(set(specs['kafka_input_topics'] +
+                                                                specs['kafka_output_topics']))
+                                         })
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay. \
             assert_any_call(instance_uuid=None, status=LambdaInstance.KAFKA_INSTALLED)
