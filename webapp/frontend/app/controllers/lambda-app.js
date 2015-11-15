@@ -2,6 +2,8 @@ import Ember from "ember";
 import ENV from 'frontend/config/environment';
 
 export default Ember.Controller.extend({
+  sortedInstances: Ember.computed.sort('model.instances', 'instanceSorting'),
+  instanceSorting: ['name'],
   failure: false,
   session: Ember.inject.service('session'),
   failed_delete: false,
