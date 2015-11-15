@@ -164,7 +164,7 @@ def test_create_single_vm():
             assert_called_with(**{
                 'name': 'test_name',
                 'image_id':
-                    u'c6f5adce-21ad-4ce3-8591-acfe7eb73c02',
+                    u'0ad78ab6-d3cd-42c9-8922-9cf63bbb7539',
                 'flavor_id': 3,
                 'project_id': '234f23f42234f',
                 'networks': [

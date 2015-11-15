@@ -29,7 +29,7 @@ test_flavors = [{
 
 test_images = [{
     u'created': u'2015-06-26T11:29:59+00:00',
-    u'id': u'c6f5adce-21ad-4ce3-8591-acfe7eb73c02', u'is_snapshot': False,
+    u'id': u'0ad78ab6-d3cd-42c9-8922-9cf63bbb7539', u'is_snapshot': False,
     u'links': [
         {u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/images/1232', u'rel': u'self'}, {
             u'href': u'https://cyclades.okeanos.grnet.gr/compute/v2.0/images/234d',
@@ -183,13 +183,13 @@ def test_find_flavor():
         provisioner.astakos.get_projects.return_value = test_projects
         provisioner.cyclades.list_images.return_value = test_images
         provisioner.cyclades.list_flavors.return_value = test_flavors
-        provisioner.image_id = u'c6f5adce-21ad-4ce3-8591-acfe7eb73c02'
+        provisioner.image_id = u'0ad78ab6-d3cd-42c9-8922-9cf63bbb7539'
         provisioner.create_vm(vm_name="tost", project_name="lambda.grnet.gr",
                               project_mode="supahpower", image_name="archlinux", net_id="12345",
                               flavor={'id': 3})
         provisioner.cyclades.create_server. \
             assert_called_with(flavor_id=3,
-                               image_id=u'c6f5adce-21ad-4ce3-8591-acfe7eb73c02',
+                               image_id=u'0ad78ab6-d3cd-42c9-8922-9cf63bbb7539',
                                name='tost',
                                networks=[{u'uuid': '12345'}],
                                personality=[],
@@ -237,7 +237,7 @@ def test_create_vpn():
 
         # Call the functions to set up a network
         provisioner = Provisioner(None, "lambda")
-        provisioner.image_id = u'c6f5adce-21ad-4ce3-8591-acfe7eb73c02'
+        provisioner.image_id = u'0ad78ab6-d3cd-42c9-8922-9cf63bbb7539'
 
         provisioner.network_client.create_network.return_value = test_ip
         provisioner.reserve_ip('6ff62e8e-0ce9-41f7-ad99-13a18ecada5f')
@@ -326,7 +326,7 @@ def test_create_cluster():
 
         # Check that the astakos cyclades call gets the correct parameters
         assert provisioner.cyclades.create_server.call_args_list == [
-            call(name='test_master_name', image_id=u'c6f5adce-21ad-4ce3-8591-acfe7eb73c02',
+            call(name='test_master_name', image_id=u'0ad78ab6-d3cd-42c9-8922-9cf63bbb7539',
                  flavor_id=3, project_id=u'6ff62e8e-0ce9-41f7-ad99-13a18ecada5f',
                  networks=[{u'fixed_ip': 'test_ip', u'uuid': 'test_ip'}, {u'uuid': 'test_uuid'}],
                  personality=[{
@@ -340,7 +340,7 @@ def test_create_cluster():
                      'owner': u'root', 'path': u'/root/.ssh/id_rsa', 'group': u'root',
                      'mode': 384, 'contents': 'dGVzdF9wcml2YXRlX2tleQ=='
                  }]),
-            call(name=u'lambda-node1', image_id=u'c6f5adce-21ad-4ce3-8591-acfe7eb73c02',
+            call(name=u'lambda-node1', image_id=u'0ad78ab6-d3cd-42c9-8922-9cf63bbb7539',
                  flavor_id=3, project_id=u'6ff62e8e-0ce9-41f7-ad99-13a18ecada5f',
                  networks=[{u'fixed_ip': 'test_ip', u'uuid': 'test_ip'}, {u'uuid': 'test_uuid'}],
                  personality=[{
@@ -348,7 +348,7 @@ def test_create_cluster():
                      'mode': 384,
                      'contents': 'dGVzdF9leHRyYV9wdWJfa2V5CnRlc3RfcHVibGljX2tleSByb290'
                  }]),
-            call(name=u'lambda-node2', image_id=u'c6f5adce-21ad-4ce3-8591-acfe7eb73c02',
+            call(name=u'lambda-node2', image_id=u'0ad78ab6-d3cd-42c9-8922-9cf63bbb7539',
                  flavor_id=3, project_id=u'6ff62e8e-0ce9-41f7-ad99-13a18ecada5f',
                  networks=[{u'fixed_ip': 'test_ip', u'uuid': 'test_ip'}, {u'uuid': 'test_uuid'}],
                  personality=[{

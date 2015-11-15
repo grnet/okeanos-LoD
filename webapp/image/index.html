@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<meta http-equiv="Refresh" content="20; url=/">-->
+    <title>λambda Project</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.5 -->
+    <link rel="stylesheet" href="files/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="files/css/AdminLTE.min.css">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+         folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="files/css/skin-blue.css">
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <header class="main-header">
+        <!-- Logo -->
+        <a href="/" class="logo">
+            <!-- mini logo for sidebar mini 50x50 pixels -->
+            <span class="logo-mini"><b>λ</b></span>
+            <!-- logo for regular state and mobile devices -->
+          <span class="logo-lg"> <img src="files/img/okeanos-ico.png" alt="Okeanos"
+                                      style="margin-bottom:5px;margin-right: 3px;"><b>λambda</b>
+          </span>
+        </a>
+        <!-- Header Navbar: style can be found in header.less -->
+        <nav class="navbar navbar-static-top" role="navigation">
+            <!-- Sidebar toggle button-->
+            <a href="/" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                <span class="sr-only">Toggle navigation</span>
+            </a>
+        </nav>
+    </header>
+
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Dashboard
+                <small>Login</small>
+            </h1>
+            <h1>
+                Initializing
+                <small><i class="fa fa-cog fa-spin"></i></small>
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="lockscreen-wrapper">
+                <div class="lockscreen-logo">
+                    <span class="logo-lg"> <img src="files/img/okeanos-ico.png" alt="Okeanos"
+                                                style="margin-bottom:5px;margin-right: 3px;"><b>λambda</b></span>
+                </div>
+                <!-- User name -->
+
+                <!-- START LOCK SCREEN ITEM -->
+                <div class="lockscreen-item">
+                    <!-- lockscreen image -->
+                    <div class="lockscreen-image">
+                        <img src="files/img/default_blogger.png" alt="User Image">
+                    </div>
+                    <!-- /.lockscreen-image -->
+
+                    <!-- lockscreen credentials (contains the form) -->
+                    <form class="lockscreen-credentials">
+                        <div class="input-group">
+                            ~okeanos token
+                            <div class="input-group-btn">
+                                <button class="btn"><i class="fa fa-arrow-right text-muted"></i></button>
+                            </div>
+                        </div>
+                    </form><!-- /.lockscreen credentials -->
+
+                </div><!-- /.lockscreen-item -->
+                <div class="help-block text-center">
+                    Enter your ~okeanos token to retrieve your session
+                </div>
+            </div>
+        </section><!-- /.content -->
+    </div><!-- /.content-wrapper -->
+
+
+    <footer class="main-footer">
+        <div class="row">
+            <div class="col-md-12">
+
+                <a href="http://europa.eu/" target="_blank" title="European Union"><img
+                        src="files/img/european_union.png" alt="European Union" width="130"></a>
+                <a href="http://www.digitalplan.gov.gr/portal/" target="_blank" title="Digital Greece"><img
+                        src="files/img/digitalgreece.png" alt="Digital Greece" width="160"></a>
+                <a href="http://www.espa.gr/en/Pages/Default.aspx" target="_blank" title="NSRF"><img
+                        src="files/img/NSRF.png" alt="NSRF" width="70"></a>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                The project is co-financed by Greece and the European Union.
+            </div>
+        </div>
+        <div class="pull-right ">
+            <a href="http://okeanos.grnet.gr/" target="_blank" title="Okeanos Project"><img
+                    src="files/img/okeanos_logo_powered_by.svg" alt="Okeanos" width="130"></a>
+        </div>
+        <strong>Copyright &copy; 2015 <a href="http://www.grnet.gr" target="_blank">GRNET S.A.</a>.</strong> All rights
+        reserved.
+    </footer>
+
+
+</div><!-- ./wrapper -->
+
+<!-- jQuery 2.1.4 -->
+<script src="files/js/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="files/js/plugins/jQueryUI/jquery-ui.min.js"></script>
+<!-- Bootstrap 3.3.5 -->
+<script src="files/bootstrap/js/bootstrap.min.js"></script>
+<!-- AdminLTE App -->
+<script src="files/js/app.min.js"></script>
+
+<script src="files/js/jquery.plainoverlay.min.js"></script>
+<script>
+    $(function () {
+        $('.content-wrapper').plainOverlay('show');
+    })
+</script>
+
+<style>
+    .jQuery-plainOverlay-progress {
+        border-color: #3c8dbc;
+    }
+</style>
+
+<!-- Reload after initialization -->
+<script>
+    $(document).ready(function () {
+        setInterval(function () {
+            $.ajax({
+                url: '/',
+                type: 'GET',
+                error: function () {
+                    // Error is thrown when https ember site comes up, due to cross-origin request
+                    location.href = '/';
+                }
+            });
+        }, 6000);
+    });
+</script>
+
+</body>
+</html>

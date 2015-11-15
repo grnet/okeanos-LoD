@@ -36,13 +36,12 @@ def test_playbook_run_minimal_manager():
         # Initialize the ansible manager and run a playbook
         manager = MiniManager("test_host", "test_group", "/path/to/private/keys")
         manager.run_playbook(playbook_file="/path/to/playbook.yml",
-                             tags=["touch"])
+                             only_tags=["touch"], skip_tags=["touch-2"])
 
         # Check playbook was called with the correct arguements
-        pb.assert_called_with(stats='c', only_tags=['touch'],
-                              callbacks='a',
+        pb.assert_called_with(only_tags=["touch"], skip_tags=["touch-2"],
+                              stats='c', callbacks='a', runner_callbacks='b',
                               playbook='/path/to/playbook.yml',
-                              runner_callbacks='b',
                               inventory=mock_ansible.inventory.Inventory.return_value)
 
 
@@ -64,8 +63,7 @@ def test_playbook_run():
         # Check that playbook was called with the correct argumenets
         pb.asset_called_with(stats='c', only_tags=['touch'], skip_tags=["touch-2"], callbacks='a',
                              playbook='/path/to/playbook.yml', runner_callbacks='b',
-                             inventory=manager.inventory
-                             )
+                             inventory=manager.inventory)
 
 
 if __name__ == "__main__":
