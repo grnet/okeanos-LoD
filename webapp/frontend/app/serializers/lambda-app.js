@@ -30,7 +30,7 @@ export default LoDSerializer.extend(DS.EmbeddedRecordsMixin, {
 
   normalizeArrayResponse: function(store, primaryModelClass, payload, id, requestType) {
     for (var i=0;i<payload.data.length;++i) {
-      payload.data[i].attributes.app_type = payload.data[0].attributes.type;
+      payload.data[i].attributes.app_type = payload.data[i].attributes.type;
       for (var k in payload.data[i].attributes.status) {
         var key = 'status_' + k;
         payload.data[i].attributes[key] = payload.data[i].attributes.status[k];
