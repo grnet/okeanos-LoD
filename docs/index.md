@@ -27,7 +27,7 @@ After spinning up a λ Service VM the user of the service can utilize λ instanc
 
 ![Screenshot](images/high-level-architecture.png)
 
-The web front interface uses the API interface in the backend. More details on the API interface are available [here](lambda-api/index.md). 
+The web front interface uses the API interface in the backend. More details on the API interface are available [here](service-api/index.md). 
 
 The API interface uses the Fokia library in its backend. More details on the Fokia library are available [here](fokia/description.md).
 
