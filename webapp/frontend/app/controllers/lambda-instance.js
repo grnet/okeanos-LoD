@@ -2,6 +2,8 @@ import Ember from "ember";
 import ENV from 'frontend/config/environment';
 
 export default Ember.Controller.extend({
+  sortedApps: Ember.computed.sort('model.apps', 'applicationSorting'),
+  applicationSorting: ['name'],
   session: Ember.inject.service('session'),
   failed_delete: false,
   success_delete: false,

@@ -191,7 +191,7 @@
                                       </tr>
                                       </thead>
                                       <tbody>
-                                      {{#each model.instances as |li|}}
+                                      {{#each sortedInstances as |li|}}
                                           <tr>
                                               <td>
                                                 {{#link-to 'lambda-instance' li.id

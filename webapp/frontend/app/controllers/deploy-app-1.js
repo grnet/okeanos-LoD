@@ -2,6 +2,8 @@ import Ember from 'ember';
 import ENV from 'frontend/config/environment';
 
 export default Ember.Controller.extend({
+  sortedInstances: Ember.computed.sort('instances', 'instanceSorting'),
+  instanceSorting: ['name'],
   actions: {
     deploy(application_id, instance_id) {
       if (!this.get("failure")) {

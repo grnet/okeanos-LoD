@@ -323,7 +323,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {{#each model.apps as |application|}}
+                  {{#each sortedApps as |application|}}
                   <tr class="instance-info">
                     <td>
                       {{#link-to 'lambda-app' application.id

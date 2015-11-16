@@ -8,6 +8,8 @@ export default Ember.ArrayController.extend({
   session: Ember.inject.service('session'),
   message: '',
   queryParams: ["page", "perPage"],
+  sortAscending: true,
+  sortProperties: ['name'],
 
   page: 1,
   perPage: 10,
@@ -23,7 +25,7 @@ export default Ember.ArrayController.extend({
     return Math.min(this.get('content.length'), (this.get('page'))*(this.get('perPage')));
   }),
 
-  pagedContent: pagedArray('content', {pageBinding: "page", perPageBinding: "perPage"}),
+  pagedContent: pagedArray('arrangedContent', {pageBinding: "page", perPageBinding: "perPage"}),
 
   totalPagesBinding: "pagedContent.totalPages",
 
