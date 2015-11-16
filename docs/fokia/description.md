@@ -1,6 +1,6 @@
 
 
-## Usage
+## Installation
 
 Although, not intended to operate in this way, the Fokia library can be used to bootstrap and configure a λ instance. To install the Fokia library (locally) a user needs to have `pip` already installed and available.
 
@@ -27,6 +27,8 @@ Then install the Fokia library using the following command:
 ```bash
 $ sudo python setup.py install
 ```
+
+## Example
 
 To bootstrap a λ instance the `lambda_instance_manager.py` executable inside the `core/fokia/` folder can be used. The available options are shown in the listing below:
 
@@ -60,4 +62,8 @@ optional arguments:
                         Size of disk on Flink slave(s) (in GB) [default: 40GB]
 ```
 
+As an example with the command given below we bootstrap a λ instance comprised of one Flink master and 5 Flink slaves:
 
+```sh
+$ python lambda_instance_manager.py --slaves 5
+```

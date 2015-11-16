@@ -43,4 +43,4 @@ pages:
 - 'License': 'about/license.md'
 
 
-theme: mkdocs
+theme: readthedocs
