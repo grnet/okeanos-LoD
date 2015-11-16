@@ -1,0 +1,37 @@
+site_name: Lambda on Demand Service
+pages:
+
+- Home: 'index.md'
+
+- Lambda Service API:
+  - Home: 'lambda-api/index.md'
+  - Authentication: 'lambda-api/Authentication.md'
+  - Create Lambda Instance: 'lambda-api/CreateLambdaInstance.md'
+  - List Lambda Instances: 'lambda-api/LambdaInstancesList.md'
+  - Details of a Lambda Instance: 'lambda-api/LambdaInstanceDetails.md'
+  - Actions on a Lambda Instance: 'lambda-api/LambdaInstanceAction.md'
+  - Destroy a Lambda Instance: 'lambda-api/LambdaInstanceDestroy.md'
+  - Upload an Application: 'lambda-api/ApplicationUpload.md'
+  - Delete an Application: 'lambda-api/ApplicationDelete.md'
+  - List Applications: 'lambda-api/ApplicationsList.md'
+  - Details of an Application: 'lambda-api/ApplicationDetails.md'
+  - Deploy an Application: 'lambda-api/ApplicationDeploy.md'
+  - Withdraw an Application: 'lambda-api/ApplicationWithdraw.md'
+  - List Deployed Applications: 'lambda-api/ApplicationsListDeployed.md'
+  - Start an Application: 'lambda-api/ApplicationStart.md'
+  - Stop an Application: 'lambda-api/ApplicationStop.md'
+  - Get SSH public keys on ~okeanos: 'lambda-api/UserPublicKeys.md'
+  - Get allowed VM Parameter Values: 'lambda-api/VMParameterValues.md'
+
+- Lambda Central API:
+  - 'Home': 'central-api/index.md'
+  - 'User API calls': 'central-api/API_users.md'
+  - 'Lamdba Instances API calls': 'central-api/API_lambda_instances.md'
+  - 'Lamdba Applications API calls': 'central-api/API_lambda_applications.md'
+
+
+- About:
+  - 'License': 'about/license.md'
+
+
+theme: readthedocs
