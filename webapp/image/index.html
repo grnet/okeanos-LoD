@@ -150,9 +150,10 @@
             $.ajax({
                 url: '/',
                 type: 'GET',
+                cache: false,
                 error: function () {
                     // Error is thrown when https ember site comes up, due to cross-origin request
-                    location.href = '/';
+                    window.location.href = '/';
                 }
             });
         }, 6000);
