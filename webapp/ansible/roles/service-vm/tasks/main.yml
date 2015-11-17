@@ -12,7 +12,7 @@
   - name: Include postgresql-install tasks.
     include: postgresql-install.yml
 
-  - name: Download Django code from Github.
+  - name: Download okeanos-LoD repository
     git: repo={{ repository_url }}  dest={{ repository_download_path }}/okeanos-LoD update=yes version={{ repository_branch }}
 
   - name: Change repository permissions.
