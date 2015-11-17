@@ -14,6 +14,10 @@
 
   - name: Configure Apache Flume.
     template: src=flume-conf.properties.j2 dest="{{ installation_path }}/flume/conf/flume-conf.properties" owner=flume group=lambda mode=0644
+    tags:
+      - image-configure
 
   - name: Start Apache Flume.
     supervisorctl: name=apache_flume state=started
+    tags:
+      - image-configure
