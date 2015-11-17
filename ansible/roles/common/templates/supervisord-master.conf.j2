@@ -75,7 +75,7 @@ user=flink
 stopsignal=INT
 stopasgroup=true
 stdout_logfile=/home/flink/supervisord_flink_logs.log
-environment=JAVA_HOME="/usr",HADOOP_HOME="/usr/local/hadoop",HADOOP_CONF_DIR="/usr/local/hadoop/etc/hadoop/"
+environment=JAVA_HOME="/usr",HADOOP_HOME="{{ hadoop_home }}",HADOOP_CONF_DIR="{{ hadoop_home }}/etc/hadoop/"
 
 [program:flink_batch_job]
 directory=/home/flink
@@ -101,7 +101,7 @@ user=flume
 stopasgroup=true
 stderr_logfile=/home/flume/supervisord_flume_stderr_logs.log
 stdout_logfile=/home/flume/supervisord_flume_stdout_logs.log
-environment=JAVA_HOME="/usr",HADOOP_HOME="/usr/local/hadoop",HADOOP_CONF_DIR="/usr/local/hadoop/etc/hadoop/"
+environment=JAVA_HOME="/usr",HADOOP_HOME="{{ hadoop_home }}",HADOOP_CONF_DIR="{{ hadoop_home }}/etc/hadoop/"
 
 ;[program:theprogramname]
 ;command=/bin/cat              ; the program (relative uses PATH, can take args)
