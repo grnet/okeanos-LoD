@@ -578,7 +578,8 @@ class TestCeleryTasks(APITestCase):
             'ip_allocation': 'master',
             'network_request': 1,
             'project_name': "lambda.grnet.gr",
-            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -648,7 +649,10 @@ class TestCeleryTasks(APITestCase):
         mock_lambda_instance_manager_fokia. \
             run_playbook.assert_any_call(mock_ansible_manager, 'kafka-install.yml',
                                          only_tags=['image-configure'],
-                                         extra_vars={'topics': specs['kafka_topics']})
+                                         extra_vars={
+                                             'topics': list(set(specs['kafka_input_topics'] +
+                                                                specs['kafka_output_topics']))
+                                         })
 
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay. \
@@ -665,6 +669,18 @@ class TestCeleryTasks(APITestCase):
             assert_any_call(instance_uuid=None, status=LambdaInstance.FLINK_INSTALLED)
         mock_set_lambda_instance_status_central_vm.delay. \
             assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.FLINK_INSTALLED, "")
+
+        mock_lambda_instance_manager_fokia.run_playbook. \
+            assert_any_call(mock_ansible_manager, 'flume-install.yml',
+                            only_tags=['image-configure'],
+                            extra_vars={
+                                'topics': list(set(specs['kafka_input_topics']))
+                            })
+        mock_check_ansible_result.assert_any_call(mock_ansible_result)
+        mock_set_lambda_instance_status_event.delay. \
+            assert_any_call(instance_uuid=None, status=LambdaInstance.FLUME_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay. \
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.FLUME_INSTALLED, "")
 
         mock_set_lambda_instance_status_event.delay. \
             assert_any_call(instance_uuid=None, status=LambdaInstance.STARTED)
@@ -710,7 +726,8 @@ class TestCeleryTasks(APITestCase):
             'ip_allocation': 'master',
             'network_request': 1,
             'project_name': "lambda.grnet.gr",
-            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -791,7 +808,8 @@ class TestCeleryTasks(APITestCase):
             'ip_allocation': 'master',
             'network_request': 1,
             'project_name': "lambda.grnet.gr",
-            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -885,7 +903,8 @@ class TestCeleryTasks(APITestCase):
             'ip_allocation': 'master',
             'network_request': 1,
             'project_name': "lambda.grnet.gr",
-            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -992,7 +1011,8 @@ class TestCeleryTasks(APITestCase):
             'ip_allocation': 'master',
             'network_request': 1,
             'project_name': "lambda.grnet.gr",
-            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -1112,7 +1132,8 @@ class TestCeleryTasks(APITestCase):
             'ip_allocation': 'master',
             'network_request': 1,
             'project_name': "lambda.grnet.gr",
-            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -1181,12 +1202,10 @@ class TestCeleryTasks(APITestCase):
         mock_lambda_instance_manager_fokia. \
             run_playbook.assert_any_call(mock_ansible_manager, 'kafka-install.yml',
                                          only_tags=['image-configure'],
-                                         extra_vars={'topics': specs['kafka_topics']})
-
-        mock_lambda_instance_manager_fokia. \
-            run_playbook.assert_any_call(mock_ansible_manager, 'kafka-install.yml',
-                                         only_tags=['image-configure'],
-                                         extra_vars={'topics': specs['kafka_topics']})
+                                         extra_vars={
+                                             'topics': list(set(specs['kafka_input_topics'] +
+                                                                specs['kafka_output_topics']))
+                                         })
 
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay. \
@@ -1249,7 +1268,8 @@ class TestCeleryTasks(APITestCase):
             'ip_allocation': 'master',
             'network_request': 1,
             'project_name': "lambda.grnet.gr",
-            'kafka_topics': ["input", "output", "stream_output", "batch_output"]
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
         }
         lambda_info = LambdaInfo(specs)
 
@@ -1318,7 +1338,10 @@ class TestCeleryTasks(APITestCase):
         mock_lambda_instance_manager_fokia. \
             run_playbook.assert_any_call(mock_ansible_manager, 'kafka-install.yml',
                                          only_tags=['image-configure'],
-                                         extra_vars={'topics': specs['kafka_topics']})
+                                         extra_vars={
+                                             'topics': list(set(specs['kafka_input_topics'] +
+                                                                specs['kafka_output_topics']))
+                                         })
         mock_check_ansible_result.assert_any_call(mock_ansible_result)
         mock_set_lambda_instance_status_event.delay. \
             assert_any_call(instance_uuid=None, status=LambdaInstance.KAFKA_INSTALLED)
@@ -1335,6 +1358,163 @@ class TestCeleryTasks(APITestCase):
                             failure_message="Ansible task failed")
         mock_set_lambda_instance_status_central_vm.delay. \
             assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.FLINK_FAILED,
+                            "Ansible task failed")
+
+    @mock.patch('backend.central_vm_tasks.set_lambda_instance_status_central_vm')
+    @mock.patch('backend.central_vm_tasks.create_lambda_instance_central_vm')
+    @mock.patch('backend.tasks._check_ansible_result')
+    @mock.patch('backend.tasks.get_named_keys', return_value={'key-1': "ssh", 'key-2': "ssh2"})
+    @mock.patch('backend.tasks.lambda_instance_manager')
+    @mock.patch('backend.tasks.events.insert_cluster_info')
+    @mock.patch('backend.tasks.events.set_lambda_instance_status')
+    @mock.patch('backend.tasks.events.create_new_lambda_instance')
+    @mock.patch('backend.tasks.settings')
+    def test_create_lambda_instance_flume_fail(self, django_settings,
+                                               mock_create_new_lambda_instance_event,
+                                               mock_set_lambda_instance_status_event,
+                                               mock_insert_cluster_info_event,
+                                               mock_lambda_instance_manager_fokia,
+                                               mock_get_named_keys, mock_check_ansible_result,
+                                               mock_create_lambda_instance_central_vm,
+                                               mock_set_lambda_instance_status_central_vm):
+        # Setup mock return values and side effects.
+        mock_ansible_manager = mock.Mock()
+        mock_provisioner_response = mock.Mock()
+
+        django_settings.MASTER_IMAGE_ID = "master_image_id"
+        django_settings.SLAVE_IMAGE_ID = "slave_image_id"
+
+        mock_lambda_instance_manager_fokia.create_cluster.return_value = mock_ansible_manager, \
+                                                                         mock_provisioner_response
+
+        mock_ansible_result = mock.Mock()
+        mock_lambda_instance_manager_fokia.run_playbook.return_value = mock_ansible_result
+
+        mock_check_ansible_result.side_effect = ["Ansible successful",
+                                                 "Ansible successful",
+                                                 "Ansible successful",
+                                                 "Ansible successful",
+                                                 "Ansible successful",
+                                                 "Ansible task failed"]
+
+        # Create the input that will be given to the task.
+        specs = {
+            'instance_name': "Lambda Instance created from Tests",
+            'public_key_name': ['key-1', 'key-2'],
+            'master_name': "master_name",
+            'master_image_id': "master_image_id",
+            'slave_image_id': "slave_image_id",
+            'slaves': 2,
+            'vcpus_master': 4,
+            'vcpus_slave': 8,
+            'ram_master': 4096,
+            'ram_slave': 8192,
+            'disk_master': 20,
+            'disk_slave': 40,
+            'ip_allocation': 'master',
+            'network_request': 1,
+            'project_name': "lambda.grnet.gr",
+            'kafka_input_topics': ["input", "private_input"],
+            'kafka_output_topics': ["output", "stream_output", "batch_output"]
+        }
+        lambda_info = LambdaInfo(specs)
+
+        # Call create lambda instance task.
+        tasks.create_lambda_instance(lambda_info, self.AUTHENTICATION_TOKEN)
+
+        # Assert that the proper mocks have been called.
+        mock_create_new_lambda_instance_event.delay. \
+            assert_called_with(instance_uuid=None,
+                               instance_name="Lambda Instance created from Tests",
+                               specs=json.dumps(specs))
+        mock_create_lambda_instance_central_vm.delay. \
+            assert_called_with(auth_token=self.AUTHENTICATION_TOKEN,
+                               instance_uuid=None,
+                               instance_name="Lambda Instance created from Tests",
+                               specs=json.dumps(specs))
+        mock_get_named_keys.assert_called_with(self.AUTHENTICATION_TOKEN,
+                                               names=['key-1', 'key-2'])
+        mock_lambda_instance_manager_fokia.create_cluster. \
+            assert_called_with(cluster_id=None,
+                               auth_token=self.AUTHENTICATION_TOKEN, master_name="master_name",
+                               master_image_id="master_image_id", slave_image_id="slave_image_id",
+                               slaves=2, vcpus_master=4, vcpus_slave=8, ram_master=4096,
+                               ram_slave=8192, disk_master=20, disk_slave=40,
+                               ip_allocation="master", network_request=1,
+                               project_name="lambda.grnet.gr",
+                               pub_keys={'key-1': "ssh", 'key-2': "ssh2"})
+        mock_set_lambda_instance_status_event.delay. \
+            assert_any_call(instance_uuid=None, status=LambdaInstance.CLUSTER_CREATED)
+        mock_set_lambda_instance_status_central_vm.delay. \
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.CLUSTER_CREATED, "")
+        mock_insert_cluster_info_event.delay. \
+            assert_called_with(instance_uuid=None, provisioner_response=mock_provisioner_response,
+                               specs=specs)
+
+        mock_lambda_instance_manager_fokia.run_playbook. \
+            assert_any_call(mock_ansible_manager,
+                            'initialize.yml',
+                            only_tags=['common-configure'])
+        mock_check_ansible_result.assert_any_call(mock_ansible_result)
+        mock_set_lambda_instance_status_event.delay. \
+            assert_any_call(instance_uuid=None, status=LambdaInstance.INIT_DONE)
+        mock_set_lambda_instance_status_central_vm.delay. \
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.INIT_DONE, "")
+
+        mock_lambda_instance_manager_fokia.run_playbook. \
+            assert_any_call(mock_ansible_manager,
+                            'common-install.yml',
+                            only_tags=['common-configure', 'image-configure'])
+        mock_check_ansible_result.assert_any_call(mock_ansible_result)
+        mock_set_lambda_instance_status_event.delay. \
+            assert_any_call(instance_uuid=None, status=LambdaInstance.COMMONS_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay. \
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.COMMONS_INSTALLED, "")
+
+        mock_lambda_instance_manager_fokia.run_playbook. \
+            assert_any_call(mock_ansible_manager,
+                            'hadoop-install.yml',
+                            only_tags=['image-configure'])
+        mock_check_ansible_result.assert_any_call(mock_ansible_result)
+        mock_set_lambda_instance_status_event.delay. \
+            assert_any_call(instance_uuid=None, status=LambdaInstance.HADOOP_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay. \
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.HADOOP_INSTALLED, "")
+
+        mock_lambda_instance_manager_fokia. \
+            run_playbook.assert_any_call(mock_ansible_manager, 'kafka-install.yml',
+                                         only_tags=['image-configure'],
+                                         extra_vars={
+                                             'topics': list(set(specs['kafka_input_topics'] +
+                                                                specs['kafka_output_topics']))
+                                         })
+        mock_check_ansible_result.assert_any_call(mock_ansible_result)
+        mock_set_lambda_instance_status_event.delay. \
+            assert_any_call(instance_uuid=None, status=LambdaInstance.KAFKA_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay. \
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.KAFKA_INSTALLED, "")
+
+        mock_lambda_instance_manager_fokia.run_playbook. \
+            assert_any_call(mock_ansible_manager, 'flink-install.yml',
+                            only_tags=['image-configure'])
+        mock_check_ansible_result.assert_any_call(mock_ansible_result)
+        mock_set_lambda_instance_status_event.delay. \
+            assert_any_call(instance_uuid=None, status=LambdaInstance.FLINK_INSTALLED)
+        mock_set_lambda_instance_status_central_vm.delay. \
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.FLINK_INSTALLED, "")
+
+        mock_lambda_instance_manager_fokia.run_playbook. \
+            assert_any_call(mock_ansible_manager, 'flume-install.yml',
+                            only_tags=['image-configure'],
+                            extra_vars={
+                                'topics': list(set(specs['kafka_input_topics']))
+                            })
+        mock_check_ansible_result.assert_any_call(mock_ansible_result)
+        mock_set_lambda_instance_status_event.delay. \
+            assert_any_call(instance_uuid=None, status=LambdaInstance.FLUME_FAILED,
+                            failure_message="Ansible task failed")
+        mock_set_lambda_instance_status_central_vm.delay. \
+            assert_any_call(self.AUTHENTICATION_TOKEN, None, LambdaInstance.FLUME_FAILED,
                             "Ansible task failed")
 
 

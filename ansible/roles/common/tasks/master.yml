@@ -3,6 +3,11 @@
   - name: Create users for each application.
     include: users.yml
 
+  - name: Create flume user
+    user: name=flume uid=2013 groups="lambda" shell=/bin/bash
+    tags:
+      - users
+
   - name: Generate ssh key for hduser
     user: name=hduser generate_ssh_key=yes
     tags:

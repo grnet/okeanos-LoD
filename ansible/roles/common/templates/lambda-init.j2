@@ -127,6 +127,22 @@ start(){
     log "Apache Flink has been started!"
   fi
 
+  # Start Apache Flume.
+  log "Starting Apache Flume..."
+  supervisorctl start apache_flume
+  # Wait for Apache Flume to start.
+  while [ "$(supervisorctl status apache_flume | tr -s ' ' | cut -f2 -d' ')" == "STARTING" ]
+  do
+    sleep 10
+  done
+  apache_flume_status=$(supervisorctl status apache_flume | tr -s ' ' | cut -f2 -d' ')
+  if [ "$apache_flume_status" != "RUNNING" ]
+  then
+    log "Apache Flume has failed to start with code $apache_flume_status."
+  else
+    log "Apache Flume has been started!"
+  fi
+
   # Create a lock file to prevent multiple instantiations.
   touch $LOCKFILE
 
@@ -211,6 +227,16 @@ stop(){
     log "Apache Zookeeper has been stopped!"
   else
     log "Apache Zookeeper has failed to stop with returned code $apache_zookeeper_status"
+  fi
+
+  # Stop Apache Flume.
+  supervisorctl stop apache_flume
+  apache_flume_status=$(supervisorctl status apache_flume | tr -s ' ' | cut -f2 -d' ')
+  if [ "$apache_flume_status" == "STOPPED" ]
+  then
+    log "Apache Flume has been stopped!"
+  else
+    log "Apache Flume has failed to stop with returned code $apache_flume_status"
   fi
 
   # Stop Supervisord on master node.

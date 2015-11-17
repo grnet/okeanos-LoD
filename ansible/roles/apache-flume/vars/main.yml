@@ -1,0 +1,6 @@
+---
+mirror_url: "http://apache.tsl.gr/flume"
+version: "1.6.0"
+download_path: "/root"
+installation_path: "/usr/local"
+topics: ["input"]

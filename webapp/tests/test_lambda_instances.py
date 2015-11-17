@@ -46,7 +46,8 @@ class TestLambdaInstanceCreate(APITestCase):
                           'slaves': 2,
                           'ip_allocation': "master",
                           'public_key_name': ["key-1", "key-2"],
-                          'kafka_topics': ["input", "output", "stream_output", "batch_output"]}
+                          'kafka_input_topics': ["input", "private_input"],
+                          'kafka_output_topics': ["output", "stream_output", "batch_output"]}
 
     # Gather required fields.
     required_keys = ['project_name',

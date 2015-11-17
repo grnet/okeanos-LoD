@@ -1,4 +1,4 @@
 ---
 - name: create topics
-  shell: "{{ installation_path }}/kafka/bin/kafka-topics.sh --create --zookeeper {{ hostvars[groups['master'][0]]['internal_ip'] }}:2181 --replica-assignment 0:1 --topic {{ item }}"
+  shell: "{{ installation_path }}/kafka/bin/kafka-topics.sh --create --zookeeper {{ hostvars[groups['master'][0]]['internal_ip'] }}:2181 --replica-assignment 0 --topic {{ item }}"
   with_items: "{{ topics }}"

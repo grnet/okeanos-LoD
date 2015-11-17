@@ -52,6 +52,10 @@
   - name: Add kafka user to sudo group.
     user: name=kafka group=sudo
 
+  - name: Add flume user to sudo group.
+    user: name=flume group=sudo
+    when: "'master' in group_names"
+
   - name: Install supervisord with apt.
     apt: name=supervisor state=latest
     environment: proxy_env
