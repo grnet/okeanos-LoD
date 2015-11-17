@@ -31,6 +31,8 @@ agent.sources.{{ topic }}Source.kafka.consumer.timeout.ms = 100
 agent.sources.{{ topic }}Source.channels = {{ topic }}Channel
 
 agent.channels.{{ topic }}Channel.type = memory
+agent.channels.{{ topic }}Channel.capacity = 1000000
+agent.channels.{{ topic }}Channel.transactionCapacity = 100000
 
 agent.sinks.{{ topic }}Sink.type = hdfs
 agent.sinks.{{ topic }}Sink.hdfs.path = /user/flume/{{ topic }}
