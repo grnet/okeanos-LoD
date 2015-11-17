@@ -70,3 +70,10 @@
               line="PATH=$PATH:{{ flink_home }}/bin:{{ hadoop_home }}/bin"
               state=present
               insertafter=EOF
+
+  - name: Set PATH environment variable for flume user
+    lineinfile: destfile="/home/flume/.bashrc"
+              regexp="^PATH"
+              line="PATH=$PATH:{{ hadoop_home }}/bin"
+              state=present
+              insertafter=EOF
