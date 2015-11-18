@@ -90,5 +90,22 @@ export default Ember.ArrayController.extend({
       alert.hidden=true;
       this.set('failed_delete', false);
     },
+
+    checkPage: function () {
+      Ember.run.once(this, function () {
+        var page = this.get('page');
+        var totalPages = this.get('totalPages');
+        if (page > totalPages) {
+          if (totalPages === 0) {
+            totalPages = 1;
+          }
+          this.set('page', totalPages);
+        }
+        if (page <= 0 || isNaN(page)) {
+          this.set('page', 1);
+        }
+      });
+    },
+
   },
 });

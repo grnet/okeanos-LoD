@@ -20,6 +20,11 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
   deactivate: function () {
     Ember.run.cancel(this.poll);
-  }
+  },
+
+  setupController: function (controller, model ) {
+    this._super(controller, model);
+    controller.send('checkPage');
+  },
 
 });
