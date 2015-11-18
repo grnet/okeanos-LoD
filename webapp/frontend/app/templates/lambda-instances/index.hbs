@@ -109,15 +109,30 @@
                   {{/link-to}}
                 </td>
                 <td>
-                    <span>{{lambda-instance.status_detail}}</span>
+                  <ul class="timeline">
+                  <li class="time-label">
                     {{#if (logical-op 'or'
                       (compare (lambda-instance-state lambda-instance.status_message) "===" "BUILDING")
                       (compare (lambda-instance-state lambda-instance.status_message) "===" "STARTING")
                       (compare (lambda-instance-state lambda-instance.status_message) "===" "STOPPING")
                       (compare (lambda-instance-state lambda-instance.status_message) "===" "DESTROYING")
                     )}}
-                      <i class="fa fa-spinner fa-spin" style="position: relative;left: 1%;"></i>
+                        <span class="bg-orange">{{lambda-instance.status_detail}}
+                            <i class="fa fa-spinner fa-spin" style="position: relative;left: 1%;"></i>
+                        </span>
                     {{/if}}
+                    {{#if (logical-op 'or'
+                      (compare (lambda-instance-state lambda-instance.status_message) "===" "STOPPED")
+                      (compare (lambda-instance-state lambda-instance.status_message) "===" "FAILED")
+                      (compare (lambda-instance-state lambda-instance.status_message) "===" "DESTROYED")
+                    )}}
+                        <span class="bg-red">{{lambda-instance.status_detail}}</span>
+                    {{/if}}
+                    {{#if (compare (lambda-instance-state lambda-instance.status_message) "===" "STARTED")}}
+                        <span class="bg-green">{{lambda-instance.status_detail}}</span>
+                    {{/if}}
+                  </li>
+                  </ul>
                 </td>
                 <td>
                   <table class="table">
