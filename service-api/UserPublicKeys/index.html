@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Get SSH public keys on ~okeanos - λ on Demand</title>
+  
+
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/highlight.css">
+
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Get SSH public keys on ~okeanos";
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
+  <script src="../../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> λ on Demand</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        <ul class="current">
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../..">Home</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Fokia</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../fokia/details/">Technical details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../fokia/description/">Usage</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Service API</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../details/">Technical details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../">Usage</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../Authentication/">Authentication</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../CreateLambdaInstance/">Create Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstancesList/">List Lambda Instances</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstancesCount/">Count Lambda Instances</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstanceDetails/">Details of a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstanceAction/">Actions on a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstanceDestroy/">Destroy a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationUpload/">Upload an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationDelete/">Delete an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationsList/">List Applications</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationsCount/">Count Applications</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationDetails/">Details of an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationDeploy/">Deploy an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationWithdraw/">Withdraw an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationsListDeployed/">List Deployed Applications</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationStart/">Start an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationStop/">Stop an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Get SSH public keys on ~okeanos</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#api-user-public-keys-description">API - User Public Keys - Description</a></li>
+                
+                    <li><a class="toctree-l4" href="#basic-parameters">Basic Parameters</a></li>
+                
+                    <li><a class="toctree-l4" href="#example">Example</a></li>
+                
+            
+            </ul>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../VMParameterValues/">Get allowed VM Parameter Values</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../UserOkeanosProjects/">Get User ~okeanos Projects</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Central API</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/details/">Details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/">Description</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/API_users/">User API calls</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/API_lambda_instances/">Lamdba Instances API calls</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/API_lambda_applications/">Lamdba Applications API calls</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../../about/license/">License</a>
+        
+    </li>
+<li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">λ on Demand</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Service API &raquo;</li>
+        
+      
+    
+    <li>Get SSH public keys on ~okeanos</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <hr />
+<p>title: 'API | User Public Keys'
+description: Retrieve user's public keys from okeanos account</p>
+<hr />
+<h1 id="api-user-public-keys-description">API - User Public Keys - Description</h1>
+<p>The User public keys call, given an authentication token through the header Authorization, will
+connect to the ~okeanos service and retrieve the user's saved public keys. If
+the token is valid then the API will reply with a "200 Success" code, along with all the user's
+public keys and the names that has been assigned to them. if the token is invalid it will return
+an "401 Unauthorized" error along with details regarding the error.</p>
+<h2 id="basic-parameters">Basic Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Description</strong></td>
+<td>Get user public keys</td>
+</tr>
+<tr>
+<td><strong>URL</strong></td>
+<td>/api/user-public-keys/</td>
+</tr>
+<tr>
+<td><strong>HTTP Method</strong></td>
+<td>GET</td>
+</tr>
+<tr>
+<td><strong>Security</strong></td>
+<td>Basic Authentication</td>
+</tr>
+</tbody>
+</table>
+<h3 id="headers">Headers</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authorization</td>
+<td>~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-&gt; API Access) https://accounts.okeanos.grnet.gr/ui/api_access.</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>Token tJ3b3f32f23ceuqdoS_..</td>
+</tr>
+</tbody>
+</table>
+<h2 id="example">Example</h2>
+<p>In the following example we are going to the get the keys uploaded on ~okeanos for
+a specified user.</p>
+<pre><code>curl -X GET -H &quot;Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY&quot; \
+'https://&lt;hostname&gt;/api/user-public-keys/'
+</code></pre>
+
+<h3 id="response-body">Response body</h3>
+<p>If the authentication token is correct then the response is</p>
+<pre><code>{
+  &quot;status&quot;: {
+    &quot;short_description&quot;: &quot;Public keys uploaded to ~okeanos&quot;,
+    &quot;code&quot;: 200
+  },
+  &quot;data&quot;: [
+    {
+      &quot;content&quot;: &quot;ssh-rsa gfadsgdssAfadsds...&quot;,
+      &quot;fingerprint&quot;: &quot;FC:ds:...&quot;,
+      &quot;id&quot;: 1000,
+      &quot;name&quot;: &quot;key-1&quot;,
+      &quot;uri&quot;: &quot;/userdata/keys/1000&quot;
+    },
+  ]
+}
+</code></pre>
+
+<p>For the case where the authentication token is not correct, refer to <a href="../Authentication/">Authentication page</a>.</p>
+<h3 id="response-messages">Response messages</h3>
+<p>The main response messages are:</p>
+<ul>
+<li>HTTP/1.1 200 OK : (Success)</li>
+<li>HTTP/1.1 401 UNAUTHORIZED : (Fail)</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../VMParameterValues/" class="btn btn-neutral float-right" title="Get allowed VM Parameter Values"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../ApplicationStop/" class="btn btn-neutral" title="Stop an Application"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../ApplicationStop/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../VMParameterValues/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+
+</body>
+</html>

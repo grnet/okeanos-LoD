@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Create Lambda Instance - λ on Demand</title>
+  
+
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/highlight.css">
+
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Create Lambda Instance";
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
+  <script src="../../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> λ on Demand</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        <ul class="current">
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../..">Home</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Fokia</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../fokia/details/">Technical details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../fokia/description/">Usage</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Service API</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../details/">Technical details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../">Usage</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../Authentication/">Authentication</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Create Lambda Instance</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#api-create-lambda-instance-description">API - create lambda instance - Description</a></li>
+                
+                    <li><a class="toctree-l4" href="#basic-parameters">Basic Parameters</a></li>
+                
+                    <li><a class="toctree-l4" href="#example">Example</a></li>
+                
+            
+            </ul>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstancesList/">List Lambda Instances</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstancesCount/">Count Lambda Instances</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstanceDetails/">Details of a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstanceAction/">Actions on a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstanceDestroy/">Destroy a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationUpload/">Upload an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationDelete/">Delete an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationsList/">List Applications</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationsCount/">Count Applications</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationDetails/">Details of an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationDeploy/">Deploy an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationWithdraw/">Withdraw an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationsListDeployed/">List Deployed Applications</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationStart/">Start an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationStop/">Stop an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../UserPublicKeys/">Get SSH public keys on ~okeanos</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../VMParameterValues/">Get allowed VM Parameter Values</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../UserOkeanosProjects/">Get User ~okeanos Projects</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Central API</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/details/">Details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/">Description</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/API_users/">User API calls</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/API_lambda_instances/">Lamdba Instances API calls</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/API_lambda_applications/">Lamdba Applications API calls</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../../about/license/">License</a>
+        
+    </li>
+<li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">λ on Demand</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Service API &raquo;</li>
+        
+      
+    
+    <li>Create Lambda Instance</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <hr />
+<p>title: API | create lambda instance
+description: create a new lambda instance</p>
+<hr />
+<h1 id="api-create-lambda-instance-description">API - create lambda instance - Description</h1>
+<p>Lambda instance creation call. Given an authentication token through the header authentication,
+and the instance specifications through other HTTP headers,
+it will firstly check the validity of the token. If the token is invalid, the API will reply with a
+"401 Unauthorized" code. If the token is valid, the API will start creating a new lambda instance
+using the instance specifications provided via the HTTP headers. For creating the cluster,
+the Fokia library will be used. This library firstly uses kamaki to create the desired cluster of
+VMs, then runs ansible on the VMs to build a complete lambda instance. After starting the lambda
+instance creation, the API will reply with the details of the cluster in creation, along with a
+"200 Success" code.</p>
+<h2 id="basic-parameters">Basic Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Description</strong></td>
+<td>Create a new lambda instance</td>
+</tr>
+<tr>
+<td><strong>URL</strong></td>
+<td>/api/lambda-instance/</td>
+</tr>
+<tr>
+<td><strong>HTTP Method</strong></td>
+<td>POST</td>
+</tr>
+<tr>
+<td><strong>Security</strong></td>
+<td>Basic Authentication</td>
+</tr>
+</tbody>
+</table>
+<h3 id="headers">Headers</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authorization</td>
+<td>~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-&gt; API Access) https://accounts.okeanos.grnet.gr/ui/api_access.</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>Token tJ3b3f32f23ceu...</td>
+</tr>
+</tbody>
+</table>
+<h3 id="body">Body</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>instance_name</td>
+<td>Name of the lambda instance</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>My first Lambda Instance</td>
+</tr>
+<tr>
+<td>master_name</td>
+<td>Name of the master node</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>lambda-master</td>
+</tr>
+<tr>
+<td>slaves</td>
+<td>Number of slaves</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>3</td>
+</tr>
+<tr>
+<td>vcpus_master</td>
+<td>Number of CPUs of the master node</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>4</td>
+</tr>
+<tr>
+<td>vcpus_slave</td>
+<td>Number of CPUs of each slave node</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>2</td>
+</tr>
+<tr>
+<td>ram_master</td>
+<td>Amount of RAM of master node in MB</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>4096</td>
+</tr>
+<tr>
+<td>ram_master</td>
+<td>Amount of RAM of each slave node in MB</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>2048</td>
+</tr>
+<tr>
+<td>disk_master</td>
+<td>Amount of HDD space of master node in GB</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>40</td>
+</tr>
+<tr>
+<td>disk_slave</td>
+<td>Amount of HDD space of each slave node in GB</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>40</td>
+</tr>
+<tr>
+<td>ip_allocation</td>
+<td>Allocation of public ips. Choose between none, master, all</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>master</td>
+</tr>
+<tr>
+<td>network_request</td>
+<td>Number of private networks</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>1</td>
+</tr>
+<tr>
+<td>project_name</td>
+<td>Name of the project</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>lambda.grnet.gr</td>
+</tr>
+<tr>
+<td>public_key_name</td>
+<td>Name of public key to use for lambda instance</td>
+<td><code>No</code></td>
+<td>None</td>
+<td><code>my public key</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="example">Example</h2>
+<p>In this example we are going to create a new lambda instance, using the specs specified in the json-formatted body, and the authentication token specified by HTTP header.</p>
+<p>The request in curl</p>
+<pre><code>curl -X POST -H &quot;Content-Type: application/json&quot; \
+ -H &quot;Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR&quot; \
+ -d '{&quot;project_name&quot;: &quot;lambda.grnet.gr&quot;, &quot;instance_name&quot;: &quot;My first Lambda Instance&quot;, &quot;network_request&quot;: 1,\
+ &quot;master_name&quot;: &quot;lambda-master&quot;, &quot;vcpus_master&quot;: 4, &quot;disk_slave&quot;: 40, &quot;slaves&quot;: 1, &quot;ram_slave&quot;: 4096, \
+ &quot;ram_master&quot;: 4096, &quot;vcpus_slave&quot;: 4, &quot;ip_allocation&quot;: &quot;master&quot;, &quot;disk_master&quot;: 40}' \
+ 'https://&lt;hostname&gt;/api/lambda-instance/'
+</code></pre>
+
+<h3 id="response-body">Response body</h3>
+<p>If the authentication token and url is correct, and all the headers are given correctly, a sample response is</p>
+<pre><code>{
+  &quot;status&quot;: {
+    &quot;short_description&quot;: &quot;Your request to create a new lambda instance has been accepted&quot;,
+    &quot;code&quot;: 202
+  },
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: &quot;dd0c8d65-0c52-4338-bcc1-6f82e57f2d37&quot;,
+      &quot;links&quot;: {
+        &quot;self&quot;: &quot;https://&lt;hostname&gt;/api/lambda-instances/dd0c8d65-0c52-4338-bcc1-6f82e57f2d37&quot;
+      }
+    }
+  ]
+}
+</code></pre>
+
+<h3 id="response-messages">Response messages</h3>
+<p>The main response messages are:</p>
+<ul>
+<li>HTTP/1.1 202 ACCEPTED : (Success)</li>
+<li>HTTP/1.1 401 UNAUTHORIZED : (Fail)</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../LambdaInstancesList/" class="btn btn-neutral float-right" title="List Lambda Instances"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../Authentication/" class="btn btn-neutral" title="Authentication"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../Authentication/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../LambdaInstancesList/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+
+</body>
+</html>

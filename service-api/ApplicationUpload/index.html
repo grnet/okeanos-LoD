@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Upload an Application - λ on Demand</title>
+  
+
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/highlight.css">
+
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Upload an Application";
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
+  <script src="../../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> λ on Demand</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        <ul class="current">
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../..">Home</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Fokia</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../fokia/details/">Technical details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../fokia/description/">Usage</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Service API</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../details/">Technical details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../">Usage</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../Authentication/">Authentication</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../CreateLambdaInstance/">Create Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstancesList/">List Lambda Instances</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstancesCount/">Count Lambda Instances</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstanceDetails/">Details of a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstanceAction/">Actions on a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstanceDestroy/">Destroy a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Upload an Application</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#api-application-upload-description">API - application upload - Description</a></li>
+                
+                    <li><a class="toctree-l4" href="#basic-parameters">Basic Parameters</a></li>
+                
+                    <li><a class="toctree-l4" href="#example">Example</a></li>
+                
+            
+            </ul>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationDelete/">Delete an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationsList/">List Applications</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationsCount/">Count Applications</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationDetails/">Details of an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationDeploy/">Deploy an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationWithdraw/">Withdraw an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationsListDeployed/">List Deployed Applications</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationStart/">Start an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationStop/">Stop an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../UserPublicKeys/">Get SSH public keys on ~okeanos</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../VMParameterValues/">Get allowed VM Parameter Values</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../UserOkeanosProjects/">Get User ~okeanos Projects</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Central API</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/details/">Details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/">Description</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/API_users/">User API calls</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/API_lambda_instances/">Lamdba Instances API calls</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/API_lambda_applications/">Lamdba Applications API calls</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../../about/license/">License</a>
+        
+    </li>
+<li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">λ on Demand</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Service API &raquo;</li>
+        
+      
+    
+    <li>Upload an Application</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <hr />
+<p>title: API | application upload
+description: Upload an application</p>
+<hr />
+<h1 id="api-application-upload-description">API - application upload - Description</h1>
+<p>Application upload call, given an authentication token through the header authentication,
+will firstly check the validity of the token. If the token is invalid, the API will reply with
+a "401 Unauthorized" code. If the token is valid, the API will reply with a "202 ACCEPTED" code
+and will start uploading the provided application to Pithos+.</p>
+<h2 id="basic-parameters">Basic Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Description</strong></td>
+<td>Upload an application</td>
+</tr>
+<tr>
+<td><strong>URL</strong></td>
+<td>api/apps/</td>
+</tr>
+<tr>
+<td><strong>HTTP Method</strong></td>
+<td>POST</td>
+</tr>
+<tr>
+<td><strong>Security</strong></td>
+<td>Basic Authentication</td>
+</tr>
+</tbody>
+</table>
+<h3 id="headers">Headers</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authorization</td>
+<td>~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-&gt; API Access) https://accounts.okeanos.grnet.gr/ui/api_access.</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>Token tJ3b3f32f23ceuqdoS_..</td>
+</tr>
+</tbody>
+</table>
+<h3 id="parameters">Parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description</td>
+<td>A description of the application</td>
+<td><code>No</code></td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>file</td>
+<td>The application file</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>type</td>
+<td>The application type (batch/streaming)</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>project_name</td>
+<td>The ~okeanos project name that has the needed quotas on Pithos+</td>
+<td><code>No</code></td>
+<td>None</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="example">Example</h2>
+<p>In this example we are going to upload an application with description "My application", file
+name "test_project" and project name "lambda.grnet.gr".</p>
+<p>The request in curl</p>
+<pre><code>curl -X POST -H &quot;Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY&quot; \
+ -F &quot;description=My application&quot;  \
+ -F &quot;file=@batch-1.0-jar-with-dependencies.jar&quot; \
+ -F &quot;type=batch&quot; \
+ -F &quot;project_name=lambda.grnet.gr&quot; \
+ -F &quot;execution_environment_name=Batch&quot; \
+ 'https://&lt;hostname&gt;/api/apps/'
+</code></pre>
+
+<h3 id="response-body">Response body</h3>
+<p>If the authentication token is correct, a sample response would be</p>
+<pre><code>{
+  &quot;status&quot;: {
+    &quot;short_description&quot;: &quot;Your request to upload the specified application has been accepted&quot;,
+    &quot;code&quot;: 202
+  },
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: &quot;84dfb596-3abb-401e-99fc-c6f0057dedab&quot;,
+      &quot;links&quot;: {
+        &quot;self&quot;: &quot;https://&lt;hostname&gt;/api/apps/84dfb596-3abb-401e-99fc-c6f0057dedab&quot;
+      }
+    }
+  ]
+}
+</code></pre>
+
+<p>For the case where the authentication token is not correct, refer to <a href="../Authentication/">Authentication page</a>.</p>
+<h3 id="response-messages">Response messages</h3>
+<p>The main response messages are:</p>
+<ul>
+<li>HTTP/1.1 201 OK : (Success)</li>
+<li>HTTP/1.1 400 BAD REQUEST : (Fail)</li>
+<li>HTTP/1.1 401 UNAUTHORIZED : (Fail)</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../ApplicationDelete/" class="btn btn-neutral float-right" title="Delete an Application"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../LambdaInstanceDestroy/" class="btn btn-neutral" title="Destroy a Lambda Instance"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../LambdaInstanceDestroy/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../ApplicationDelete/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+
+</body>
+</html>

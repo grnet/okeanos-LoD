@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    
+    <url>
+     <loc>None/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+        
+    <url>
+     <loc>None/fokia/details/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/fokia/description/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+    
+        
+    <url>
+     <loc>None/service-api/details/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/Authentication/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/CreateLambdaInstance/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/LambdaInstancesList/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/LambdaInstancesCount/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/LambdaInstanceDetails/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/LambdaInstanceAction/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/LambdaInstanceDestroy/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/ApplicationUpload/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/ApplicationDelete/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/ApplicationsList/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/ApplicationsCount/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/ApplicationDetails/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/ApplicationDeploy/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/ApplicationWithdraw/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/ApplicationsListDeployed/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/ApplicationStart/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/ApplicationStop/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/UserPublicKeys/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/VMParameterValues/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/service-api/UserOkeanosProjects/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+    
+        
+    <url>
+     <loc>None/central-api/details/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/central-api/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/central-api/API_users/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/central-api/API_lambda_instances/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/central-api/API_lambda_applications/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+    
+    <url>
+     <loc>None/about/license/</loc>
+     <lastmod>2015-11-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+</urlset>

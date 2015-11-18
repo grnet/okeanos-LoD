@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Lamdba Applications API calls - λ on Demand</title>
+  
+
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/highlight.css">
+
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Lamdba Applications API calls";
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
+  <script src="../../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> λ on Demand</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        <ul class="current">
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../..">Home</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Fokia</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../fokia/details/">Technical details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../fokia/description/">Usage</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Service API</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/details/">Technical details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/">Usage</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/Authentication/">Authentication</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/CreateLambdaInstance/">Create Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/LambdaInstancesList/">List Lambda Instances</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/LambdaInstancesCount/">Count Lambda Instances</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/LambdaInstanceDetails/">Details of a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/LambdaInstanceAction/">Actions on a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/LambdaInstanceDestroy/">Destroy a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/ApplicationUpload/">Upload an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/ApplicationDelete/">Delete an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/ApplicationsList/">List Applications</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/ApplicationsCount/">Count Applications</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/ApplicationDetails/">Details of an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/ApplicationDeploy/">Deploy an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/ApplicationWithdraw/">Withdraw an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/ApplicationsListDeployed/">List Deployed Applications</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/ApplicationStart/">Start an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/ApplicationStop/">Stop an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/UserPublicKeys/">Get SSH public keys on ~okeanos</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/VMParameterValues/">Get allowed VM Parameter Values</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../service-api/UserOkeanosProjects/">Get User ~okeanos Projects</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Central API</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../details/">Details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../">Description</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../API_users/">User API calls</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../API_lambda_instances/">Lamdba Instances API calls</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Lamdba Applications API calls</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#lambda-applications-related-api-calls">Lambda Applications related API calls</a></li>
+                
+                    <li><a class="toctree-l4" href="#create-lambda-application-record">Create Lambda Application Record</a></li>
+                
+                    <li><a class="toctree-l4" href="#update-lambda-application-status">Update Lambda Application Status</a></li>
+                
+                    <li><a class="toctree-l4" href="#delete-lambda-application">Delete Lambda Application</a></li>
+                
+                    <li><a class="toctree-l4" href="#list-lambda-applications">List Lambda Applications</a></li>
+                
+                    <li><a class="toctree-l4" href="#count-lambda-applications">Count Lambda Applications</a></li>
+                
+            
+            </ul>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../../about/license/">License</a>
+        
+    </li>
+<li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">λ on Demand</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Central API &raquo;</li>
+        
+      
+    
+    <li>Lamdba Applications API calls</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="lambda-applications-related-api-calls">Lambda Applications related API calls</h1>
+<h2 id="create-lambda-application-record">Create Lambda Application Record</h2>
+<h3 id="api-call">API Call</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Description</strong></td>
+<td>create a new lambda application record</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>URL</strong></td>
+<td>/api/lambda_applications/</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>HTTP Method</strong></td>
+<td>POST</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Security</strong></td>
+<td>Basic Authentication</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="parameters">Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default Value</th>
+<th>Example Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>uuid</td>
+<td>The Unique Identifier of the lamdba application, as identified from the service vm.</td>
+<td>Yes</td>
+<td>None</td>
+<td>'24b8a635-8d71-4016-b8f5-c4a14348ed8f'</td>
+</tr>
+<tr>
+<td>name</td>
+<td>The name of the lamdba application.</td>
+<td>Yes</td>
+<td>None</td>
+<td>'My first lambda application'</td>
+</tr>
+<tr>
+<td>description</td>
+<td>Description text about the lambda application.</td>
+<td>Yes</td>
+<td>None</td>
+<td>"Testing the lambda cluster."</td>
+</tr>
+<tr>
+<td>status</td>
+<td>The status of the lambda application.</td>
+<td>Yes</td>
+<td>None</td>
+<td>"2"</td>
+</tr>
+<tr>
+<td>failure_message</td>
+<td>(optional) A message related to the failed status of the lamdbda application</td>
+<td>Yes</td>
+<td>""</td>
+<td>"Segmentation fault."</td>
+</tr>
+</tbody>
+</table>
+<h4 id="headers">Headers</h4>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authorization</td>
+<td>~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-&gt; API Access) https://accounts.okeanos.grnet.gr/ui/api_access.</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>Token tJ3b3f32f23ceuqdoS_..</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-api-call">Example API call</h3>
+<p><code>curl -X POST -H "Content-Type: application/json" -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" -d '{"uuid": "24b8a635-8d71-4016-b8f5-c4a14348ed8f", "name": "My frist Lambda application", "description": "", "status": "2", "failure_message": "Segmentation fault."}' 'http://&lt;hostname&gt;/api/lambda_applications/'</code></p>
+<h3 id="response">Response</h3>
+<pre><code class="json">{
+  &quot;status&quot;: {
+    &quot;short_description&quot;: &quot;Your request to create the specified application has been accepted.&quot;,
+    &quot;code&quot;: 202
+  },
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: &quot;24b8a635-8d71-4016-b8f5-c4a14348ed8f&quot;
+    }
+  ]
+}
+
+</code></pre>
+
+<h2 id="update-lambda-application-status">Update Lambda Application Status</h2>
+<h3 id="api-call_1">API Call</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Description</strong></td>
+<td>update the status of the lambda application</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>URL</strong></td>
+<td>/api/lambda_applications/[uuid]/status/</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>HTTP Method</strong></td>
+<td>POST</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Security</strong></td>
+<td>Basic Authentication</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="parameters_1">Parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default Value</th>
+<th>Example Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>status</td>
+<td>The status of the lambda application.</td>
+<td>Yes</td>
+<td>None</td>
+<td>"0"</td>
+</tr>
+<tr>
+<td>failure_message</td>
+<td>A message related to the failed status of the lamdbda application</td>
+<td>Yes</td>
+<td>""</td>
+<td>"No stdout found."</td>
+</tr>
+</tbody>
+</table>
+<h4 id="headers_1">Headers</h4>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authorization</td>
+<td>~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-&gt; API Access) https://accounts.okeanos.grnet.gr/ui/api_access.</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>Token tJ3b3f32f23ceuqdoS_..</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-api-call_1">Example API call</h3>
+<p><code>curl -X POST -H "Content-Type: application/json" -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" -d '{"status": "0", "failure_message": ""}' 'http://&lt;hostname&gt;/api/lambda_applications/24b8a635-8d71-4016-b8f5-c4a14348ed8f/status/'</code></p>
+<h3 id="response_1">Response</h3>
+<pre><code class="json">{
+  &quot;status&quot;: {
+    &quot;short_description&quot;: &quot;Lambda application status update accepted.&quot;,
+    &quot;code&quot;: 202
+  },
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: &quot;24b8a635-8d71-4016-b8f5-c4a14348ed8f&quot;
+    }
+  ]
+}
+
+</code></pre>
+
+<h2 id="delete-lambda-application">Delete Lambda Application</h2>
+<h3 id="api-call_2">API Call</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Description</strong></td>
+<td>delete the specified lambda application</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>URL</strong></td>
+<td>/api/lambda_applications/[uuid]</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>HTTP Method</strong></td>
+<td>DELETE</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Security</strong></td>
+<td>Basic Authentication</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="headers_2">Headers</h4>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authorization</td>
+<td>~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-&gt; API Access) https://accounts.okeanos.grnet.gr/ui/api_access.</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>Token tJ3b3f32f23ceuqdoS_..</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-api-call_2">Example API call</h3>
+<p><code>curl -X DELETE -H "Content-Type: application/json" -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" 'http://&lt;hostname&gt;/api/lambda_applications/24b8a635-8d71-4016-b8f5-c4a14348ed8f'</code></p>
+<h3 id="response_2">Response</h3>
+<pre><code class="json">{
+  &quot;status&quot;: {
+    &quot;short_description&quot;: &quot;Your request to destroy the specified lambda application has been accepted.&quot;,
+    &quot;code&quot;: 202
+  },
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: &quot;24b8a635-8d71-4016-b8f5-c4a14348ed8f&quot;
+    }
+  ]
+}
+
+</code></pre>
+
+<h2 id="list-lambda-applications">List Lambda Applications</h2>
+<h3 id="api-call_3">API Call</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Description</strong></td>
+<td>lists the lambda applications of the specific user being authorized.</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>URL</strong></td>
+<td>/api/lambda_applications/</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>HTTP Method</strong></td>
+<td>GET</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Security</strong></td>
+<td>Basic Authentication</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="headers_3">Headers</h4>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authorization</td>
+<td>~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-&gt; API Access) https://accounts.okeanos.grnet.gr/ui/api_access.</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>Token tJ3b3f32f23ceuqdoS_..</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-api-call_3">Example API call</h3>
+<p><code>curl -X GET -H "Content-Type: application/json" -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" 'http://&lt;hostname&gt;/api/lambda_applications/'</code></p>
+<h3 id="response_3">Response</h3>
+<pre><code class="json">
+{
+  &quot;status&quot;: {
+    &quot;short_description&quot;: &quot;Lambda Applications.&quot;,
+    &quot;code&quot;: 200
+  },
+  &quot;data&quot;: [
+    {
+      &quot;uuid&quot;: &quot;24b8a635-8d71-4016-b8f5-c4a14348ed8f&quot;,
+      &quot;description&quot;: &quot;A lambda application created from the api&quot;,
+      &quot;name&quot;: &quot;CreatedFromAPi&quot;,
+      &quot;status&quot;: &quot;1&quot;,
+      &quot;failure_message&quot;: &quot;Some failure message&quot;
+    },
+    {
+      &quot;uuid&quot;: &quot;24b8a635-8d71-4016-b8f5-c4a14348ed9f&quot;,
+      &quot;description&quot;: &quot;A lambda application created from the api&quot;,
+      &quot;name&quot;: &quot;CreatedFromAPi&quot;,
+      &quot;status&quot;: &quot;2&quot;,
+      &quot;failure_message&quot;: &quot;Segmentation fault&quot;
+    }
+  ]
+}
+
+</code></pre>
+
+<h3 id="pagination">Pagination</h3>
+<p>Results may be paginated, if one passes in the url the parameters <code>limit</code> (<em>compulsory</em>) and <code>offset</code> (<em>optional</em>).</p>
+<p>e.g.</p>
+<p><code>curl -X GET -H "Content-Type: application/json" -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" 'http://&lt;hostname&gt;/api/lambda_applications?limit=1&amp;offset=2'</code></p>
+<h2 id="count-lambda-applications">Count Lambda Applications</h2>
+<h3 id="api-call_4">API Call</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Description</strong></td>
+<td>counts the active lambda applications and returns its count</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>URL</strong></td>
+<td>/api/lambda_applications/count</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>HTTP Method</strong></td>
+<td>GET</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-api-call_4">Example API call</h3>
+<p><code>curl -X DELETE -H "Content-Type: application/json" 'http://&lt;hostname&gt;/api/lambda_applications/count</code></p>
+<h3 id="response_4">Response</h3>
+<pre><code class="json">{
+  &quot;status&quot;: {
+    &quot;short_description&quot;: &quot;Lamdba applications count.&quot;,
+    &quot;code&quot;: 200
+  },
+  &quot;data&quot;: {
+    &quot;count&quot;: &quot;2&quot;
+  }
+}
+
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../../about/license/" class="btn btn-neutral float-right" title="License"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../API_lambda_instances/" class="btn btn-neutral" title="Lamdba Instances API calls"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../API_lambda_instances/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../../about/license/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>List Applications - λ on Demand</title>
+  
+
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/highlight.css">
+
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "List Applications";
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
+  <script src="../../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> λ on Demand</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        <ul class="current">
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../..">Home</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Fokia</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../fokia/details/">Technical details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../fokia/description/">Usage</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Service API</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../details/">Technical details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../">Usage</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../Authentication/">Authentication</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../CreateLambdaInstance/">Create Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstancesList/">List Lambda Instances</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstancesCount/">Count Lambda Instances</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstanceDetails/">Details of a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstanceAction/">Actions on a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../LambdaInstanceDestroy/">Destroy a Lambda Instance</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationUpload/">Upload an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationDelete/">Delete an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">List Applications</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#api-applications-list-description">API - applications list - Description</a></li>
+                
+                    <li><a class="toctree-l4" href="#basic-parameters">Basic Parameters</a></li>
+                
+                    <li><a class="toctree-l4" href="#example">Example</a></li>
+                
+            
+            </ul>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationsCount/">Count Applications</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationDetails/">Details of an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationDeploy/">Deploy an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationWithdraw/">Withdraw an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationsListDeployed/">List Deployed Applications</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationStart/">Start an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../ApplicationStop/">Stop an Application</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../UserPublicKeys/">Get SSH public keys on ~okeanos</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../VMParameterValues/">Get allowed VM Parameter Values</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../UserOkeanosProjects/">Get User ~okeanos Projects</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Central API</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/details/">Details</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/">Description</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/API_users/">User API calls</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/API_lambda_instances/">Lamdba Instances API calls</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../central-api/API_lambda_applications/">Lamdba Applications API calls</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../../about/license/">License</a>
+        
+    </li>
+<li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">λ on Demand</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Service API &raquo;</li>
+        
+      
+    
+    <li>List Applications</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <hr />
+<p>title: API | applications list
+description: Lists all applications</p>
+<hr />
+<h1 id="api-applications-list-description">API - applications list - Description</h1>
+<p>Applications list call, given an authentication token through the header Authorization,
+will firstly check the validity of the token. If the token is invalid, the API will reply
+with a "401 Unauthorized" code. If the token is valid, the API will return all the applications in JSON format along with a "200 OK" code. If there are no applications the array
+of the returned applications will be empty. Applications can be viewed in pages with
+a specified number of them per page. This is possible by specifying the "limit" and "offset"
+GET variables on the URL of the call(offset can be ommited). If "offset" is specified without
+"limit", or has a zero or negative value, it will be ignored. If "limit" is less than zero, the API
+will reply with a "400 Bad Request" code.</p>
+<h2 id="basic-parameters">Basic Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Description</strong></td>
+<td>List all applications</td>
+</tr>
+<tr>
+<td><strong>URL</strong></td>
+<td>/api/apps/</td>
+</tr>
+<tr>
+<td><strong>HTTP Method</strong></td>
+<td>GET</td>
+</tr>
+<tr>
+<td><strong>Security</strong></td>
+<td>Basic Authentication</td>
+</tr>
+</tbody>
+</table>
+<h3 id="headers">Headers</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authorization</td>
+<td>~okeanos authentication token. If you have an account you may find the authentication token at (Dashboad-&gt; API Access) https://accounts.okeanos.grnet.gr/ui/api_access.</td>
+<td><code>Yes</code></td>
+<td>None</td>
+<td>Token tJ3b3f32f23ceuqdoS_..</td>
+</tr>
+</tbody>
+</table>
+<h3 id="parameters">Parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>limit</td>
+<td>number of lambda instances on each page</td>
+<td><code>No</code></td>
+<td>None</td>
+<td>3</td>
+</tr>
+<tr>
+<td>offset</td>
+<td>the first lambda instance of the page</td>
+<td><code>No</code></td>
+<td>None</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<h3 id="keywords-in-response">Keywords in response</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>The name of the application</td>
+<td>None</td>
+</tr>
+<tr>
+<td>id</td>
+<td>Unique key identifying a lambda i</td>
+<td>None</td>
+</tr>
+<tr>
+<td>status</td>
+<td>The status code of the response</td>
+<td>None</td>
+</tr>
+<tr>
+<td>next</td>
+<td>The URL to be used to list the next lambda instance</td>
+<td>null</td>
+</tr>
+<tr>
+<td>previous</td>
+<td>The URL to be used to list the previous lambda instance</td>
+<td>null</td>
+</tr>
+<tr>
+<td>count</td>
+<td>The number of existing lambda instances</td>
+<td>None</td>
+</tr>
+<tr>
+<td>description</td>
+<td>The description of the application</td>
+<td>None</td>
+</tr>
+<tr>
+<td>deployed</td>
+<td>A boolean value, specifying if the application is deployed on any lambda instance</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
+<h2 id="example">Example</h2>
+<p>In this example we are going to list all the available applications.</p>
+<p>The request in curl</p>
+<pre><code>curl -X GET -H &quot;Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY&quot; \
+ 'https://&lt;hostname&gt;/api/apps/'
+</code></pre>
+
+<h3 id="response-body">Response body</h3>
+<p>If the authentication token is correct, a sample response is</p>
+<pre><code>{
+  &quot;status&quot;: {
+    &quot;short_description&quot;: &quot;Applications&quot;,
+    &quot;code&quot;: 200
+  },
+  &quot;data&quot;: [
+    {
+      &quot;name&quot;: &quot;project.jar&quot;,
+      &quot;id&quot;: &quot;68e836e2-2ea4-4bb8-8b46-dcef869b3f08&quot;,
+      &quot;type&quot;: &quot;STREAMING&quot;,
+      &quot;status&quot;: {
+        &quot;message&quot;: &quot;UPLOADED&quot;,
+        &quot;code&quot;: &quot;0&quot;,
+        &quot;detail&quot;: &quot;Application has been successfully uploaded&quot;
+      },
+      &quot;deployed&quot;: true,
+    },
+    {
+      &quot;name&quot;: &quot;test_file&quot;,
+      &quot;id&quot;: &quot;1b9f7773-f19d-426d-bc29-5434844e4537&quot;,
+      &quot;type&quot;: &quot;STREAMING&quot;,
+      &quot;status&quot;: {
+        &quot;message&quot;: &quot;UPLOADED&quot;,
+        &quot;code&quot;: &quot;0&quot;,
+        &quot;detail&quot;: &quot;Application has been successfully uploaded&quot;
+      },
+      &quot;deployed&quot;: false,
+    },
+    {
+      &quot;name&quot;: &quot;test_file_2&quot;,
+      &quot;id&quot;: &quot;dddb18ae-5dab-4e9e-8914-3062b8853e24&quot;,
+      &quot;type&quot;: &quot;STREAMING&quot;,
+      &quot;status&quot;: {
+        &quot;message&quot;: &quot;UPLOADED&quot;,
+        &quot;code&quot;: &quot;0&quot;,
+        &quot;detail&quot;: &quot;Application has been successfully uploaded&quot;
+      },
+      &quot;deployed&quot;: true,
+    },
+    {
+      &quot;name&quot;: &quot;test_file_3&quot;,
+      &quot;id&quot;: &quot;b3e5d867-c882-4f5e-a5c2-75193866f44e&quot;,
+      &quot;type&quot;: &quot;BATCH&quot;,
+      &quot;status&quot;: {
+        &quot;message&quot;: &quot;UPLOADING&quot;,
+        &quot;code&quot;: &quot;1&quot;,
+        &quot;detail&quot;: &quot;Application is being uploaded&quot;
+      },
+      &quot;deployed&quot;: false,
+    },
+    {
+      &quot;name&quot;: &quot;test_file_4&quot;,
+      &quot;id&quot;: &quot;a5623a2e-7742-4299-8ca4-c05e811d2262&quot;,
+      &quot;type&quot;: &quot;BATCH&quot;,
+      &quot;status&quot;: {
+        &quot;message&quot;: &quot;UPLOADED&quot;,
+        &quot;code&quot;: &quot;0&quot;,
+        &quot;detail&quot;: &quot;Application has been successfully uploaded&quot;
+      },
+      &quot;deployed&quot;: true,
+    },
+    {
+      &quot;name&quot;: &quot;project1.jar&quot;,
+      &quot;id&quot;: &quot;5bda8e92-6397-493d-9aeb-a2fcf67b19a4&quot;,
+      &quot;type&quot;: &quot;STREAMING&quot;,
+      &quot;status&quot;: {
+        &quot;message&quot;: &quot;UPLOADED&quot;,
+        &quot;code&quot;: &quot;0&quot;,
+        &quot;detail&quot;: &quot;Application has been successfully uploaded&quot;
+      },
+      &quot;deployed&quot;: true,
+    },
+    {
+      &quot;name&quot;: &quot;application.jar&quot;,
+      &quot;id&quot;: &quot;6fb97497-8d2c-45ed-bb7d-207e16b97c48&quot;,
+      &quot;type&quot;: &quot;BATCH&quot;,
+      &quot;status&quot;: {
+        &quot;message&quot;: &quot;FAILED&quot;,
+        &quot;code&quot;: &quot;2&quot;,
+        &quot;detail&quot;: &quot;Application upload has failed&quot;,
+        &quot;failure_message&quot;: &quot;Couldn't reach remote host&quot;
+      },
+      &quot;deployed&quot;: false,
+    }
+  ]
+}
+</code></pre>
+
+<p>For the case where the authentication token is not correct, refer to <a href="../Authentication/">Authentication page</a>.</p>
+<p>In this example we are going to list a limit of 2 applications, starting from the third
+application.</p>
+<p>The request in url</p>
+<pre><code>curl -X GET -H &quot;Authorization: Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY&quot; 'https://&lt;hostname&gt;/api/apps/?limit=2&amp;offset=3'
+</code></pre>
+
+<p>If the authentication token is correct, a sample response is</p>
+<pre><code>{
+  &quot;data&quot;: [
+    {
+      &quot;name&quot;: &quot;test_file_3&quot;,
+      &quot;id&quot;: &quot;b3e5d867-c882-4f5e-a5c2-75193866f44e&quot;,
+      &quot;type&quot;: &quot;BATCH&quot;,
+      &quot;status&quot;: {
+        &quot;message&quot;: &quot;UPLOADING&quot;,
+        &quot;code&quot;: &quot;1&quot;,
+        &quot;detail&quot;: &quot;Application is being uploaded&quot;
+      },
+      &quot;deployed&quot;: false,
+    },
+    {
+      &quot;name&quot;: &quot;test_file_4&quot;,
+      &quot;id&quot;: &quot;a5623a2e-7742-4299-8ca4-c05e811d2262&quot;,
+      &quot;type&quot;: &quot;BATCH&quot;,
+      &quot;status&quot;: {
+        &quot;message&quot;: &quot;UPLOADED&quot;,
+        &quot;code&quot;: &quot;0&quot;,
+        &quot;detail&quot;: &quot;Application has been successfully uploaded&quot;
+      },
+      &quot;deployed&quot;: true,
+    }
+  ],
+  &quot;pagination&quot;: {
+    &quot;count&quot;: 7,
+    &quot;next&quot;: &quot;https://&lt;hostname&gt;/api/apps/?limit=2&amp;offset=5&quot;,
+    &quot;previous&quot;: &quot;https://&lt;hostname&gt;/api/apps/?limit=2&amp;offset=1&quot;
+  },
+  &quot;status&quot;: {
+    &quot;short_description&quot;: &quot;Applications.&quot;,
+    &quot;code&quot;: 200
+  }
+}
+</code></pre>
+
+<h3 id="response-messages">Response messages</h3>
+<p>The main response messages are:</p>
+<ul>
+<li>HTTP/1.1 200 OK : (Success)</li>
+<li>HTTP/1.1 400 BAD REQUEST : (Fail)</li>
+<li>HTTP/1.1 401 UNAUTHORIZED : (Fail)</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../ApplicationsCount/" class="btn btn-neutral float-right" title="Count Applications"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../ApplicationDelete/" class="btn btn-neutral" title="Delete an Application"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../ApplicationDelete/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../ApplicationsCount/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+
+</body>
+</html>
