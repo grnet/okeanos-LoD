@@ -38,7 +38,13 @@ export default Ember.Controller.extend({
       }), ENV.message_dismiss);
     },
     delete_instance: function(instance_id) {
-      if (confirm("Are you sure you want to delete this lambda instance?")) {
+      var running_warning = "";
+      this.get('model.apps').forEach(function (item) {
+        if (item.get("started")) {
+          running_warning = " One or more application(s) are running on the instance.";
+        }
+      });
+      if (confirm("Are you sure you want to delete this lambda instance?" + running_warning)) {
         var _this = this;
 
         var host = this.store.adapterFor('upload-app').get('host'),

@@ -40,7 +40,11 @@ export default Ember.ArrayController.extend({
     },
 
     delete_instance: function(instance_id) {
-      if (confirm("Are you sure you want to delete this lambda instance?")) {
+      var running_warning = "";
+      if (this.get('model').findBy('id', instance_id).get('running_app')) {
+        running_warning = " One or more application(s) are running on the instance.";
+      }
+      if (confirm("Are you sure you want to delete this lambda instance?" + running_warning)) {
         var _this = this;
 
         var host = this.store.adapterFor('upload-app').get('host'),
