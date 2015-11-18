@@ -22,13 +22,14 @@ module.exports = function(environment) {
     }
   };
 
-  ENV.host = "http://{{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr"
+  ENV.host = "https://{{ ansible_hostname }}.vm.okeanos.grnet.gr"
+  ENV.port = 443
 
   ENV.contentSecurityPolicy = {
     'connect-src': "'self' http://{{ hostname.stdout_lines | replace("[", "") | replace("u", "") | replace("'", "") | replace("]", "") }}.vm.okeanos.grnet.gr:80"
   }
 
-  ENV.refresh_interval = 2000;
+  ENV.refresh_interval = 6000;
 
   if (environment === 'development') {
     // ENV.APP.LOG_RESOLVER = true;
