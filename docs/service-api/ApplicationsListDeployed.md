@@ -1,0 +1,1 @@
+../../webapp/api-doc/docs/ApplicationsListDeployed.md
