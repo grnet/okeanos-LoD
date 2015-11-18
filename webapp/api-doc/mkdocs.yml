@@ -4,12 +4,14 @@ pages:
   - Authentication: Authentication.md
   - Create Lambda Instance: CreateLambdaInstance.md
   - List Lambda Instances: LambdaInstancesList.md
+  - Count Lambda Instances: LambdaInstancesCount.md
   - Details of a Lambda Instance: LambdaInstanceDetails.md
   - Actions on a Lambda Instance: LambdaInstanceAction.md
   - Destroy a Lambda Instance: LambdaInstanceDestroy.md
   - Upload an Application: ApplicationUpload.md
   - Delete an Application: ApplicationDelete.md
   - List Applications: ApplicationsList.md
+  - Count Applications: ApplicationsCount.md
   - Details of an Application: ApplicationDetails.md
   - Deploy an Application: ApplicationDeploy.md
   - Withdraw an Application: ApplicationWithdraw.md
@@ -17,6 +19,7 @@ pages:
   - Start an Application: ApplicationStart.md
   - Stop an Application: ApplicationStop.md
   - Get SSH public keys on ~okeanos: UserPublicKeys.md
-  - Get allower VM Parameter Values: VMParameterValues.md
+  - Get allowed VM Parameter Values: VMParameterValues.md
+  - Get User ~okeanos Projects: UserOkeanosProjects.md
 
 theme: readthedocs
