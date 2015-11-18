@@ -11,5 +11,8 @@
   - name: Install python-pip.
     apt: name=python-pip force=yes
 
+  - name: Install curl
+    apt: name=curl force=yes
+
   - name: Create celery user.
     user: name=celery shell=/bin/bash home=/home/celery
