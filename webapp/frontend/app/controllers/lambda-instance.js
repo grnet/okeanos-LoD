@@ -68,7 +68,7 @@ export default Ember.Controller.extend({
             Ember.run.later((function () {
               _this.set("success_delete", false);
               _this.transitionToRoute('dashboard');
-            }), 3000);
+            }), ENV.message_dismiss);
           },
           statusCode: {
             404: function(xhr) {

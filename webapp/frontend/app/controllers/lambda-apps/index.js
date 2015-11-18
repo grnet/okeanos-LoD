@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import pagedArray from 'ember-cli-pagination/computed/paged-array';
+import ENV from 'frontend/config/environment';
 
 export default Ember.ArrayController.extend({
   success_delete: false,
@@ -63,7 +64,7 @@ export default Ember.ArrayController.extend({
               _this.store.unloadAll('lambda-app');
               Ember.run.later((function () {
                 _this.set("success_delete", false);
-              }), 4000);
+              }), ENV.message_dismiss);
             },
             statusCode: {
               404: function (xhr) {

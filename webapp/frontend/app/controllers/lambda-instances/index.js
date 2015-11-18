@@ -67,7 +67,7 @@ export default Ember.ArrayController.extend({
             _this.set('message', 'Your request to delete the lambda instance was successfully sent to the server.');
             Ember.run.later((function () {
               _this.set("success_delete", false);
-            }), 4000);
+            }), ENV.message_dismiss);
           },
           statusCode: {
             404: function(xhr) {
