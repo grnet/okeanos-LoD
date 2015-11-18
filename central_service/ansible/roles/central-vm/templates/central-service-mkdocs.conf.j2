@@ -2,7 +2,6 @@ Listen 8083
 Listen 8084
 
 <VirtualHost *:8083>
-        ServerName {{ ansible_hostname }}.vm.okeanos.grnet.gr
         RewriteEngine On
         RewriteCond %{HTTPS} !=on
         RewriteRule ^/?(.*) https://%{SERVER_NAME}:8084/$1 [R,L]
@@ -17,14 +16,16 @@ Listen 8084
         # value is not decisive as it is used as a last resort host regardless.
         # However, you must set it for any further virtual host explicitly.
         #ServerName www.example.com
-        ServerName {{ ansible_hostname }}.vm.okeanos.grnet.gr:8083
+        ServerName {{ ansible_hostname }}.vm.okeanos.grnet.gr:8084
+        ServerAlias {{ inventory_hostname }}:8084
 
         #ServerAdmin webmaster@localhost
         DocumentRoot {{ repository_download_path }}/okeanos-LoD/central_service/app/api-doc/site
 
         SSLEngine ON
-        SSLCertificateFile /etc/apache2/ssl/server.crt
-        SSLCertificateKeyFile /etc/apache2/ssl/server.key
+        SSLCertificateFile /etc/ssl/certs/{{ inventory_hostname }}.crt
+        SSLCertificateKeyFile /etc/ssl/private/{{ inventory_hostname }}.key
+        SSLCertificateChainFile /etc/ssl/certs/DigiCertCA.crt
 
         # Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
         # error, crit, alert, emerg.

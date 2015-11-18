@@ -4,7 +4,7 @@ export default Ember.Route.extend({
   model: function() {
   	this.poll = Ember.run.later(this, function () {
 	    this.model();
-	}, 100);
+	}, 30000);
 
     return Ember.RSVP.hash({
       lambdaInstancesCount: this.store.findAll('lambda-instances-count'),
