@@ -955,7 +955,18 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                              .format(state="destroyed"))
 
         if lambda_instance_data['status'] == LambdaInstance.CLUSTER_FAILED:
-            raise CustomCantDoError(CustomCantDoError.messages['cant_do'].
+            if 'out of limit' in lambda_instance_data['failure_message']:
+                events.set_lambda_instance_status.delay(lambda_instance_data['uuid'],
+                                                        LambdaInstance.DESTROYED)
+                status_code = status.HTTP_202_ACCEPTED
+                return Response({
+                    "status": {
+                        'code': status_code,
+                        'short_description':
+                            ResponseMessages.short_descriptions['lambda_instance_destroy']
+                    }}, status=status_code)
+            else:
+                raise CustomCantDoError(CustomCantDoError.messages['cant_do'].
                                         format(action="destroy", object="a lambda instance",
                                                status=LambdaInstance.status_choices[
                                                    int(lambda_instance_data['status'])][1]))
