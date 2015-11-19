@@ -12,6 +12,7 @@ var LambdaApp = DS.Model.extend({
   status_failure_message: DS.attr(),
   lambda_instances: DS.hasMany('lambda-instance'),
   started: DS.attr('boolean'),
+  deployed: DS.attr('boolean'),
   execution_environment_name: DS.attr()
 });
 

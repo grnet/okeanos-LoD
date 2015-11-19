@@ -6,5 +6,8 @@ export default LoDAdapter.extend({
   },
   shouldBackgroundReloadRecord: function(){
     return true;
+  },
+  shouldReloadAll: function(){
+    return true;
   }
 });

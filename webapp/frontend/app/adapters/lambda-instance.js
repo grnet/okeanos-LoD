@@ -9,5 +9,11 @@ export default GenericAdapter.extend({
     else{
       return new DS.InvalidError(payload.errors);
     }
+  },
+  shouldBackgroundReloadRecord: function() {
+    return true;
+  },
+  shouldReloadAll: function(){
+    return true;
   }
 });

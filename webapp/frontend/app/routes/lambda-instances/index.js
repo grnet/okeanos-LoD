@@ -27,9 +27,12 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
   },
 
-  setupController: function(controller, model) {
-      controller.set('content', model.instances);
-      controller.set('instance_action', model.instance_action);
+  setupController: function (controller, model) {
+    controller.set('content', model.instances);
+    controller.set('instance_action', model.instance_action);
+    controller.set('failure', false);
+    controller.set('failed_delete', false);
+    controller.send('checkPage');
   },
 
   deactivate: function () {
