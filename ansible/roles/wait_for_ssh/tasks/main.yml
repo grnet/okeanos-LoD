@@ -1,7 +1,7 @@
 ---
 
 - name: Wait for port 22 to be ready
-  local_action: wait_for port=22 host="{{ inventory_hostname }}"  search_regex=OpenSSH
+  local_action: wait_for port=22 host="{{ inventory_hostname }}"  search_regex=OpenSSH timeout=600
 
 - name: Wait for SSH SIGHUPs to stop
   pause: seconds=15
