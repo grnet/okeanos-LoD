@@ -1,7 +1,3 @@
----
-title: API | application withdraw
-description: Withdraws an application from a specified lambda instance
----
 
 # API - application withdraw - Description
 

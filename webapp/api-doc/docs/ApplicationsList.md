@@ -1,7 +1,3 @@
----
-title: API | applications list
-description: Lists all applications
----
 
 # API - applications list - Description
 

@@ -1,7 +1,3 @@
----
-title: API | lambda instance destroy
-description: Destroys a specified lambda instance
----
 
 # API - lambda instance destroy - Description
 

@@ -1,7 +1,3 @@
----
-title: API | lambda instance details
-description: Returns the details of a specified lambda instance
----
 
 # API - lambda instance details - Description
 

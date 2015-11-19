@@ -1,7 +1,3 @@
----
-title: API | application deploy
-description: Deploys an application on a specified lambda instance.
----
 
 # API - application deploy - Description
 

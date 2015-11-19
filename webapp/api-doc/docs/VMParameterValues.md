@@ -1,7 +1,3 @@
----
-title: 'API | VM parameter values'
-description: Retrieve the ~okeanos to which the user is a member
----
 
 # API - VM parameter values - Description
 VM parameter values call, given an authentication token through the header Authorization, will connect to ~okeanos service and retrieve the allowed values

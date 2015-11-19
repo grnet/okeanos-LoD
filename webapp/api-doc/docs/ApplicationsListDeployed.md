@@ -1,7 +1,3 @@
----
-title: API | application list deployed
-description: Lists the deployed application on the lambda instance
----
 
 # API - application list deployed - Description
 

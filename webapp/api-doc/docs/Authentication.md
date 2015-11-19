@@ -1,7 +1,3 @@
----
-title: 'API | authentication'
-description: authentication token validation
----
 
 # API - authentication - Description
 The authentication call, given an authentication token through the header Authorization, will

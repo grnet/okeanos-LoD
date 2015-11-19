@@ -1,7 +1,3 @@
----
-title: API | lambda instance action
-description: Performs a specified action on a specified lambda instance
----
 
 # API - lambda instance action - Description
 

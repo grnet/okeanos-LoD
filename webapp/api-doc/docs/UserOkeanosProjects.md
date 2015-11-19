@@ -1,7 +1,3 @@
----
-title: 'API | User ~okeanos projects'
-description: Retrieve the ~okeanos to which the user is a member
----
 
 # API - User ~okeanos projects - Description
 User ~okeanos projects call, given an authentication token through the header Authorization,

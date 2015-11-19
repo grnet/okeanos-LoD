@@ -1,7 +1,3 @@
----
-title: API | create lambda instance
-description: create a new lambda instance
----
 
 # API - create lambda instance - Description
 
