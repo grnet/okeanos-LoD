@@ -231,6 +231,7 @@ if __name__ == "__main__":
         run_playbook(ansible_manager, 'hadoop-install.yml', only_tags=only_tags)
         run_playbook(ansible_manager, 'kafka-install.yml', only_tags=only_tags)
         run_playbook(ansible_manager, 'flink-install.yml', only_tags=only_tags)
+        run_playbook(ansible_manager, 'flume-install.yml', only_tags=only_tags)
 
     else:
         # Used for image creation, does not configure or start lambda instance
@@ -240,3 +241,4 @@ if __name__ == "__main__":
         run_playbook(ansible_manager, 'hadoop-install.yml', skip_tags=skip_tags)
         run_playbook(ansible_manager, 'kafka-install.yml', skip_tags=skip_tags)
         run_playbook(ansible_manager, 'flink-install.yml', skip_tags=skip_tags)
+        run_playbook(ansible_manager, 'flume-install.yml', skip_tags=skip_tags)
