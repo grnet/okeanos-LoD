@@ -1,7 +1,3 @@
----
-title: API | API Endpoints
-description: [One line description]
----
 
 ~okeanos Lambda on Demand project
 

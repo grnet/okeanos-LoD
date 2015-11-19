@@ -1,7 +1,3 @@
----
-title: API | application upload
-description: Upload an application
----
 
 # API - application upload - Description
 

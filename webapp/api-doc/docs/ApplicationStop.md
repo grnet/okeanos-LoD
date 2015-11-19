@@ -1,7 +1,3 @@
----
-title: API | application stop
-description: Stops an application on a specified lambda instance
----
 
 # API - application stop - Description
 

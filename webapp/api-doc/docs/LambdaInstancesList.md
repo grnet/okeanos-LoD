@@ -1,7 +1,3 @@
----
-title: API | lambda instances list
-description: Lists all lambda instances
----
 
 # API - lambda instances list - Description
 

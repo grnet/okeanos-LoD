@@ -1,7 +1,3 @@
----
-title: API | application start
-description: Starts an application on a specified lambda instance
----
 
 # API - application start - Description
 

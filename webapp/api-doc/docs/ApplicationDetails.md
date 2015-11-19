@@ -1,7 +1,3 @@
----
-title: API | application details
-description: Returns the details of a specified application
----
 
 # API - application details - Description
 

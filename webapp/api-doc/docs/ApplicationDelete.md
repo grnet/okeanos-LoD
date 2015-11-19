@@ -1,7 +1,3 @@
----
-title: API | application delete
-description: Delete an uploaded application
----
 
 # API - application delete - Description
 

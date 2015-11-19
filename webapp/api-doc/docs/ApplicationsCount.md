@@ -1,7 +1,3 @@
----
-title: API | applications count
-description: Returns the number of applications
----
 
 # API - applications count - Description
 

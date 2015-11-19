@@ -1,7 +1,3 @@
----
-title: 'API | User Public Keys'
-description: Retrieve user's public keys from okeanos account
----
 
 # API - User Public Keys - Description
 The User public keys call, given an authentication token through the header Authorization, will

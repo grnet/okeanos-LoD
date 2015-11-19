@@ -1,7 +1,3 @@
----
-title: API | lambda instances count
-description: Returns the number of lambda instances
----
 
 # API - lambda instances count - Description
 
