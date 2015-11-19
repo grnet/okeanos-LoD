@@ -5,7 +5,8 @@ import ENV from 'frontend/config/environment';
 export default Ember.ArrayController.extend({
   success_delete: false,
   failed_delete: false,
-  message: '',
+  delete_success_message: '',
+  delete_error_message: '',
   error: false,
   session: Ember.inject.service('session'),
   queryParams: ["page", "perPage"],
@@ -60,26 +61,26 @@ export default Ember.ArrayController.extend({
             contentType: false,
             success: function () {
               _this.set('success_delete', true);
-              _this.set('message', 'Your request to delete the application was successfully sent to the server.');
+              _this.set('delete_success_message', 'Your request to delete the application was successfully sent to the server.');
               _this.store.unloadAll('lambda-app');
               Ember.run.later((function () {
-                _this.set("success_delete", false);
+                _this.set('success_delete', false);
               }), ENV.message_dismiss);
             },
             statusCode: {
               404: function (xhr) {
                 _this.set('failed_delete', true);
-                _this.set('message', xhr.responseJSON.errors[0].detail);
+                _this.set('delete_error_message', xhr.responseJSON.errors[0].detail);
               },
               409: function (xhr) {
                 _this.set('failed_delete', true);
-                _this.set('message', xhr.responseJSON.errors[0].detail);
+                _this.set('delete_error_message', xhr.responseJSON.errors[0].detail);
               }
             },
             error: function (xhr) {
               var error = 'Error ' + xhr.status + '. Your request to delete the application was rejected. Please try again later or after the status of the instance has changed.';
               _this.set('failed_delete', true);
-              _this.set('message', error);
+              _this.set('delete_error_message', error);
             }
           });
         }

@@ -62,14 +62,14 @@
     {{#if failed_delete}}
         <div  class="alert alert-dismissable alert-danger" id="alert">
           <button type="button" class="close" {{action "close_alert"}}>×</button>
-          {{message}}
+          {{delete_error_message}}
         </div>
     {{/if}}
 
     {{#if success_delete}}
         <div  class="alert alert-dismissable alert-success" id="alert">
           <button type="button" class="close" {{action "close_alert"}}>×</button>
-          {{message}}
+          {{delete_success_message}}
         </div>
     {{/if}}
 

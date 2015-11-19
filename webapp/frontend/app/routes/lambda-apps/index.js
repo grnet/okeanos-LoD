@@ -18,13 +18,15 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
     return this.store.findAll('lambda-app', params, { reload: true });
   },
 
-  deactivate: function () {
-    Ember.run.cancel(this.poll);
-  },
-
   setupController: function (controller, model ) {
     this._super(controller, model);
+    controller.set('failure', false);
+    controller.set('failed_delete', false);
     controller.send('checkPage');
+  },
+
+  deactivate: function () {
+    Ember.run.cancel(this.poll);
   },
 
 });

@@ -31,6 +31,12 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
   },
 
+  setupController: function (controller, model) {
+    this._super(controller, model);
+    controller.set('failure', false);
+    controller.set('failed_delete', false);
+  },
+
   deactivate: function () {
     Ember.run.cancel(this.poll);
   },
