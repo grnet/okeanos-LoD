@@ -66,14 +66,14 @@
 
   - name: Set PATH environment variable for flink user
     lineinfile: destfile="/home/flink/.bashrc"
-              regexp="^PATH"
-              line="PATH=$PATH:{{ flink_home }}/bin:{{ hadoop_home }}/bin"
-              state=present
-              insertafter=EOF
+                regexp="^export\sPATH"
+                line="export PATH=$PATH:{{ flink_home }}/bin:{{ hadoop_home }}/bin"
+                state=present
+                insertafter=EOF
 
   - name: Set PATH environment variable for flume user
     lineinfile: destfile="/home/flume/.bashrc"
-              regexp="^PATH"
-              line="PATH=$PATH:{{ hadoop_home }}/bin"
-              state=present
-              insertafter=EOF
+                regexp="^export\sPATH"
+                line="export PATH=$PATH:{{ hadoop_home }}/bin"
+                state=present
+                insertafter=EOF
