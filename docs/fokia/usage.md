@@ -65,5 +65,7 @@ optional arguments:
 As an example with the command given below we bootstrap a λ instance comprised of one Flink master and 5 Flink slaves:
 
 ```sh
-$ python lambda_instance_manager.py --slaves 5
+$ python lambda_instance_manager.py --slaves 5 --project-name <~okeanos-project-name>
 ```
+
+In the command above one should replace the argument `<~okeanos-project-name>` with a valid ~okeanos project name. 
