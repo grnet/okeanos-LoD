@@ -29,11 +29,13 @@ export default Ember.Controller.extend({
         _this.set('app_request', false);
       }), ENV.message_dismiss);
     },
-    withdraw: function()
+    withdraw: function(application_id)
     {
       var _this = this;
       Ember.run.later((function () {
-        _this.store.unloadAll('lambda-app');
+        _this.store.find('lambda-app', application_id).then(function (application) {
+          _this.store.unloadRecord(application);
+        });
         _this.set('request', false);
         _this.set('app_request', false);
       }), ENV.message_dismiss);
@@ -63,7 +65,6 @@ export default Ember.Controller.extend({
           processData: false,
           contentType: false,
           success: function(){
-            _this.store.unloadAll('lambda-instance');
             _this.set('success_delete', true);
             _this.set('delete_success_message', 'Your request to delete the lambda instance was successfully sent to the server.');
             Ember.run.later((function () {

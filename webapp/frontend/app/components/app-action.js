@@ -70,14 +70,16 @@ export default Ember.Component.extend({
       }
       var _this = this;
       //send request to withdraw application
-      app.set('application_id', this.get("application-id"));
-      app.set('lambda_instance_id', this.get("instance-id"));
+      let application_id = this.get('application-id');
+      let instance_id = this.get('instance-id');
+      app.set('application_id', application_id);
+      app.set('lambda_instance_id', instance_id);
       app.set('call', "withdraw");
       app.save().then(
       function success() {
         _this.set("request", true);
         _this.set("message", "Your request to undeploy the application was successfully sent to the server.");
-        _this.sendAction('action');
+        _this.sendAction('action', application_id, instance_id);
       }).catch(
       function failure() {
         _this.set("failure", true);

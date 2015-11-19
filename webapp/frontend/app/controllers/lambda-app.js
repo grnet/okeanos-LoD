@@ -11,11 +11,13 @@ export default Ember.Controller.extend({
   delete_success_message: '',
   delete_error_message: '',
   actions: {
-    withdraw: function()
+    withdraw: function(application_id, instance_id)
     {
       var _this = this;
       Ember.run.later((function () {
-        _this.store.unloadAll('lambda-instance');
+        _this.store.find('lambda-instance', instance_id).then(function (instance) {
+          _this.store.unloadRecord(instance);
+        });
         _this.set('request', false);
       }), ENV.message_dismiss);
     },
@@ -57,7 +59,6 @@ export default Ember.Controller.extend({
             processData: false,
             contentType: false,
             success: function () {
-              _this.store.unloadAll('lambda-app');
               _this.set('delete_success_message', 'Your request to delete the application was successfully sent to the server.');
               _this.set('success_delete', true);
               Ember.run.later((function () {

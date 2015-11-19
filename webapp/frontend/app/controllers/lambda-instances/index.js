@@ -63,10 +63,12 @@ export default Ember.ArrayController.extend({
           processData: false,
           contentType: false,
           success: function(){
-            _this.store.unloadAll('lambda-instance');
             _this.set('success_delete', true);
             _this.set('delete_success_message', 'Your request to delete the lambda instance was successfully sent to the server.');
             Ember.run.later((function () {
+              _this.store.find('lambda-instance', instance_id).then(function (instance) {
+                _this.store.unloadRecord(instance);
+              });
               _this.set('success_delete', false);
             }), ENV.message_dismiss);
           },

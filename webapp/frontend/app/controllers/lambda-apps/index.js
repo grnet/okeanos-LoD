@@ -62,8 +62,10 @@ export default Ember.ArrayController.extend({
             success: function () {
               _this.set('success_delete', true);
               _this.set('delete_success_message', 'Your request to delete the application was successfully sent to the server.');
-              _this.store.unloadAll('lambda-app');
               Ember.run.later((function () {
+                _this.store.find('lambda-app', app_id).then(function (application) {
+                  _this.store.unloadRecord(application);
+                });
                 _this.set('success_delete', false);
               }), ENV.message_dismiss);
             },
