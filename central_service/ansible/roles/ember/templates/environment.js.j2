@@ -22,14 +22,14 @@ module.exports = function(environment) {
     }
   };
 
-  ENV.host = "https://{{ ansible_hostname }}.vm.okeanos.grnet.gr"
+  ENV.host = "https://{{ inventory_hostname }}"
   ENV.port = 443
 
   ENV.contentSecurityPolicy = {
-    'connect-src': "'self' https://{{ ansible_hostname }}.vm.okeanos.grnet.gr:443"
+    'connect-src': "'self' https://{{ inventory_hostname }}"
   }
 
-  ENV.refresh_interval = 6000;
+  ENV.refresh_interval = 30000;
 
   if (environment === 'development') {
     // ENV.APP.LOG_RESOLVER = true;

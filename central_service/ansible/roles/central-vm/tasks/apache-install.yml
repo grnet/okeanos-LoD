@@ -6,13 +6,14 @@
       - apache2-dev
       - libapache2-mod-wsgi
 
-  - name: Install apache ssl, rewrite and headers modules
+  - name: Install apache ssl, rewrite and headers modules.
     apache2_module: name={{item}} state=present
     with_items:
       - ssl
       - rewrite
       - headers
-    notify: restart_apache2
+    notify:
+      - restart_apache2
 
   - name: Copy certificate.
     copy: src={{ inventory_hostname }}.crt dest=/etc/ssl/certs/{{ inventory_hostname }}.crt owner=root group=root mode=0644
@@ -45,16 +46,6 @@
       - default-ssl.conf
     notify:
       - restart_apache2
-
-  - name: Activate Apache rewrite module.
-    apache2_module: name=rewrite state=present
-    notify:
-          - restart_apache2
-
-  - name: Activate Apache headers module.
-    apache2_module: name=headers state=present
-    notify:
-          - restart_apache2
 
   - name: Configure Apache.
     lineinfile: dest=/etc/apache2/apache2.conf line="WSGIPythonPath {{ repository_download_path }}/okeanos-LoD/central_service/app" state=present insertafter=EOF

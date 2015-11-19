@@ -19,24 +19,24 @@
 	#ServerAdmin webmaster@localhost
 	DocumentRoot {{ repository_download_path }}/okeanos-LoD/central_service/app/
 
-        Alias /api {{ repository_download_path }}/okeanos-LoD/central_service/app/app/django.wsgi/api
-        WSGIScriptAlias /api {{ repository_download_path }}/okeanos-LoD/central_service/app/app/django.wsgi/api
+    Alias /api {{ repository_download_path }}/okeanos-LoD/central_service/app/app/django.wsgi/api
+    WSGIScriptAlias /api {{ repository_download_path }}/okeanos-LoD/central_service/app/app/django.wsgi/api
+    WSGIPassAuthorization On
+
+    <Directory {{ repository_download_path }}/okeanos-LoD/central_service/app/app/>
+        WSGIApplicationGroup %{GLOBAL}
         WSGIPassAuthorization On
+        AddHandler wsgi-script .wsgi
+        Options ExecCGI
+        Order allow,deny
+        Allow from all
+    </Directory>
 
-        <Directory {{ repository_download_path }}/okeanos-LoD/central_service/app/app/>
-                WSGIApplicationGroup %{GLOBAL}
-                WSGIPassAuthorization On
-                AddHandler wsgi-script .wsgi
-                Options ExecCGI
-                Order allow,deny
-                Allow from all
-        </Directory>
-
-        Alias / {{ repository_download_path }}/okeanos-LoD/central_service/app/frontend/dist/
-        <Directory /var/www/okeanos-LoD/central_service/app/frontend/dist/>
-                Order deny,allow
-                Allow from all
-        </Directory>
+    Alias / {{ repository_download_path }}/okeanos-LoD/central_service/app/frontend/dist/
+    <Directory /var/www/okeanos-LoD/central_service/app/frontend/dist/>
+        Order deny,allow
+        Allow from all
+    </Directory>
 
 	SetEnvIf Origin "https://({{ ansible_default_ipv4.address }})$" AccessControlAllowOrigin=$0
 	Header always set Access-Control-Allow-Origin %{AccessControlAllowOrigin}e env=AccessControlAllowOrigin
@@ -45,14 +45,14 @@
 	Header always set Access-Control-Allow-Headers "Authorization"
 	Header always add Access-Control-Allow-Headers "Content-Type"
 
-        SSLEngine ON
-        SSLCertificateFile /etc/ssl/certs/{{ inventory_hostname }}.crt
-        SSLCertificateKeyFile /etc/ssl/private/{{ inventory_hostname }}.key
-        SSLCertificateChainFile /etc/ssl/certs/DigiCertCA.crt
+    SSLEngine ON
+    SSLCertificateFile /etc/ssl/certs/{{ inventory_hostname }}.crt
+    SSLCertificateKeyFile /etc/ssl/private/{{ inventory_hostname }}.key
+    SSLCertificateChainFile /etc/ssl/certs/DigiCertCA.crt
 
-        RewriteEngine On
-        RewriteCond %{REQUEST_METHOD} OPTIONS
-        RewriteRule ^(.*)$ $1 [R=200,L]
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=200,L]
 
 	# Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
 	# error, crit, alert, emerg.
