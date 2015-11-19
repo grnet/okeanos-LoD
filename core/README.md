@@ -80,12 +80,14 @@ from within the `core/fokia` directory. To change the default settings (one mast
 ```
   --master-name MASTER_NAME    Name of Flink master VM [default: lambda-master]
   --slaves SLAVES              Number of Flink slaves [default: 1]
-  --vcpus_master VCPUS_MASTER  Number of CPUs on Flink master [default: 4]
-  --vcpus_slave VCPUS_SLAVE    Number of CPUs on Flink slave(s) [default: 4]
-  --ram_master RAM_MASTER      Size of RAM on Flink master (in MB) [default: 4096MB]
-  --ram_slave RAM_SLAVE        Size of RAM on Flink slave(s) (in MB) [default: 4096MB]
-  --disk_master DISK_MASTER    Size of disk on Flink master (in GB) [default: 40GB]
-  --disk_slave DISK_SLAVE      Size of disk on Flink slave(s) (in GB) [default: 40GB]
+  --vcpus-master VCPUS_MASTER  Number of CPUs on Flink master [default: 4]
+  --vcpus-slave VCPUS_SLAVE    Number of CPUs on Flink slave(s) [default: 4]
+  --ram-master RAM_MASTER      Size of RAM on Flink master (in MB) [default: 4096MB]
+  --ram-slave RAM_SLAVE        Size of RAM on Flink slave(s) (in MB) [default: 4096MB]
+  --disk-master DISK_MASTER    Size of disk on Flink master (in GB) [default: 40GB]
+  --disk-slave DISK_SLAVE      Size of disk on Flink slave(s) (in GB) [default: 40GB]
+  --project-name               ~okeanos Project [example: project.grnet.gr]
+  --auth-token                 ~okeanos auth token
 ```
 
 

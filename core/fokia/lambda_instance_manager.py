@@ -156,8 +156,6 @@ if __name__ == "__main__":
 
     import argparse
     import uuid
-    image_creation = False
-    use_images = True
 
     parser = argparse.ArgumentParser(description="Okeanos VM provisioning")
     parser.add_argument('--master-name', type=str, dest="master_name",
@@ -165,20 +163,26 @@ if __name__ == "__main__":
                         help="Name of Flink master VM [default: lambda-master]")
     parser.add_argument('--slaves', type=int, dest='slaves', default=1,
                         help="Number of Flink slaves [default: 1]")
-    parser.add_argument('--vcpus_master', type=int, dest='vcpus_master', default=4,
+    parser.add_argument('--vcpus-master', type=int, dest='vcpus_master', default=4,
                         help="Number of CPUs on Flink master [default: 4]")
-    parser.add_argument('--vcpus_slave', type=int, dest='vcpus_slave', default=4,
+    parser.add_argument('--vcpus-slave', type=int, dest='vcpus_slave', default=4,
                         help="Number of CPUs on Flink slave(s) [default: 4]")
-    parser.add_argument('--ram_master', type=int, dest='ram_master', default=4096,
+    parser.add_argument('--ram-master', type=int, dest='ram_master', default=4096,
                         help="Size of RAM on Flink master (in MB) [default: 4096MB]")
-    parser.add_argument('--ram_slave', type=int, dest='ram_slave', default=4096,
+    parser.add_argument('--ram-slave', type=int, dest='ram_slave', default=4096,
                         help="Size of RAM on Flink slave(s) (in MB) [default: 4096MB]")
-    parser.add_argument('--disk_master', type=int, dest='disk_master', default=40,
+    parser.add_argument('--disk-master', type=int, dest='disk_master', default=40,
                         help="Size of disk on Flink master (in GB) [default: 40GB]")
-    parser.add_argument('--disk_slave', type=int, dest='disk_slave', default=40,
+    parser.add_argument('--disk-slave', type=int, dest='disk_slave', default=40,
                         help="Size of disk on Flink slave(s) (in GB) [default: 40GB]")
     parser.add_argument('--project-name', type=str, dest="project_name",
                         help="~okeanos Project [example: project.grnet.gr]")
+    parser.add_argument('--auth-token', type=str, dest="auth_token",
+                        help="~okeanos auth token")
+    parser.add_argument('--no-images', action='store_false', dest="use_images",
+                        default=True, help=argparse.SUPPRESS)
+    parser.add_argument('--image-creation', action='store_true', dest="image_creation",
+                        default=False, help=argparse.SUPPRESS)
 
     args = parser.parse_args()
 
@@ -190,13 +194,17 @@ if __name__ == "__main__":
         if choice.lower() in ["", "y", "yes"]:
             os.mkdir(keys_folder, 0o755)
 
-    if use_images:
+    use_images = args.use_images
+    image_creation = args.image_creation
+
+    if use_images and not image_creation:
         master_image_id = 'ef4d0aec-896a-4df1-80f5-b7c31b475499'
         slave_image_id = '3ac53ab3-4d3c-4fb9-8816-525bdd9ab975'
     else:
         master_image_id = None
         slave_image_id = None
     ansible_manager, provisioner_response = create_cluster(cluster_id=uuid.uuid4(),
+                                                           auth_token=args.auth_token,
                                                            master_image_id=master_image_id,
                                                            slave_image_id=slave_image_id,
                                                            master_name=args.master_name,
