@@ -1,7 +1,7 @@
 import DS from "ember-data";
 
 export default DS.Model.extend({
-  projectName: DS.attr('string', {defaultValue: "lambda.grnet.gr"}),
+  projectName: DS.attr('string'),
   instanceName: DS.attr('string', {defaultValue: "My Lambda Instance"}),
   masterName: DS.attr('string', {defaultValue: "Lambda Instance Master Node"}),
   slaves: DS.attr('number', {defaultValue: 2}),
