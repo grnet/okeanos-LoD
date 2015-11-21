@@ -99,38 +99,58 @@ class Provisioner(ProvisionerBase):
             vpn_id = self.vpn['id']
             self.create_private_subnet(vpn_id)
 
-            master_ip = None
-            slave_ips = [None] * kwargs['slaves']
-            # reserve ip
-            if kwargs['ip_allocation'] in ["master", "all"]:
-                master_ip = self.reserve_ip(project_id=project_id)
+            self.ips = []
 
-                if kwargs['ip_allocation'] == "all":
-                    slave_ips = [self.reserve_ip(project_id=project_id)
-                                 for i in range(kwargs['slaves'])]
+            attempts = 0
+            # Create master and make sure that if there are ip conflicts to retry reserving an ip
+            master_ip = self.reserve_ip(project_id=project_id)
+            while attempts < 3:
+                try:
+                    self.master = self.create_vm(vm_name=vm_name,
+                                                 image_id=master_image_id,
+                                                 ip=master_ip,
+                                                 flavor=master_flavor,
+                                                 personality=master_personality,
+                                                 net_id=vpn_id,
+                                                 **kwargs)
 
-            self.ips = [ip for ip in [master_ip] + slave_ips if ip]
+                    self.ips.append(master_ip)
+                    break
+                except ClientError:
+                    attempts += 1
+                    if attempts > 3:
+                        raise
+                    master_ip = self.reserve_ip(project_id=project_id)
 
-            self.master = self.create_vm(vm_name=vm_name,
-                                         image_id=master_image_id,
-                                         ip=master_ip,
-                                         flavor=master_flavor,
-                                         personality=master_personality,
-                                         net_id=vpn_id,
-                                         **kwargs)
 
             # Create slaves
             self.slaves = list()
             for i in range(kwargs['slaves']):
                 slave_name = 'lambda-node' + str(i + 1)
-                slave = self.create_vm(vm_name=slave_name,
-                                       image_id=slave_image_id,
-                                       ip=slave_ips[i],
-                                       flavor=slave_flavor,
-                                       personality=slave_personality,
-                                       net_id=vpn_id,
-                                       **kwargs)
-                self.slaves.append(slave)
+                attempts = 0
+                slave_ip = None
+                if kwargs['ip_allocation'] == "all":
+                    slave_ip = self.reserve_ip(project_id=project_id)
+                while attempts < 3:
+                    try:
+                        slave = self.create_vm(vm_name=slave_name,
+                                               image_id=slave_image_id,
+                                               ip=slave_ip,
+                                               flavor=slave_flavor,
+                                               personality=slave_personality,
+                                               net_id=vpn_id,
+                                               **kwargs)
+                        self.slaves.append(slave)
+                        self.ips.append(slave_ip)
+                        break
+                    except ClientError:
+                        attempts += 1
+                        if attempts > 3:
+                            raise
+                        if kwargs['ip_allocation'] == "all":
+                            slave_ip = self.reserve_ip(project_id=project_id)
+
+            self.ips = filter(None, self.ips)
 
             # Wait for VMs to complete being built
             if wait:
@@ -266,15 +286,14 @@ class Provisioner(ProvisionerBase):
             msg = 'Cyclades disk out of limit'
             raise ClientError(msg, error_quotas_cyclades_disk)
         # Check for authorized IPs
-        # list_float_ips = self.network_client.list_floatingips()
+        list_float_ips = self.network_client.list_floatingips()
         pending_ips = quotas[project_id]['cyclades.floating_ip']['project_pending']
         limit_ips = quotas[project_id]['cyclades.floating_ip']['project_limit']
         usage_ips = quotas[project_id]['cyclades.floating_ip']['project_usage']
         available_ips = limit_ips - usage_ips - pending_ips
-        # TODO: figure out how to handle unassigned floating ips
-        # for d in list_float_ips:
-        #     if d['instance_id'] is None and d['port_id'] is None:
-        #         available_ips += 1
+        for d in list_float_ips:
+            if d['instance_id'] is None and d['port_id'] is None:
+                available_ips += 1
         if (kwargs['ip_allocation'] == "master" and available_ips < 1) or \
                 (kwargs['ip_allocation'] == "all" and available_ips < kwargs['cluster_size']):
             msg = 'authorized IPs out of limit'

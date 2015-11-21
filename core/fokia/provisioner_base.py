@@ -189,10 +189,12 @@ class ProvisionerBase:
         Reserve ip
         :return: the ip object if successfull
         """
-        # list_float_ips = self.network_client.list_floatingips()
-        # for ip in list_float_ips:
-        #     if ip['instance_id'] is None and ip['port_id'] is None and ip not in ips:
-        #         return ip
+
+        list_float_ips = self.network_client.list_floatingips()
+        for ip in list_float_ips:
+            if ip['instance_id'] is None and ip['port_id'] is None:
+                return ip
+
         try:
             ip = self.network_client.create_floatingip(project_id=project_id)
             return ip
