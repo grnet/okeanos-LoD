@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Copy image files
+mkdir -p /var/www/html/files
 cp -r /var/www/okeanos-LoD/webapp/frontend/public/assets/img/ /var/www/html/files
 
 # Copy js and css files
