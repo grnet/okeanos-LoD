@@ -34,7 +34,7 @@ class CentralServiceManager(object):
 
     def central_service_create(self, vm_name='Central Service',
                                vcpus=4, ram=4096, disk=40,
-                               project_name='lambda.grnet.gr',
+                               project_name=None,
                                private_key_path=None, public_key_path=None):
         """
         Creates the central service vm and installs the relevant s/w.
@@ -86,9 +86,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Central service VM provisioning')
     parser.add_argument('--action', type=str, dest='action', required=True,
                         choices=['create', 'start', 'stop', 'destroy'])
-    parser.add_argument('--auth_token', type=str, dest='auth_token', required=False)
-    parser.add_argument('--vm_id', type=int, dest='vm_id')
-    parser.add_argument('--vm_name', type=str, dest='vm_name', required=False,
+    parser.add_argument('--auth-token', type=str, dest='auth_token', required=False)
+    parser.add_argument('--vm-id', type=int, dest='vm_id')
+    parser.add_argument('--vm-name', type=str, dest='vm_name', required=False,
                         default='Central Service')
     parser.add_argument('--vcpus', type=int, dest='vcpus', default='4',
                         choices=[1, 2, 4, 8])
@@ -96,9 +96,9 @@ if __name__ == "__main__":
                         choices=[512, 1024, 2048, 4096, 6144, 8192])
     parser.add_argument('--disk', type=int, dest='disk', default='40',
                         choices=[5, 10, 20, 40, 60, 80, 100])
-    parser.add_argument('--project_name', type=str, dest='project_name', default='lambda.grnet.gr')
-    parser.add_argument('--private_key_path', type=str, dest='private_key_path')
-    parser.add_argument('--public_key_path', type=str, dest='public_key_path')
+    parser.add_argument('--project-name', type=str, dest='project_name')
+    parser.add_argument('--private-key-path', type=str, dest='private_key_path')
+    parser.add_argument('--public-key-path', type=str, dest='public_key_path')
     args = parser.parse_args()
 
     csm = CentralServiceManager(args.auth_token)

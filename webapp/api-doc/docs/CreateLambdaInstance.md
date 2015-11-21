@@ -43,7 +43,7 @@ disk_master | Amount of HDD space of master node in GB | `Yes` | None | 40
 disk_slave | Amount of HDD space of each slave node in GB | `Yes` | None | 40
 ip_allocation | Allocation of public ips. Choose between none, master, all | `Yes` | None | master
 network_request | Number of private networks | `Yes` | None | 1
-project_name | Name of the project | `Yes` | None | lambda.grnet.gr
+project_name | Name of the project | `Yes` | None | project.grnet.gr
 public_key_name | Name of public key to use for lambda instance | `No`| None | `my public key`
 
 ## Example
@@ -55,7 +55,8 @@ The request in curl
 ```
 curl -X POST -H "Content-Type: application/json" \
  -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttR" \
- -d '{"project_name": "lambda.grnet.gr", "instance_name": "My first Lambda Instance", "network_request": 1,\
+ -d '{"project_name": "project.grnet.gr", "instance_name": "My first Lambda Instance",
+ "network_request": 1,\
  "master_name": "lambda-master", "vcpus_master": 4, "disk_slave": 40, "slaves": 1, "ram_slave": 4096, \
  "ram_master": 4096, "vcpus_slave": 4, "ip_allocation": "master", "disk_master": 40}' \
  'https://<hostname>/api/lambda-instance/'
