@@ -61,7 +61,7 @@ If the authentication token is correct, a sample response is
     {
       "info": {
         "instance_info": {
-          "project_name": "lambda.grnet.gr",
+          "project_name": "project.grnet.gr",
           "master_name": "lambda-master-2",
           "vcpus_master": 4,
           "network_request": 1,

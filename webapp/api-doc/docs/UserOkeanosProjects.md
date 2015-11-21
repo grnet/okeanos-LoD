@@ -41,7 +41,7 @@ If the authentication token is correct then the response is
   "data": [
     {
       "id": "e9ccbc1b-81f9-4c46-9258-a579f9f0d030",
-      "name": "lambda.grnet.gr",
+      "name": "project.grnet.gr",
       "pithos_space": 150341341,
       "floating_ip": 10,
       "ram": 43215423621,

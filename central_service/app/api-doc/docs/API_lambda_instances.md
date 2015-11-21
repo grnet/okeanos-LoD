@@ -169,7 +169,7 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
       "uuid": "24b8a635-8d71-4016-b8f5-c4a14348ed8f",
       "name": "API_celery",
       "instance_info": {
-          "project_name": "lambda.grnet.gr",
+          "project_name": "project.grnet.gr",
           "master_name": "lambda-master-1",
           "vcpus_master": 4,
           "network_request": 1,
@@ -188,7 +188,7 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
       "uuid": "24b8a635-8d71-4016-b8f5-c4a14348ed8e",
       "name": "API_celery",
       "instance_info": {
-          "project_name": "lambda.grnet.gr",
+          "project_name": "project.grnet.gr",
           "master_name": "lambda-master-2",
           "vcpus_master": 4,
           "network_request": 1,
@@ -207,7 +207,7 @@ Authorization | ~okeanos authentication token. If you have an account you may fi
       "uuid": "24b8a635-8d71-4016-b8f5-c4a14348ed9f",
       "name": "API_celery",
       "instance_info": {
-          "project_name": "lambda.grnet.gr",
+          "project_name": "project.grnet.gr",
           "master_name": "lambda-master-3",
           "vcpus_master": 4,
           "network_request": 1,

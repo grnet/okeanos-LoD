@@ -36,7 +36,7 @@ project_name | The ~okeanos project name that has the needed quotas on Pithos+ |
 ## Example
 
 In this example we are going to upload an application with description "My application", file
-name "test_project" and project name "lambda.grnet.gr".
+name "test_project" and project name "project.grnet.gr".
 
 The request in curl
 
@@ -45,7 +45,7 @@ curl -X POST -H "Authorization:Token tJ3b3f32f23ceuqdoS_TH7m0d6yxmlWL1r2ralKcttY
  -F "description=My application"  \
  -F "file=@batch-1.0-jar-with-dependencies.jar" \
  -F "type=batch" \
- -F "project_name=lambda.grnet.gr" \
+ -F "project_name=project.grnet.gr" \
  -F "execution_environment_name=Batch" \
  'https://<hostname>/api/apps/'
 ```
