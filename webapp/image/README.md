@@ -39,4 +39,4 @@ the default site, enables the ansible-vm-init init script, then runs snf-image-c
 4. Run `./create_image.sh`.
 5. snf-image-creator will run, to bundle the host. Insert the required image properties, and
 ~okeanos credentials, to register your new image on the ~okeanos cloud. Recommended image
-name/description: Lambda Service VM YYYYMMDD. (eg. Lambda Service VM 20151219)
+name/description: Lambda Service VM YYYYMMDD (e.g. Lambda Service VM 20151219).

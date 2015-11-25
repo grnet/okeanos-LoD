@@ -153,7 +153,7 @@
                 cache: false,
                 error: function () {
                     // Error is thrown when https ember site comes up, due to cross-origin request
-                    window.location.href = '/';
+                    window.location.reload(true);
                 }
             });
         }, 6000);
