@@ -5,7 +5,6 @@
 The scripts contained in the webapp/image directory are responsible for assisting an
 administrator in creating a new Service VM image.
 
-
 ### ansible-vm-init
 
 The run-once init script responsible for  the initial configuration of the Service VM, after it has
@@ -33,7 +32,7 @@ the default site, enables the ansible-vm-init init script, then runs snf-image-c
 ## Usage
 
 1. Create a new Service VM, by issuing:
-`webapp/manager/service_vm_manager.py --action image_creation`.
+`python webapp/manager/service_vm_manager.py --action image_creation`.
 2. After the service_vm_manager finishes successfully, ssh to the created VM.
 3. Navigate to the image folder on the Service VM: `cd /var/www/okeanos-LoD/webapp/image`.
 4. Run `./create_image.sh`.
