@@ -32,6 +32,9 @@ public_key_path=$PUBLIC_KEY_PATH
 # Private key path is given as third argument.
 private_key_path=$PRIVATE_KEY_PATH
 
+# Project to use
+okeanos_project="lambda.grnet.gr"
+
 # Clone devel branch of ~okeanos-LoD project.
 git clone -b devel https://github.com/grnet/okeanos-LoD.git
 
@@ -50,7 +53,7 @@ central_vm_id=$(python utils.py --get id --vm_name "Central VM devel CI" --auth_
 
 # Destroy the Central VM.
 cd okeanos-LoD/central_service/manager
-python central_service_manager.py --action destroy --auth_token $okeanos_token --vm_id $central_vm_id --public_key_path "$public_key_path" --private_key_path "$private_key_path"
+python central_service_manager.py --action destroy --auth-token $okeanos_token --vm-id $central_vm_id --public-key-path "$public_key_path" --private-key-path "$private_key_path"
 cd ../../../
 
 # Destroy the lambda instance.
@@ -61,7 +64,7 @@ service_vm_id=$(python utils.py --get id --vm_name "Service VM devel CI" --auth_
 
 # Destroy the Service VM.
 cd okeanos-LoD/webapp/manager
-python service_vm_manager.py --action destroy --auth_token $okeanos_token --vm_id $service_vm_id --public_key_path "$public_key_path" --private_key_path "$private_key_path"
+python service_vm_manager.py --action destroy --auth-token $okeanos_token --vm-id $service_vm_id --public-key-path "$public_key_path" --private-key-path "$private_key_path"
 cd ../../../
 
 # Destroy the python virtual environment.
