@@ -1,5 +1,5 @@
 from django.db import models
-import uuid
+from uuid import uuid4
 
 """
 OBJECTS
@@ -55,8 +55,11 @@ class Project(models.Model):
 
 class Application(models.Model):
     id = models.AutoField("id", primary_key=True, unique=True, help_text="Application id.")
-    uuid = models.UUIDField("uuid", unique=True, default=uuid.uuid4, help_text="Application uuid.")
+    uuid = models.UUIDField("uuid", unique=True, default=uuid4,
+                            help_text="Application uuid.")
     name = models.CharField(max_length=100, default="", null=True, blank=True)
+    project_id = models.UUIDField("project_id", unique=False, default=uuid4,
+                                  help_text="Project id.")
     path = models.CharField(max_length=400, default="lambda_applications")
     description = models.CharField(max_length=400, blank=True, default='')
     owner = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, null=True, blank=True)

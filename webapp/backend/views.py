@@ -201,7 +201,8 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     lookup_field = 'uuid'
 
-    # The Pithos container on which user's applications are saved.
+    # The Pithos container on which user's applications are saved. Since each ~okeanos project will
+    # have its own container, the following name will be extended by the name of the project.
     pithos_container = "lambda_applications"
 
     def get_queryset(self):
@@ -264,6 +265,9 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         r'^{prefix}{trailing_slash}$'
         """
 
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+        auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
+
         # Check if a file was sent with the request.
         uploaded_file = request.FILES.get('file')
         if not uploaded_file:
@@ -285,17 +289,25 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         if app_type != 'batch' and app_type != 'streaming':
             raise CustomParseError(CustomParseError.messages['no_type_error'])
 
-        # Get the name of the project provided.
+        # Get the name of the project provided and check if the user is subscribed on this project.
         project_name = request.data.get('project_name', '')
+        user_projects = get_user_okeanos_projects(auth_url, auth_token)
+        chosen_project = None
+        if project_name not in [project['name'] for project in user_projects]:
+            raise CustomCantDoError(CustomCantDoError.messages['wrong_project_name'].
+                                    format(project_name=project_name))
+        else:
+            chosen_project = [project for project in user_projects
+                              if project['name'] == project_name][0]
 
         # Generate a uuid for the uploaded application.
         application_uuid = uuid.uuid4()
 
         # Create an event to insert a new entry on the database.
-        events.create_new_application.delay(application_uuid, uploaded_file.name,
-                                            self.pithos_container, description,
-                                            app_type, request.user,
-                                            execution_environment_name)
+        events.create_new_application.\
+            delay(application_uuid, uploaded_file.name, chosen_project['id'],
+                  self.pithos_container + "_" + chosen_project['name'], description, app_type,
+                  request.user, execution_environment_name)
 
         # Save the uploaded file on the local file system.
         if not path.exists(settings.TEMPORARY_FILE_STORAGE):
@@ -312,12 +324,10 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         local_file.close()
 
         # Create a task to upload the application from the local file system to Pithos.
-        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
-        auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
-
-        tasks.upload_application_to_pithos.delay(auth_url, auth_token, self.pithos_container,
-                                                 project_name, local_file_path, application_uuid,
-                                                 uploaded_file.name, description)
+        tasks.upload_application_to_pithos.\
+            delay(auth_url, auth_token, self.pithos_container + "_" + chosen_project['name'],
+                  chosen_project['id'], local_file_path, application_uuid, uploaded_file.name,
+                  description)
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
@@ -416,7 +426,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
-        tasks.delete_application_from_pithos.delay(auth_url, auth_token, self.pithos_container,
+        tasks.delete_application_from_pithos.delay(auth_url, auth_token, serializer.data['path'],
                                                    serializer.data['name'], uuid)
 
         # Return an appropriate response.
@@ -470,7 +480,7 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
-        tasks.deploy_application.delay(auth_url, auth_token, self.pithos_container,
+        tasks.deploy_application.delay(auth_url, auth_token, application.path,
                                        lambda_instance_uuid, application_uuid)
 
         # Return an appropriate response.

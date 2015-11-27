@@ -333,7 +333,7 @@ setattr(create_lambda_instance, 'on_failure', on_failure)
 
 
 @shared_task
-def upload_application_to_pithos(auth_url, auth_token, container_name, project_name,
+def upload_application_to_pithos(auth_url, auth_token, container_name, project_id,
                                  local_file_path, application_uuid, application_name,
                                  application_description):
     """
@@ -355,7 +355,7 @@ def upload_application_to_pithos(auth_url, auth_token, container_name, project_n
     local_file = open(local_file_path, 'r')
 
     try:
-        utils.upload_file_to_pithos(auth_url, auth_token, container_name, project_name, local_file)
+        utils.upload_file_to_pithos(auth_url, auth_token, container_name, project_id, local_file)
 
         events.set_application_status.delay(application_uuid=application_uuid,
                                             status=Application.UPLOADED)
