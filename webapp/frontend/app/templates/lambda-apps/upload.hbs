@@ -48,11 +48,11 @@
               <div class="box-body">
                <div class="row">
         <div class="form-group col-sm-6">
-              <label for="okeanos_project" class="col-sm-6">~okeanos Project:</label>
+              <label for="project_name" class="col-sm-6">~okeanos Project:</label>
               <div class="col-sm-6">
 
 
-               <select name="okeanos_project" class="form-control">
+               <select name="project_name" class="form-control">
                  {{#each model.userOkeanosProjects as |project|}}
                    <option value={{project.name}}>{{project.name}} (pithos_space: {{normalize-bytes project.pithos_space}})</option>
                  {{/each}}
