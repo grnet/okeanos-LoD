@@ -35,6 +35,7 @@ export default LoDSerializer.extend(DS.EmbeddedRecordsMixin, {
         payload.data[i].attributes[key] = payload.data[i].attributes.status[k];
       }
     }
+    this.removeDeleted(store, primaryModelClass.modelName, payload);
     return this._super(store, primaryModelClass, payload, id, requestType);
   }
 });
