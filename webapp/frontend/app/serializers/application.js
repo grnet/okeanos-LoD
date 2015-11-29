@@ -25,7 +25,7 @@ export default DS.JSONAPISerializer.extend({
     var oldRecords = this.store.peekAll(modelName);
     var record;
     oldRecords.forEach (function (oldRecord) {
-      if (!payload.data.isAny('id', oldRecord.id)) {
+      if (!payload.isAny('id', oldRecord.id)) {
         record = store.peekRecord(modelName, oldRecord.id);
         store.unloadRecord(record);
       }
