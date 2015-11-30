@@ -294,7 +294,7 @@ def test_pithos_file_handling(mock_pithos, astakosclient, cycladesclient, mock_o
     file_obj = mock.Mock()
     pithosclient = mock_pithos.return_value
     mock_os.path.basename.return_value = "test_file_name"
-    utils.upload_file_to_pithos(url, token, container, "test_project_name", file_obj)
+    utils.upload_file_to_pithos(url, token, container, "test_project_id", file_obj)
     utils.download_file_from_pithos(url, token, container, filename, "test_destination")
     utils.delete_file_from_pithos(url, token, container, filename)
     pithosclient.upload_object.assert_called_with('test_file_name', file_obj)

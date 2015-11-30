@@ -291,6 +291,9 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         # Get the name of the project provided and check if the user is subscribed on this project.
         project_name = request.data.get('project_name', '')
+        if project_name == "":
+            raise CustomParseError(CustomParseError.messages['no_project_error'])
+
         user_projects = get_user_okeanos_projects(auth_url, auth_token)
         chosen_project = None
         if project_name not in [project['name'] for project in user_projects]:

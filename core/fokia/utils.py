@@ -148,7 +148,8 @@ def upload_file_to_pithos(auth_url, auth_token, container_name, project_id, loca
     :param auth_url: The authentication url for ~okeanos API.
     :param auth_token: The authentication token of the user.
     :param container_name: The name of the Pithos container to be used.
-    :param file_descriptor: A file descriptor of the file saved of the local file system.
+    :param project_id: The id of the ~okeanos project with the needed quotas.
+    :param local_file: A file descriptor on the local file system.
     """
 
     # Create Astakos client.

@@ -26,7 +26,8 @@ class CustomParseError(APIException):
         'filter_value_error': "filter GET parameter can be used with values status or info.",
         'action_value_error': "action POST parameter can be used with start or stop value.",
         'no_type_error': "Wrong or no application type specified "
-                         "(correct choices: batch/streaming)."
+                         "(correct choices: batch/streaming).",
+        'no_project_error': "No ~okeanos project name provided."
     }
 
 
