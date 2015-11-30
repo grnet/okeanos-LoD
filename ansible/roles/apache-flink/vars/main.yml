@@ -1,5 +1,5 @@
 ---
-mirror_url: "http://mirrors.myaegean.gr/apache/flink"
+mirror_url: "http://archive.apache.org/dist/flink"
 version: "0.9.1"
 version_for: "bin-hadoop27"
 download_path: "/root"
