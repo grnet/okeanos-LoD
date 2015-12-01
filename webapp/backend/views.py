@@ -290,8 +290,8 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             raise CustomParseError(CustomParseError.messages['no_type_error'])
 
         # Get the name of the project provided and check if the user is subscribed on this project.
-        project_name = request.data.get('project_name', '')
-        if project_name == "":
+        project_name = request.data.get('project_name')
+        if not project_name:
             raise CustomParseError(CustomParseError.messages['no_project_error'])
 
         user_projects = get_user_okeanos_projects(auth_url, auth_token)
