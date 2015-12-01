@@ -304,7 +304,8 @@ class LambdaInstanceCounterView(APIView):
 
     # GET /api/lambda_instances/count
     def get(self, request, format=None):
-        activeLambdaInstances = LambdaInstance.objects.filter(status="0").count()
+        running_lambda_instances = LambdaInstance.objects.filter(status="0").count()
+        created_lambda_instances = LambdaInstance.objects.all().count()
         status_code = rest_status.HTTP_200_OK
         return Response(
             {
@@ -315,7 +316,8 @@ class LambdaInstanceCounterView(APIView):
                 },
                 "data": [
                     {
-                        "count": str(activeLambdaInstances),
+                        "running_lambda_instances": str(running_lambda_instances),
+                        "created_lambda_instances": str(created_lambda_instances)
                     }
                 ]
             },

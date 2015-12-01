@@ -43,7 +43,9 @@
               <div class="small-box bg-blue">
                 <div class="inner">
                   {{#each model.lambdaInstancesCount as |lambdaInstancesCount|}}
-                  <h3>{{lambdaInstancesCount.count}}</h3>
+                  <h3>{{lambdaInstancesCount.runningLambdaInstances}} <sub><small><font color="white">running</font></small></sub> / 
+                      {{lambdaInstancesCount.createdLambdaInstances}} <sub><small><font color="white">created</font></small></sub>
+                  </h3>
                   {{/each}}
                   <p>Lambda Instances</p>
                 </div>
