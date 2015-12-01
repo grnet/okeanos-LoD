@@ -215,19 +215,19 @@ class TestCeleryTasks(APITestCase):
         application_name = "application_name"
         application_description = "application_description"
         container_name = "container_name"
-        project_name = "project_name"
+        project_id = uuid.uuid4()
         local_file_path = "local_file_path"
         application_uuid = uuid.uuid4()
 
         Application.objects.create(uuid=application_uuid, name=application_name,
-                                   path=container_name, description=application_description,
-                                   type=Application.BATCH)
+                                   project_id=project_id, path=container_name,
+                                   description=application_description, type=Application.BATCH)
 
         mock_local_file = mock.create_autospec(CustomFile())
         mock_builtin_open.return_value = mock_local_file
 
         tasks.upload_application_to_pithos(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
-                                           container_name, project_name, local_file_path,
+                                           container_name, project_id, local_file_path,
                                            application_uuid, application_name,
                                            application_description)
 
@@ -237,7 +237,7 @@ class TestCeleryTasks(APITestCase):
         mock_builtin_open.assert_called_with(local_file_path, 'r')
         mock_upload_file_to_pithos_fokia.assert_called_with(self.AUTHENTICATION_URL,
                                                             self.AUTHENTICATION_TOKEN,
-                                                            container_name, project_name,
+                                                            container_name, project_id,
                                                             mock_local_file)
         mock_set_application_status_event.delay. \
             assert_called_with(application_uuid=application_uuid, status=Application.UPLOADED)
@@ -264,19 +264,19 @@ class TestCeleryTasks(APITestCase):
         application_name = "application_name"
         application_description = "application_description"
         container_name = "container_name"
-        project_name = "project_name"
+        project_id = uuid.uuid4()
         local_file_path = "local_file_path"
         application_uuid = uuid.uuid4()
 
         Application.objects.create(uuid=application_uuid, name=application_name,
-                                   path=container_name, description=application_description,
-                                   type=Application.BATCH)
+                                   project_id=project_id, path=container_name,
+                                   description=application_description, type=Application.BATCH)
 
         mock_local_file = mock.create_autospec(CustomFile())
         mock_builtin_open.return_value = mock_local_file
 
         tasks.upload_application_to_pithos(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
-                                           container_name, project_name, local_file_path,
+                                           container_name, project_id, local_file_path,
                                            application_uuid, application_name,
                                            application_description)
 
@@ -286,7 +286,7 @@ class TestCeleryTasks(APITestCase):
         mock_builtin_open.assert_called_with(local_file_path, 'r')
         mock_upload_file_to_pithos_fokia.assert_called_with(self.AUTHENTICATION_URL,
                                                             self.AUTHENTICATION_TOKEN,
-                                                            container_name, project_name,
+                                                            container_name, project_id,
                                                             mock_local_file)
         mock_set_application_status_event.delay. \
             assert_called_with(application_uuid, Application.FAILED, "exception-message")

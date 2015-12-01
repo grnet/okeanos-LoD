@@ -142,13 +142,14 @@ def lambda_instance_stop(auth_url, auth_token, master_id, slave_ids):
         cyclades_compute_client.wait_server(slave_id, current_status="ACTIVE", max_wait=600)
 
 
-def upload_file_to_pithos(auth_url, auth_token, container_name, project_name, local_file):
+def upload_file_to_pithos(auth_url, auth_token, container_name, project_id, local_file):
     """
     Uploads a given file to a specified container, under a specified name on Pithos.
     :param auth_url: The authentication url for ~okeanos API.
     :param auth_token: The authentication token of the user.
     :param container_name: The name of the Pithos container to be used.
-    :param file_descriptor: A file descriptor of the file saved of the local file system.
+    :param project_id: The id of the ~okeanos project with the needed quotas.
+    :param local_file: A file descriptor on the local file system.
     """
 
     # Create Astakos client.
@@ -158,12 +159,6 @@ def upload_file_to_pithos(auth_url, auth_token, container_name, project_name, lo
     pithos_url = astakos_client.get_endpoint_url(PithosClient.service_type)
     pithos_client = PithosClient(pithos_url, auth_token)
     pithos_client.account = astakos_client.user_info['id']
-
-    # Get the project id.
-    if project_name != "":
-        project_id = astakos_client.get_projects(**{'name': project_name})[0]['id']
-    else:
-        project_id = astakos_client.get_projects()[0]['id']
 
     # Choose the container on Pithos that is used to store application. If the container doesn't
     # exist, create it.

@@ -124,20 +124,22 @@ class TestCeleryEvents(APITestCase):
     def test_create_new_application(self):
         application_uuid = uuid.uuid4()
         application_name = "application.jar"
+        project_id = uuid.uuid4()
         application_path = "application_path"
         application_description = "application_description"
         application_type = "batch"
         application_owner = User.objects.create(uuid=uuid.uuid4())
         application_execution_environment_name = "Stream"
 
-        events.create_new_application(application_uuid, application_name, application_path,
-                                      application_description, application_type,
+        events.create_new_application(application_uuid, application_name, project_id,
+                                      application_path, application_description, application_type,
                                       application_owner, application_execution_environment_name)
 
         self.assertEqual(Application.objects.all().count(), 1)
 
         application = Application.objects.get(uuid=application_uuid)
         self.assertEqual(application.name, application_name)
+        self.assertEqual(application.project_id, project_id)
         self.assertEqual(application.path, application_path)
         self.assertEqual(application.description, application_description)
         self.assertEqual(application.owner, application_owner)

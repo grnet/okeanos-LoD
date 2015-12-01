@@ -83,12 +83,13 @@ def insert_cluster_info(instance_uuid, specs, provisioner_response):
 
 
 @shared_task
-def create_new_application(uuid, name, path, description, app_type, owner,
+def create_new_application(uuid, name, project_id, path, description, app_type, owner,
                            execution_environment_name):
     """
     Creates a new entry of an application on the database.
     :param uuid: The uuid of the new application.
     :param name: The name of the new application.
+    :param project_id: The id of the ~okeanos project to be used.
     :param path: The path where the new application is stored on Pithos.
     :param description: The provided description of the new application.
     :param app_type: The type of the new application.
@@ -101,8 +102,8 @@ def create_new_application(uuid, name, path, description, app_type, owner,
     elif app_type == 'streaming':
         app_type = Application.STREAMING
 
-    Application.objects.create(uuid=uuid, name=name, path=path, description=description,
-                               owner=owner, type=app_type,
+    Application.objects.create(uuid=uuid, name=name, project_id=project_id, path=path,
+                               description=description, owner=owner, type=app_type,
                                execution_environment_name=execution_environment_name)
 
 

@@ -41,6 +41,14 @@ class TestApplicationUpload(APITestCase):
     # execution_environment_name
     execution_environment_name = "Stream"
 
+    user_projects = [
+        {'name': "lambda.grnet.gr", 'id': uuid.uuid4()},
+        {'name': "project_1", 'id': uuid.uuid4()},
+        {'name': "project_2", 'id': uuid.uuid4()},
+        {'name': "project_3", 'id': uuid.uuid4()},
+        {'name': "project_4", 'id': uuid.uuid4()}
+    ]
+
     def setUp(self):
         # Create a user and force authenticate.
         self.user = User.objects.create(uuid=uuid.uuid4())
@@ -51,10 +59,15 @@ class TestApplicationUpload(APITestCase):
                                                                           AUTHENTICATION_TOKEN))
 
     # Test for uploading an application.
+    @mock.patch('backend.views.get_user_okeanos_projects')
     @mock.patch('backend.views.events.create_new_application')
     @mock.patch('backend.views.tasks.upload_application_to_pithos')
     def test_application_upload(self, mock_upload_application_to_pithos_task,
-                                mock_create_new_application_event):
+                                mock_create_new_application_event,
+                                mock_get_user_okeanos_projects):
+        # Configure return values for mocks.
+        chosen_project = self.user_projects[0]
+        mock_get_user_okeanos_projects.return_value = self.user_projects
 
         # Make a request to upload an application.
         response = self.client.post("/api/apps/", {'description': self.application_description,
@@ -82,15 +95,15 @@ class TestApplicationUpload(APITestCase):
 
         # Assert that the proper tasks and views have been called.
         mock_create_new_application_event.delay.\
-            assert_called_with(application_id, self.application.name,
-                               ApplicationViewSet.pithos_container,
+            assert_called_with(application_id, self.application.name, chosen_project['id'],
+                               ApplicationViewSet.pithos_container + "_" + chosen_project['name'],
                                self.application_description, self.application_type_batch,
                                self.user, self.execution_environment_name)
 
         mock_upload_application_to_pithos_task.delay.\
             assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
-                               ApplicationViewSet.pithos_container,
-                               self.project_name,
+                               ApplicationViewSet.pithos_container + "_" + chosen_project['name'],
+                               chosen_project['id'],
                                path.join(settings.TEMPORARY_FILE_STORAGE, self.application.name),
                                application_id, self.application.name, self.application_description)
 
@@ -121,10 +134,14 @@ class TestApplicationUpload(APITestCase):
                          CustomParseError.messages['filename_already_exists_error'])
 
     # Test for uploading an application when no description is provided.
+    @mock.patch('backend.views.get_user_okeanos_projects')
     @mock.patch('backend.views.events.create_new_application')
     @mock.patch('backend.views.tasks.upload_application_to_pithos')
     def test_no_description(self, mock_upload_application_to_pithos_task,
-                            mock_create_new_application_event):
+                            mock_create_new_application_event, mock_get_user_okeanos_projects):
+        # Configure return values for mocks.
+        chosen_project = self.user_projects[0]
+        mock_get_user_okeanos_projects.return_value = self.user_projects
 
         # Make a request to upload an application.
         response = self.client.post("/api/apps/", {'file': self.application,
@@ -151,24 +168,29 @@ class TestApplicationUpload(APITestCase):
 
         # Assert that the proper tasks and views have been called.
         mock_create_new_application_event.delay.\
-            assert_called_with(application_id, self.application.name,
-                               ApplicationViewSet.pithos_container, "",
-                               self.application_type_batch, self.user,
+            assert_called_with(application_id, self.application.name, chosen_project['id'],
+                               ApplicationViewSet.pithos_container + "_" + chosen_project['name'],
+                               "", self.application_type_batch, self.user,
                                self.execution_environment_name)
 
         mock_upload_application_to_pithos_task.delay.\
             assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
-                               ApplicationViewSet.pithos_container,
-                               self.project_name,
+                               ApplicationViewSet.pithos_container + "_" + chosen_project['name'],
+                               chosen_project['id'],
                                path.join(settings.TEMPORARY_FILE_STORAGE, self.application.name),
                                application_id, self.application.name, "")
 
     # Test for uploading an application when no execution environment name is provided.
     # Test for uploading an application when no description is provided.
+    @mock.patch('backend.views.get_user_okeanos_projects')
     @mock.patch('backend.views.events.create_new_application')
     @mock.patch('backend.views.tasks.upload_application_to_pithos')
     def test_no_execution_environment_name(self, mock_upload_application_to_pithos_task,
-                                           mock_create_new_application_event):
+                                           mock_create_new_application_event,
+                                           mock_get_user_okeanos_projects):
+        # Configure return values for mocks.
+        chosen_project = self.user_projects[0]
+        mock_get_user_okeanos_projects.return_value = self.user_projects
 
         # Make a request to upload an application.
         response = self.client.post("/api/apps/", {'file': self.application,
@@ -194,14 +216,15 @@ class TestApplicationUpload(APITestCase):
 
         # Assert that the proper tasks and views have been called.
         mock_create_new_application_event.delay.\
-            assert_called_with(application_id, self.application.name,
-                               ApplicationViewSet.pithos_container, self.application_description,
-                               self.application_type_batch, self.user, "")
+            assert_called_with(application_id, self.application.name, chosen_project['id'],
+                               ApplicationViewSet.pithos_container + "_" + chosen_project['name'],
+                               self.application_description, self.application_type_batch,
+                               self.user, "")
 
         mock_upload_application_to_pithos_task.delay.\
             assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
-                               ApplicationViewSet.pithos_container,
-                               self.project_name,
+                               ApplicationViewSet.pithos_container + "_" + chosen_project['name'],
+                               chosen_project['id'],
                                path.join(settings.TEMPORARY_FILE_STORAGE, self.application.name),
                                application_id, self.application.name, self.application_description)
 
@@ -222,10 +245,14 @@ class TestApplicationUpload(APITestCase):
                                                                messages['no_file_error'])
 
     # Test for uploading an application with type "streaming".
+    @mock.patch('backend.views.get_user_okeanos_projects')
     @mock.patch('backend.views.events.create_new_application')
     @mock.patch('backend.views.tasks.upload_application_to_pithos')
     def test_type_streaming(self, mock_upload_application_to_pithos_task,
-                            mock_create_new_application_event):
+                            mock_create_new_application_event, mock_get_user_okeanos_projects):
+        # Configure return values for mocks.
+        chosen_project = self.user_projects[0]
+        mock_get_user_okeanos_projects.return_value = self.user_projects
 
         # Make a request to upload an application.
         response = self.client.post("/api/apps/", {'description': self.application_description,
@@ -253,15 +280,15 @@ class TestApplicationUpload(APITestCase):
 
         # Assert that the proper tasks and views have been called.
         mock_create_new_application_event.delay.\
-            assert_called_with(application_id, self.application.name,
-                               ApplicationViewSet.pithos_container,
+            assert_called_with(application_id, self.application.name, chosen_project['id'],
+                               ApplicationViewSet.pithos_container + "_" + chosen_project['name'],
                                self.application_description, self.application_type_streaming,
                                self.user, self.execution_environment_name)
 
         mock_upload_application_to_pithos_task.delay.\
             assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
-                               ApplicationViewSet.pithos_container,
-                               self.project_name,
+                               ApplicationViewSet.pithos_container + "_" + chosen_project['name'],
+                               chosen_project['id'],
                                path.join(settings.TEMPORARY_FILE_STORAGE, self.application.name),
                                application_id, self.application.name, self.application_description)
 
@@ -297,11 +324,7 @@ class TestApplicationUpload(APITestCase):
                                                                messages['no_type_error'])
 
     # Test for uploading an application when no project name is provided.
-    @mock.patch('backend.views.events.create_new_application')
-    @mock.patch('backend.views.tasks.upload_application_to_pithos')
-    def test_no_project_name(self, mock_upload_application_to_pithos_task,
-                             mock_create_new_application_event):
-
+    def test_no_project_name(self):
         # Make a request to upload an application.
         response = self.client.post("/api/apps/", {'description': self.application_description,
                                                    'file': self.application,
@@ -310,33 +333,41 @@ class TestApplicationUpload(APITestCase):
                                                    execution_environment_name})
 
         # Assert the structure of the response.
-        self._assert_accepted_response_structure(response)
+        self._assert_bad_request_response_structure(response)
 
         # Assert the contents of the response.
-        self.assertEqual(response.data['status']['code'], status.HTTP_202_ACCEPTED)
-        self.assertEqual(response.data['status']['short_description'],
-                         ResponseMessages.short_descriptions['application_upload'])
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomParseError.messages['no_project_error'])
 
-        self.assertIsInstance(response.data['data'][0]['id'], uuid.UUID)
+    # Test for uploading an application when a wrong project is provided.
+    @mock.patch('backend.views.get_user_okeanos_projects')
+    def test_wrong_project_name(self, mock_get_user_okeanos_projects):
+        # Configure return values for mocks.
+        mock_get_user_okeanos_projects.return_value = self.user_projects
 
-        self.assertRegexpMatches(response.data['data'][0]['links']['self'],
-                                 r'^http://testserver/api/apps/([^/.]+)$')
+        # Make a request to upload an application.
+        response = self.client.post("/api/apps/", {'description': self.application_description,
+                                                   'file': self.application,
+                                                   'type': self.application_type_batch,
+                                                   'project_name': "a-wrong-project-name",
+                                                   'execution_environment_name':
+                                                   self.execution_environment_name})
 
-        # Get the id of the uploaded application.
-        application_id = response.data['data'][0]['id']
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
 
-        # Assert that the proper tasks and views have been called.
-        mock_create_new_application_event.delay.\
-            assert_called_with(application_id, self.application.name,
-                               ApplicationViewSet.pithos_container,
-                               self.application_description, self.application_type_batch,
-                               self.user, self.execution_environment_name)
+        self.assertEqual(len(response.data['errors']), 1)
 
-        mock_upload_application_to_pithos_task.delay.\
-            assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
-                               ApplicationViewSet.pithos_container, "",
-                               path.join(settings.TEMPORARY_FILE_STORAGE, self.application.name),
-                               application_id, self.application.name, self.application_description)
+        for error in response.data['errors']:
+            self.assertIn('status', error)
+            self.assertIn('detail', error)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_409_CONFLICT)
+        self.assertEqual(response.data['errors'][0]['detail'],
+                         CustomCantDoError.messages['wrong_project_name'].
+                         format(project_name="a-wrong-project-name"))
 
     def _assert_accepted_response_structure(self, response):
         # Assert the response code.
