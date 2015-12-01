@@ -265,7 +265,7 @@
             <p>Your lambda instance has been destroyed. There is nothing else you can do with it!</p>
             {{/if}}
             {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STARTED")}}
-            <p>Your lambda instance is up and running. You can deploy an application on it.</p>
+            <p>Your lambda instance is up and running.</p>
             {{/if}}
         </div> <!-- /.box-body -->
       </div><!-- /.box -->
