@@ -15,7 +15,7 @@ from .authenticate_user import KamakiTokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from .exceptions import CustomParseError, CustomNotFoundError, \
-    CustomAlreadyDoneError
+    CustomAlreadyDoneError, CustomCantDoError
 
 from .response_messages import ResponseMessages
 import events
@@ -493,6 +493,55 @@ class LambdaApplicationView(mixins.ListModelMixin,
 
         return default_response
 
+    @detail_route(methods=['post'], url_path="increment_started")
+    def increment_started(self, request, uuid):
+        """
+        Increases the counter of the times started for a specified application by one.
+        """
+
+        # Check if the specified application exists.
+        applications = self.get_queryset().filter(uuid=uuid)
+        if not applications.exists():
+            raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
+
+        # Create a Celery task that will increment the counter of the application.
+        events.incrementApplicationStartedCounter.delay(uuid)
+
+        # Return an appropriate response.
+        status_code = rest_status.HTTP_202_ACCEPTED
+        return Response({
+            'code': status_code,
+            'short_description': ResponseMessages.short_descriptions[
+                'application_increment_started_counter']
+        }, status=status_code)
+
+    @detail_route(methods=['post'], url_path="decrement_started")
+    def decrement_started(self, request, uuid):
+        """
+        Decreases the counter of the times started for a specified application by one.
+        """
+
+        # Check if the specified application exists.
+        applications = self.get_queryset().filter(uuid=uuid)
+        if not applications.exists():
+            raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
+
+        # Check if the counter has already reached zero.
+        application = applications[0]
+        if application.times_started == 0:
+            raise CustomCantDoError(CustomCantDoError.messages['decrement_times_started'])
+
+        # Create a Celery task that will decrement the counter of the application.
+        events.decrementApplicationStartedCounter(uuid)
+
+        # Return an appropriate response.
+        status_code = rest_status.HTTP_202_ACCEPTED
+        return Response({
+            'code': status_code,
+            'short_description': ResponseMessages.short_descriptions[
+                'application_decrement_started_counter']
+        }, status=status_code)
+
 
 class LambdaApplicationCounterView(APIView):
     """
@@ -501,7 +550,11 @@ class LambdaApplicationCounterView(APIView):
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
     def get(self, request, format=None):
-        activeLambdaApplications = LambdaApplication.objects.filter(status="0").count()
+        uploaded_applications = LambdaApplication.objects.filter(status="0").count()
+
+        running_applications = 0
+        for application in LambdaApplication.objects.filter(status="0"):
+            running_applications += application.times_started
 
         status_code = rest_status.HTTP_200_OK
         return Response(
@@ -514,7 +567,8 @@ class LambdaApplicationCounterView(APIView):
                 },
                 "data": [
                     {
-                        "count": str(activeLambdaApplications),
+                        "uploaded_applications": str(uploaded_applications),
+                        "running_applications": str(running_applications)
                     }
                 ]
             },

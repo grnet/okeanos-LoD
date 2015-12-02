@@ -175,6 +175,9 @@ class LambdaApplication(models.Model):
     failure_message = models.TextField(default="",
                                        help_text="Error message regarding this application.")
 
+    times_started = models.PositiveIntegerField(
+        default=0, help_text="The count of times that this application has been started.")
+
     def __unicode__(self):
         unicode_str = "Application id: " + str(self.id) + "\n" + \
                       "Description: " + str(self.description)

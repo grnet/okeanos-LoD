@@ -152,6 +152,14 @@ CELERY_ROUTES = {
         'queue': 'events_queue',
         'routing_key': 'event_key'
     },
+    'backend.events.incrementApplicationStartedCounter': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key'
+    },
+    'backend.events.decrementApplicationStartedCounter': {
+        'queue': 'events_queue',
+        'routing_key': 'event_key'
+    },
 }
 
 CELERY_IMPORTS = ('backend.events', )

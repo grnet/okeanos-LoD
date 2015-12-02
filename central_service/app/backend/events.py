@@ -91,3 +91,25 @@ def deleteLambdaApplication(uuid):
     """
     lambda_application = LambdaApplication.objects.get(uuid=uuid)
     lambda_application.delete()
+
+@shared_task
+def incrementApplicationStartedCounter(uuid):
+    """
+    Celery task responsible for incrementing the times_started field of an application.
+    :param uuid: The uuid of the application.
+    """
+
+    application = LambdaApplication.objects.get(uuid=uuid)
+    application.times_started += 1
+    application.save()
+
+@shared_task
+def decrementApplicationStartedCounter(uuid):
+    """
+    Celery task responsible for decrementing the times_started field of an application.
+    :param uuid: The uuid of the application.
+    """
+
+    application = LambdaApplication.objects.get(uuid=uuid)
+    application.times_started -= 1
+    application.save()

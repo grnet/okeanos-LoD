@@ -26,7 +26,12 @@ class ResponseMessages:
         'lambda_applications_count': 'Lambda applications count.',
         'lambda_applications_update': "Lambda application status update accepted.",
 
-        'lambda_users_count': 'Lambda Users count on ~okeanos infrastructure.'
+        'lambda_users_count': 'Lambda Users count on ~okeanos infrastructure.',
+
+        'application_increment_started_counter': 'Your request to increment the times started of '
+                                                 'the specified application has been accepted.',
+        'application_decrement_started_counter': 'Your request to decrement the times started of '
+                                                 'the specified application has been accepted.'
     }
 
     lambda_instance_status_details = {
