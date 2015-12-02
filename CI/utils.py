@@ -58,9 +58,9 @@ if __name__ == "__main__":
     argument_parser = argparse.ArgumentParser(description='Manage Lambda Instance')
     argument_parser.add_argument('--get', type=str, required=True, dest='get',
                                  choices=['ip', 'id'])
-    argument_parser.add_argument('--vm_name', type=str, required=True,
+    argument_parser.add_argument('--vm-name', type=str, required=True,
                                  dest='vm_name')
-    argument_parser.add_argument('--auth_token', type=str, required=True, dest='auth_token')
+    argument_parser.add_argument('--auth-token', type=str, required=True, dest='auth_token')
     arguments = argument_parser.parse_args()
 
     vm_info = VMInfo(arguments.auth_token, arguments.vm_name)

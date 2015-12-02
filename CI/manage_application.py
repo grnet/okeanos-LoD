@@ -200,11 +200,11 @@ if __name__ == "__main__":
     argument_parser = argparse.ArgumentParser(description='Manage Application')
     argument_parser.add_argument('--action', type=str, required=True, dest='action',
                                  choices=['upload', 'deploy', 'start'])
-    argument_parser.add_argument('--service_vm_name', type=str, required=True,
+    argument_parser.add_argument('--service-vm-name', type=str, required=True,
                                  dest='service_vm_name')
     argument_parser.add_argument('--application', type=str, required=False,
                                  dest='application')
-    argument_parser.add_argument('--auth_token', type=str, required=True, dest='auth_token')
+    argument_parser.add_argument('--auth-token', type=str, required=True, dest='auth_token')
     arguments = argument_parser.parse_args()
 
     application_manager = ApplicationManager(arguments.auth_token, arguments.service_vm_name,
