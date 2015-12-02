@@ -19,6 +19,17 @@ export default DS.JSONAPISerializer.extend({
   normalizeSingleResponse: function (store, primaryModelClass, payload, id, requestType) {
     payload.data = payload.data[0];
     return this._super(store, primaryModelClass, payload, id, requestType);
-  }
+  },
+
+  removeDeleted: function (store, modelName, payload) {
+    var oldRecords = this.store.peekAll(modelName);
+    var record;
+    oldRecords.forEach (function (oldRecord) {
+      if (!payload.isAny('id', oldRecord.id)) {
+        record = store.peekRecord(modelName, oldRecord.id);
+        store.unloadRecord(record);
+      }
+    });
+  },
 
 });

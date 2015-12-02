@@ -23,6 +23,7 @@ export default LoDSerializer.extend(DS.EmbeddedRecordsMixin, {
        }
     }
     payload.included = payload.data[0].attributes.lambda_instances;
+    this.removeDeleted(store, 'lambda-instance', payload.included);
     delete payload.data[0].attributes.lambda_instances;
     delete payload.data[0].attributes.status;
     return this._super(store, primaryModelClass, payload, id, requestType);
@@ -36,6 +37,7 @@ export default LoDSerializer.extend(DS.EmbeddedRecordsMixin, {
         payload.data[i].attributes[key] = payload.data[i].attributes.status[k];
       }
     }
+    this.removeDeleted(store, primaryModelClass.modelName, payload.data);
     return this._super(store, primaryModelClass, payload, id, requestType);
   }
 });

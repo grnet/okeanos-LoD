@@ -22,6 +22,7 @@ export default LoDSerializer.extend(DS.EmbeddedRecordsMixin, {
       payload.data[0].applications[k].attributes = Ember.$.extend(true, {}, payload.data[0].applications[k]);
     }
     payload.included = payload.data[0].applications;
+    this.removeDeleted(store, 'lambda-app', payload.included);
     delete payload.data[0].attributes.applications;
     delete payload.data[0].attributes.info;
     delete payload.data[0].attributes.status;
@@ -35,6 +36,7 @@ export default LoDSerializer.extend(DS.EmbeddedRecordsMixin, {
         payload.data[i].attributes[key] = payload.data[i].attributes.status[k];
       }
     }
+    this.removeDeleted(store, primaryModelClass.modelName, payload.data);
     return this._super(store, primaryModelClass, payload, id, requestType);
   }
 });
