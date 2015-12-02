@@ -29,6 +29,9 @@ public_key_path=$2
 # Private key path is given as third argument.
 private_key_path=$3
 
+# Project to use
+okeanos_project="lambda.grnet.gr"
+
 # Clone devel branch of ~okeanos-LoD project.
 git clone -b devel https://github.com/grnet/okeanos-LoD.git
 
@@ -44,7 +47,7 @@ cd ../../
 
 # Create a Service VM.
 cd okeanos-LoD/webapp/manager
-python service_vm_manager.py --action create --auth_token $okeanos_token --public_key_path "$public_key_path" --private_key_path "$private_key_path" --vm_name "Service VM master CI"
+python service_vm_manager.py --action create --auth-token $okeanos_token --public-key-path "$public_key_path" --private-key-path "$private_key_path" --vm-name "Service VM master CI"  --project-name $okeanos_project
 cd ../../../
 
 # Create a Lambda Instance.
@@ -52,7 +55,7 @@ echo "$(python manage_lambda_instance.py --action create --service_vm_name "Serv
 
 # Create a Central VM.
 cd okeanos-LoD/central_service/manager
-python central_service_manager.py --action create --auth_token $okeanos_token --public_key_path "$public_key_path" --private_key_path "$private_key_path" --vm_name "Central VM master CI"
+python central_service_manager.py --action create --auth-token $okeanos_token --public-key-path "$public_key_path" --private-key-path "$private_key_path" --vm-name "Central VM master CI"  --project-name $okeanos_project
 cd ../../../
 
 # Upload an application to Pithos, deploy in on the lambda instance and start it.
