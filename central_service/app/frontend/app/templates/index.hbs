@@ -58,9 +58,11 @@
               <div class="small-box bg-orange">
                 <div class="inner">
                   {{#each model.applicationsCount as |applicationsCount|}}
-                  <h3>{{applicationsCount.count}}</h3>
+                  <h3>{{applicationsCount.runningApplications}} <sub><small><font color="white">running</font></small></sub> / 
+                      {{applicationsCount.uploadedApplications}} <sub><small><font color="white">uploaded</font></small></sub>
+                  </h3>
                   {{/each}}
-                  <p>Applications Uploaded</p>
+                  <p>Applications</p>
                 </div>
                 <div class="icon">
                   <i class="fa fa-th"></i>
