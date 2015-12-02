@@ -1,9 +1,9 @@
-celery
-psycopg2
-django
-djangorestframework
-djangorestframework-xml
+celery==3.1.18
+psycopg2==2.6.1
+Django==1.8.7
+djangorestframework==3.2.4
+djangorestframework-xml==1.2.0
 pytest-django
 pytest-xdist
-mkdocs
+mkdocs==0.14.0
 

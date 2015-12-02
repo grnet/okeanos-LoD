@@ -59,7 +59,6 @@ script:
 # - ansible-playbook -v playbooks/setup.yml -e "repository_url="$TRAVIS_BUILD_DIR -e  "repository_branch=HEAD"  --start-at-task="Upgrade packages." --connection=local -vvvv
 # - cd /var/www/okeanos-LoD/webapp/
  - python manage.py makemigrations
- - python manage.py syncdb --noinput
  - python manage.py migrate
  - coverage run --source='.' --omit="*tests*","*webapp/webapp*","*webapp/backend/migrations*","*__init__*","*manage.py*" manage.py test
  - coverage report
@@ -74,7 +73,6 @@ script:
 
  - pip install -r requirements.txt
  - python manage.py makemigrations
- - python manage.py syncdb --noinput
  - python manage.py migrate
  - coverage run --source='.' --omit="*tests*","*app/app*","*app/backend/migrations*","*__init__*","*manage.py*" manage.py test
  - coverage report
