@@ -13,7 +13,12 @@
         <div class="col-xs-12">
             <div class="box box-warning">
                 <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-laptop"></i> Application {{application.name}}</h3>
+                    <h3 class="box-title"><i class="fa fa-laptop"></i> Application
+                      {{#link-to 'lambda-app' application.id
+                      tooltipContent=(concat "<center>" application.id "</center>")}}
+                        {{application.name}}
+                      {{/link-to}}
+                    </h3>
 
                     <div class="box-tools pull-right">
                         <small>ID: {{application.id}}</small>
