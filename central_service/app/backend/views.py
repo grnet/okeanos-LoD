@@ -552,7 +552,7 @@ class LambdaApplicationView(mixins.ListModelMixin,
             raise CustomCantDoError(CustomCantDoError.messages['decrement_times_started'])
 
         # Create a Celery task that will decrement the counter of the application.
-        events.decrementApplicationStartedCounter(uuid)
+        events.decrementApplicationStartedCounter.delay(uuid)
 
         # Return an appropriate response.
         status_code = rest_status.HTTP_202_ACCEPTED
