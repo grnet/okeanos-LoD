@@ -74,7 +74,13 @@ var UploadController = Ember.Controller.extend({
         success: function(response){
           progress.className = "progress-bar progress-bar-success";
           progress.innerHTML =  'Success.Your request to upload the application has been sent.';
-          _this.transitionToRoute('lambda-app', response.data[0].id);
+          _this.transitionToRoute('lambda-app', response.data[0].id).catch(function() {
+            _this.transitionToRoute('lambda-apps.index').then(function(newRoute) {
+              newRoute.controller.set('message', 'Your lambda application upload will begin shortly.');
+              newRoute.controller.set('request', true);
+              newRoute.controller.send('dismiss_message');
+            });
+          });
         },
         statusCode: {
           400: function() {

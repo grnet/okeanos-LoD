@@ -108,5 +108,13 @@ export default Ember.ArrayController.extend({
       });
     },
 
+    dismiss_message: function()
+    {
+      var _this = this;
+      Ember.run.later((function () {
+        _this.set('request', false);
+      }), ENV.message_dismiss);
+    },
+
   },
 });
