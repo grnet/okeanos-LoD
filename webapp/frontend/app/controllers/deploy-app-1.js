@@ -5,12 +5,12 @@ export default Ember.Controller.extend({
   sortedInstances: Ember.computed.sort('instances', 'instanceSorting'),
   instanceSorting: ['name'],
   actions: {
-    deploy(application_id, instance_id) {
+    deploy(application_id) {
       if (!this.get("failure")) {
         var _this = this;
         Ember.run.later((function () {
           _this.set("request", false);
-          _this.transitionToRoute('lambda-instance', instance_id);
+          _this.transitionToRoute('lambda-app', application_id);
         }), ENV.redirect_delay);
       }
     }

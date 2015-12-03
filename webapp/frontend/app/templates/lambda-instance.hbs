@@ -99,7 +99,7 @@
           </div><!-- /.row -->
 
           <div class="row">
-            <div class="col-ms-9 col-xs-9">
+            <div class="col-ms-7 col-xs-7">
               <table  class="table table-bordered table-hover table-responsive">
                 <thead>
                   <tr>
@@ -138,19 +138,19 @@
                   </tr>
                   <tr>
                     <th>Size of RAM on master node</th>
-                    <td>{{model.instance.ram_master}}MB</td>
+                    <td>{{model.instance.ram_master}} MB</td>
                   </tr>
                   <tr>
                     <th>Size of RAM on each slave node</th>
-                    <td>{{model.instance.ram_slave}}MB</td>
+                    <td>{{model.instance.ram_slave}} MB</td>
                   </tr>
                   <tr>
                     <th>Size of disk (HDD) on master node</th>
-                    <td>{{model.instance.disk_master}}GB</td>
+                    <td>{{model.instance.disk_master}} GB</td>
                   </tr>
                   <tr>
                     <th>Size of disk (HDD) on each slave node</th>
-                    <td>{{model.instance.disk_slave}}GB</td>
+                    <td>{{model.instance.disk_slave}} GB</td>
                   </tr>
                   <tr>
                       <th>Kafka input topics(broker port: 9092)</th>
@@ -170,7 +170,7 @@
               </table>
             </div><!--col-xs-12-->
             <!-- About Instance -->
-    <div class="col-md-3 pull-right">
+    <div class="col-md-4 pull-right">
       <div class="box box-primary">
         <div class="box-header with-border">
           <h3 class="box-title"><i class="fa  fa-bullhorn"></i> About The Instance</h3>
@@ -265,7 +265,7 @@
             <p>Your lambda instance has been destroyed. There is nothing else you can do with it!</p>
             {{/if}}
             {{#if (compare (lambda-instance-state model.instance.status_message) "===" "STARTED")}}
-            <p>Your lambda instance is up and running. You can deploy an application on it.</p>
+            <p>Your lambda instance is up and running.</p>
             {{/if}}
         </div> <!-- /.box-body -->
       </div><!-- /.box -->
@@ -307,14 +307,14 @@
             </div>
           </div>
           <div class=“row”>
-            <div class="col-ms-8 col-xs-8">
+            <div class="col-ms-7 col-xs-7">
               <table class="table table-bordered table-hover table-responsive">
                 <thead>
                   <tr>
                     <th>Name</th>
                     <th>Type</th>
                     <th>Started</th>
-                    <th> Actions </th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -329,73 +329,67 @@
                     <td>{{lower-case application.app_type}}</td>
                     <td>{{application.started}}</td>
                     <td>
-                      <div class="table">
-                          <table class="table">
-                              <tbody>
-                                {{#if (compare model.instance.status_code '==' '0')}}
-                                    {{#if application.started}}
-                                        <td>
-                                          {{#tool-tip}}
-                                          {{app-action start=true disabled=true
-                                          tool-tip-message="it is started!"}}
-                                          {{/tool-tip}}
-                                        </td>
-                                        <td>
-                                          {{#tool-tip}}
-                                            {{app-action stop=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop"}}
-                                          {{/tool-tip}}
-                                        </td>
-                                        <td>
-                                          {{#tool-tip}}
-                                          {{app-action withdraw=true disabled=true
-                                          tool-tip-message="it is started!"}}
-                                          {{/tool-tip}}
-                                        </td>
-                                    {{else}}
-                                        <td>
-                                        {{#tool-tip}}
-                                          {{app-action start=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop"}}
-                                        {{/tool-tip}}
-                                        </td>
-                                        <td>
-                                          {{#tool-tip}}
-                                            {{app-action stop=true disabled=true
-                                            tool-tip-message="it is already stopped!"}}
-                                          {{/tool-tip}}
-                                        </td>
-                                        <td>
-                                      {{#tool-tip}}
-                                          {{app-action withdraw=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="withdraw"}}
-                                      {{/tool-tip}}
-                                        </td>
-                                    {{/if}}
-                                {{else}}
-                                        <td>
-                                          {{#tool-tip}}
-                                          {{app-action start=true disabled=true
-                                          tool-tip-message=(concat "the lambda instance's status
-                                          is " (lower-case model.instance.status_message))}}
-                                          {{/tool-tip}}
-                                        </td>
-                                        <td>
-                                          {{#tool-tip}}
-                                            {{app-action stop=true disabled=true
-                                            tool-tip-message=(concat "the lambda instance's status
-                                          is " (lower-case model.instance.status_message))}}
-                                          {{/tool-tip}}
-                                        </td>
-                                        <td>
-                                          {{#tool-tip}}
-                                          {{app-action withdraw=true disabled=true
-                                          tool-tip-message=(concat "the lambda instance's status
-                                          is " (lower-case model.instance.status_message))}}
-                                          {{/tool-tip}}
-                                        </td>
-                                {{/if}}
-                              </tbody>
-                          </table>
-                      </div>
-                  </td>
+                      {{#if (compare model.instance.status_code '==' '0')}}
+                          {{#if application.started}}
+                              <td>
+                                {{#tool-tip}}
+                                {{app-action start=true disabled=true
+                                tool-tip-message="it is started!"}}
+                                {{/tool-tip}}
+                              </td>
+                              <td>
+                                {{#tool-tip}}
+                                  {{app-action stop=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop"}}
+                                {{/tool-tip}}
+                              </td>
+                              <td>
+                                {{#tool-tip}}
+                                {{app-action withdraw=true disabled=true
+                                tool-tip-message="it is started!"}}
+                                {{/tool-tip}}
+                              </td>
+                          {{else}}
+                              <td>
+                              {{#tool-tip}}
+                                {{app-action start=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop"}}
+                              {{/tool-tip}}
+                              </td>
+                              <td>
+                                {{#tool-tip}}
+                                  {{app-action stop=true disabled=true
+                                  tool-tip-message="it is already stopped!"}}
+                                {{/tool-tip}}
+                              </td>
+                              <td>
+                            {{#tool-tip}}
+                                {{app-action withdraw=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="withdraw"}}
+                            {{/tool-tip}}
+                              </td>
+                          {{/if}}
+                      {{else}}
+                              <td>
+                                {{#tool-tip}}
+                                {{app-action start=true disabled=true
+                                tool-tip-message=(concat "the lambda instance's status
+                                is " (lower-case model.instance.status_message))}}
+                                {{/tool-tip}}
+                              </td>
+                              <td>
+                                {{#tool-tip}}
+                                  {{app-action stop=true disabled=true
+                                  tool-tip-message=(concat "the lambda instance's status
+                                is " (lower-case model.instance.status_message))}}
+                                {{/tool-tip}}
+                              </td>
+                              <td>
+                                {{#tool-tip}}
+                                {{app-action withdraw=true disabled=true
+                                tool-tip-message=(concat "the lambda instance's status
+                                is " (lower-case model.instance.status_message))}}
+                                {{/tool-tip}}
+                              </td>
+                      {{/if}}
+                    </td>
                   </tr>
                   {{/each}}
                 </tbody>

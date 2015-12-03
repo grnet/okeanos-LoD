@@ -109,15 +109,13 @@
                   {{/link-to}}
                 </td>
                 <td>
-                  <ul class="timeline">
-                  <li class="time-label">
                     {{#if (logical-op 'or'
                       (compare (lambda-instance-state lambda-instance.status_message) "===" "BUILDING")
                       (compare (lambda-instance-state lambda-instance.status_message) "===" "STARTING")
                       (compare (lambda-instance-state lambda-instance.status_message) "===" "STOPPING")
                       (compare (lambda-instance-state lambda-instance.status_message) "===" "DESTROYING")
                     )}}
-                        <span class="bg-orange">{{lambda-instance.status_detail}}
+                        <span style="font-size: .9em;" class="label bg-orange">{{lambda-instance.status_detail}}
                             <i class="fa fa-spinner fa-spin" style="position: relative;left: 1%;"></i>
                         </span>
                     {{/if}}
@@ -126,87 +124,80 @@
                       (compare (lambda-instance-state lambda-instance.status_message) "===" "FAILED")
                       (compare (lambda-instance-state lambda-instance.status_message) "===" "DESTROYED")
                     )}}
-                        <span class="bg-red">{{lambda-instance.status_detail}}</span>
+                      <span style="font-size: .9em;" class="label bg-red">{{lambda-instance.status_detail}}</span>
                     {{/if}}
                     {{#if (compare (lambda-instance-state lambda-instance.status_message) "===" "STARTED")}}
-                        <span class="bg-green">{{lambda-instance.status_detail}}</span>
+                      <span style="font-size: .9em;" class="label bg-green">{{lambda-instance.status_detail}}</span>
                     {{/if}}
-                  </li>
-                  </ul>
                 </td>
                 <td>
-                  <table class="table">
-                    <tbody>
-                      <td>
-                        {{#link-to 'lambda-instance' lambda-instance.id}}
-                          <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
+                    <td style="padding-right: 5px;">
+                      {{#link-to 'lambda-instance' lambda-instance.id}}
+                        <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
+                      {{/link-to}}
+                    </td>
+                    {{#if (compare lambda-instance.status_code '==' '0')}}
+                      <td style="padding-right: 5px;">
+                        {{#tool-tip}}
+                            {{instance-action start=true xs=true disabled=true status_message=lambda-instance.status_message}}
+                        {{/tool-tip}}
+                      </td>
+
+                      <td style="padding-right: 5px;">
+                        {{instance-action apps=apps xs=true stop=true check_apps=false started_app=lambda-instance.running_app instance=instance_action failure=failure instance-id=lambda-instance.id request=request message=message action="start_stop"}}
+                      </td>
+                      <td style="padding-right: 5px;">
+                        {{#link-to "deploy-app-2" lambda-instance.id}}
+                            <button class="btn btn-primary btn-xs"
+                                    style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
+                                Deploy an application
+                            </button>
                         {{/link-to}}
                       </td>
-
-                        {{#if (compare lambda-instance.status_code '==' '0')}}
-                        <td>
-                          {{#tool-tip}}
-                              {{instance-action start=true xs=true disabled=true status_message=lambda-instance.status_message}}
-                          {{/tool-tip}}
-                        </td>
-
-                        <td>
-                          {{instance-action apps=apps xs=true stop=true check_apps=false started_app=lambda-instance.running_app instance=instance_action failure=failure instance-id=lambda-instance.id request=request message=message action="start_stop"}}
-                        </td>
-                        <td>
-                          {{#link-to "deploy-app-2" lambda-instance.id}}
-                              <button class="btn btn-primary btn-xs"
-                                      style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
-                                  Deploy an application
-                              </button>
-                          {{/link-to}}
-                        </td>
-                        {{else if (compare lambda-instance.status_code '==' '1')}}
-                          <td>
-                            {{instance-action start=true xs=true instance=instance_action instance-id=lambda-instance.id failure=failure request=request message=message action="start_stop"}}
-                          </td>
-                          <td>
-                            {{#tool-tip}}
-                              {{instance-action stop=true xs=true disabled=true status_message=lambda-instance.status_message}}
-                            {{/tool-tip}}
-                          </td>
-                        <td>
-                          {{#tool-tip}}
-                              <button class="btn btn-primary btn-xs disabled  has-tooltip"
-                                            data-tooltip-content="<center>Cannot deploy an application, while lambda instance
-                                            status is {{lower-case lambda-instance.status_message}}!</center>"
-                                            style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
-                                  Deploy an application
-                              </button>
-                          {{/tool-tip}}
-                        </td>
-                        {{else}}
-                        <td>
-                          {{#tool-tip}}
-                            {{instance-action start=true xs=true disabled=true status_message=lambda-instance.status_message}}
-                          {{/tool-tip}}
-                        </td>
-                        <td>
-                          {{#tool-tip}}
-                            {{instance-action stop=true xs=true disabled=true status_message=lambda-instance.status_message}}
-                          {{/tool-tip}}
-                        </td>
-                        <td>
-                          {{#tool-tip}}
-                                    <button class="btn btn-primary btn-xs disabled  has-tooltip"
-                                            data-tooltip-content="<center>Cannot deploy an application, while lambda instance
-                                            status is {{lower-case lambda-instance.status_message}}!</center>"
-                                            style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
-                                  Deploy an application
-                              </button>
-                            {{/tool-tip}}
-                          </td>
-                        {{/if}}
-                      <td>
-                          <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_instance" lambda-instance.id}}><i class="fa fa-times"></i> Delete</button>
+                    {{else if (compare lambda-instance.status_code '==' '1')}}
+                      <td style="padding-right: 5px;">
+                        {{instance-action start=true xs=true instance=instance_action instance-id=lambda-instance.id failure=failure request=request message=message action="start_stop"}}
                       </td>
-                    </tbody>
-                  </table>
+                      <td style="padding-right: 5px;">
+                        {{#tool-tip}}
+                          {{instance-action stop=true xs=true disabled=true status_message=lambda-instance.status_message}}
+                        {{/tool-tip}}
+                      </td>
+                      <td style="padding-right: 5px;">
+                        {{#tool-tip}}
+                            <button class="btn btn-primary btn-xs disabled  has-tooltip"
+                                          data-tooltip-content="<center>Cannot deploy an application, while lambda instance
+                                          status is {{lower-case lambda-instance.status_message}}!</center>"
+                                          style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
+                                Deploy an application
+                            </button>
+                        {{/tool-tip}}
+                      </td>
+                    {{else}}
+                      <td style="padding-right: 5px;">
+                        {{#tool-tip}}
+                          {{instance-action start=true xs=true disabled=true status_message=lambda-instance.status_message}}
+                        {{/tool-tip}}
+                      </td>
+                      <td style="padding-right: 5px;">
+                        {{#tool-tip}}
+                          {{instance-action stop=true xs=true disabled=true status_message=lambda-instance.status_message}}
+                        {{/tool-tip}}
+                      </td>
+                      <td style="padding-right: 5px;">
+                        {{#tool-tip}}
+                                  <button class="btn btn-primary btn-xs disabled  has-tooltip"
+                                          data-tooltip-content="<center>Cannot deploy an application, while lambda instance
+                                          status is {{lower-case lambda-instance.status_message}}!</center>"
+                                          style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>
+                                Deploy an application
+                            </button>
+                          {{/tool-tip}}
+                      </td>
+                    {{/if}}
+                    <td>
+                        <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_instance" lambda-instance.id}}><i class="fa fa-times"></i> Delete</button>
+                    </td>
                 </td>
               </tr>
               {{/each}}
