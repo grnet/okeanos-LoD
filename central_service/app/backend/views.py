@@ -78,6 +78,31 @@ def _alter_default_pagination_response(default_response):
     return default_response
 
 
+class AuthenticateView(APIView):
+    """
+    Implements the API calls relevant to authenticating a user.
+    """
+
+    def get(self, request, format=None):
+        """
+        Checks the validity of the authentication token of a user and registers him/her on the
+        database.
+        """
+
+        # request.META contains all the headers of the request
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+
+        # If something is wrong with the given token, authenticate credentials will throw an
+        # exception which will be correctly handled by the exception handler.
+        authenticator = KamakiTokenAuthentication()
+        user = authenticator.authenticate_credentials(auth_token)[0]
+
+        status_code = rest_status.HTTP_200_OK
+        return Response({"status": status_code,
+                         "result": "Success"},
+                        status=status_code)
+
+
 class UsersViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Viewset for viewing Users.
@@ -93,12 +118,7 @@ class LambdaUsersCounterView(APIView):
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
     def get(self, request, format=None):
-        if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql_psycopg2':
-            # This works only on Postgres
-            lambdaUsersCount = LambdaInstance.objects.all(). \
-                order_by('owner').distinct('owner').count()
-        else:
-            lambdaUsersCount = LambdaInstance.objects.values('owner').distinct().count()
+        lambdaUsersCount = User.objects.all().count()
 
         status_code = rest_status.HTTP_202_ACCEPTED
         return Response(

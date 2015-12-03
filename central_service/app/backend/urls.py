@@ -22,6 +22,7 @@ lambda_applications_router.include_format_suffixes = False
 
 # Register routers and views to the urls.
 urlpatterns = [
+    url(r'^authenticate/?$', views.AuthenticateView.as_view(), name='authenticate'),
     url(r'^users/count/?$', views.LambdaUsersCounterView.as_view(), name='count_users'),
     url(r'^', include(users_router.urls)),
     url(r'^lambda_instances/count/?$', views.LambdaInstanceCounterView.as_view(),
