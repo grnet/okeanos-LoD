@@ -38,11 +38,10 @@ class TestUsersAPI(APITestCase):
 
     def test_users_count(self):
         """
-        Tests API for correct count of the users owning at least one lambda instance.
+        Tests API for correct count of the users.
         """
 
-        expected_count = self.instances_count if \
-            self.instances_count < self.user_count else self.user_count
+        expected_count = User.objects.all().count()
 
         response = self.client.get("/api/users/count", format='json')
         self.assertEqual(response.status_code, rest_status.HTTP_202_ACCEPTED)

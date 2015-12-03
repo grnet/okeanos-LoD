@@ -92,6 +92,7 @@ def deleteLambdaApplication(uuid):
     lambda_application = LambdaApplication.objects.get(uuid=uuid)
     lambda_application.delete()
 
+
 @shared_task
 def incrementApplicationStartedCounter(uuid):
     """
@@ -102,6 +103,7 @@ def incrementApplicationStartedCounter(uuid):
     application = LambdaApplication.objects.get(uuid=uuid)
     application.times_started += 1
     application.save()
+
 
 @shared_task
 def decrementApplicationStartedCounter(uuid):

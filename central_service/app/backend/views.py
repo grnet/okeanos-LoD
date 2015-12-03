@@ -95,7 +95,7 @@ class AuthenticateView(APIView):
         # If something is wrong with the given token, authenticate credentials will throw an
         # exception which will be correctly handled by the exception handler.
         authenticator = KamakiTokenAuthentication()
-        user = authenticator.authenticate_credentials(auth_token)[0]
+        authenticator.authenticate_credentials(auth_token)[0]
 
         status_code = rest_status.HTTP_200_OK
         return Response({"status": status_code,
