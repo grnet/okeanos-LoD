@@ -1346,8 +1346,10 @@ class TestApplicationStart(APITestCase):
             create(application=self.application, lambda_instance=self.lambda_instance)
 
     # Test for starting an application on a specified lambda instance that it is already deployed.
+    @mock.patch('backend.views.central_vm_tasks.increment_started_counter_central_vm')
     @mock.patch('backend.views.tasks.start_stop_application')
-    def test_application_start_batch(self, mock_start_stop_application_task):
+    def test_application_start_batch(self, mock_start_stop_application_task,
+                                     mock_increment_started_counter_central_vm):
         # Make a request to start the application.
         response = self.client.post("/api/apps/{application_uuid}/start/".
                                       format(application_uuid=self.application_uuid),
@@ -1375,10 +1377,14 @@ class TestApplicationStart(APITestCase):
                                app_action="start", app_type="batch",
                                jar_filename="application.jar",
                                execution_environment_name="Stream")
+        mock_increment_started_counter_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, "{}".format(self.application_uuid))
 
     # Test for starting an application on a specified lambda instance that it is already deployed.
+    @mock.patch('backend.views.central_vm_tasks.increment_started_counter_central_vm')
     @mock.patch('backend.views.tasks.start_stop_application')
-    def test_application_start_streaming(self, mock_start_stop_application_task):
+    def test_application_start_streaming(self, mock_start_stop_application_task,
+                                         mock_increment_started_counter_central_vm):
         # Change the type of the application from batch to streaming.
         self.application.type = Application.STREAMING
         self.application.save()
@@ -1410,6 +1416,8 @@ class TestApplicationStart(APITestCase):
                                app_action="start", app_type="streaming",
                                jar_filename="application.jar",
                                execution_environment_name="Stream")
+        mock_increment_started_counter_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, "{}".format(self.application_uuid))
 
     # Test for request to start an application when the lambda instance id is not provided.
     def test_no_lambda_instance_id(self):
@@ -1653,8 +1661,10 @@ class TestApplicationStop(APITestCase):
                    started=True)
 
     # Test for stopping an application on a specified lambda instance that it is already started.
+    @mock.patch('backend.views.central_vm_tasks.decrement_started_counter_central_vm')
     @mock.patch('backend.views.tasks.start_stop_application')
-    def test_application_stop_batch(self, mock_start_stop_application_task):
+    def test_application_stop_batch(self, mock_start_stop_application_task,
+                                    mock_decrement_started_counter_central_vm):
         # Make a request to stop the application.
         response = self.client.post("/api/apps/{application_uuid}/stop/".
                                       format(application_uuid=self.application_uuid),
@@ -1681,10 +1691,14 @@ class TestApplicationStop(APITestCase):
                                format(application_id=self.application_uuid),
                                app_action="stop", app_type="batch",
                                execution_environment_name="Stream")
+        mock_decrement_started_counter_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, "{}".format(self.application_uuid))
 
     # Test for stopping an application on a specified lambda instance that it is already started.
+    @mock.patch('backend.views.central_vm_tasks.decrement_started_counter_central_vm')
     @mock.patch('backend.views.tasks.start_stop_application')
-    def test_application_stop_streaming(self, mock_start_stop_application_task):
+    def test_application_stop_streaming(self, mock_start_stop_application_task,
+                                        mock_decrement_started_counter_central_vm):
         # Change the type of the application from batch to streaming.
         self.application.type = Application.STREAMING
         self.application.save()
@@ -1715,6 +1729,8 @@ class TestApplicationStop(APITestCase):
                                format(application_id=self.application_uuid),
                                app_action="stop", app_type="streaming",
                                execution_environment_name="Stream")
+        mock_decrement_started_counter_central_vm.delay.\
+            assert_called_with(self.AUTHENTICATION_TOKEN, "{}".format(self.application_uuid))
 
     # Test for request to stop an application when the lambda instance id is not provided.
     def test_no_lambda_instance_id(self):
