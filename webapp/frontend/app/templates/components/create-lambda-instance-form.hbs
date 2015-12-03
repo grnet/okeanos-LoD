@@ -97,15 +97,23 @@
             <div class="row">
               <div class="form-group col-sm-6">
                 <label for="kafka_topics">Apache Kafka input topics:</label>
-                  {{input type="text" value=kafkaInputTopics placeholder="e.g. name1,name2,name3" size="50" class="form-control"}}
-                  <span id="helpBlock" class="help-block">Names of Apache Kafka input topics</span>
+                  {{input type="text" value=kafkaInputTopics placeholder="e.g. topic1, topic2, topic3" size="50" class="form-control" id="inputTopics"}}
+                  <span id="helpBlock" class="help-block">Names of Apache Kafka input topics<br>
+                  Default input topic, if no names are given: "input"</span>
               </div>
               <div class="form-group col-sm-6 pull-right">
                 <label for="kafka_topics">Apache Kafka output topics:</label>
-                  {{input type="text" value=kafkaOutputTopics placeholder="e.g. name1,name2,name3" size="50" class="form-control"}}
-                  <span id="helpBlock" class="help-block">Names of Apache Kafka output topics</span>
+                  {{input type="text" value=kafkaOutputTopics placeholder="e.g. topic1, topic2, topic3" size="50" class="form-control"}}
+                  <span id="helpBlock" class="help-block">Names of Apache Kafka output topics<br>
+                  Default output topics, if no names are given: "batch-output", "stream-output"</span>
               </div>
             </div><!--row-->
+            {{#if duplicate}}
+                <div  class="alert alert-dismissable alert-danger" id="alert">
+                    <button type="button" class="close" {{action "close_alert"}}>×</button>
+                  {{duplicate_message}}
+                </div>
+            {{/if}}
             <div class="row">
               <div class="form-group col-sm-3">
                 <label for="public_key_name">Public SSH keys (*):</label>

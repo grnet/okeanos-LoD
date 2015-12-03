@@ -99,7 +99,7 @@
           </div><!-- /.row -->
 
           <div class="row">
-            <div class="col-ms-7 col-xs-7">
+            <div class="col-ms-8 col-xs-8">
               <table  class="table table-bordered table-hover table-responsive">
                 <thead>
                   <tr>
@@ -153,11 +153,35 @@
                     <td>{{model.instance.disk_slave}} GB</td>
                   </tr>
                   <tr>
-                      <th>Kafka input topics(broker port: 9092)</th>
+                      <th>
+                        {{#tool-tip}}
+                            Kafka input topics (broker port: 9092)
+                            <i class="fa fa-info-circle has-tooltip"
+                               data-tooltip-content="<center>
+                               In order to send information to an Apache Kafka topic, you need to communicate with a
+                               broker. A properly configured broker has been installed on the master node of this
+                               lambda instance and accepts input at port 9092. For more information, please visit
+                               kafka.apache.org.
+                               </center>">
+                            </i>
+                        {{/tool-tip}}
+                      </th>
                       <td>{{model.instance.kafka_input_topics}}</td>
                   </tr>
                   <tr>
-                      <th>Kafka output topics(zookeeper port: 2181)</th>
+                      <th>
+                        {{#tool-tip}}
+                          <span>Kafka output topics (zookeeper port: 2181)</span>
+                            <i class="fa fa-info-circle has-tooltip"
+                               data-tooltip-content="<center>
+                               In order to receive information from an Apache Kafka topic, you need to communicate with
+                               Apache Zookeeper. A properly configured zookeeper has been installed on the master node
+                               of this lambda instance. You can communicate with it through port 2181. For more
+                               information, please visit kafka.apache.org.
+                               </center>">
+                            </i>
+                        {{/tool-tip}}
+                      </th>
                       <td>{{model.instance.kafka_output_topics}}</td>
                   </tr>
                   {{#if model.instance.public_key_name}}

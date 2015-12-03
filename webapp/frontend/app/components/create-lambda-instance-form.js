@@ -25,17 +25,42 @@ export default Ember.Component.extend({
       }
       newLambdaInstance.set('publicKeyName', requestedPublicKeys);
 
-      var kafkaInputTopicsString = this.get("kafkaInputTopics");
+      var kafkaOutputTopics, kafkaInputTopics;
+      
+      var kafkaInputTopicsString = this.get('kafkaInputTopics');
       if (kafkaInputTopicsString) {
-        newLambdaInstance.set('kafkaInputTopics', kafkaInputTopicsString.replace(/\s+/g, '').split(','));
+        kafkaInputTopics = kafkaInputTopicsString.replace(/\s+/g, '').split(',');
       }
 
-      var kafkaOutputTopicsString = this.get("kafkaOutputTopics");
+      var kafkaOutputTopicsString = this.get('kafkaOutputTopics');
       if (kafkaOutputTopicsString) {
-        newLambdaInstance.set('kafkaOutputTopics', kafkaOutputTopicsString.replace(/\s+/g, '').split(','));
+        kafkaOutputTopics = kafkaOutputTopicsString.replace(/\s+/g, '').split(',');
       }
 
-      this.sendAction('saveAction', newLambdaInstance);
-    }
+      var duplicateTopic = false;
+      if (kafkaInputTopics && kafkaOutputTopics) {
+        kafkaInputTopics.forEach(function (inputTopic) {
+          if (kafkaOutputTopics.indexOf(inputTopic) !== -1) {
+            duplicateTopic = true;
+          }
+        });
+      }
+
+      if (duplicateTopic) {
+        this.set('duplicate_message', 'Apache Kafka input and output topics must be different!');
+        this.set('duplicate', true);
+        document.getElementById('inputTopics').focus();
+      }
+      else {
+        newLambdaInstance.set('kafkaInputTopics', kafkaInputTopics);
+        newLambdaInstance.set('kafkaOutputTopics', kafkaOutputTopics);
+        this.sendAction('saveAction', newLambdaInstance);
+      }
+    },
+
+    close_alert: function()
+    {
+      this.set('duplicate', false);
+    },
   }
 });
