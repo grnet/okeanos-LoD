@@ -108,6 +108,9 @@ def authenticate(request):
     authenticator = KamakiTokenAuthentication()
     user = authenticator.authenticate_credentials(auth_token)[0]
 
+    # Create a Celery task that will register the user on the Central VM.
+    central_vm_tasks.register_user_central_vm.delay(auth_token)
+
     status_code = status.HTTP_200_OK
     return Response({"status": status_code,
                      "result": "Success",

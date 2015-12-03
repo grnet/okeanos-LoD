@@ -207,3 +207,21 @@ def decrement_started_counter_central_vm(self, auth_token, application_uuid):
             })
     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
         self.retry(countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
+
+
+@shared_task(bind=True)
+def register_user_central_vm(self, auth_token):
+    """
+    Makes an HTTP request to Central VM to register the user.
+    :param auth_token: The authentication token of the user to be registered.
+    """
+
+    # Make a get request to Central VM. Note that in case of a timeout, there will be no retries
+    # since the registering of the user can be done the next time he/she logs in, creates a new
+    # Lambda Instance or uploads an Application.
+    requests.get(
+        url=settings.CENTRAL_VM_API + "/authenticate/",
+        headers={
+            'Authorization': "Token {}".format(auth_token),
+        }
+    )
