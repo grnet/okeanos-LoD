@@ -49,7 +49,7 @@ python setup.py install
 cd ../../
 
 # Get the id of the Central VM.
-central_vm_id=$(python utils.py --get id --vm_name "Central VM devel CI" --auth_token $okeanos_token)
+central_vm_id=$(python utils.py --get id --vm-name "Central VM devel CI" --auth-token $okeanos_token)
 
 # Destroy the Central VM.
 cd okeanos-LoD/central_service/manager
@@ -57,10 +57,10 @@ python central_service_manager.py --action destroy --auth-token $okeanos_token -
 cd ../../../
 
 # Destroy the lambda instance.
-echo "$(python manage_lambda_instance.py --action destroy --service_vm_name "Service VM devel CI" --auth_token $okeanos_token)"
+echo "$(python manage_lambda_instance.py --action destroy --service-vm-name "Service VM devel CI" --auth-token $okeanos_token)"
 
 # Get the id of the Service VM.
-service_vm_id=$(python utils.py --get id --vm_name "Service VM devel CI" --auth_token $okeanos_token)
+service_vm_id=$(python utils.py --get id --vm-name "Service VM devel CI" --auth-token $okeanos_token)
 
 # Destroy the Service VM.
 cd okeanos-LoD/webapp/manager

@@ -53,7 +53,7 @@ python service_vm_manager.py --action create --auth-token $okeanos_token --publi
 cd ../../../
 
 # Create a Lambda Instance.
-echo "$(python manage_lambda_instance.py --action create --service_vm_name "Service VM master CI" --auth_token $okeanos_token)"
+echo "$(python manage_lambda_instance.py --action create --service-vm-name "Service VM master CI" --auth-token $okeanos_token)"
 
 # Create a Central VM.
 cd okeanos-LoD/central_service/manager
@@ -61,9 +61,9 @@ python central_service_manager.py --action create --auth-token $okeanos_token --
 cd ../../../
 
 # Upload an application to Pithos, deploy in on the lambda instance and start it.
-echo "$(python manage_application.py --action upload --service_vm_name "Service VM master CI" --auth_token $okeanos_token --application stream-1.0-jar-with-dependencies.jar)"
-echo "$(python manage_application.py --action deploy --service_vm_name "Service VM master CI" --auth_token $okeanos_token)"
-echo "$(python manage_application.py --action start --service_vm_name "Service VM master CI" --auth_token $okeanos_token)"
+echo "$(python manage_application.py --action upload --service-vm-name "Service VM master CI" --auth-token $okeanos_token --application stream-1.0-jar-with-dependencies.jar)"
+echo "$(python manage_application.py --action deploy --service-vm-name "Service VM master CI" --auth-token $okeanos_token)"
+echo "$(python manage_application.py --action start --service-vm-name "Service VM master CI" --auth-token $okeanos_token)"
 
 # Deactivate the virtual environment.
 deactivate

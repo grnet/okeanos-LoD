@@ -141,9 +141,9 @@ if __name__ == "__main__":
     argument_parser = argparse.ArgumentParser(description='Manage Lambda Instance')
     argument_parser.add_argument('--action', type=str, required=True, dest='action',
                                  choices=['create', 'destroy'])
-    argument_parser.add_argument('--service_vm_name', type=str, required=True,
+    argument_parser.add_argument('--service-vm-name', type=str, required=True,
                                  dest='service_vm_name')
-    argument_parser.add_argument('--auth_token', type=str, required=True, dest='auth_token')
+    argument_parser.add_argument('--auth-token', type=str, required=True, dest='auth_token')
     arguments = argument_parser.parse_args()
 
     lambda_instance_manager = LambdaInstanceManager(arguments.auth_token, arguments.service_vm_name)
