@@ -8,7 +8,7 @@ Using the fokia library, an administrator is able to create new Lambda Instance 
 
 1. To create the Lambda Master and Slave nodes suitable for Lambda Instance images creation, one must use the fokia library. This can be done either on your own computer, after installing the required dependencies, or using an up-to-date Lambda Service VM. To install fokia and its dependencies on your own computer, consult [\<project_directory\>/core/README.md] (https://github.com/grnet/okeanos-LoD/blob/master/core/README.md).
 2. Navigate to the fokia library folder: `cd <project_directory>/core/fokia`.
-3. Run `python lambda_instance_manager.py --image-creation --project-name <~okeanos project name> --auth_token <~okeanos auth token>`, to create a minimal Lambda Instance (1 Master and 1 Slave node) suitable for image creation (services are not configured or started, when using the --image-creation flag).
+3. Run `python lambda_instance_manager.py --image-creation --project-name <~okeanos project name> --auth-token <~okeanos auth token>`, to create a minimal Lambda Instance (1 Master and 1 Slave node) suitable for image creation (services are not configured or started, when using the --image-creation flag).
 4. After lambda_instance_manager finishes the Lambda Instance creation successfully, a Lambda Master and a Lambda Slave VM will be available on your cyclades account. You will be able to ssh  into their root user, from the system, where you run the lambda_instance_manager.
 5. To be able to upload the Lambda Slave image to the ~okeanos cloud, you must assign a public IP to the Slave node<sup>[1](#footnote1)</sup> (the Master node already has a public IP by default).
 6. ssh into the Master and Slave nodes. On each host, run:
