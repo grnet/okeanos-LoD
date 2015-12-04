@@ -11,7 +11,7 @@
       - ember-install
 
   - name: Install Ember globally.
-    npm: name=ember-cli global=yes
+    npm: name=ember-cli global=yes version=1.13.8
     tags:
       - ember-install
 
