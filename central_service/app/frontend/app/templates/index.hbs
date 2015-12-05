@@ -38,51 +38,42 @@
           </div>
         </div><!-- /.box-header -->
         <div class="box-body no-padding">
+
           <div class="row">
             <div class="col-md-4 col-sm-4">
-              <div class="small-box bg-blue">
-                <div class="inner">
+              <div class="info-box bg-blue">
+                <span class="info-box-icon"><i class="fa fa-laptop"></i></span>
+                <div class="info-box-content">
                   {{#each model.lambdaInstancesCount as |lambdaInstancesCount|}}
-                  <h3>{{lambdaInstancesCount.runningLambdaInstances}} <sub><small><font color="white">running</font></small></sub> / 
-                      {{lambdaInstancesCount.createdLambdaInstances}} <sub><small><font color="white">created</font></small></sub>
-                  </h3>
+                  <h2 style="padding:4px;line-height:0px;margin-top:12px;">{{lambdaInstancesCount.runningLambdaInstances}} <small><font color="white">lambda instance running</font></small></h2>
+                  <h2 style="padding:4px;line-height:0px;margin-top:12px;">{{lambdaInstancesCount.createdLambdaInstances}} <small><font color="white">lambda instance created</font></small></h2>
                   {{/each}}
-                  <p>Lambda Instances</p>
-                </div>
-                <div class="icon">
-                  <i class="fa fa-laptop"></i>
-                </div>
+                </div><!-- /.info-box-content -->
               </div>
-            </div><!-- /.col -->
+            </div>
             <div class="col-md-4 col-sm-4">
-              <div class="small-box bg-orange">
-                <div class="inner">
+              <div class="info-box bg-orange">
+                <span class="info-box-icon"><i class="fa fa-th"></i></span>
+                <div class="info-box-content">
                   {{#each model.applicationsCount as |applicationsCount|}}
-                  <h3>{{applicationsCount.runningApplications}} <sub><small><font color="white">running</font></small></sub> / 
-                      {{applicationsCount.uploadedApplications}} <sub><small><font color="white">uploaded</font></small></sub>
-                  </h3>
+                  <h2 style="padding:4px;line-height:0px;margin-top:12px;">{{applicationsCount.runningApplications}} <small><font color="white">running applications</font></small></h2>
+                  <h2 style="padding:4px;line-height:0px;margin-top:12px;">{{applicationsCount.uploadedApplications}} <small><font color="white">applications uploaded</font></small></h2>
                   {{/each}}
-                  <p>Applications</p>
-                </div>
-                <div class="icon">
-                  <i class="fa fa-th"></i>
-                </div>
-              </div>	<!--class="small-box bg-orange"-->
-            </div><!-- /.col -->
+                </div><!-- /.info-box-content -->
+              </div>
+            </div>
             <div class="col-md-4 col-sm-4">
-              <div class="small-box bg-green">
-                <div class="inner">
+              <div class="info-box bg-green">
+                <span class="info-box-icon"><i class="fa fa-users"></i></span>
+                <div class="info-box-content">
                   {{#each model.usersCount as |usersCount|}}
-                  <h3>{{usersCount.count}}</h3>
+                  <h2 style="">{{usersCount.count}} <small><font color="white"> subscribed Users</font></small></h2>
                   {{/each}}
-                  <p>Subscribed Users</p>
-                </div>
-                <div class="icon">
-                  <i class="fa fa-users"></i>
-                </div>
-              </div>  <!--class="small-box bg-orange"-->
-            </div><!-- /.col -->
-          </div><!-- /.row -->
+                </div><!-- /.info-box-content -->
+              </div>
+            </div>
+          </div>
+
         </div><!-- /.box-body -->
       </div>
     </div>
