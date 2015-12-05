@@ -11,7 +11,7 @@
       - ember-install
 
   - name: Install Ember globally.
-    npm: name=ember-cli global=yes
+    npm: name=ember-cli global=yes version=1.13.8
     tags:
       - ember-install
 
@@ -41,6 +41,11 @@
       chdir: "{{ install_dir }}"
     tags:
       - ember-install
+
+  - name: Fix ember-cli-bootstrap-tokenfield bug
+    replace: dest={{ install_dir }}/node_modules/ember-cli-bootstrap-tokenfield/addon/components/input-tokenfield.js
+             regexp='(.*)createTokenOnBlur(.*)'
+             replace='\1createTokensOnBlur\2'
 
   - name: Create Ember config directory
     file: path={{install_dir}}/config state=directory
