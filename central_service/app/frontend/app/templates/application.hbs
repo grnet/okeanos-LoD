@@ -31,6 +31,16 @@
             <i class="fa fa-dashboard"></i> <span>Home</span>
         {{/link-to}}
         </li>
+        <li class={{active-treeview currentPath 'lambda-instance'}}>
+        {{#link-to 'lambda-instance'}}
+            <i class="fa fa-laptop"></i> <span>Lambda Instance</span>
+        {{/link-to}}
+        </li>
+        <li class={{active-treeview currentPath 'lambda-application'}}>
+        {{#link-to 'lambda-application'}}
+            <i class="fa fa-th"></i> <span>Lambda Application</span>
+        {{/link-to}}
+        </li>
       </ul>
     </section>
     <!-- /.sidebar -->
