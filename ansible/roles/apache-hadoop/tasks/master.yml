@@ -19,7 +19,7 @@
       - image-configure
 
   - name: Wait for Apache HDFS to become available.
-    wait_for: host="{{ hostvars[inventory_hostname]["internal_ip"] }}" port=9000
+    wait_for: host="{{ hostvars[inventory_hostname]["internal_ip"] }}" port=9000 timeout=600
     tags:
       - start-hdfs
       - image-configure
