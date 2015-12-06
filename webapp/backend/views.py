@@ -20,7 +20,7 @@ from rest_framework_xml.renderers import XMLRenderer
 
 from fokia.utils import get_user_okeanos_projects, get_vm_parameter_values
 
-from . import tasks, events
+from . import tasks, events, central_vm_tasks
 from .models import Application, LambdaInstance, LambdaInstanceApplicationConnection
 from .exceptions import CustomParseError, CustomValidationError, CustomNotFoundError,\
     CustomAlreadyDoneError, CustomCantDoError
@@ -107,6 +107,9 @@ def authenticate(request):
     # which will be correctly handled by the exception handler.
     authenticator = KamakiTokenAuthentication()
     user = authenticator.authenticate_credentials(auth_token)[0]
+
+    # Create a Celery task that will register the user on the Central VM.
+    central_vm_tasks.register_user_central_vm.delay(auth_token)
 
     status_code = status.HTTP_200_OK
     return Response({"status": status_code,
@@ -602,6 +605,13 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                            app_type=app_type, jar_filename=filename,
                                            execution_environment_name=execution_environment_name)
 
+        # Make a request to Central VM to increment the times_started counter of the specified
+        # application.
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+
+        central_vm_tasks.increment_started_counter_central_vm.\
+            delay(auth_token, uuid)
+
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED
         return Response({
@@ -645,6 +655,13 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         tasks.start_stop_application.delay(lambda_instance_uuid=lambda_instance_uuid,
                                            app_uuid=uuid, app_action=app_action, app_type=app_type,
                                            execution_environment_name=execution_environment_name)
+
+        # Make a request to Central VM to increment the times_started counter of the specified
+        # application.
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+
+        central_vm_tasks.decrement_started_counter_central_vm.\
+            delay(auth_token, uuid)
 
         # Return an appropriate response.
         status_code = status.HTTP_202_ACCEPTED

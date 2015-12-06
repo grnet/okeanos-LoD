@@ -673,3 +673,196 @@ class TestCeleryCentralVMTasks(APITestCase):
 
         central_vm_tasks.delete_application_central_vm.retry.\
             assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+
+    @mock.patch('backend.central_vm_tasks.settings')
+    @mock.patch('backend.central_vm_tasks.requests')
+    def test_increment_started_counter_central_vm(self, mock_requests, mock_settings):
+        # Set the required values for the mocks.
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
+
+        # Create the parameters that will be given as input to the task.
+        application_uuid = uuid.uuid4()
+
+        # Call the task.
+        central_vm_tasks.increment_started_counter_central_vm(self.AUTHENTICATION_TOKEN,
+                                                              application_uuid)
+
+        # Assert that the proper mock calls have been made.
+        mock_requests.post.assert_called_with(
+            url="CENTRAL_VM_API/lambda_applications/{}/increment_started/".format(application_uuid),
+            headers={
+                'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
+            }
+        )
+
+    @mock.patch('backend.central_vm_tasks.requests.exceptions.Timeout', new=CustomTimeoutException)
+    @mock.patch('backend.central_vm_tasks.settings')
+    @mock.patch('backend.central_vm_tasks.requests')
+    def test_increment_started_counter_central_vm_timeout_except(self, mock_requests,
+                                                                 mock_settings):
+        # Set side effects for mocks.
+        mock_requests.post.side_effect = CustomTimeoutException()
+
+        # Set the required values for the mocks.
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
+        mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
+
+        # Create the parameters that will be given as input to the task.
+        instance_uuid = uuid.uuid4()
+
+        # Mock retry method of the task to be called.
+        central_vm_tasks.increment_started_counter_central_vm.retry = mock.Mock()
+
+        # Call the task.
+        central_vm_tasks.increment_started_counter_central_vm(self.AUTHENTICATION_TOKEN,
+                                                              instance_uuid)
+
+        # Assert that the proper mock calls have been made.
+        mock_requests.post.assert_called_with(
+            url="CENTRAL_VM_API/lambda_applications/{}/increment_started/".format(instance_uuid),
+            headers={
+                'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
+            }
+        )
+
+        central_vm_tasks.increment_started_counter_central_vm.retry.\
+            assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+
+    @mock.patch('backend.central_vm_tasks.requests.exceptions.ConnectionError',
+                new=CustomConnectionError)
+    @mock.patch('backend.central_vm_tasks.settings')
+    @mock.patch('backend.central_vm_tasks.requests')
+    def test_increment_started_counter_central_vm_connection_error_except(self, mock_requests,
+                                                                          mock_settings):
+        # Set side effects for mocks.
+        mock_requests.post.side_effect = CustomConnectionError()
+
+        # Set the required values for the mocks.
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
+        mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
+
+        # Create the parameters that will be given as input to the task.
+        application_uuid = uuid.uuid4()
+
+        # Mock retry method of the task to be called.
+        central_vm_tasks.increment_started_counter_central_vm.retry = mock.Mock()
+
+        # Call the task.
+        central_vm_tasks.increment_started_counter_central_vm(self.AUTHENTICATION_TOKEN,
+                                                              application_uuid)
+
+        # Assert that the proper mock calls have been made.
+        mock_requests.post.assert_called_with(
+            url="CENTRAL_VM_API/lambda_applications/{}/increment_started/".format(application_uuid),
+            headers={
+                'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
+            }
+        )
+
+        central_vm_tasks.increment_started_counter_central_vm.retry.\
+            assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+
+    @mock.patch('backend.central_vm_tasks.settings')
+    @mock.patch('backend.central_vm_tasks.requests')
+    def test_decrement_started_counter_central_vm(self, mock_requests, mock_settings):
+        # Set the required values for the mocks.
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
+
+        # Create the parameters that will be given as input to the task.
+        application_uuid = uuid.uuid4()
+
+        # Call the task.
+        central_vm_tasks.decrement_started_counter_central_vm(self.AUTHENTICATION_TOKEN,
+                                                              application_uuid)
+
+        # Assert that the proper mock calls have been made.
+        mock_requests.post.assert_called_with(
+            url="CENTRAL_VM_API/lambda_applications/{}/decrement_started/".format(application_uuid),
+            headers={
+                'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
+            }
+        )
+
+    @mock.patch('backend.central_vm_tasks.requests.exceptions.Timeout', new=CustomTimeoutException)
+    @mock.patch('backend.central_vm_tasks.settings')
+    @mock.patch('backend.central_vm_tasks.requests')
+    def test_decrement_started_counter_central_vm_timeout_except(self, mock_requests,
+                                                                 mock_settings):
+        # Set side effects for mocks.
+        mock_requests.post.side_effect = CustomTimeoutException()
+
+        # Set the required values for the mocks.
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
+        mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
+
+        # Create the parameters that will be given as input to the task.
+        instance_uuid = uuid.uuid4()
+
+        # Mock retry method of the task to be called.
+        central_vm_tasks.decrement_started_counter_central_vm.retry = mock.Mock()
+
+        # Call the task.
+        central_vm_tasks.decrement_started_counter_central_vm(self.AUTHENTICATION_TOKEN,
+                                                              instance_uuid)
+
+        # Assert that the proper mock calls have been made.
+        mock_requests.post.assert_called_with(
+            url="CENTRAL_VM_API/lambda_applications/{}/decrement_started/".format(instance_uuid),
+            headers={
+                'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
+            }
+        )
+
+        central_vm_tasks.decrement_started_counter_central_vm.retry.\
+            assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+
+    @mock.patch('backend.central_vm_tasks.requests.exceptions.ConnectionError',
+                new=CustomConnectionError)
+    @mock.patch('backend.central_vm_tasks.settings')
+    @mock.patch('backend.central_vm_tasks.requests')
+    def test_decrement_started_counter_central_vm_connection_error_except(self, mock_requests,
+                                                                          mock_settings):
+        # Set side effects for mocks.
+        mock_requests.post.side_effect = CustomConnectionError()
+
+        # Set the required values for the mocks.
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
+        mock_settings.CENTRAL_VM_RETRY_COUNTDOWN = "CENTRAL_VM_RETRY_COUNTDOWN"
+
+        # Create the parameters that will be given as input to the task.
+        application_uuid = uuid.uuid4()
+
+        # Mock retry method of the task to be called.
+        central_vm_tasks.decrement_started_counter_central_vm.retry = mock.Mock()
+
+        # Call the task.
+        central_vm_tasks.decrement_started_counter_central_vm(self.AUTHENTICATION_TOKEN,
+                                                              application_uuid)
+
+        # Assert that the proper mock calls have been made.
+        mock_requests.post.assert_called_with(
+            url="CENTRAL_VM_API/lambda_applications/{}/decrement_started/".format(application_uuid),
+            headers={
+                'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
+            }
+        )
+
+        central_vm_tasks.decrement_started_counter_central_vm.retry.\
+            assert_called_with(countdown=mock_settings.CENTRAL_VM_RETRY_COUNTDOWN)
+
+    @mock.patch('backend.central_vm_tasks.settings')
+    @mock.patch('backend.central_vm_tasks.requests')
+    def test_register_user_central_vm_central_vm(self, mock_requests, mock_settings):
+        # Set the required values for the mocks.
+        mock_settings.CENTRAL_VM_API = "CENTRAL_VM_API"
+
+        # Call the task.
+        central_vm_tasks.register_user_central_vm(self.AUTHENTICATION_TOKEN)
+
+        # Assert that the proper mock calls have been made.
+        mock_requests.get.assert_called_with(
+            url="CENTRAL_VM_API/authenticate/",
+            headers={
+                'Authorization': "Token {}".format(self.AUTHENTICATION_TOKEN),
+            }
+        )

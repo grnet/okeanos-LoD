@@ -161,3 +161,67 @@ def delete_application_central_vm(self, auth_token, application_uuid):
             })
     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
         self.retry(countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
+
+
+@shared_task(bind=True)
+def increment_started_counter_central_vm(self, auth_token, application_uuid):
+    """
+    Makes an HTTP request to Central VM to increment the times_started counter of the specified
+    Application.
+    :param auth_token: The authentication token of the user that owns the Application.
+    :param application_uuid: The uuid of the Application.
+    """
+
+    # Make a POST request to Central VM. In case of a timeout, retry three(3)
+    # times(default Celery retry) and then stop trying.
+
+    try:
+        requests.post(
+            url=(settings.CENTRAL_VM_API + "/lambda_applications/{}/increment_started/").format(
+                application_uuid),
+            headers={
+                'Authorization': "Token {}".format(auth_token),
+            })
+    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+        self.retry(countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
+
+
+@shared_task(bind=True)
+def decrement_started_counter_central_vm(self, auth_token, application_uuid):
+    """
+    Makes an HTTP request to Central Vm to increment the times_started counter of the specified
+    Application.
+    :param auth_token: The authentication token of the user that owns the Application.
+    :param application_uuid: The uuid of the Application.
+    """
+
+    # Make a POST request to Central VM. In case of a timeout, retry three(3)
+    # times(default Celery retry) and then stop trying.
+
+    try:
+        requests.post(
+            url=(settings.CENTRAL_VM_API + "/lambda_applications/{}/decrement_started/").format(
+                application_uuid),
+            headers={
+                'Authorization': "Token {}".format(auth_token),
+            })
+    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+        self.retry(countdown=settings.CENTRAL_VM_RETRY_COUNTDOWN)
+
+
+@shared_task(bind=True)
+def register_user_central_vm(self, auth_token):
+    """
+    Makes an HTTP request to Central VM to register the user.
+    :param auth_token: The authentication token of the user to be registered.
+    """
+
+    # Make a get request to Central VM. Note that in case of a timeout, there will be no retries
+    # since the registering of the user can be done the next time he/she logs in, creates a new
+    # Lambda Instance or uploads an Application.
+    requests.get(
+        url=settings.CENTRAL_VM_API + "/authenticate/",
+        headers={
+            'Authorization': "Token {}".format(auth_token),
+        }
+    )

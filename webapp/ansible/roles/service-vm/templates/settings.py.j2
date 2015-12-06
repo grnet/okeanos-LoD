@@ -202,6 +202,18 @@ CELERY_ROUTES = {
         'queue': 'statistics_queue',
         'routing_key': 'statistics_key',
     },
+    'backend.central_vm_tasks.increment_started_counter_central_vm': {
+        'queue': 'statistics_queue',
+        'routing_key': 'statistics_key',
+    },
+    'backend.central_vm_tasks.decrement_started_counter_central_vm': {
+        'queue': 'statistics_queue',
+        'routing_key': 'statistics_key',
+    },
+    'backend.central_vm_tasks.register_user_central_vm': {
+        'queue': 'statistics_queue',
+        'routing_key': 'statistics_key',
+    },
     'backend.events.set_lambda_instance_status': {
         'queue': 'events_queue',
         'routing_key': 'event_key',
