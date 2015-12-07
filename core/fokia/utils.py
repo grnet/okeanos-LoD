@@ -232,6 +232,9 @@ def get_user_okeanos_projects(auth_url, auth_token):
     okeanos_projects = list()
 
     for okeanos_project in astakos_client.get_projects():
+        if okeanos_project['state'] != 'active':
+            continue
+
         project_id = okeanos_project['id']
         project_name = okeanos_project['name']
 

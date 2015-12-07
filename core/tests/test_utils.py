@@ -18,8 +18,9 @@ def test_get_user_okeanos_projects(mock_AstakosClient):
     mock_AstakosClient.return_value = mock_astakos_client
 
     mock_astakos_client.get_projects.return_value = [
-        {'id': '1', 'name': "name1", 'garbage': 'garbage'},
-        {'id': '2', 'name': "name2", 'garbage2': 'garbage2'}]
+        {'id': '1', 'name': "name1", 'state': 'active', 'garbage': 'garbage'},
+        {'id': '2', 'name': "name2", 'state': 'active', 'garbage2': 'garbage2'},
+        {'id': '3', 'name': "name3", 'state': 'deleted', 'garbage3': 'garbage3'}]
 
     mock_astakos_client.get_quotas.return_value = {
         '1': {
