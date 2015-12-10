@@ -4,6 +4,7 @@ from fokia.provisioner import Provisioner
 from fokia.ansible_manager import Manager
 import os
 from os.path import join, expanduser, exists
+from kamaki.clients import ClientError
 
 check_folders = ['/var/www/okeanos-LoD/ansible', 'okeanos-LoD/ansible', 'ansible', '../ansible',
                  '../../ansible']
@@ -120,6 +121,26 @@ def lambda_instance_destroy(instance_uuid, auth_token,
     # Retrieve cyclades network client
     cyclades_network_client = provisioner.network_client
 
+    # Detach the public ip
+    port_id = cyclades_network_client.get_floatingip_details(public_ip_id)['port_id']
+    if port_id:
+        port_status = cyclades_network_client.get_port_details(port_id)['status']
+        cyclades_network_client.delete_port(port_id)
+        try:
+            cyclades_network_client.wait_port_while(port_id, port_status)
+        except ClientError as ce:
+            if ce.status != 404:
+                raise
+
+    # Check if the public ip is attached
+    attached_vm = cyclades_network_client.get_floatingip_details(public_ip_id)['instance_id']
+    if not attached_vm:
+        # Destroy the public ip
+        cyclades_network_client.delete_floatingip(public_ip_id)
+    else:
+        if attached_vm in [master_id] + slave_ids:
+            raise ClientError("Destroy failed. Reason: The public IP was not detached")
+
     # Get the current status of the VMs.
     master_status = cyclades_compute_client.get_server_details(master_id)["status"]
     slaves_status = []
@@ -141,9 +162,6 @@ def lambda_instance_destroy(instance_uuid, auth_token,
     cyclades_compute_client.wait_server(master_id, current_status=master_status, max_wait=600)
     for i, slave_id in enumerate(slave_ids):
         cyclades_compute_client.wait_server(slave_id, current_status=slaves_status[i], max_wait=600)
-
-    # Destroy the public ip.
-    cyclades_network_client.delete_floatingip(public_ip_id)
 
     # Destroy the private network.
     cyclades_network_client.delete_network(private_network_id)
