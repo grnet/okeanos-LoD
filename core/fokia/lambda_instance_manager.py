@@ -105,7 +105,7 @@ def lambda_instance_destroy(instance_uuid, auth_token,
     ip and the private network used are destroyed and the status of the lambda instance gets
     changed to DESTROYED. There is no going back from this state, the entries are kept to the
     database for reference.
-    :param auth_url: The authentication url for ~okeanos API.
+    :param instance_uuid: The uuid of the lambda instance
     :param auth_token: The authentication token of the owner of the lambda instance.
     :param master_id: The ~okeanos id of the VM that acts as the master node.
     :param slave_ids: The ~okeanos ids of the VMs that act as the slave nodes.
@@ -141,6 +141,24 @@ def lambda_instance_destroy(instance_uuid, auth_token,
         if attached_vm in [master_id] + slave_ids:
             raise ClientError("Destroy failed. Reason: The public IP was not detached")
 
+    # Detach the VMs from the private network
+    for server_id in [master_id] + slave_ids:
+        ports = [port for port in
+                 cyclades_compute_client.get_server_details(server_id)['attachments'] if
+                 (int(port['network_id']) == private_network_id)]
+        if ports:
+            for port in ports:
+                port['status'] = cyclades_network_client.get_port_details(port['id'])['status']
+                cyclades_network_client.delete_port(port['id'])
+                try:
+                    cyclades_network_client.wait_port_while(port['id'], port['status'])
+                except ClientError as ce:
+                    if ce.status != 404:
+                        raise
+
+    # Destroy the private network
+    cyclades_network_client.delete_network(private_network_id)
+
     # Get the current status of the VMs.
     master_status = cyclades_compute_client.get_server_details(master_id)["status"]
     slaves_status = []
@@ -157,14 +175,10 @@ def lambda_instance_destroy(instance_uuid, auth_token,
         if cyclades_compute_client.get_server_details(slave_id)["status"] != "DELETED":
             cyclades_compute_client.delete_server(slave_id)
 
-    # Wait for all the VMs to be destroyed before destroyed the public ip and the
-    # private network.
+    # Wait for all VMs to be destroyed
     cyclades_compute_client.wait_server(master_id, current_status=master_status, max_wait=600)
     for i, slave_id in enumerate(slave_ids):
         cyclades_compute_client.wait_server(slave_id, current_status=slaves_status[i], max_wait=600)
-
-    # Destroy the private network.
-    cyclades_network_client.delete_network(private_network_id)
 
     # Delete the private key
     __delete_private_key(instance_uuid, master_id, slave_ids)
