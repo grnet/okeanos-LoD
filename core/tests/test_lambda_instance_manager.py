@@ -203,6 +203,8 @@ def test_destroy_cluster():
         provisioner_obj = provisioner.return_value
         cyclades_compute = provisioner_obj.cyclades
         cyclades_network = provisioner_obj.network_client
+        cyclades_network.get_floatingip_details.side_effect = [{'port_id': 'test_port_id'},
+                                                               {'instance_id': None}]
 
         # Execute instance destroy with test values
         lambda_instance_destroy('test_cluster_id', 'test_token', 'master_id',
