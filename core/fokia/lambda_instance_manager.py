@@ -83,11 +83,17 @@ def __add_private_key(cluster_id, provisioner_response):
 def __delete_private_key(cluster_id, master_id, slave_ids):
     sconfig = Storm(expanduser('~/.ssh/config'))
     name = 'snf-' + str(master_id) + '.vm.okeanos.grnet.gr'
-    sconfig.delete_entry(name)
-    for slave_id in slave_ids:
-        name = 'snf-' + str(slave_id) + '.local'
+    try:
         sconfig.delete_entry(name)
-    os.remove(join(expanduser('~/.ssh/lambda_instances/'), cluster_id))
+        for slave_id in slave_ids:
+            name = 'snf-' + str(slave_id) + '.local'
+            sconfig.delete_entry(name)
+    except ValueError:
+        pass
+    try:
+        os.remove(join(expanduser('~/.ssh/lambda_instances/'), cluster_id))
+    except OSError:
+        pass
 
 
 def run_playbook(ansible_manager, playbook, only_tags=None, skip_tags=None, extra_vars=None):
