@@ -159,12 +159,6 @@ def lambda_instance_destroy(instance_uuid, auth_token,
     # Destroy the private network
     cyclades_network_client.delete_network(private_network_id)
 
-    # Get the current status of the VMs.
-    master_status = cyclades_compute_client.get_server_details(master_id)["status"]
-    slaves_status = []
-    for slave_id in slave_ids:
-        slaves_status.append(cyclades_compute_client.get_server_details(slave_id)["status"])
-
     # Destroy all the VMs without caring for properly stopping the lambda services.
     # Destroy master node.
     if cyclades_compute_client.get_server_details(master_id)["status"] != "DELETED":
@@ -176,9 +170,9 @@ def lambda_instance_destroy(instance_uuid, auth_token,
             cyclades_compute_client.delete_server(slave_id)
 
     # Wait for all VMs to be destroyed
-    cyclades_compute_client.wait_server(master_id, current_status=master_status, max_wait=600)
-    for i, slave_id in enumerate(slave_ids):
-        cyclades_compute_client.wait_server(slave_id, current_status=slaves_status[i], max_wait=600)
+    cyclades_compute_client.wait_server_until(master_id, target_status="DELETED", max_wait=300)
+    for slave_id in slave_ids:
+        cyclades_compute_client.wait_server_until(slave_id, target_status="DELETED", max_wait=300)
 
     # Delete the private key
     __delete_private_key(instance_uuid, master_id, slave_ids)
