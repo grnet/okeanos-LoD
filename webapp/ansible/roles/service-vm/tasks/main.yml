@@ -1,10 +1,11 @@
 ---
-  - name: Install python-dev, sudo and git packages.
+  - name: Install python-dev, sudo, git and libffi-dev packages
     apt: name={{ item }} state=latest
     with_items:
       - python-dev
       - sudo
       - git
+      - libffi-dev
 
   - name: Include apache2 tasks.
     include: apache-install.yml
