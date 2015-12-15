@@ -12,27 +12,42 @@
   - name: Include postgresql-install tasks.
     include: postgresql-install.yml
 
-  - name: Download Django code from Github.
-    git: repo={{ repository_url }}  dest={{ repository_download_path }}/okeanos-LoD update=yes version={{ repository_branch }}
+  - name: Download ~okeanos LoD code from Github.
+    git: repo={{ repository_url }}  dest={{ repository_download_path }}/okeanos-LoD update=yes version={{ repository_branch }} force=yes
+    tags:
+      - update
 
   - name: Change repository permissions.
     file: path={{ repository_download_path }} owner=celery group=celery recurse=yes
+    tags:
+      - update
 
   - name: Install Fokia requirements.
     pip: requirements={{ repository_download_path }}/okeanos-LoD/core/requirements.txt
+    tags:
+      - update
 
   - name: Install app requirements.
     pip: requirements={{ repository_download_path }}/okeanos-LoD/central_service/app/requirements.txt
+    tags:
+      - update
 
   - name: Install Fokia.
     command: python setup.py install chdir="{{ repository_download_path }}/okeanos-LoD/core/"
+    tags:
+      - update
 
   - name: Setup Django database configuration.
     template: src=settings.py.j2 dest={{ repository_download_path }}/okeanos-LoD/central_service/app/app/settings.py
+    changed_when: true
     notify:
       - django_dbs_migrate
+    tags:
+      - update
 
   - name: Build mkdocs.
     command: mkdocs build --clean
     args:
       chdir: "{{ repository_download_path }}/okeanos-LoD/central_service/app/api-doc/"
+    tags:
+      - update

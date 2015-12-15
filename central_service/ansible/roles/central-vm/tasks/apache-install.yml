@@ -29,15 +29,23 @@
 
   - name: Copy Lambda sites-available configuration.
     template: src=central-service-backend.conf.j2 dest=/etc/apache2/sites-available/central-service-backend.conf
+    tags:
+      - update
 
   - name: Copy lambda sites-available mkdocs configuration.
     template: src=central-service-mkdocs.conf.j2 dest=/etc/apache2/sites-available/central-service-mkdocs.conf
+    tags:
+      - update
 
   - name: Add central-service-backend to sites-enabled.
     command: a2ensite central-service-backend.conf
+    tags:
+      - update
 
   - name: Add central-service-mkdocs to sites-enabled.
     command: a2ensite central-service-mkdocs.conf
+    tags:
+      - update
 
   - name: Disable default apache sites.
     command: a2dissite {{ item }}
@@ -46,8 +54,12 @@
       - default-ssl.conf
     notify:
       - restart_apache2
+    tags:
+      - update
 
   - name: Configure Apache.
     lineinfile: dest=/etc/apache2/apache2.conf line="WSGIPythonPath {{ repository_download_path }}/okeanos-LoD/central_service/app" state=present insertafter=EOF
     notify:
       - restart_apache2
+    tags:
+      - update
