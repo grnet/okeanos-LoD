@@ -85,20 +85,29 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Central service VM provisioning')
     parser.add_argument('--action', type=str, dest='action', required=True,
-                        choices=['create', 'start', 'stop', 'destroy'])
-    parser.add_argument('--auth-token', type=str, dest='auth_token', required=False)
-    parser.add_argument('--vm-id', type=int, dest='vm_id')
+                        choices=['create', 'start', 'stop', 'destroy'],
+                        help="action to be performed")
+    parser.add_argument('--auth-token', type=str, dest='auth_token', required=False,
+                        help="the ~okeanos authentication token of the user")
+    parser.add_argument('--vm-id', type=int, dest='vm_id',
+                        help="the ~okeanos id of the correspoding VM")
     parser.add_argument('--vm-name', type=str, dest='vm_name', required=False,
-                        default='Central Service')
+                        default='Central Service', help="the name of the VM")
     parser.add_argument('--vcpus', type=int, dest='vcpus', default='4',
-                        choices=[1, 2, 4, 8])
+                        choices=[1, 2, 4, 8], help="the number of CPUs on the VM")
     parser.add_argument('--ram', type=int, dest='ram', default='4096',
-                        choices=[512, 1024, 2048, 4096, 6144, 8192])
+                        choices=[512, 1024, 2048, 4096, 6144, 8192],
+                        help="the amount of RAM on the VM")
     parser.add_argument('--disk', type=int, dest='disk', default='40',
-                        choices=[5, 10, 20, 40, 60, 80, 100])
-    parser.add_argument('--project-name', type=str, dest='project_name')
-    parser.add_argument('--private-key-path', type=str, dest='private_key_path')
-    parser.add_argument('--public-key-path', type=str, dest='public_key_path')
+                        choices=[5, 10, 20, 40, 60, 80, 100], help="the size of the HDD on the VM")
+    parser.add_argument('--project-name', type=str, dest='project_name',
+                        help="the ~okeanos project with the appropriate quotas for the VM")
+    parser.add_argument('--private-key-path', type=str, dest='private_key_path',
+                        help="path to private ssh key to be used by Ansible"
+                             " (should pair with the provided public key)")
+    parser.add_argument('--public-key-path', type=str, dest='public_key_path',
+                        help="path to public ssh key to be injected in the VM"
+                             " (should pair with the provided private key)")
     args = parser.parse_args()
 
     csm = CentralServiceManager(args.auth_token)
