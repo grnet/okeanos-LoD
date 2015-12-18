@@ -3,6 +3,7 @@ import Ember from "ember";
 var UploadController = Ember.Controller.extend({
   session: Ember.inject.service('session'),
   wrongExt: false,
+  outOfSpace: false,
   userHasEnteredData: false,
   submitDisabled: false,
 
@@ -11,6 +12,7 @@ var UploadController = Ember.Controller.extend({
       var _this = this;
       this.setProperties({
         wrongExt: false,
+        outOfSpace: false,
       });
 
       var host = this.store.adapterFor('upload-app').get('host'),
@@ -34,9 +36,17 @@ var UploadController = Ember.Controller.extend({
       progress.className = "progress-bar progress-bar-striped active";
       progress_bar.hidden=true;
 
-      var res = document.getElementById("file").value.split(".");
+      var file = document.getElementById("file");
+      var res = file.value.split(".");
       var ext = res[res.length-1];
-      if (ext !== "jar")
+      var project_name = document.getElementById('project-name').value;
+      var pithos_space = this.get('model.userOkeanosProjects').findBy('name', project_name).get('pithos_space');
+      var file_size = file.files[0].size;
+      if (pithos_space < file_size) {
+        this.set('fileSize', file_size);
+        this.set('outOfSpace', true);
+      }
+      else if (ext !== "jar")
       {
         this.set("wrongExt", true);
       }
@@ -83,15 +93,21 @@ var UploadController = Ember.Controller.extend({
           });
         },
         statusCode: {
-          400: function() {
-            progress.className = "progress-bar progress-bar-danger";
-            progress.innerHTML =  'Failure. Your request to upload the application has failed.Try another application';
-            progress_text.innerHTML =  '';
+          400: function (response) {
+            progress.clasName = "progress-bar progress-bar-danger";
+            var error_detail = response.responseJSON.errors[0].detail;
+            if (error_detail === 'The specified file name already exists.') {
+              progress.innerHTML = error_detail + ' Try another application.';
+            }
+            else {
+              progress.innerHTML = 'Failure. Your request to upload the application has failed. Try another application.';
+            }
+            progress_text.innerHTML = '';
           }
         },
         error: function() {
           progress.className = "progress-bar progress-bar-danger";
-          progress.innerHTML =  'Your request to application the file has been rejected.Please try again later.';
+          progress.innerHTML =  'Your request to application the file has been rejected. Please try again later.';
           progress_text.innerHTML =  '';
         }
       });

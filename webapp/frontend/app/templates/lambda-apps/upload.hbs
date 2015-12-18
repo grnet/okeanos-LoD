@@ -46,13 +46,18 @@
                 <h3 class="box-title">Main</h3>: Select the data for your application
                           </div><!-- /.box-header -->
               <div class="box-body">
+                  <div class="row">
+                      <div class="col-sm-12">
+                          <p><i class="fa fa-info"></i>  All inputs marked with (*) are required. </p>
+                      </div>
+                  </div>
                <div class="row">
         <div class="form-group col-sm-6">
-              <label for="project_name" class="col-sm-6">~okeanos Project:</label>
+              <label for="project_name" class="col-sm-6">~okeanos Project (*):</label>
               <div class="col-sm-6">
 
 
-               <select name="project_name" class="form-control">
+               <select name="project_name" class="form-control" id="project-name">
                  {{#each model.userOkeanosProjects as |project|}}
                    <option value={{project.name}}>{{project.name}} (pithos_space: {{normalize-bytes project.pithos_space}})</option>
                  {{/each}}
@@ -72,7 +77,7 @@
           <span id="helpBlock" class="help-block">Add a small description of your application</span>
           </div>
 
-          <label for="description" class="col-sm-6">Execution Environment Name:</label>
+          <label for="description" class="col-sm-6">Execution Environment Name (*):</label>
               <div class="col-sm-6">
 
           <textarea type="textarea" name="execution_environment_name" class="center-block form-control input-lg" id="execution_environment_name" style="font-size: 14px;" required="true"></textarea>
@@ -86,7 +91,7 @@
 
         </div>	<!--class="col-sm-6"-->
           <div class="form-group col-sm-6">
-              <label for="type"  class="col-sm-6">Application type: </label>
+              <label for="type"  class="col-sm-6">Application type (*): </label>
                 <div class="col-sm-6" >
                   <select name="type" class="form-control">
                     <option value="batch">batch</option>
@@ -99,7 +104,7 @@
            </div><!--class="form-group col-sm-6"-->
 
       <div class="form-group col-sm-6">
-      <label for="type"  class="col-sm-6">File to upload: </label>
+      <label for="type"  class="col-sm-6">File to upload (*): </label>
       <div class="col-sm-6" >
           {{input type="file" name="file" id="file" required="true" accept=".jar"}}
         <span id="helpBlock" class="help-block">Upload the file of the application.<br>Only jar files are accepted.</span>
@@ -112,6 +117,13 @@
        </div>
      </div>
      <p id="progress_text" class="col-sm-6 col-sm-offset-3"></p>
+
+    {{#if outOfSpace}}
+       <div class="alert alert-danger col-sm-8 col-sm-offset-3">
+           The size of the file you are trying to upload ({{normalize-bytes fileSize}}) is bigger than your pithos
+           quotas in the selected ~okeanos project. Please select another ~okeanos project, or another file.
+       </div>
+    {{/if}}
 
     {{#if wrongExt}}
       <div class="alert alert-danger col-sm-6 col-sm-offset-3">
@@ -130,7 +142,7 @@
       <button type="submit" class="btn btn-primary" id="submit-button">Submit</button>
     {{else}}
       {{#tool-tip}}
-          <button type="submit" class="btn btn-primary has-tooltip"
+          <button type="button" class="btn btn-primary has-tooltip"
                   data-tooltip-content="<center>An application is already uploading!</center>"
                   id="submit-button">Submit</button>
       {{/tool-tip}}
