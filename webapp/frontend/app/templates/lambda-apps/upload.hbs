@@ -57,7 +57,7 @@
               <div class="col-sm-6">
 
 
-               <select name="project_name" class="form-control">
+               <select name="project_name" class="form-control" id="project-name">
                  {{#each model.userOkeanosProjects as |project|}}
                    <option value={{project.name}}>{{project.name}} (pithos_space: {{normalize-bytes project.pithos_space}})</option>
                  {{/each}}
@@ -118,6 +118,13 @@
      </div>
      <p id="progress_text" class="col-sm-6 col-sm-offset-3"></p>
 
+    {{#if outOfSpace}}
+       <div class="alert alert-danger col-sm-8 col-sm-offset-3">
+           The size of the file you are trying to upload ({{normalize-bytes fileSize}}) is bigger than your pithos
+           quotas in the selected ~okeanos project. Please select another ~okeanos project, or another file.
+       </div>
+    {{/if}}
+
     {{#if wrongExt}}
       <div class="alert alert-danger col-sm-6 col-sm-offset-3">
         File extension error. Only <strong>.jar</strong> files may be uploaded
@@ -135,7 +142,7 @@
       <button type="submit" class="btn btn-primary" id="submit-button">Submit</button>
     {{else}}
       {{#tool-tip}}
-          <button type="submit" class="btn btn-primary has-tooltip"
+          <button type="button" class="btn btn-primary has-tooltip"
                   data-tooltip-content="<center>An application is already uploading!</center>"
                   id="submit-button">Submit</button>
       {{/tool-tip}}

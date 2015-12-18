@@ -3,6 +3,7 @@ import Ember from "ember";
 var UploadController = Ember.Controller.extend({
   session: Ember.inject.service('session'),
   wrongExt: false,
+  outOfSpace: false,
   userHasEnteredData: false,
   submitDisabled: false,
 
@@ -11,6 +12,7 @@ var UploadController = Ember.Controller.extend({
       var _this = this;
       this.setProperties({
         wrongExt: false,
+        outOfSpace: false,
       });
 
       var host = this.store.adapterFor('upload-app').get('host'),
@@ -34,9 +36,17 @@ var UploadController = Ember.Controller.extend({
       progress.className = "progress-bar progress-bar-striped active";
       progress_bar.hidden=true;
 
-      var res = document.getElementById("file").value.split(".");
+      var file = document.getElementById("file");
+      var res = file.value.split(".");
       var ext = res[res.length-1];
-      if (ext !== "jar")
+      var project_name = document.getElementById('project-name').value;
+      var pithos_space = this.get('model.userOkeanosProjects').findBy('name', project_name).get('pithos_space');
+      var file_size = file.files[0].size;
+      if (pithos_space < file_size) {
+        this.set('fileSize', file_size);
+        this.set('outOfSpace', true);
+      }
+      else if (ext !== "jar")
       {
         this.set("wrongExt", true);
       }
