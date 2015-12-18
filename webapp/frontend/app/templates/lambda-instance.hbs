@@ -57,9 +57,24 @@
               actions you may take depending on the <i>status</i> of the lambda instance.
               </div>
 
-
-            <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right" {{action "delete_instance" model.instance.id}}><i class="fa fa-times"></i> Delete</button>
-              {{#if (compare model.instance.status_code '==' '0')}}
+              {{#if (logical-op 'and'
+                (compare (lambda-instance-state model.instance.status_message) "!==" "DESTROYING")
+                (compare (lambda-instance-state model.instance.status_message) "!==" "DESTROYED")
+              )}}
+                <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right"
+                  {{action "delete_instance" model.instance.id}}>
+                    <i class="fa fa-times"></i> Delete
+                </button>
+              {{else}}
+                {{#tool-tip}}
+                <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right disabled has-tooltip"
+                        data-tooltip-content="<center>Cannot delete a lambda instance, while its
+                        status is {{lower-case model.instance.status_message}}!</center>">
+                    <i class="fa fa-times"></i> Delete
+                </button>
+                {{/tool-tip}}
+              {{/if}}
+                {{#if (compare model.instance.status_code '==' '0')}}
                 {{#link-to 'deploy-app-2' model.instance.id}}
                   <button class="btn btn-primary pull-right"
                           style="margin-right: 15px;"><i class="fa fa-mail-reply"> </i>

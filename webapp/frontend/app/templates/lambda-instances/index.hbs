@@ -196,7 +196,20 @@
                       </td>
                     {{/if}}
                     <td>
-                        <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_instance" lambda-instance.id}}><i class="fa fa-times"></i> Delete</button>
+                      {{#if (compare (lambda-instance-state lambda-instance.status_message) "!==" "DESTROYING")}}
+                          <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs"
+                                  {{action "delete_instance" lambda-instance.id}}>
+                              <i class="fa fa-times"></i> Delete
+                          </button>
+                    {{else}}
+                      {{#tool-tip}}
+                          <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs disabled has-tooltip"
+                                  data-tooltip-content="<center>Cannot delete a lambda instance, while its
+                                  status is {{lower-case lambda-instance.status_message}}!</center>">
+                              <i class="fa fa-times"></i> Delete
+                          </button>
+                      {{/tool-tip}}
+                    {{/if}}
                     </td>
                 </td>
               </tr>
