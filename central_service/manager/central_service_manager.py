@@ -32,9 +32,9 @@ class CentralServiceManager(object):
     def __init__(self, auth_token):
         self.auth_token = auth_token
 
-    def central_service_create(self, vm_name='Central Service',
-                               vcpus=4, ram=4096, disk=40,
-                               project_name=None,
+    def central_service_create(self, ssl_certificate_file, ssl_certificate_key_file,
+                               ssl_certificate_chain_file, vm_name='Central Service', vcpus=4,
+                               ram=4096, disk=40, project_name=None,
                                private_key_path=None, public_key_path=None):
         """
         Creates the central service vm and installs the relevant s/w.
@@ -50,7 +50,12 @@ class CentralServiceManager(object):
         group = 'central-vm'
         ansible_manager = Manager(hostname, group, private_key_path)
         ansible_result = ansible_manager.run_playbook(
-            playbook_file=os.path.join(ansible_path, 'playbooks', 'setup.yml'))
+            playbook_file=os.path.join(ansible_path, 'playbooks', 'setup.yml'),
+            extra_vars={
+                "ssl_certificate_file": ssl_certificate_file,
+                "ssl_certificate_key_file": ssl_certificate_key_file,
+                "ssl_certificate_chain_file": ssl_certificate_chain_file
+            })
         return ansible_result
 
     def central_service_destroy(self, vm_id):
@@ -108,6 +113,13 @@ if __name__ == "__main__":
     parser.add_argument('--public-key-path', type=str, dest='public_key_path',
                         help="path to public ssh key to be injected in the VM"
                              " (should pair with the provided private key)")
+    parser.add_argument('--ssl-certificate-file', type=str, dest='ssl_certificate_file',
+                        help="the ssl certificate file to be used.")
+    parser.add_argument('--ssl-certificate-key-file', type=str, dest='ssl_certificate_key_file',
+                        help="the respective key file of the provided ssl certificate file.")
+    parser.add_argument('--ssl-certificate-chain-file', type=str, dest='ssl_certificate_chain_file',
+                        help="the ssl certificate chain file to be used.")
+
     args = parser.parse_args()
 
     csm = CentralServiceManager(args.auth_token)
@@ -116,7 +128,10 @@ if __name__ == "__main__":
                                    vcpus=args.vcpus, ram=args.ram, disk=args.disk,
                                    project_name=args.project_name,
                                    private_key_path=args.private_key_path,
-                                   public_key_path=args.public_key_path)
+                                   public_key_path=args.public_key_path,
+                                   ssl_certificate_file=args.ssl_certificate_file,
+                                   ssl_certificate_key_file=args.ssl_certificate_key_file,
+                                   ssl_certificate_chain_file=args.ssl_certificate_chain_file)
     elif args.vm_id is None:
         raise ValueError("VM id must be specified")
     else:

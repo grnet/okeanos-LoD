@@ -26,7 +26,7 @@ class Manager:
         self.ansible_inventory.add_group(ansible_group)
         all_group.add_child_group(ansible_group)
 
-    def run_playbook(self, playbook_file, only_tags=None, skip_tags=None):
+    def run_playbook(self, playbook_file, only_tags=None, skip_tags=None, extra_vars=None):
         """
         Run the playbook_file using created inventory and tags specified
         :return:
@@ -36,6 +36,6 @@ class Manager:
         runner_cb = callbacks.PlaybookRunnerCallbacks(stats, verbose=utils.VERBOSITY)
         pb = PlayBook(playbook=playbook_file, inventory=self.ansible_inventory, stats=stats,
                       callbacks=playbook_cb, runner_callbacks=runner_cb,
-                      only_tags=only_tags, skip_tags=skip_tags)
+                      only_tags=only_tags, skip_tags=skip_tags, extra_vars=extra_vars)
         playbook_result = pb.run()
         return playbook_result
