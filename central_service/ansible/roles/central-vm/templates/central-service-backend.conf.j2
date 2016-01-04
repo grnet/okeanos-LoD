@@ -46,9 +46,9 @@
 	Header always add Access-Control-Allow-Headers "Content-Type"
 
     SSLEngine ON
-    SSLCertificateFile /etc/ssl/certs/{{ inventory_hostname }}.crt
-    SSLCertificateKeyFile /etc/ssl/private/{{ inventory_hostname }}.key
-    SSLCertificateChainFile /etc/ssl/certs/DigiCertCA.crt
+    SSLCertificateFile /etc/ssl/certs/{{ ssl_certificate_file }}
+    SSLCertificateKeyFile /etc/ssl/private/{{ ssl_certificate_key_file }}
+    SSLCertificateChainFile /etc/ssl/certs/{{ ssl_certificate_chain_file }}
 
     RewriteEngine On
     RewriteCond %{REQUEST_METHOD} OPTIONS

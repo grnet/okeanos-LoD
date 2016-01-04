@@ -5,3 +5,6 @@ database_user_password: change_me
 repository_download_path: /var/www
 repository_url: https://github.com/grnet/okeanos-LoD.git
 repository_branch: devel
+ssl_certificate_file: "ssl_certificate_file"
+ssl_certificate_key_file: "ssl_certificate_key_file"
+ssl_certificate_chain_file: "ssl_certificate_chain_file"
