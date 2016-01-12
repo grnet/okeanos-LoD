@@ -138,7 +138,7 @@
               <br><br>
 
               <h4>Input-Output</h4>
-              The Stream Job reads its input data from an Apache Kafka topic and sends its output to another. A <a href="https://ci.apache.org/projects/flink/flink-docs-release-0.8/streaming_guide.html#apache-kafka">connector</a> is provided by Apache Flink for this purpose. When using this connector, you should specify the machine on which Apache Kafka is deployed along with the names of the input and the output topics you want to use. In our example this is done with the following commands:
+              The Stream Job reads its input data from an Apache Kafka topic and sends its output to another. A <a href="https://ci.apache.org/projects/flink/flink-docs-release-0.8/streaming_guide.html#apache-kafka">connector</a> is provided by Apache Flink for this purpose. When using this connector, you should specify the machine on which Apache Kafka is deployed along with the names of the input and the output topics you want to use. In our example this is done with the following directives:
 
               <pre>
 String zookeeper= "master:2181";
@@ -149,7 +149,7 @@ String outputTopic = "stream-output";
               <br><br>
 
               <h4>Execution Flow</h4>
-              The execution flow of your job describes the steps that the Stream Job will execute. It is a series of directives that specify the input source of the data, the method that will be used to process them and the output destination. In our example, the execution flow is determined by the following commands:
+              The execution flow of your job describes the steps that the Stream Job will execute. It is a series of directives that specify the input source of the data, the method that will be used to process them and the output destination. In our example, the execution flow is determined by the following directives:
 
               <pre>
 DataStream&lt;Tuple4&lt;String, Integer, String, String&gt;&gt; text = env
