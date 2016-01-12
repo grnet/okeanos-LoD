@@ -82,7 +82,9 @@ class CustomCantDoError(APIException):
     default_detail = "Can't do."
 
     messages = {
-        'other_owner': 'The specified resource is not yours.'
+        'other_owner': 'The specified resource is not yours.',
+        'decrement_times_started': "Can't decrement started times counter for the specified "
+                                   "application, the counter is already 0."
     }
 
 

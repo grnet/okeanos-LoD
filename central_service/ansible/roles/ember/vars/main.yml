@@ -1,0 +1,5 @@
+---
+
+install_dir: /var/www/okeanos-LoD/central_service/app/frontend
+ember_addons:
+      - ember-data-filter

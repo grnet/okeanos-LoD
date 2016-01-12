@@ -1,0 +1,108 @@
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-warning">
+        <div class="box-header with-border">
+          <h3 class="box-title">λ Service</h3>
+          <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+          </div>
+        </div><!-- /.box-header -->
+        <div class="box-body no-padding">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="pad">Welcome to ~okeanos λ service pages. Through these pages you can find general information regarding the usage of the λ service.
+              </div>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div><!-- /.box-body -->
+      </div><!--box box-primary-->
+    </div><!--col-xs-12-->
+  </div><!--row -->
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-info">
+        <div class="box-header with-border">
+          <h3 class="box-title">Usage Statistics</h3>
+          <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+          </div>
+        </div><!-- /.box-header -->
+        <div class="box-body no-padding">
+
+          <div class="row">
+            <div class="col-md-4 col-sm-4">
+              <div class="info-box bg-blue">
+                <span class="info-box-icon"><i class="fa fa-laptop"></i></span>
+                <div class="info-box-content">
+                  {{#each model.lambdaInstancesCount as |lambdaInstancesCount|}}
+                  <h2 style="padding:4px;line-height:0px;margin-top:12px;">{{lambdaInstancesCount.runningLambdaInstances}} <small><font color="white">lambda instance running</font></small></h2>
+                  <h2 style="padding:4px;line-height:0px;margin-top:12px;">{{lambdaInstancesCount.createdLambdaInstances}} <small><font color="white">lambda instance created</font></small></h2>
+                  {{/each}}
+                </div><!-- /.info-box-content -->
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+              <div class="info-box bg-orange">
+                <span class="info-box-icon"><i class="fa fa-th"></i></span>
+                <div class="info-box-content">
+                  {{#each model.applicationsCount as |applicationsCount|}}
+                  <h2 style="padding:4px;line-height:0px;margin-top:12px;">{{applicationsCount.runningApplications}} <small><font color="white">running applications</font></small></h2>
+                  <h2 style="padding:4px;line-height:0px;margin-top:12px;">{{applicationsCount.uploadedApplications}} <small><font color="white">applications uploaded</font></small></h2>
+                  {{/each}}
+                </div><!-- /.info-box-content -->
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+              <div class="info-box bg-green">
+                <span class="info-box-icon"><i class="fa fa-users"></i></span>
+                <div class="info-box-content">
+                  {{#each model.usersCount as |usersCount|}}
+                  <h2 style="">{{usersCount.count}} <small><font color="white"> subscribed Users</font></small></h2>
+                  {{/each}}
+                </div><!-- /.info-box-content -->
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /.box-body -->
+      </div>
+    </div>
+  </div><!--row-->
+
+  <div class="row">
+    <div class="col-xs-12">
+      <!-- DIRECT CHAT DANGER -->
+      <div class="box box-success ">
+        <div class="box-header with-border">
+          <h3 class="box-title">Short guide on creating a Lambda Instance through a LoD Service VM</h3>
+        </div><!-- /.box-header -->
+        <div class="box-body">
+          <div class="row">
+            <div class="col-md-12">
+              <h1>Lambda Instance Creation</h1>
+
+              <p>After creating a LoD service VM, one can create a Lambda Instance through the web pages of the service VM. The images below will guide you step by step in the creation of your first Lambda Instance.</p>
+
+              <p><img src="assets/img/usage1-6.png" alt="usage1-6.png" width="750"></p>
+
+              <ol>
+                <li>Login the service dashboard using your ~okeanos token(you can find your ~okeanos token <a href="https://accounts.okeanos.grnet.gr/ui/api_access">here</a>)</li>
+                <li>Select Instances from the upper left menu of options</li>
+                <li>On the main window select the button "Create New Instance"</li>
+                <li>Fill your Lambda Instance specification in the form provided and select "Submit" when ready</li>
+                <li>Note the status of your new Lambda Instance change while it is being deployed and configured</li>
+                <li>At the end your Lambda Instance will be ready to use</li>
+              </ol>
+
+              <p>On the <a href="https://cyclades.okeanos.grnet.gr/ui/">Cyclades web interface</a> of the ~okeanos service you should now be able to see the new VMs that have been utilized as a full blown Lambda Instance.</p>
+            </div><!--col-->
+          </div><!--row-->
+        </div><!--class="box-body"-->
+      </div> <!--box-->
+    </div><!--col-md-3 -->
+  </div>  <!--row-->
+</section><!-- /.content -->

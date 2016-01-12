@@ -15,7 +15,7 @@ from .authenticate_user import KamakiTokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from .exceptions import CustomParseError, CustomNotFoundError, \
-    CustomAlreadyDoneError
+    CustomAlreadyDoneError, CustomCantDoError
 
 from .response_messages import ResponseMessages
 import events
@@ -78,6 +78,31 @@ def _alter_default_pagination_response(default_response):
     return default_response
 
 
+class AuthenticateView(APIView):
+    """
+    Implements the API calls relevant to authenticating a user.
+    """
+
+    def get(self, request, format=None):
+        """
+        Checks the validity of the authentication token of a user and registers him/her on the
+        database.
+        """
+
+        # request.META contains all the headers of the request
+        auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
+
+        # If something is wrong with the given token, authenticate credentials will throw an
+        # exception which will be correctly handled by the exception handler.
+        authenticator = KamakiTokenAuthentication()
+        authenticator.authenticate_credentials(auth_token)[0]
+
+        status_code = rest_status.HTTP_200_OK
+        return Response({"status": status_code,
+                         "result": "Success"},
+                        status=status_code)
+
+
 class UsersViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Viewset for viewing Users.
@@ -93,12 +118,7 @@ class LambdaUsersCounterView(APIView):
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
     def get(self, request, format=None):
-        if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql_psycopg2':
-            # This works only on Postgres
-            lambdaUsersCount = LambdaInstance.objects.all(). \
-                order_by('owner').distinct('owner').count()
-        else:
-            lambdaUsersCount = LambdaInstance.objects.values('owner').distinct().count()
+        lambdaUsersCount = User.objects.all().count()
 
         status_code = rest_status.HTTP_202_ACCEPTED
         return Response(
@@ -107,10 +127,11 @@ class LambdaUsersCounterView(APIView):
                     "code": status_code,
                     "short_description": ResponseMessages.short_descriptions['lambda_users_count'],
                 },
-                "data": {
-                    "count": str(lambdaUsersCount),
-                }
-
+                "data": [
+                    {
+                        "count": str(lambdaUsersCount),
+                    }
+                ]
             },
             status=status_code)
 
@@ -303,7 +324,8 @@ class LambdaInstanceCounterView(APIView):
 
     # GET /api/lambda_instances/count
     def get(self, request, format=None):
-        activeLambdaInstances = LambdaInstance.objects.filter(status="0").count()
+        running_lambda_instances = LambdaInstance.objects.filter(status="0").count()
+        created_lambda_instances = LambdaInstance.objects.all().count()
         status_code = rest_status.HTTP_200_OK
         return Response(
             {
@@ -312,10 +334,12 @@ class LambdaInstanceCounterView(APIView):
                     "short_description":
                         ResponseMessages.short_descriptions['lambda_instances_count'],
                 },
-                "data": {
-                    "count": str(activeLambdaInstances),
-                }
-
+                "data": [
+                    {
+                        "running_lambda_instances": str(running_lambda_instances),
+                        "created_lambda_instances": str(created_lambda_instances)
+                    }
+                ]
             },
             status=status_code)
 
@@ -489,6 +513,55 @@ class LambdaApplicationView(mixins.ListModelMixin,
 
         return default_response
 
+    @detail_route(methods=['post'], url_path="increment_started")
+    def increment_started(self, request, uuid):
+        """
+        Increases the counter of the times started for a specified application by one.
+        """
+
+        # Check if the specified application exists.
+        applications = self.get_queryset().filter(uuid=uuid)
+        if not applications.exists():
+            raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
+
+        # Create a Celery task that will increment the counter of the application.
+        events.incrementApplicationStartedCounter.delay(uuid)
+
+        # Return an appropriate response.
+        status_code = rest_status.HTTP_202_ACCEPTED
+        return Response({
+            'code': status_code,
+            'short_description': ResponseMessages.short_descriptions[
+                'application_increment_started_counter']
+        }, status=status_code)
+
+    @detail_route(methods=['post'], url_path="decrement_started")
+    def decrement_started(self, request, uuid):
+        """
+        Decreases the counter of the times started for a specified application by one.
+        """
+
+        # Check if the specified application exists.
+        applications = self.get_queryset().filter(uuid=uuid)
+        if not applications.exists():
+            raise CustomNotFoundError(CustomNotFoundError.messages['application_not_found'])
+
+        # Check if the counter has already reached zero.
+        application = applications[0]
+        if application.times_started == 0:
+            raise CustomCantDoError(CustomCantDoError.messages['decrement_times_started'])
+
+        # Create a Celery task that will decrement the counter of the application.
+        events.decrementApplicationStartedCounter.delay(uuid)
+
+        # Return an appropriate response.
+        status_code = rest_status.HTTP_202_ACCEPTED
+        return Response({
+            'code': status_code,
+            'short_description': ResponseMessages.short_descriptions[
+                'application_decrement_started_counter']
+        }, status=status_code)
+
 
 class LambdaApplicationCounterView(APIView):
     """
@@ -497,7 +570,11 @@ class LambdaApplicationCounterView(APIView):
     renderer_classes = JSONRenderer, XMLRenderer, BrowsableAPIRenderer
 
     def get(self, request, format=None):
-        activeLambdaApplications = LambdaApplication.objects.filter(status="0").count()
+        uploaded_applications = LambdaApplication.objects.filter(status="0").count()
+
+        running_applications = 0
+        for application in LambdaApplication.objects.filter(status="0"):
+            running_applications += application.times_started
 
         status_code = rest_status.HTTP_200_OK
         return Response(
@@ -508,9 +585,11 @@ class LambdaApplicationCounterView(APIView):
                         'lambda_applications_count'
                     ],
                 },
-                "data": {
-                    "count": str(activeLambdaApplications),
-                }
-
+                "data": [
+                    {
+                        "uploaded_applications": str(uploaded_applications),
+                        "running_applications": str(running_applications)
+                    }
+                ]
             },
             status=status_code)

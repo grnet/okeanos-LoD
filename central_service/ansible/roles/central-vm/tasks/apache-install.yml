@@ -6,24 +6,26 @@
       - apache2-dev
       - libapache2-mod-wsgi
 
-  - name: Install apache ssl module
+  - name: Install apache ssl, rewrite and headers modules.
     apache2_module: name={{item}} state=present
     with_items:
       - ssl
       - rewrite
+      - headers
+    notify:
+      - restart_apache2
+
+  - name: Copy ssl certificate file.
+    copy: src={{ ssl_certificate_file }} dest=/etc/ssl/certs/{{ ssl_certificate_file }} owner=root group=root mode=0644
     notify: restart_apache2
 
-  - name: Create /etc/apache2/ssl directory
-    file: path=/etc/apache2/ssl state=directory owner=root group=root mode=0744
+  - name: Copy ssl certificate key file.
+    copy: src={{ ssl_certificate_key_file }} dest=/etc/ssl/private/{{ ssl_certificate_key_file }} owner=root group=root mode=0400
+    notify: restart_apache2
 
-  - name: Create self-signed certificate (to become deprecated)
-    command: openssl req -new -nodes -x509 -subj "/C=GR/O=GRNET S.A./OU=okeanos.grnet.gr/CN={{ ansible_hostname }}" -days 3650 -keyout /etc/apache2/ssl/server.key -out /etc/apache2/ssl/server.crt -extensions v3_ca creates=/etc/apache2/ssl/server.crt
-
-  - name: Change permissions of private key
-    file: path=/etc/apache2/ssl/server.key mode=600 owner=root group=root
-
-  - name: Change permissions of certificate
-    file: path=/etc/apache2/ssl/server.crt mode=600 owner=root group=root
+  - name: Copy ssl certificate chain file.
+    copy: src={{ ssl_certificate_chain_file }} dest=/etc/ssl/certs/{{ ssl_certificate_chain_file }} owner=root group=root mode=0644
+    notify: restart_apache2
 
   - name: Copy Lambda sites-available configuration.
     template: src=central-service-backend.conf.j2 dest=/etc/apache2/sites-available/central-service-backend.conf
@@ -32,13 +34,18 @@
     template: src=central-service-mkdocs.conf.j2 dest=/etc/apache2/sites-available/central-service-mkdocs.conf
 
   - name: Add central-service-backend to sites-enabled.
-    file: src=/etc/apache2/sites-available/central-service-backend.conf dest=/etc/apache2/sites-enabled/central-service-backend.conf state=link
+    command: a2ensite central-service-backend.conf
 
-  - name: Add lambda-service-mkdocs to sites-enabled.
+  - name: Add central-service-mkdocs to sites-enabled.
     command: a2ensite central-service-mkdocs.conf
 
-  - name: Remove default sites-enabled.
-    file: name=/etc/apache2/sites-enabled/000-default.conf state=absent
+  - name: Disable default apache sites.
+    command: a2dissite {{ item }}
+    with_items:
+      - 000-default.conf
+      - default-ssl.conf
+    notify:
+      - restart_apache2
 
   - name: Configure Apache.
     lineinfile: dest=/etc/apache2/apache2.conf line="WSGIPythonPath {{ repository_download_path }}/okeanos-LoD/central_service/app" state=present insertafter=EOF

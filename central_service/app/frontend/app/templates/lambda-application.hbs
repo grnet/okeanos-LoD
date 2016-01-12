@@ -1,0 +1,302 @@
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-warning">
+        <div class="box-header with-border">
+          <h3 class="box-title">λ Service</h3>
+          <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+          </div>
+        </div><!-- /.box-header -->
+        <div class="box-body no-padding">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="pad">Welcome to ~okeanos λ service pages. Through these pages you can find general information regarding the usage of the λ service.
+              </div>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div><!-- /.box-body -->
+      </div><!--box box-primary-->
+    </div><!--col-xs-12-->
+  </div><!--row -->
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-info">
+        <div class="box-header with-border">
+          <h3 class="box-title">Usage Statistics</h3>
+          <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+          </div>
+        </div><!-- /.box-header -->
+        <div class="box-body no-padding">
+
+          <div class="row">
+            <div class="col-md-4 col-sm-4">
+              <div class="info-box bg-blue">
+                <span class="info-box-icon"><i class="fa fa-laptop"></i></span>
+                <div class="info-box-content">
+                  {{#each model.lambdaInstancesCount as |lambdaInstancesCount|}}
+                  <h2 style="padding:4px;line-height:0px;margin-top:12px;">{{lambdaInstancesCount.runningLambdaInstances}} <small><font color="white">lambda instance running</font></small></h2>
+                  <h2 style="padding:4px;line-height:0px;margin-top:12px;">{{lambdaInstancesCount.createdLambdaInstances}} <small><font color="white">lambda instance created</font></small></h2>
+                  {{/each}}
+                </div><!-- /.info-box-content -->
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+              <div class="info-box bg-orange">
+                <span class="info-box-icon"><i class="fa fa-th"></i></span>
+                <div class="info-box-content">
+                  {{#each model.applicationsCount as |applicationsCount|}}
+                  <h2 style="padding:4px;line-height:0px;margin-top:12px;">{{applicationsCount.runningApplications}} <small><font color="white">running applications</font></small></h2>
+                  <h2 style="padding:4px;line-height:0px;margin-top:12px;">{{applicationsCount.uploadedApplications}} <small><font color="white">applications uploaded</font></small></h2>
+                  {{/each}}
+                </div><!-- /.info-box-content -->
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+              <div class="info-box bg-green">
+                <span class="info-box-icon"><i class="fa fa-users"></i></span>
+                <div class="info-box-content">
+                  {{#each model.usersCount as |usersCount|}}
+                  <h2 style="">{{usersCount.count}} <small><font color="white"> subscribed Users</font></small></h2>
+                  {{/each}}
+                </div><!-- /.info-box-content -->
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /.box-body -->
+      </div>
+    </div>
+  </div><!--row-->
+
+  <div class="row">
+    <div class="col-xs-12">
+      <!-- DIRECT CHAT DANGER -->
+      <div class="box box-success ">
+        <div class="box-header with-border">
+          <h3 class="box-title">Short guide on creating an Application to run on a Lambda Instance</h3>
+        </div><!-- /.box-header -->
+        <div class="box-body">
+          <div class="row">
+            <div class="col-md-12">
+              <h1>Lambda Applications</h1>
+
+              <p>One may find an excellent guide on writing Lambda Applications on the landing page of the LoD service. The source code exhibited through that example is available on <a href="https://github.com/grnet/okeanos-LoD/tree/master/example">github</a>. For easy reference, the aforementioned guide is also include in this page.</p>
+
+              <p>In order to upload, deploy and start running a Lambda Application on top of a Lambda Instance the user of the service will go through the workflow shown below, again using the Web UI of the LoD service VM.</p>
+
+              <p><img src="assets/img/usage7-12.png" alt="usage7-12.png" width="750"></p>
+
+              <ol>
+                <li>Select Applications from the upper left menu of options</li>
+                <li>On the main window select the button "Upload an Application"</li>
+                <li>Fill in the form, select the jar file to upload and press "Submit" when ready</li>
+                <li>Note the progress bar as the application uploads</li>
+                <li>Upload is completed</li>
+                <li>On the Applications page select the Application you have just uploaded (click on its name)</li>
+              </ol>
+
+              <p><img src="assets/img/usage13-15.png" alt="usage13-15.png" width="750"></p>
+
+              <ol start="7">
+                <li>Select the "Deploy on a Lambda Instance" button</li>
+                <li>On the list of Lambda Instances available select the one you want to use for running this specific application and</li>
+                <li>Select to start your application once it has been deployed on the Lambda Instance</li>
+              </ol>
+
+              You can read the following examples to find information regarding how to create an Application.
+              <br><br>
+
+              <h3>Introduction</h3>
+              In this example we are going to describe the way a Lambda Instance can be used. You can find the code for this example on our code repository at <a href="https://github.com/grnet/okeanos-LoD/tree/master/example">github</a>. In order to showcase the full capabilities of your Lambda Instance this example consists of two (2) sections, a Stream Job Application and a Batch Job Application. In the following lines we are going to describe each one step by step.
+              <br><br>
+
+              <h3>Stream Job</h3>
+              A Stream Job, is an Apache Flink Job designed to process streams of data, in real time, with high throughput rates and low latency.
+              You can find the code for the Stream Job inside the <a href="https://github.com/grnet/okeanos-LoD/tree/master/example/stream_word_count">stream_word_count</a> directory.
+              <br><br>
+
+              <h4>Input</h4>
+              The Stream Job reads its input data from an Apache Kafka topic. Upon creation, unless otherwise chosen, each Lambda Instance has three Apache Kafka topics
+              named "input", "stream-output" and "batch-output". Should you need to create more Apache Kafka topics after the creation of a Lambda Instance, all you have to do it send
+              some data to the topic you wish to create and it will be automatically created for you.
+              <br><br>
+
+              <h4>Output</h4>
+              The Stream Job sends its output data to an Apache Kafka topic. You should probably choose one topic as an input topic and another
+              as an output topic to avoid mixing up your input and output data.
+
+              The machine where Apache Kafka is deployed, along with the names of the input and the output topics, should be placed at the beginning
+              of the program within the following lines:
+
+              <pre>
+String zookeeper= "master:2181";
+String consumerGroupId = "consumer-stream";
+String kafkaBroker = "master:9092";
+String inputTopic = "input";
+String outputTopic = "stream-output";
+              </pre>
+              <br><br>
+
+              <h4>Execution Flow</h4>
+              The execution flow of your job describes the steps that the Stream Job will execute. It is a series of commands that specify the input source of the data, the method that will be used to process them and the output destination. In our example, the execution flow is determined by the following commands:
+
+              <pre>
+// Read input message from Kafka topic input and send it to the splitter class
+DataStream&lt;Tuple4&lt;String, Integer, String, String&gt;&gt; text = env
+        .addSource(new FlinkKafkaConsumer082&lt;&gt;(inputTopic, new SimpleStringSchema(),
+                kafkaConsumerProperties))
+        .flatMap(new Splitter())
+        .groupBy(0)
+        .sum(1)
+        .addSink(new KafkaSin&lt;Tuple4&lt;String, Integer, String, String&gt;&gt;(kafkaBroker,
+                outputTopic, new tuple4serialization()));
+              </pre>
+
+              The addSource method, is used in order to determine the input source of data, while the addSink method is used to add
+              a sink as an output for the data. In our example, the source is an Apache Kafka Consumer while the sink is an
+              Apache Kafka Producer. Finally, the flatMap method defines the way the data is going to be processed. We will cover
+              this method in a separate paragraph, right below.
+              <br><br>
+
+              <h4>Flat Map Function</h4>
+              The Flat Map Function is the core of the Stream Job. It describes the way the data is going to be processed. We use
+              a Splitter as our Flat Map Function. From the code which we attach here for ease of reference
+
+              <pre>
+// Receives the messages, splits it to words and then emits each word and number of appearance.
+public static class Splitter implements FlatMapFunction&lt;String, Tuple4&lt;String, Integer, String, String&gt;&gt; {
+  public void flatMap(String sentence,Collector&lt;Tuple4&lt;String, Integer, String, String&gt;&gt; out) throws Exception {
+      String words[] = sentence.split(" ");
+      for (String word : words){
+          word = word.trim().replace("'", "");
+
+          SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+          SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+
+          Date date = new Date();
+
+          String dateFormatted = dateFormat.format(date);
+          String timeFormatted = timeFormat.format(date);
+
+          out.collect(new Tuple4&lt;String, Integer, String, String&gt;(word, 1, dateFormatted,
+                  timeFormatted));
+      }
+  }
+}
+              </pre>
+
+              you can see that the Splitter breaks each input message to its words (words are defined by spaces, thus the input string "what?" will be
+              considered a single word in our example). It then appends to each word a time and a date stamp, and sends it to the
+              output increasing the respective word counter by one.
+              <br><br>
+
+              <h4>Serializer</h4>
+              When adding a Sink, you should specify the way you want your data to be serialized before being sent to the output.
+              The serializer you provide, will be applied on each message before sending it to the specified Sink. The serializer in our example implementation transforms the message into a String and then returns its bytes.
+              <br><br>
+
+              <h4>Building the Job</h4>
+              You can use <a href="https://maven.apache.org/">Apache Maven</a> to build your Applications. You can find the respective pom.xml
+              file, required by Apache Maven in the <a href="https://github.com/grnet/okeanos-LoD/tree/master/example/stream_word_count">stream_word_count</a> directory.
+
+              We suggest you statically compile your Jobs, so that every needed library is in place when the Job starts being executed on
+              a Lambda Instance. To do that, use the following command:
+
+              <pre>
+mvn clean compile assembly:assembly
+              </pre>
+              <br><br>
+              <br><br>
+
+
+              <h3>Batch Job</h3>
+              A Batch Job is an Apache Flink Job designed to process big loads of data asynchronously. You can find the code for
+              out Batch Job inside the  <a href="https://github.com/grnet/okeanos-LoD/tree/master/example/batch_word_count">batch_word_count</a> directory.
+              <br><br>
+
+              <h4>Input-Output</h4>
+              The Batch Job reads its input data from HDFS, processes them and then saves them back to HDFS but also sends them
+              to an Apache Kafka topic. The input and output HDFS directories, the machine where Apache Kafka is deployed and the
+              name of the topic are configured at the beginning of our example:
+
+              <pre>
+// HDFS configuration.
+String inputHDFSDirectory = "hdfs:///user/flink/input";
+String outputHDFSDirectory = "hdfs:///user/flink/output";
+
+// Apache Kafka configuration.
+String outputTopic = "batch-output";
+String kafkaBroker = "master:9092";
+              </pre>
+              You should change these values to meet your Lambda Instance configuration if you are not using the default one. 
+              <br><br>
+
+              <h4>Execution Flow</h4>
+              The execution flow of our Job consists of three stages. During the first stage, the input data are read from HDFS:
+
+              <pre>
+// get input data
+DataSet&lt;String&gt; text = env.readTextFile(inputHDFSDirectory);
+              </pre>
+
+              During the second stage, this data are processed:
+
+              <pre>
+DataSet&lt;Tuple4&lt;String, Integer, String, String&gt;&gt; counts =
+// split up the lines
+text.flatMap(new LineSplitter())
+// group by the tuple field "0" and sum up tuple field "1"
+.groupBy(0)
+.sum(1);
+              </pre>
+
+              The processing is done using a Flat Map Function which we will describe later.
+
+              During the final stage of the execution, the results are sent to Apache Kafka output topic ("batch-output"):
+
+              <pre>
+// Write result to Kafka
+KafkaConnection kb = new KafkaConnection(outputTopic, kafkaBroker);
+List&lt;Tuple4&lt;String, Integer, String, String&gt;&gt; elements = counts.collect();
+for (Tuple4&lt;String, Integer, String, String&gt; e : elements) {
+    kb.write((e.toString()));
+}
+              </pre>
+
+              while they are also saved on HDFS:
+
+              <pre>
+counts.writeAsText(outputHDFSDirectory, FileSystem.WriteMode.OVERWRITE);
+              </pre>
+
+              The batch procedure then repeats itself at a chosen predefined interval.
+              <br><br>
+
+              <h4>Flat Map Function</h4>
+              The Flat Map Function is the core of the processing procedure. It defines the way the data will be processed. In our example, we provide a Flat Map Function that will split every input line in words (words are defined again by spaces) and counts the occurence of each word. After that, each word is also split into letters the occurence of which is also computed.
+              <br><br>
+
+              <h4>Building the Job</h4>
+              Once again, you may use <a href="https://maven.apache.org/">Apache Maven</a> to build your application. You can find the respective pom.xml
+              file, required by Apache Maven in the  <a href="https://github.com/grnet/okeanos-LoD/tree/master/example/batch_word_count">batch_word_count</a> directory.
+              <br><br>
+
+              We suggest you statically compile your Jobs, so that every needed library is in place when the Jobs is executed on
+              a Lambda Instance. To do that, use the following command:
+
+              <pre>
+mvn clean compile assembly:assembly
+              </pre>
+              <br><br>
+            </div><!--col-->
+          </div><!--row-->
+        </div><!--class="box-body"-->
+      </div> <!--box-->
+    </div><!--col-md-3 -->
+  </div>  <!--row-->
+</section><!-- /.content -->

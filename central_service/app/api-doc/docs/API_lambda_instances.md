@@ -259,9 +259,11 @@ Type | Description |
     "short_description": "Lamdba instances count.",
     "code": 200
   },
-  "data": {
-    "count": "2"
-  }
+  "data": [
+    {
+      "count": "2"
+    }
+  ]
 }
 
 ```

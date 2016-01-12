@@ -516,17 +516,25 @@ class TestLambdaInstances(APITestCase):
         self.assertIn('data', response.data)
         self.assertIn('short_description', response.data['status'])
         self.assertIn('code', response.data['status'])
-        self.assertIn('count', response.data['data'])
+
+        for item in response.data['data']:
+            self.assertIn('running_lambda_instances', item)
+            self.assertIn('created_lambda_instances', item)
 
         # Content of the response assertions
         self.assertEqual(rest_status.HTTP_200_OK, response.data['status']['code'])
         self.assertEqual(ResponseMessages.short_descriptions['lambda_instances_count'],
                          response.data['status']['short_description'])
 
-        number_of_lambda_instances = \
+        running_lambda_instances = \
             LambdaInstance.objects.filter(status="0").count()
+        created_lambda_instances = \
+            LambdaInstance.objects.all().count()
 
-        self.assertEqual(str(number_of_lambda_instances), response.data['data']['count'])
+        self.assertEqual(str(running_lambda_instances),
+                         response.data['data'][0]['running_lambda_instances'])
+        self.assertEqual(str(created_lambda_instances),
+                         response.data['data'][0]['created_lambda_instances'])
 
     def test_count_zero(self):
         """
@@ -543,14 +551,22 @@ class TestLambdaInstances(APITestCase):
         self.assertIn('data', response.data)
         self.assertIn('short_description', response.data['status'])
         self.assertIn('code', response.data['status'])
-        self.assertIn('count', response.data['data'])
+
+        for item in response.data['data']:
+            self.assertIn('running_lambda_instances', item)
+            self.assertIn('created_lambda_instances', item)
 
         # Content of the response assertions
         self.assertEqual(rest_status.HTTP_200_OK, response.data['status']['code'])
         self.assertEqual(ResponseMessages.short_descriptions['lambda_instances_count'],
                          response.data['status']['short_description'])
 
-        number_of_lambda_instances = \
+        running_lambda_instances = \
             LambdaInstance.objects.filter(status="0").count()
+        created_lambda_instances = \
+            LambdaInstance.objects.all().count()
 
-        self.assertEqual(str(number_of_lambda_instances), response.data['data']['count'])
+        self.assertEqual(str(running_lambda_instances),
+                         response.data['data'][0]['running_lambda_instances'])
+        self.assertEqual(str(created_lambda_instances),
+                         response.data['data'][0]['created_lambda_instances'])

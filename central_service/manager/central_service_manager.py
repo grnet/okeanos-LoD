@@ -32,9 +32,9 @@ class CentralServiceManager(object):
     def __init__(self, auth_token):
         self.auth_token = auth_token
 
-    def central_service_create(self, vm_name='Central Service',
-                               vcpus=4, ram=4096, disk=40,
-                               project_name=None,
+    def central_service_create(self, ssl_certificate_file, ssl_certificate_key_file,
+                               ssl_certificate_chain_file, vm_name='Central Service', vcpus=4,
+                               ram=4096, disk=40, project_name=None,
                                private_key_path=None, public_key_path=None):
         """
         Creates the central service vm and installs the relevant s/w.
@@ -50,7 +50,12 @@ class CentralServiceManager(object):
         group = 'central-vm'
         ansible_manager = Manager(hostname, group, private_key_path)
         ansible_result = ansible_manager.run_playbook(
-            playbook_file=os.path.join(ansible_path, 'playbooks', 'setup.yml'))
+            playbook_file=os.path.join(ansible_path, 'playbooks', 'setup.yml'),
+            extra_vars={
+                "ssl_certificate_file": ssl_certificate_file,
+                "ssl_certificate_key_file": ssl_certificate_key_file,
+                "ssl_certificate_chain_file": ssl_certificate_chain_file
+            })
         return ansible_result
 
     def central_service_destroy(self, vm_id):
@@ -85,20 +90,36 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Central service VM provisioning')
     parser.add_argument('--action', type=str, dest='action', required=True,
-                        choices=['create', 'start', 'stop', 'destroy'])
-    parser.add_argument('--auth-token', type=str, dest='auth_token', required=False)
-    parser.add_argument('--vm-id', type=int, dest='vm_id')
+                        choices=['create', 'start', 'stop', 'destroy'],
+                        help="action to be performed")
+    parser.add_argument('--auth-token', type=str, dest='auth_token', required=False,
+                        help="the ~okeanos authentication token of the user")
+    parser.add_argument('--vm-id', type=int, dest='vm_id',
+                        help="the ~okeanos id of the correspoding VM")
     parser.add_argument('--vm-name', type=str, dest='vm_name', required=False,
-                        default='Central Service')
+                        default='Central Service', help="the name of the VM")
     parser.add_argument('--vcpus', type=int, dest='vcpus', default='4',
-                        choices=[1, 2, 4, 8])
+                        choices=[1, 2, 4, 8], help="the number of CPUs on the VM")
     parser.add_argument('--ram', type=int, dest='ram', default='4096',
-                        choices=[512, 1024, 2048, 4096, 6144, 8192])
+                        choices=[512, 1024, 2048, 4096, 6144, 8192],
+                        help="the amount of RAM on the VM")
     parser.add_argument('--disk', type=int, dest='disk', default='40',
-                        choices=[5, 10, 20, 40, 60, 80, 100])
-    parser.add_argument('--project-name', type=str, dest='project_name')
-    parser.add_argument('--private-key-path', type=str, dest='private_key_path')
-    parser.add_argument('--public-key-path', type=str, dest='public_key_path')
+                        choices=[5, 10, 20, 40, 60, 80, 100], help="the size of the HDD on the VM")
+    parser.add_argument('--project-name', type=str, dest='project_name',
+                        help="the ~okeanos project with the appropriate quotas for the VM")
+    parser.add_argument('--private-key-path', type=str, dest='private_key_path',
+                        help="path to private ssh key to be used by Ansible"
+                             " (should pair with the provided public key)")
+    parser.add_argument('--public-key-path', type=str, dest='public_key_path',
+                        help="path to public ssh key to be injected in the VM"
+                             " (should pair with the provided private key)")
+    parser.add_argument('--ssl-certificate-file', type=str, dest='ssl_certificate_file',
+                        help="the ssl certificate file to be used.")
+    parser.add_argument('--ssl-certificate-key-file', type=str, dest='ssl_certificate_key_file',
+                        help="the respective key file of the provided ssl certificate file.")
+    parser.add_argument('--ssl-certificate-chain-file', type=str, dest='ssl_certificate_chain_file',
+                        help="the ssl certificate chain file to be used.")
+
     args = parser.parse_args()
 
     csm = CentralServiceManager(args.auth_token)
@@ -107,7 +128,10 @@ if __name__ == "__main__":
                                    vcpus=args.vcpus, ram=args.ram, disk=args.disk,
                                    project_name=args.project_name,
                                    private_key_path=args.private_key_path,
-                                   public_key_path=args.public_key_path)
+                                   public_key_path=args.public_key_path,
+                                   ssl_certificate_file=args.ssl_certificate_file,
+                                   ssl_certificate_key_file=args.ssl_certificate_key_file,
+                                   ssl_certificate_chain_file=args.ssl_certificate_chain_file)
     elif args.vm_id is None:
         raise ValueError("VM id must be specified")
     else:

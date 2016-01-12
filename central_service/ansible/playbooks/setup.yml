@@ -12,4 +12,5 @@
     - common
     - central-vm
     - rabbitmq
+    - ember
     - celery

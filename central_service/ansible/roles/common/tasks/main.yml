@@ -8,8 +8,11 @@
   - name: Upgrade packages.
     apt: update_cache=yes
 
-  - name: Install python-pip.
-    apt: name=python-pip force=yes
+  - name: Install python-pip and curl with apt.
+    apt: name={{ item }} force=yes
+    with_items:
+      - python-pip
+      - curl
 
   - name: Create celery user.
     user: name=celery shell=/bin/bash home=/home/celery

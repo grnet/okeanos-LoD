@@ -4,10 +4,16 @@
 
   - name: Configure supervisord.
     copy: src=supervisord.conf dest=/etc/supervisord.conf owner=root group=root mode=0600
+    tags:
+      - update
 
   - name: Copy supervisord init script.
     copy: src=supervisord-init dest=/etc/init.d/supervisord-init owner=root group=root mode=0700
+    tags:
+      - update
 
   - name: Put supervisord init script on boot and shutdown sequence.
     command: update-rc.d supervisord-init defaults
     notify: start-supervisord
+    tags:
+      - update

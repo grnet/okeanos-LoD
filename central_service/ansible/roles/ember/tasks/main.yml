@@ -1,0 +1,63 @@
+---
+
+  - name: Fetch url for nodejs.
+    shell: "curl --silent --location https://deb.nodesource.com/setup_0.12 | bash -"
+    tags:
+      - ember-install
+
+  - name: Install nodejs.
+    apt: name=nodejs force=yes
+    tags:
+      - ember-install
+
+  - name: Install Ember globally.
+    npm: name=ember-cli global=yes
+    tags:
+      - ember-install
+
+  - name: Install Ember Application dependencies
+    shell: "npm install"
+    args:
+      chdir: "{{ install_dir }}/app"
+    tags:
+      - ember-install
+      - update
+
+  - name: Install Bower globally.
+    npm: name=bower global=yes
+    tags:
+      - ember-install
+
+  - name: Install Ember Application dependencies for bower
+    shell: "bower install --allow-root"
+    args:
+      chdir: "{{ install_dir }}"
+    tags:
+      - ember-install
+      - update
+
+  - name: Install ember addons
+    shell: ember install "{{ item }}"
+    with_items: "{{ ember_addons }}"
+    args:
+      chdir: "{{ install_dir }}"
+    tags:
+      - ember-install
+      - update
+
+  - name: Create Ember config directory
+    file: path={{install_dir}}/config state=directory
+    tags:
+      - update
+
+  - name: Setup Ember configuration environment.
+    template: src=environment.js.j2 dest={{ install_dir }}/config/environment.js
+    tags:
+      - update
+
+  - name: Build ember for production.
+    command: ember build --environment=production
+    args:
+      chdir: "{{ install_dir }}"
+    tags:
+      - update

@@ -1,7 +1,8 @@
 from mock import patch
 from backend.models import User, LambdaApplication
 from backend.response_messages import ResponseMessages
-from backend.exceptions import CustomAlreadyDoneError, CustomNotFoundError, CustomParseError
+from backend.exceptions import CustomAlreadyDoneError, CustomNotFoundError, CustomParseError,\
+    CustomCantDoError
 from rest_framework.test import APITestCase
 from rest_framework import status as rest_status
 import copy
@@ -370,7 +371,7 @@ class TestLambdaApplications(APITestCase):
             created_applications.append(
                 LambdaApplication.objects.create(uuid=uuid.uuid4(), description="inst_info",
                                                  owner=created_users[i % (self.user_count)],
-                                                 status=0)
+                                                 status=0, times_started=randint(0, 10))
             )
 
     def test_list_users_applications_non_empty(self):
@@ -496,6 +497,140 @@ class TestLambdaApplications(APITestCase):
         self.assertEqual(response.data['errors'][0]['detail'], CustomParseError.
                          messages['limit_value_error'])
 
+    @patch('backend.events.incrementApplicationStartedCounter.delay')
+    def test_increment_started(self, unused_mock):
+        """
+        Tests API increment_started call.
+        """
+
+        # Create an application on the database.
+        application = LambdaApplication.objects.create(uuid=uuid.uuid4(), name="application.jar",
+                                                       description="",
+                                                       owner=self.authenticated_user, status=0)
+
+        # Make a request to increment the started times of the created application.
+        response = self.client.post("/api/lambda_applications/{}/increment_started/".
+                                    format(application.uuid), format='json')
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, rest_status.HTTP_202_ACCEPTED)
+
+        # Assert the structure of the response.
+        self.assertIn('code', response.data)
+        self.assertIn('short_description', response.data)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['code'], rest_status.HTTP_202_ACCEPTED)
+        self.assertEqual(response.data['short_description'],
+                         ResponseMessages.short_descriptions[
+                             'application_increment_started_counter'])
+
+    @patch('backend.events.incrementApplicationStartedCounter.delay')
+    def test_increment_started_wrong_uuid(self, unused_mock):
+        """
+        Tests API increment_started call when a wrong uuid is provided.
+        """
+
+        # Make a request to increment the started times of the created application.
+        response = self.client.post("/api/lambda_applications/{}/increment_started/".
+                                    format(uuid.uuid4()), format='json')
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, rest_status.HTTP_404_NOT_FOUND)
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+        for err in response.data['errors']:
+            self.assertIn('status', err)
+            self.assertIn('detail', err)
+
+        # Assert the contents of the response.
+        self.assertEqual(rest_status.HTTP_404_NOT_FOUND, response.data['errors'][0]['status'])
+        self.assertEqual(CustomNotFoundError.messages['application_not_found'],
+                         response.data['errors'][0]['detail'])
+
+    @patch('backend.events.decrementApplicationStartedCounter.delay')
+    def test_decrement_started(self, unused_mock):
+        """
+        Tests API decrement_started call.
+        """
+
+        # Create an application on the database.
+        application = LambdaApplication.objects.create(uuid=uuid.uuid4(), name="application.jar",
+                                                       description="",
+                                                       owner=self.authenticated_user, status=0,
+                                                       times_started=1)
+
+        # Make a request to increment the started times of the created application.
+        response = self.client.post("/api/lambda_applications/{}/decrement_started/".
+                                    format(application.uuid), format='json')
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, rest_status.HTTP_202_ACCEPTED)
+
+        # Assert the structure of the response.
+        self.assertIn('code', response.data)
+        self.assertIn('short_description', response.data)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['code'], rest_status.HTTP_202_ACCEPTED)
+        self.assertEqual(response.data['short_description'],
+                         ResponseMessages.short_descriptions[
+                             'application_decrement_started_counter'])
+
+    @patch('backend.events.decrementApplicationStartedCounter.delay')
+    def test_decrement_started_zero(self, unused_mock):
+        """
+        Tests API decrement_started call when the started times of the application is 0.
+        """
+
+        # Create an application on the database.
+        application = LambdaApplication.objects.create(uuid=uuid.uuid4(), name="application.jar",
+                                                       description="",
+                                                       owner=self.authenticated_user, status=0)
+
+        # Make a request to increment the started times of the created application.
+        response = self.client.post("/api/lambda_applications/{}/decrement_started/".
+                                    format(application.uuid), format='json')
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, rest_status.HTTP_409_CONFLICT)
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+        for err in response.data['errors']:
+            self.assertIn('status', err)
+            self.assertIn('detail', err)
+
+        # Assert the contents of the response.
+        self.assertEqual(rest_status.HTTP_409_CONFLICT, response.data['errors'][0]['status'])
+        self.assertEqual(CustomCantDoError.messages['decrement_times_started'],
+                         response.data['errors'][0]['detail'])
+
+    @patch('backend.events.decrementApplicationStartedCounter.delay')
+    def test_decrement_started_wrong_uuid(self, unused_mock):
+        """
+        Tests API increment_started call when a wrong uuid is provided.
+        """
+
+        # Make a request to increment the started times of the created application.
+        response = self.client.post("/api/lambda_applications/{}/decrement_started/".
+                                    format(uuid.uuid4()), format='json')
+
+        # Assert the response code.
+        self.assertEqual(response.status_code, rest_status.HTTP_404_NOT_FOUND)
+
+        # Assert the structure of the response.
+        self.assertIn('errors', response.data)
+        for err in response.data['errors']:
+            self.assertIn('status', err)
+            self.assertIn('detail', err)
+
+        # Assert the contents of the response.
+        self.assertEqual(rest_status.HTTP_404_NOT_FOUND, response.data['errors'][0]['status'])
+        self.assertEqual(CustomNotFoundError.messages['application_not_found'],
+                         response.data['errors'][0]['detail'])
+
     # ----- Count Tests -----
     def test_count(self):
         """
@@ -512,17 +647,26 @@ class TestLambdaApplications(APITestCase):
         self.assertIn('data', response.data)
         self.assertIn('short_description', response.data['status'])
         self.assertIn('code', response.data['status'])
-        self.assertIn('count', response.data['data'])
+
+        for item in response.data['data']:
+            self.assertIn('uploaded_applications', item)
+            self.assertIn('running_applications', item)
 
         # Content of the response assertions
         self.assertEqual(rest_status.HTTP_200_OK, response.data['status']['code'])
         self.assertEqual(ResponseMessages.short_descriptions['lambda_applications_count'],
                          response.data['status']['short_description'])
 
-        number_of_lambda_applications = \
+        uploaded_applications = \
             LambdaApplication.objects.filter(status="0").count()
+        running_applications = 0
+        for application in LambdaApplication.objects.filter(status=0):
+            running_applications += application.times_started
 
-        self.assertEqual(str(number_of_lambda_applications), response.data['data']['count'])
+        self.assertEqual(str(uploaded_applications),
+                         response.data['data'][0]['uploaded_applications'])
+        self.assertEqual(str(running_applications),
+                         response.data['data'][0]['running_applications'])
 
     def test_count_zero(self):
         """
@@ -539,14 +683,23 @@ class TestLambdaApplications(APITestCase):
         self.assertIn('data', response.data)
         self.assertIn('short_description', response.data['status'])
         self.assertIn('code', response.data['status'])
-        self.assertIn('count', response.data['data'])
+
+        for item in response.data['data']:
+            self.assertIn('uploaded_applications', item)
+            self.assertIn('running_applications', item)
 
         # Content of the response assertions
         self.assertEqual(rest_status.HTTP_200_OK, response.data['status']['code'])
         self.assertEqual(ResponseMessages.short_descriptions['lambda_applications_count'],
                          response.data['status']['short_description'])
 
-        number_of_lambda_applications = \
+        uploaded_applications = \
             LambdaApplication.objects.filter(status="0").count()
+        running_applications = 0
+        for application in LambdaApplication.objects.filter(status=0):
+            running_applications += application.times_started
 
-        self.assertEqual(str(number_of_lambda_applications), response.data['data']['count'])
+        self.assertEqual(str(uploaded_applications),
+                         response.data['data'][0]['uploaded_applications'])
+        self.assertEqual(str(running_applications),
+                         response.data['data'][0]['running_applications'])
