@@ -1,5 +1,5 @@
 kamaki>=0.13.4
-ansible>=1.9.2
+ansible==1.9.4
 crypto>=1.4.1
 pycrypto>=2.6.1
 stormssh>=0.6.5
