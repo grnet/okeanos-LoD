@@ -7,7 +7,7 @@
 
 ![alt text](https://pbs.twimg.com/profile_images/3378789570/e1da61d4058395b770cd5ce15a6925e6_normal.png "Travis")
 
-<img src="https://pbs.twimg.com/profile_images/3378789570/e1da61d4058395b770cd5ce15a6925e6_normal.png" alt="Jenkins" width="40"/> [![Build Status](https://api.travis-ci.org/grnet/okeanos-LoD.svg?brach=devel)](https://travis-ci.org/grnet/okeanos-LoD/)
+<img src="https://pbs.twimg.com/profile_images/3378789570/e1da61d4058395b770cd5ce15a6925e6_normal.png" alt="Jenkins" width="20"/> [![Build Status](https://api.travis-ci.org/grnet/okeanos-LoD.svg?brach=devel)](https://travis-ci.org/grnet/okeanos-LoD/)
 
 # okeanos-LoD
 
