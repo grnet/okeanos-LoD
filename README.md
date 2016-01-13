@@ -1,5 +1,7 @@
 ![alt text](http://grnet.github.io/grnet-media-pack/grnet/logos/grnet_logo_en.svg "GRNET Logo") 
+
 ![alt text](https://jenkins.argo.grnet.gr/static/3c75a153/images/headshot.png "Jenkins")[![Build Status](https://jenkins.argo.grnet.gr/job/Okeanos-LoD-devel/badge/icon)](https://jenkins.argo.grnet.gr/job/Okeanos-LoD-devel) ![Test Coverage](http://jenkins.argo.grnet.gr:9913/jenkins/c/http/jenkins.argo.grnet.gr/job/Okeanos-LoD-devel)
+
 [![Build Status](https://api.travis-ci.org/grnet/okeanos-LoD.svg?brach=devel)](https://travis-ci.org/grnet/okeanos-LoD/)
 
 # okeanos-LoD
