@@ -23,7 +23,7 @@ before_install:
  - "npm install -g npm@^2"
 
 install: 
- - pip install tox ansible flake8-diff
+ - pip install tox ansible==1.9.4 flake8-diff
  - cd webapp/frontend/
  - npm install -g bower
  - npm install
