@@ -8,6 +8,7 @@ var Router = Ember.Router.extend({
 Router.map(function () {
 	this.route('lambda-instance');
 	this.route('lambda-application');
+	this.route('faq');
 });
 
 export default Router;
