@@ -3,9 +3,11 @@
 
 ![alt text](https://jenkins.argo.grnet.gr/static/3c75a153/images/headshot.png "Jenkins")
 
-<img src="https://jenkins.argo.grnet.gr/static/3c75a153/images/headshot.png" alt="Jenkins" height="40px"/> [![Build Status](https://jenkins.argo.grnet.gr/job/Okeanos-LoD-devel/badge/icon)](https://jenkins.argo.grnet.gr/job/Okeanos-LoD-devel) ![Test Coverage](http://jenkins.argo.grnet.gr:9913/jenkins/c/http/jenkins.argo.grnet.gr/job/Okeanos-LoD-devel)
+<img src="https://jenkins.argo.grnet.gr/static/3c75a153/images/headshot.png" alt="Jenkins" height="40"/> [![Build Status](https://jenkins.argo.grnet.gr/job/Okeanos-LoD-devel/badge/icon)](https://jenkins.argo.grnet.gr/job/Okeanos-LoD-devel) ![Test Coverage](http://jenkins.argo.grnet.gr:9913/jenkins/c/http/jenkins.argo.grnet.gr/job/Okeanos-LoD-devel)
 
-![alt text](https://pbs.twimg.com/profile_images/3378789570/e1da61d4058395b770cd5ce15a6925e6_normal.png "Travis") [![Build Status](https://api.travis-ci.org/grnet/okeanos-LoD.svg?brach=devel)](https://travis-ci.org/grnet/okeanos-LoD/)
+![alt text](https://pbs.twimg.com/profile_images/3378789570/e1da61d4058395b770cd5ce15a6925e6_normal.png "Travis")
+
+<img src="https://pbs.twimg.com/profile_images/3378789570/e1da61d4058395b770cd5ce15a6925e6_normal.png" alt="Jenkins" width="40"/> [![Build Status](https://api.travis-ci.org/grnet/okeanos-LoD.svg?brach=devel)](https://travis-ci.org/grnet/okeanos-LoD/)
 
 # okeanos-LoD
 
