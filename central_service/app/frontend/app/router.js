@@ -9,7 +9,20 @@ Router.map(function () {
 	this.route('lambda-instance');
 	this.route('lambda-application');
 	this.route('faqs', function() {
-    	this.route('create-lambda-instance');
+		this.route('lambda-instance', function() {
+    		this.route('create');
+    		this.route('start-stop');
+    		this.route('kafka-topics');
+		});
+
+		this.route('lambda-application', function() {
+			this.route('create');
+			this.route('run');
+			this.route('observe-running');
+			this.route('check-running');
+			this.route('view-results');
+			this.route('export-data');
+		});
     });
 });
 
