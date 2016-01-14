@@ -6,8 +6,8 @@ var Router = Ember.Router.extend({
 });
 
 Router.map(function () {
-	this.route('lambda-instance');
-	this.route('lambda-application');
+	this.route('lambda-instance', function() {});
+	this.route('lambda-application', function() {});
 	this.route('faqs', function() {
 		this.route('lambda-instance', function() {
     		this.route('create');
