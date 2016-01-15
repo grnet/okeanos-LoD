@@ -13,6 +13,7 @@ Router.map(function () {
     		this.route('create');
     		this.route('start-stop');
     		this.route('kafka-topics');
+    		this.route('find-master-node-hostname');
 		});
 
 		this.route('lambda-application', function() {
