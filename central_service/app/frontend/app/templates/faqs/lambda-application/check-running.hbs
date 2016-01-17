@@ -27,51 +27,32 @@
     <!-- DIRECT CHAT DANGER -->
     <div class="box box-success ">
       <div class="box-header with-border">
-        <h3 class="box-title">Short guide on checking the execution of a Lambda Application</h3>
+        <h3 class="box-title">Short guide on checking which Applications are running</h3>
       </div><!-- /.box-header -->
       <div class="box-body">
         <div class="row">
           <div class="col-md-12">
-            <h1>Check Lambda Application Execution</h1>
+            <h1>Check Running Applications</h1>
 
             <p>
-              While it is possible to observe which Lambda Applications run on which Lambda Instances using
-              {{#link-to 'faqs.lambda-application.observe-running'}}this{{/link-to}} guide, you might want to get
-              a closer look on the execution of your Application. This can be done by viewing the Apache Flink logs
-              generated during the execution of your Application. To do that, you have to connect via ssh on the Master Node
-              of your Lambda Instance. You can find the log files at <b>"/home/flink/supervisord_flink_streaming_logs.log"</b> and
-              <b>"/home/flink/supervisord_flink_batch_logs.log"</b>.
+              To view your Lambda Applications you can follow the guide show below.
             </p>
 
-            <p>
-              The step-by-step directives you should execute are the following:
+            <p><img src="assets/img/check-applications.png" alt="check-applications.png" width="1000" height="250"></p>
 
-              <ol>
-                <li>
-                  Connect over ssh on the Master Node of your Lambda Instance:
-                  <pre>
-ssh -l root snf-XXXXXX.vm.okeanos.grnet.gr
-                  </pre>
-                  where XXXXXX should be replaced with the id of the VM(e.g. snf-543786.vm.okeanos.grnet.gr). To find the id of the Master Node
-                  of your Lambda Instance you can use {{#link-to 'faqs.lambda-instance.find-master-node-hostname'}}this{{/link-to}} guide.
-                </li><br>
+            <ol>
+              <li>
+                Log in the LoD Service VM using your ~okeanos token.
+              </li>
 
-                <li>
-                  Move to the directory where the log files are places:
-                  <pre>
-cd /home/flink
-                  </pre>
-                </li><br>
+              <li>
+                From the sidebar, select "Applications".
+              </li>
 
-                <li>
-                  See the log files:
-                  <pre>
-cat supervisord_flink_streaming_logs.log
-cat supervisord_flink_batch_logs.log
-                  </pre>
-                </li>
-              </ol>
-            </p>
+              <li>
+                On the list of Lambda Applications that appear, choose the button "Details" to get more details about a specific Application. 
+              </li>
+            </ol>
           </div><!--col-->
         </div><!--row-->
       </div><!--class="box-body"-->
