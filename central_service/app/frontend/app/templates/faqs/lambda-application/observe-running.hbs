@@ -1,0 +1,82 @@
+<section class="content">
+  <div class="row">
+   <div class="col-xs-12">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">How to observe my running application</h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+          <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div>
+      </div><!-- /.box-header -->
+      <div class="box-body no-padding">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="pad"> Follow the steps described in this section to observe your running application.
+            </div>
+          </div><!-- /.col -->
+
+        </div><!-- /.row -->
+      </div><!-- /.box-body -->
+    </div><!--box box-primary-->
+  </div><!--col-xs-12-->
+</div><!--row -->
+
+
+<div class="row">
+  <div class="col-xs-12">
+    <!-- DIRECT CHAT DANGER -->
+    <div class="box box-success ">
+      <div class="box-header with-border">
+        <h3 class="box-title">Short guide on observing running Applications</h3>
+      </div><!-- /.box-header -->
+      <div class="box-body">
+        <div class="row">
+          <div class="col-md-12">
+            <h1>Observe Lambda Application Execution</h1>
+
+            <p>
+              While it is possible to check which Lambda Applications run on which Lambda Instances using
+              {{#link-to 'faqs.lambda-application.check-running'}}this{{/link-to}} guide, you might want to get
+              a closer look on the execution of your Application. This can be done by viewing the Apache Flink logs
+              generated during the execution of your Application. To do that, you have to connect via ssh on the Master Node
+              of your Lambda Instance. You can find the log files at <b>"/home/flink/supervisord_flink_streaming_logs.log"</b> and
+              <b>"/home/flink/supervisord_flink_batch_logs.log"</b>.
+            </p>
+
+            <p>
+              The step-by-step directives you should execute are the following:
+
+              <ol>
+                <li>
+                  Connect over ssh on the Master Node of your Lambda Instance:
+                  <pre>
+ssh -l root snf-XXXXXX.vm.okeanos.grnet.gr
+                  </pre>
+                  where XXXXXX should be replaced with the id of the VM(e.g. snf-543786.vm.okeanos.grnet.gr). To find the id of the Master Node
+                  of your Lambda Instance you can use {{#link-to 'faqs.lambda-instance.find-master-node-hostname'}}this{{/link-to}} guide.
+                </li><br>
+
+                <li>
+                  Move to the directory where the log files are places:
+                  <pre>
+cd /home/flink
+                  </pre>
+                </li><br>
+
+                <li>
+                  See the log files:
+                  <pre>
+cat supervisord_flink_streaming_logs.log
+cat supervisord_flink_batch_logs.log
+                  </pre>
+                </li>
+              </ol>
+            </p>
+          </div><!--col-->
+        </div><!--row-->
+      </div><!--class="box-body"-->
+    </div> <!--box-->
+  </div><!--col-md-3 -->
+</div>  <!--row-->
+</section><!-- /.content -->
