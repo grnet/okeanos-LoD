@@ -1,16 +1,163 @@
-<h1>Lambda Instance Creation</h1>
+<h3>Lambda Instance Creation</h3>
 
 <p>After creating a LoD service VM, one can create a Lambda Instance through the control panel of the service VM. The images below will guide you step by step in the creation of your first Lambda Instance.</p>
 
-<p><img src="assets/img/usage1-6.png" alt="usage1-6.png" width="750"></p>
+<div class="row margin-bottom">
+	<div class="col-sm-6">
+		<div class="row margin-bottom">
+			<div class="col-sm-3">
+				<a href="#" data-toggle="modal" data-target="#LoginPage">
+					<img class="img-responsive" src="assets/img/login-sm.png" alt="Photo" >
+				</a>
+				<p class="text-center">Step 1</p>
+			</div>
+			<div class="col-sm-1 text-center">
+				<span class="fa fa-arrow-right"></span>
+			</div>
+			<div class="col-sm-3">
+				<a href="#" data-toggle="modal" data-target="#createStep2">
+					<img class="img-responsive" src="assets/img/create-step2-sm.png" alt="Photo">
+				</a>
+				<p class="text-center">Step 2</p>
+			</div>
+			<div class="col-sm-1 text-center">
+				<span class="fa fa-arrow-right"></span>
+			</div>
+			<div class="col-sm-3">
+				<a href="#" data-toggle="modal" data-target="#createStep3">
+					<img class="img-responsive" src="assets/img/create-step3-sm.png" alt="Photo">
+				</a>
+				<p class="text-center">Step 3</p>
+			</div>
+		</div>
+		<div class="row ">
+			<div class="col-sm-12 col-md-offset-9">
+				<span class="fa fa-arrow-down"></span>
+			</div>
+		</div>
+		<div class="row ">
+			<div class="col-sm-3 col-md-offset-4">
+				<a href="#" data-toggle="modal" data-target="#createStep5">
+					<img class="img-responsive" src="assets/img/create-step5-sm.png" alt="Photo" >
+				</a>
+				<p class="text-center">Step 5</p>
+			</div>
+			<div class="col-sm-1 text-center">
+				<span class="fa fa-arrow-left"></span>
+			</div>
+			<div class="col-sm-3">
+				<a href="#" data-toggle="modal" data-target="#createStep4">
+					<img class="img-responsive" src="assets/img/create-step4-sm.png" alt="Photo" >
+				</a>
+				<p class="text-center">Step 4</p>
+			</div>
+		</div>
+	</div>
+</div><!-- /.col -->
 
-<ol>
-  <li>Login the service dashboard using your ~okeanos token(you can find your ~okeanos token <a href="https://accounts.okeanos.grnet.gr/ui/api_access">here</a>)</li>
-  <li>Select Instances from the upper left menu of options</li>
-  <li>On the main window select the button "Create New Instance"</li>
-  <li>Fill your Lambda Instance specification in the form provided and click "Submit" when ready</li>
-  <li>Note the status of your new Lambda Instance is updated while it is being deployed and configured</li>
-</ol>
-At the end your Lambda Instance will be ready to use.<br>
+<div class="row">
+	<div class="col-md-12">
+		<ol>
+			<li>Login the service dashboard using your ~okeanos token(you can find your ~okeanos token <a href="https://accounts.okeanos.grnet.gr/ui/api_access">here</a>)</li>
+			<li>Select Instances from the upper left menu of options</li>
+			<li>On the main window select the button "Create New Instance"</li>
+			<li>Fill your Lambda Instance specification in the form provided and click "Submit" when ready</li>
+			<li>Note the status of your new Lambda Instance is updated while it is being deployed and configured</li>
+		</ol>
 
-<p>On the <a href="https://cyclades.okeanos.grnet.gr/ui/">Cyclades web interface</a> of the ~okeanos service you should now be able to see the new VMs that have been utilized for the Lambda on Demand Service.</p>
+		<p><strong>At the end your Lambda Instance will be ready to use. </strong></p>
+
+		<p>If something goes wrong you will be informed with an error message.</p>
+
+		<p>On the <a href="https://cyclades.okeanos.grnet.gr/ui/">Cyclades web interface</a> of the ~okeanos service you should now be able to see the new VMs that have been utilized for the Lambda on Demand Service.</p>
+	</div>
+</div>
+
+<!-- MODALS START -->
+<!-- modal login -->
+<div class="modal fade" id="LoginPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Step 1</h4>
+			</div>
+			<div class="modal-body">
+				<img class="img-responsive" src="assets/img/login.png" alt="Photo" >
+			</div>
+			<div class="modal-footer">
+				Login the service dashboard using your ~okeanos token
+			</div>
+		</div>
+	</div>
+</div>
+<!-- modal login  end-->
+<!-- modal step2-->
+<div class="modal fade" id="createStep2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Step 2</h4>
+			</div>
+			<div class="modal-body">
+				<img class="img-responsive" src="assets/img/create-step2.png" alt="Photo" >
+			</div>
+			<div class="modal-footer">
+				Select Instances from the upper left menu of options
+			</div>
+		</div> <!--<div class="modal-content">-->
+	</div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+<!--- modal step3 -->
+<div class="modal fade" id="createStep3" tabindex="-1" role="dialog" aria-labelledby="createStep3">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="createStep3">Step 3</h4>
+			</div>
+			<div class="modal-body">
+				<img class="img-responsive" src="assets/img/create-step3.png" alt="Photo" >
+			</div>
+			<div class="modal-footer">
+				On the main window select the button "Create New Instance"
+			</div>
+		</div> <!--<div class="modal-content">-->
+	</div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+<!--- modal step4 -->
+<div class="modal fade" id="createStep4" tabindex="-1" role="dialog" aria-labelledby="createStep4">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="createStep4">Step 4</h4>
+			</div>
+			<div class="modal-body">
+				<img class="img-responsive" src="assets/img/create-step4.png" alt="Photo" >
+			</div>
+			<div class="modal-footer">
+				Fill your Lambda Instance specification in the form provided and click "Submit" when ready.
+			</div>
+		</div> <!--<div class="modal-content">-->
+	</div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+<!--- modal step5 -->
+<div class="modal fade" id="createStep5" tabindex="-1" role="dialog" aria-labelledby="createStep5">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="createStep4">Step 5</h4>
+			</div>
+			<div class="modal-body">
+				<img class="img-responsive" src="assets/img/create-step5.png" alt="Photo" >
+			</div>
+			<div class="modal-footer">
+				Note the status of your new Lambda Instance is updated while it is being deployed and configured
+			</div>
+		</div> <!--<div class="modal-content">-->
+	</div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+<!-- MODALS END -->
