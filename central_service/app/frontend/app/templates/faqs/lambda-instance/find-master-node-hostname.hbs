@@ -40,7 +40,53 @@
               VM from those that comprise the Lambda Instance that has a public IP and is thus accessible through the internet. You can follow the steps described bellow to find the hostname of this VM.
             </p>
 
-            <p><img src="assets/img/master-node-hostname-guide.png" alt="master-node-hostname-guide.png" width="1000" height="250"></p>
+            <div class="row margin-bottom">
+              <div class="col-sm-6">
+                <div class="row margin-bottom">
+                  <div class="col-sm-3">
+                    <a href="#" data-toggle="modal" data-target="#LoginPage">
+                      <img class="img-responsive" src="assets/img/faqs/login-sm.png" alt="Login" title="Login" >
+                    </a>
+                    <p class="text-center">Step 1</p>
+                  </div>
+                  <div class="col-sm-1 text-center">
+                    <span class="fa fa-arrow-right"></span>
+                  </div>
+                  <div class="col-sm-3">
+                    <a href="#" data-toggle="modal" data-target="#createStep2">
+                      <img class="img-responsive" src="assets/img/faqs/lambda-instance/create-sm.png" alt="Home Page" title="Home Page">
+                    </a>
+                    <p class="text-center">Step 2</p>
+                  </div>
+                  <div class="col-sm-1 text-center">
+                    <span class="fa fa-arrow-right"></span>
+                  </div>
+                  <div class="col-sm-3">
+                    <a href="#" data-toggle="modal" data-target="#startstop">
+                      <img class="img-responsive" src="assets/img/faqs/lambda-instance/start-stop-sm.png" alt="Start Stop Lambda Instance" title="Start Stop Lambda Instance">
+                    </a>
+                    <p class="text-center">Step 3</p>
+                  </div>
+                </div>
+              </div><!--row-->
+              <div class="row ">
+                <div class="col-sm-7 col-md-offset-5">
+                  <span class="fa fa-arrow-down"></span>
+                </div>
+              </div>
+              <div class="row margin-bottom">
+                <div class="col-sm-6">
+                  <div class="row margin-bottom">
+                    <div class="col-sm-3 col-md-offset-8">
+                      <a href="#" data-toggle="modal" data-target="#Hostname">
+                        <img class="img-responsive" src="assets/img/faqs/lambda-instance/find-master-node-hostname/step4-sm.png" alt="Login" title="Login" >
+                      </a>
+                      <p class="text-center">Step 4</p>
+                    </div>
+                  </div>
+                </div><!--row-->
+              </div>
+            </div><!--row-->
 
             <ol>
               <li>
@@ -70,3 +116,75 @@
   </div><!--col-md-3 -->
 </div>  <!--row-->
 </section><!-- /.content -->
+
+<!-- MODALS START -->
+<!-- modal login -->
+<div class="modal fade" id="LoginPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Step 1</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/login.png" alt="Login" title="Login">
+      </div>
+      <div class="modal-footer">
+        Login the service dashboard using your ~okeanos token
+      </div>
+    </div>
+  </div>
+</div>
+<!-- modal login  end-->
+<!-- modal step2-->
+<div class="modal fade" id="createStep2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Step 2</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/create.png" alt="Home" title="Home" >
+      </div>
+      <div class="modal-footer">
+        Select Instances from the upper left menu of options
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+<!--- modal step3 -->
+<div class="modal fade" id="startstop" tabindex="-1" role="dialog" aria-labelledby="startstop">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createStep3">Step 3</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-instance/start-stop.png" alt="Start Stop Lambda Instance" title="Start Stop Lambda Instance" >
+      </div>
+      <div class="modal-footer">
+        Click on the name of the Lambda Instance you chose or the corresponding "Details" button.
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+<!--- modal Hostname -->
+<div class="modal fade" id="Hostname" tabindex="-1" role="dialog" aria-labelledby="Hostname">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createStep3">Step 4</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-instance/find-master-node-hostname/step4.png" alt="Lambda Instance Hostname" title="Lambda Instance Hostname" >
+      </div>
+      <div class="modal-footer">
+        On the list of properties that are desplayed, the fourth one, namely "Hostname of master node" is the hostname of the Master Node of your Lambda Instance.
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+<!-- MODALS END -->
