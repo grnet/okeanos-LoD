@@ -1,10 +1,70 @@
-<h1>Lambda Applications</h1>
+<h3>Lambda Applications</h3>
 
 <p>One may find an excellent guide on writing Lambda Applications on the landing page of the LoD service. The source code exhibited through that example is available on <a href="https://github.com/grnet/okeanos-LoD/tree/master/example">github</a>. For easy reference, the aforementioned guide is also include in this page.</p>
 
 <p>In order to upload, deploy and start running a Lambda Application on top of a Lambda Instance the user of the service will go through the workflow shown below, again using the Web UI of the LoD service VM.</p>
 
-<p><img src="assets/img/usage7-12.png" alt="usage7-12.png" width="750"></p>
+<div class="row margin-bottom">
+  <div class="col-sm-6">
+    <div class="row margin-bottom">
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#LoginPage">
+          <img class="img-responsive" src="assets/img/login-sm.png" alt="Login" title="Login" >
+        </a>
+        <p class="text-center">Step 1</p>
+      </div>
+      <div class="col-sm-1 text-center">
+        <span class="fa fa-arrow-right"></span>
+      </div>
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#createStep2">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step2-sm.png" alt=" Page" title="Home Page">
+        </a>
+        <p class="text-center">Step 2</p>
+      </div>
+      <div class="col-sm-1 text-center">
+        <span class="fa fa-arrow-right"></span>
+      </div>
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#applist">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step3-sm.png" alt="List Applications" title="List Applications">
+        </a>
+        <p class="text-center">Step 3</p>
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-sm-12 col-md-offset-9">
+        <span class="fa fa-arrow-down"></span>
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#appcomplete">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step6-sm.png" alt="Application has been successfully uploaded" title="Application has been successfully uploaded" >
+        </a>
+        <p class="text-center">Step 6</p>
+      </div>
+      <div class="col-sm-1 text-center">
+        <span class="fa fa-arrow-left"></span>
+      </div>
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#appprogress">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step5-sm.png" alt="Application Progress Bar"  title="Application Progress Bar" >
+        </a>
+        <p class="text-center">Step 5</p>
+      </div>
+      <div class="col-sm-1 text-center">
+        <span class="fa fa-arrow-left"></span>
+      </div>
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#appform">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step4-sm.png" alt="Application Form"  title="Application Form" >
+        </a>
+        <p class="text-center">Step 4</p>
+      </div>
+    </div>
+  </div>
+</div><!--row-->
 
 <ol>
   <li>Select Applications from the upper left menu of options</li>
@@ -15,7 +75,55 @@
   <li>On the Applications page select the Application you have just uploaded (click on its name)</li>
 </ol>
 
-<p><img src="assets/img/usage13-15.png" alt="usage13-15.png" width="750"></p>
+<div class="row margin-bottom">
+  <div class="col-sm-6">
+    <h4>Deploy Application</h4>
+  </div>
+</div>
+
+<div class="row margin-bottom">
+  <div class="col-sm-6">
+    <div class="row margin-bottom">
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#listapps">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step2-sm.png" alt="Application List" title="Application List" >
+        </a>
+        <p class="text-center">Step 7</p>
+      </div>
+      <div class="col-sm-1 text-center">
+        <span class="fa fa-arrow-right"></span>
+      </div>
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#appdeploy">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step8-sm.png" alt="Application deploy"  title="Application Deploy" >
+        </a>
+        <p class="text-center">Step 8</p>
+      </div>
+      <div class="col-sm-1 text-center">
+        <span class="fa fa-arrow-right"></span>
+      </div>
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#appdeploylist">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step9-sm.png" alt="Application Deploy list"  title="Application Deploy list" >
+        </a>
+        <p class="text-center">Step 9</p>
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-sm-12 col-md-offset-9">
+        <span class="fa fa-arrow-down"></span>
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-sm-3 col-md-offset-8">
+        <a href="#" data-toggle="modal" data-target="#apprunning">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step10-sm.png" alt="Application Running"  title="Application Running" >
+        </a>
+        <p class="text-center">Step 10</p>
+      </div>
+    </div>
+  </div>
+</div><!--row-->
 
 <ol start="7">
   <li>Select the "Deploy on a Lambda Instance" button</li>
@@ -87,23 +195,23 @@ a Splitter as our Flat Map Function. From the code which we attach here for ease
 
 <pre>
   public static class Splitter implements FlatMapFunction&lt;String, Tuple4&lt;String, Integer, String, String&gt;&gt; {
-  public void flatMap(String sentence,Collector&lt;Tuple4&lt;String, Integer, String, String&gt;&gt; out) throws Exception {
-  String words[] = sentence.split(" ");
+    public void flatMap(String sentence,Collector&lt;Tuple4&lt;String, Integer, String, String&gt;&gt; out) throws Exception {
+      String words[] = sentence.split(" ");
 
-  for (String word : words){
-  word = word.trim().replace("'", "");
+      for (String word : words){
+      word = word.trim().replace("'", "");
 
-  SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-  SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+      SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+      SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
-  Date date = new Date();
-  String dateFormatted = dateFormat.format(date);
-  String timeFormatted = timeFormat.format(date);
+      Date date = new Date();
+      String dateFormatted = dateFormat.format(date);
+      String timeFormatted = timeFormat.format(date);
 
-  out.collect(new Tuple4&lt;String, Integer, String, String&gt;(word, 1, dateFormatted, timeFormatted));
-}
-}
-}
+      out.collect(new Tuple4&lt;String, Integer, String, String&gt;(word, 1, dateFormatted, timeFormatted));
+      }
+    }
+  }
 </pre>
 
 you can see that the Splitter breaks each input message to its words (words are defined by spaces, thus the input string "what?" will be
@@ -235,3 +343,186 @@ a Lambda Instance. To do that, use the following directive:
 </pre>
 
 After this directive is finished, a new directory, named "target" will have been created for you inside your current working directory. Inside "target" directory, you can find the .jar files that can be uploaded on a LoD Service VM. To upload the statically compiled version of your application, choose the .jar file that has the words "jar-with-dependencies" in its name.
+
+<!-- MODALS START -->
+<!-- modal login -->
+<div class="modal fade" id="LoginPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Step 1</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/login.png" alt="Login" title="Login">
+      </div>
+      <div class="modal-footer">
+        Login the service dashboard using your ~okeanos token
+      </div>
+    </div>
+  </div>
+</div>
+<!-- modal login  end-->
+
+<!-- modal step2-->
+<div class="modal fade" id="createStep2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Step 2</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/create.png" alt="Home" title="Home" >
+      </div>
+      <div class="modal-footer">
+        From the sidebar, select "Applications".
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!--- modal step3 -->
+<div class="modal fade" id="applist" tabindex="-1" role="dialog" aria-labelledby="applist">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createStep3">Step 3</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/list.png" alt="List Applications" title="List Applications" >
+      </div>
+      <div class="modal-footer">
+        On the list of Lambda Applications that appear, choose the button "Details" to get more details about a specific Application.
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!--- appform -->
+<div class="modal fade" id="appform" tabindex="-1" role="dialog" aria-labelledby="appform">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="appform">Step 4</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step4.png" alt="Application Form"  title="Application Form" >
+      </div>
+      <div class="modal-footer">
+        Fill in the form, select the jar file to upload and press "Submit" when ready 
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!--- appform -->
+<div class="modal fade" id="appprogress" tabindex="-1" role="dialog" aria-labelledby="appprogress">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="appprogress">Step 5</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step5.png" alt="Application Progress Bar"  title="Application Progress Bar" >
+      </div>
+      <div class="modal-footer">
+        Note the progress bar as the application uploads. 
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!--- appcomplete -->
+<div class="modal fade" id="appcomplete" tabindex="-1" role="dialog" aria-labelledby="appcomplete">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="appcomplete">Step 6</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step6.png" alt="Application has been successfully uploaded" title="Application has been successfully uploaded" >
+      </div>
+      <div class="modal-footer">
+        Upload is completed. 
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!-- modal step2-->
+<div class="modal fade" id="listapps" tabindex="-1" role="dialog" aria-labelledby="listapps">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="listapps">Step 7</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/list.png" alt="List Applications" title="List Applications" >
+      </div>
+      <div class="modal-footer">
+        From the sidebar, select "Applications".
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!--- apprunning -->
+<div class="modal fade" id="appdeploy" tabindex="-1" role="dialog" aria-labelledby="appdeploy">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="appdeploy">Step 8</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/list.png" alt="Application deploy"  title="Application Deploy" >
+      </div>
+      <div class="modal-footer">
+        Select the "Deploy on a Lambda Instance" button (for the uploaded application)
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!--app deploy list-->
+<div class="modal fade" id="appdeploylist" tabindex="-1" role="dialog" aria-labelledby="appdeploylist">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="appdeploylist">Step 9</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step9.png" alt="Application Deploy list"  title="Application Deploy list" >
+      </div>
+      <div class="modal-footer">
+        On the list of Lambda Instances available select the one you want to use for running this specific application and
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!--app running-->
+<div class="modal fade" id="apprunning" tabindex="-1" role="dialog" aria-labelledby="apprunning">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createStep3">Step 10</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step10.png" alt="Application Running"  title="Application Running" >
+      </div>
+      <div class="modal-footer">
+        Select to start your application once it has been deployed on the Lambda Instance
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+<!-- MODALS END -->
