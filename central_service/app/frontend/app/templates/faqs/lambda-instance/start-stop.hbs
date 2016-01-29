@@ -39,7 +39,36 @@
               You have the ability to Stop and then Start again a Lambda Instance. To do that, follow the guide below.
             </p>
 
-            <p><img src="assets/img/start-stop-lambda-instance.png" alt="start-stop-lambda-instance.png" width="1000" height="250"></p>
+            <div class="row margin-bottom">
+              <div class="col-sm-6">
+                <div class="row margin-bottom">
+                  <div class="col-sm-3">
+                    <a href="#" data-toggle="modal" data-target="#LoginPage">
+                      <img class="img-responsive" src="assets/img/faqs/login-sm.png" alt="Login" title="Login" >
+                    </a>
+                    <p class="text-center">Step 1</p>
+                  </div>
+                  <div class="col-sm-1 text-center">
+                    <span class="fa fa-arrow-right"></span>
+                  </div>
+                  <div class="col-sm-3">
+                    <a href="#" data-toggle="modal" data-target="#createStep2">
+                      <img class="img-responsive" src="assets/img/faqs/lambda-instance/create-sm.png" alt="Home Page" title="Home Page">
+                    </a>
+                    <p class="text-center">Step 2</p>
+                  </div>
+                  <div class="col-sm-1 text-center">
+                    <span class="fa fa-arrow-right"></span>
+                  </div>
+                  <div class="col-sm-3">
+                    <a href="#" data-toggle="modal" data-target="#startstop">
+                      <img class="img-responsive" src="assets/img/faqs/lambda-instance/start-stop-sm.png" alt="Start Stop Lambda Instance" title="Start Stop Lambda Instance">
+                    </a>
+                    <p class="text-center">Step 3</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <ol>
               <li>
@@ -69,3 +98,58 @@
   </div><!--col-md-3 -->
 </div>  <!--row-->
 </section><!-- /.content -->
+
+<!-- MODALS START -->
+<!-- modal login -->
+<div class="modal fade" id="LoginPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Step 1</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/login.png" alt="Login" title="Login">
+      </div>
+      <div class="modal-footer">
+        Login the service dashboard using your ~okeanos token
+      </div>
+    </div>
+  </div>
+</div>
+<!-- modal login  end-->
+<!-- modal step2-->
+<div class="modal fade" id="createStep2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Step 2</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/create.png" alt="Home" title="Home" >
+      </div>
+      <div class="modal-footer">
+        Select Instances from the upper left menu of options
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+<!--- modal step3 -->
+<div class="modal fade" id="startstop" tabindex="-1" role="dialog" aria-labelledby="startstop">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createStep3">Step 3</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-instance/start-stop.png" alt="Start Stop Lambda Instance" title="Start Stop Lambda Instance" >
+      </div>
+      <div class="modal-footer">
+        On the list of Lambda Instances that appear, choose the corresponding "Start" or "Stop" button.
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+<!-- MODALS END -->
