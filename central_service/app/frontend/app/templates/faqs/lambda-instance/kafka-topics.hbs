@@ -36,7 +36,7 @@
             <h1>Apache Kafka topics</h1>
 
             <p>
-              Apache Kafka is the data ingestion layer used by a Lambda Instance. It maintains feeds of messages in categories called topics. Each topic has its own name and can be used either to write or read data from it. Upon creation of a Lambda Instance, you can specify the names of the Kafka topics you want to be created. If no name is provided, then three topics will be created, named "input", "stream-output" and "batch-output". The topics created on a Lambda Instance are categorized to "input" and "output" topics. All the data sent to an input topic, will be automatically saved on the immutable dataset of the Lambda Instance.<br>
+              Apache Kafka is the data ingestion layer used by a Lambda Instance. It maintains feeds of messages in categories called topics. Each topic has its own name and can be used either to write or read data from it. Upon creation of a Lambda Instance, you can specify the names of the Kafka topics you want to be created. If no name is provided, then three topics will be created, named "input", "stream-output" and "batch-output". The topics created on a Lambda Instance are categorized to "input" and "output" topics. All the data sent to an input topic, will be automatically appended to the master dataset of the Lambda Instance.<br>
 
               To get more information about Apache Kafka, you can visit <a href="https://kafka.apache.org">kafka.apache.org</a>
             </p>
