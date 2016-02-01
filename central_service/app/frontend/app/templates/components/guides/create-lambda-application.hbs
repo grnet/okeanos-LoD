@@ -1,6 +1,6 @@
 <h3>Lambda Applications</h3>
 
-<p>One may find an excellent guide on writing Lambda Applications on the landing page of the LoD service. The source code exhibited through that example is available on <a href="https://github.com/grnet/okeanos-LoD/tree/master/example">github</a>. For easy reference, the aforementioned guide is also include in this page.</p>
+<p>One may find a guide on writing Lambda Applications on the landing page of the LoD service. The source code exhibited through that example is available on <a href="https://github.com/grnet/okeanos-LoD/tree/master/example">github</a>. For easy reference, the aforementioned guide is also include in this page.</p>
 
 <p>In order to upload, deploy and start running a Lambda Application on top of a Lambda Instance the user of the service will go through the workflow shown below, again using the Web UI of the LoD service VM.</p>
 
@@ -139,18 +139,18 @@ In order to showcase the full capabilities of your Lambda Instance this example 
 <br><br>
 
 <h4>Application</h4>
-An application is program written in the Java programming language. Each application should be compiled and assembled in a single .jar file before being uploded on Pithos+ through the web pages of a LoD Service VM. Inside your Java code, you can use the <a href="https://ci.apache.org/projects/flink/flink-docs-release-0.10/quickstart/java_api_quickstart.html">Apache Flink Java API</a> to utilize the full capabilities of your Lambda Instance.
+An application is program written in the Java programming language. Each application should be compiled and assembled in a single .jar file before being uploaded on Pithos+ through the LoD Service. Inside your Java code, you can use the <a href="https://ci.apache.org/projects/flink/flink-docs-release-0.10/quickstart/java_api_quickstart.html">Apache Flink Java API</a> to utilize the full capabilities of your Lambda Instance.
 <br><br>
 
 <h4>Apache Kafka Topic</h4>
 Apache Kafka is the data ingestion layer used by a Lambda Instance. It maintains feeds of messages in categories called topics. Each topic has its own name and can be used either to write or read data from it. Upon creation of a Lambda Instance, you can specify the names of the Kafka topics you want to be created. If no name is provided, then three topics will be created, named "input", "stream-output" and "batch-output". The topics created on a Lambda Instance are categorized to "input" and "output" topics. All the data
-sent to an input topic, will be automatically saved on the immutable dataset described below.<br>
+sent to an input topic, will be automatically appended to the master dataset described below.<br>
 
 To get more information about Apache Kafka, you can visit <a href="kafka.apache.org">kafka.apache.org</a>
 <br><br>
 
-<h4>Immutable Dataset</h4>
-The immutable dataset is the place on a Lambda Instance where all input data will be saved and is implemented using Apache HDFS. As stated in the previous paragraph, any data sent on a topic categorized as input topic, will be saved on the immutable dataset automatically. This is done using Apache Flume.<br>
+<h4>Master Dataset</h4>
+The master dataset is an immutable, append-only set of raw data that is stored in the Apache HDFS cluster of your Lambda Instance. As stated in the previous paragraph, any data sent on a topic categorized as input topic, will be appended to the master dataset automatically via Apache Flume.<br>
 
 For more information regarding Apache HDFS and FLume you can visit <a href="hadoop.apache.org">hadoop.apache.org</a> and <a href="flume.apache.org">flume.apache.org</a> respectively.
 <br><br>
@@ -232,7 +232,7 @@ In order to use Apache Flink in your application, you need to create an executio
   env.execute("Stream Word Count");
 </pre>
 
-Note that, when calling the "execute" method of the environment, a name is provided in the form of a String. This name will be requested when uploading your application on a LoD Service VM, so you need to make sure this name is unique for each of your applications.
+<b><i>Note that, when calling the "execute" method of the environment, a name is provided in the form of a String. This name will be requested when uploading your application on a LoD Service VM, so you need to make sure this name is unique for each of your applications.</i></b>
 <br><br>
 
 

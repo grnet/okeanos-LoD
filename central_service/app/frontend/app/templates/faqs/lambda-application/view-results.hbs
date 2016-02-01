@@ -33,25 +33,10 @@
       <div class="box-body">
         <div class="row">
           <div class="col-md-12">
-            <h1>Getting Results</h1>
+            <h1>Getting the Results</h1>
 
             <p>
-              Lambda on Demand service is used to process data. This means that, to get results, you first have to provide some data.
-              To do that, you should first {{#link-to 'index'}}create a LoD service VM{{/link-to}}, a {{#link-to 'faqs.lambda-instance.create'}}
-              Lambda Instance{{/link-to}} and a {{#link-to 'faqs.lambda-application.create'}}Lambda Application{{/link-to}}.
-            </p>
-
-            <p>
-              After you have created these three elements, follow {{#link-to 'faqs.lambda-application.run'}}this{{/link-to}} guide to find out how
-              to upload your Lambda Application on your Lambda Instance using the web interface of your LoD service VM. You can follow
-              {{#link-to 'faqs.lambda-application.observe-running'}}this{{/link-to}} guide to observe your runnning applications on a LoD service VM.
-            </p>
-
-            <p>
-              At this point, you have successfully started a Lambda Application on a Lambda Instance. As stated before, in order to get results, you
-              first have to provide some data. To send data on a Lambda Instance you can use Apache Kafka which is installed by default. Follow the
-              {{#link-to 'faqs.lambda-instance.kafka-topics'}}Kafka topics guide{{/link-to}} to get information on how to send data to an Apache Kafka
-              topic and also how to receive the results of your Lambda Application's processing.
+              To get the results, you should configure your application to send them to an Apache Kafka topic. After that, you can read {{#link-to 'faqs.lambda-instance.kafka-topics'}}this{{/link-to}} guide to find out how to get the results from the topic you sent them.
             </p>
           </div><!--col-->
         </div><!--row-->
