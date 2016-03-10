@@ -1,6 +1,6 @@
 <h3>Lambda Applications</h3>
 
-<p>One may find a guide on writing Lambda Applications on the landing page of the LoD service. The source code exhibited through that example is available on <a href="https://github.com/grnet/okeanos-LoD/tree/master/example">github</a>. For easy reference, the aforementioned guide is also include in this page.</p>
+<p>One may find a guide on writing Lambda Applications on the landing page of the LoD service. The source code exhibited through that example is available on <a href="https://github.com/grnet/okeanos-LoD/tree/master/example">github</a>. For easy reference, the aforementioned guide is also in included this page.</p>
 
 <p>In order to upload, deploy and start running a Lambda Application on top of a Lambda Instance the user of the service will go through the workflow shown below, again using the Web UI of the LoD service VM.</p>
 
@@ -67,12 +67,12 @@
 </div><!--row-->
 
 <ol>
+  <li>Log into the service dashboard using your ~okeanos token (you can find your ~okeanos token <a href="https://accounts.okeanos.grnet.gr/ui/api_access">here</a>)</li>
   <li>Select Applications from the upper left menu of options</li>
   <li>On the main window select the button "Upload an Application"</li>
   <li>Fill in the form, select the jar file to upload and press "Submit" when ready</li>
-  <li>Note the progress bar as the application uploads</li>
-  <li>Upload is completed</li>
-  <li>On the Applications page select the Application you have just uploaded (click on its name)</li>
+  <li>Notice the progress bar as the application uploads</li>
+  <li>Upload has been completed. On the Applications' page, you can select the Application you have just uploaded (click on its name)</li>
 </ol>
 
 <div class="row margin-bottom">
@@ -126,8 +126,9 @@
 </div><!--row-->
 
 <ol start="7">
-  <li>Select the "Deploy on a Lambda Instance" button</li>
-  <li>On the list of Lambda Instances available select the one you want to use for running this specific application and</li>
+  <li>Select Applications from the upper left menu of options</li>
+  <li>Select the "Deploy on a Lambda Instance" button of the Application you wish to deploy</li>
+  <li>On the list of Lambda Instances available select the one you want to use for running this specific application</li>
   <li>Select to start your application once it has been deployed on the Lambda Instance</li>
 </ol>
 
@@ -152,12 +153,12 @@ To get more information about Apache Kafka, you can visit <a href="kafka.apache.
 <h4>Master Dataset</h4>
 The master dataset is an immutable, append-only set of raw data that is stored in the Apache HDFS cluster of your Lambda Instance. As stated in the previous paragraph, any data sent on a topic categorized as input topic, will be appended to the master dataset automatically via Apache Flume.<br>
 
-For more information regarding Apache HDFS and FLume you can visit <a href="hadoop.apache.org">hadoop.apache.org</a> and <a href="flume.apache.org">flume.apache.org</a> respectively.
+For more information regarding Apache HDFS and Flume you can visit <a href="hadoop.apache.org">hadoop.apache.org</a> and <a href="flume.apache.org">flume.apache.org</a> respectively.
 <br><br>
 
 <h3>Stream Job</h3>
 A Stream Job, is an Apache Flink Job designed to process streams of data, in real time, with high throughput rates and low latency.
-You can find the code for the Stream Job inside the <a href="https://github.com/grnet/okeanos-LoD/tree/master/example/stream_word_count">stream_word_count</a> directory.
+You can find the example code for the Stream Job inside the <a href="https://github.com/grnet/okeanos-LoD/tree/master/example/stream_word_count">stream_word_count</a> directory.
 <br><br>
 
 <h4>Input-Output</h4>
@@ -253,7 +254,7 @@ After this directive is finished, a new directory, named "target" will have been
 
 
 <h3>Batch Job</h3>
-A Batch Job is an Apache Flink Job designed to process big loads of data asynchronously. You can find the code for
+A Batch Job is an Apache Flink Job designed to process big loads of data asynchronously. You can find the example code for
 out Batch Job inside the  <a href="https://github.com/grnet/okeanos-LoD/tree/master/example/batch_word_count">batch_word_count</a> directory.
 <br><br>
 
@@ -357,7 +358,7 @@ After this directive is finished, a new directory, named "target" will have been
         <img class="img-responsive" src="assets/img/faqs/login.png" alt="Login" title="Login">
       </div>
       <div class="modal-footer">
-        Login the service dashboard using your ~okeanos token
+        Log into the service dashboard using your ~okeanos token
       </div>
     </div>
   </div>
@@ -430,7 +431,7 @@ After this directive is finished, a new directory, named "target" will have been
         <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step5.png" alt="Application Progress Bar"  title="Application Progress Bar" >
       </div>
       <div class="modal-footer">
-        Note the progress bar as the application uploads. 
+        Notice the progress bar as the application uploads.
       </div>
     </div> <!--<div class="modal-content">-->
   </div><!--<div class="modal-dialog"-->
@@ -463,7 +464,7 @@ After this directive is finished, a new directory, named "target" will have been
         <h4 class="modal-title" id="listapps">Step 7</h4>
       </div>
       <div class="modal-body">
-        <img class="img-responsive" src="assets/img/faqs/lambda-application/list.png" alt="List Applications" title="List Applications" >
+        <img class="img-responsive" src="assets/img/faqs/create.png" alt="List Applications" title="List Applications" >
       </div>
       <div class="modal-footer">
         From the sidebar, select "Applications".

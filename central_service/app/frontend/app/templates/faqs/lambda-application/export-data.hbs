@@ -36,7 +36,7 @@
             <h1>Export Master Dataset</h1>
 
             <p>
-              The master dataset of each Lambda Instance, is stored on its <a href="https://hadoop.apache.org">Hadoop Distributed File System(HDFS)</a>.
+              The master dataset of each Lambda Instance, is stored on its <a href="https://hadoop.apache.org">Hadoop Distributed File System (HDFS)</a>.
               In order to export them, you will have to connect over ssh to the Master Node of your Lambda Instance and create a snapshot of the HDFS. After
               that, you can move the snapshot on the file system of your VM and then, secure copy it on your local machine, upload it on the cloud etc...
             </p>
@@ -50,7 +50,7 @@
                   <pre>
 ssh -l root snf-XXXXXX.vm.okeanos.grnet.gr
                   </pre>
-                  where, XXXXXX should be replaced with the id of the VM(e.g. snf-543786.vm.okeanos.grnet.gr). To find the id of the Master Node of your
+                  where, XXXXXX should be replaced with the id of the VM (e.g. snf-543786.vm.okeanos.grnet.gr). To find the id of the Master Node of your
                   Lambda Instance you can use {{#link-to 'faqs.lambda-instance.find-master-node-hostname'}}this{{/link-to}} guide.
                 </li><br>
 
