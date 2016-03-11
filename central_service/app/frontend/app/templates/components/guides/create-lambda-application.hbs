@@ -1,8 +1,14 @@
 <h3>Lambda Applications</h3>
 
-<p>One may find a guide on writing Lambda Applications on the landing page of the LoD service. The source code exhibited through that example is available on <a href="https://github.com/grnet/okeanos-LoD/tree/master/example">github</a>. For easy reference, the aforementioned guide is also in included this page.</p>
+<p>One may find a guide on writing Lambda Applications on the landing page of the LoD service VM. The source code exhibited through that example is available on <a href="https://github.com/grnet/okeanos-LoD/tree/devel/example">github</a>. For easy reference, the aforementioned guide is also included in this page.</p>
 
-<p>In order to upload, deploy and start running a Lambda Application on top of a Lambda Instance the user of the service will go through the workflow shown below, again using the Web UI of the LoD service VM.</p>
+<p>In order to upload, deploy and start running a Lambda Application on top of a Lambda Instance you should go through the workflow shown below, again using the Web UI of the LoD service VM.</p>
+
+<div class="row margin-bottom">
+  <div class="col-sm-6">
+    <h4>Upload Application</h4>
+  </div>
+</div>
 
 <div class="row margin-bottom">
   <div class="col-sm-6">
@@ -67,11 +73,11 @@
 </div><!--row-->
 
 <ol>
-  <li>Log into the service dashboard using your ~okeanos token (you can find your ~okeanos token <a href="https://accounts.okeanos.grnet.gr/ui/api_access">here</a>)</li>
-  <li>Select Applications from the upper left menu of options</li>
-  <li>On the main window select the button "Upload an Application"</li>
-  <li>Fill in the form, select the jar file to upload and press "Submit" when ready</li>
-  <li>Notice the progress bar as the application uploads</li>
+  <li>Log into the LoD service VM dashboard using your ~okeanos token (you can find your ~okeanos token <a href="https://accounts.okeanos.grnet.gr/ui/api_access">here</a>)</li>
+  <li>On the sidebar, select "Applications"</li>
+  <li>On the main window click the button "Upload an Application"</li>
+  <li>Fill in the form, select the jar file to upload and click "Submit" when ready</li>
+  <li>Notice the progress bar as the Application is being uploaded</li>
   <li>Upload has been completed. On the Applications' page, you can select the Application you have just uploaded (click on its name)</li>
 </ol>
 
@@ -126,8 +132,8 @@
 </div><!--row-->
 
 <ol start="7">
-  <li>Select Applications from the upper left menu of options</li>
-  <li>Select the "Deploy on a Lambda Instance" button of the Application you wish to deploy</li>
+  <li>On the sidebar, select "Applications"</li>
+  <li>Click the "Deploy on a Lambda Instance" button of the Application you wish to deploy</li>
   <li>On the list of Lambda Instances available select the one you want to use for running this specific application</li>
   <li>Select to start your application once it has been deployed on the Lambda Instance</li>
 </ol>
@@ -358,7 +364,7 @@ After this directive is finished, a new directory, named "target" will have been
         <img class="img-responsive" src="assets/img/faqs/login.png" alt="Login" title="Login">
       </div>
       <div class="modal-footer">
-        Log into the service dashboard using your ~okeanos token
+        Log into the LoD service VM dashboard using your ~okeanos token
       </div>
     </div>
   </div>
@@ -377,7 +383,7 @@ After this directive is finished, a new directory, named "target" will have been
         <img class="img-responsive" src="assets/img/faqs/create.png" alt="Home" title="Home" >
       </div>
       <div class="modal-footer">
-        From the sidebar, select "Applications".
+        On the sidebar, select "Applications"
       </div>
     </div> <!--<div class="modal-content">-->
   </div><!--<div class="modal-dialog"-->
@@ -395,7 +401,7 @@ After this directive is finished, a new directory, named "target" will have been
         <img class="img-responsive" src="assets/img/faqs/lambda-application/list.png" alt="List Applications" title="List Applications" >
       </div>
       <div class="modal-footer">
-        On the list of Lambda Applications that appear, choose the button "Details" to get more details about a specific Application.
+        On the main window click the button "Upload an Application"
       </div>
     </div> <!--<div class="modal-content">-->
   </div><!--<div class="modal-dialog"-->
@@ -413,7 +419,7 @@ After this directive is finished, a new directory, named "target" will have been
         <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step4.png" alt="Application Form"  title="Application Form" >
       </div>
       <div class="modal-footer">
-        Fill in the form, select the jar file to upload and press "Submit" when ready 
+        Fill in the form, select the jar file to upload and click "Submit" when ready
       </div>
     </div> <!--<div class="modal-content">-->
   </div><!--<div class="modal-dialog"-->
@@ -431,7 +437,7 @@ After this directive is finished, a new directory, named "target" will have been
         <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step5.png" alt="Application Progress Bar"  title="Application Progress Bar" >
       </div>
       <div class="modal-footer">
-        Notice the progress bar as the application uploads.
+        Notice the progress bar as the Application is being uploaded
       </div>
     </div> <!--<div class="modal-content">-->
   </div><!--<div class="modal-dialog"-->
@@ -449,7 +455,7 @@ After this directive is finished, a new directory, named "target" will have been
         <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step6.png" alt="Application has been successfully uploaded" title="Application has been successfully uploaded" >
       </div>
       <div class="modal-footer">
-        Upload is completed. 
+        Upload has been completed
       </div>
     </div> <!--<div class="modal-content">-->
   </div><!--<div class="modal-dialog"-->
@@ -467,7 +473,7 @@ After this directive is finished, a new directory, named "target" will have been
         <img class="img-responsive" src="assets/img/faqs/create.png" alt="List Applications" title="List Applications" >
       </div>
       <div class="modal-footer">
-        From the sidebar, select "Applications".
+        On the sidebar, select "Applications"
       </div>
     </div> <!--<div class="modal-content">-->
   </div><!--<div class="modal-dialog"-->
@@ -485,7 +491,7 @@ After this directive is finished, a new directory, named "target" will have been
         <img class="img-responsive" src="assets/img/faqs/lambda-application/list.png" alt="Application deploy"  title="Application Deploy" >
       </div>
       <div class="modal-footer">
-        Select the "Deploy on a Lambda Instance" button (for the uploaded application)
+        Click the "Deploy on a Lambda Instance" button of the Application you wish to deploy
       </div>
     </div> <!--<div class="modal-content">-->
   </div><!--<div class="modal-dialog"-->
@@ -503,7 +509,7 @@ After this directive is finished, a new directory, named "target" will have been
         <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step9.png" alt="Application Deploy list"  title="Application Deploy list" >
       </div>
       <div class="modal-footer">
-        On the list of Lambda Instances available select the one you want to use for running this specific application and
+        On the list of Lambda Instances available select the one you want to use for running this specific application
       </div>
     </div> <!--<div class="modal-content">-->
   </div><!--<div class="modal-dialog"-->
