@@ -1,0 +1,22 @@
+<p>The Lambda on Demand service runs on top of GRNET ~okeanos IaaS public cloud. Users of the ~okeanos service can use the Lambda on Demand service in order to instantiate and manage their own Lambda Instances (clusters of VMs utilizing the <a href="http://lambda-architecture.net/">λ (lambda) architectural pattern</a>) with ease and comfort.</p>
+
+<p>The Lambda on Demand service utilizes Apache Flink on a backend YARN/HDFS installation and Apache Kafka as the data ingestion layer. It also utilizes Apache Flume as a Kafka-HDFS connector.</p>
+
+<p>In order to use the Lambda on Demand (LoD for brevity) service an ~okeanos user will first need to <a href="https://cyclades.okeanos.grnet.gr">spin up a LoD service VM</a> using the publicly available Lambda Service VM image file.<i> We recommend using at least 4 CPUs, 4GB of RAM and 40GB disk size for the LoD service VM.</i></p>
+
+<p><img src="assets/img/service_vm_image.png" alt="service_vm_image.png" width="500"></p>
+
+<p>Once the LoD service VM is up and running the user may direct his/her browser to the login page available at the following link:</p>
+
+<p><b>http://&#123;&#123;hostname&#125;&#125;/</b></p>
+
+<p><i>Note that one will need to replace the "&#123;&#123;hostname&#125;&#125;" above with the hostname given by the ~okeanos service (usually something of the form snf-XXXXXX.vm.okeanos.grnet.gr) for the LoD service VM.</i></p>
+
+
+<h1>Notes and advisories</h1>
+
+<p>Each LoD Service VM a user instantiates ships with a self signed certificate key pair. We strongly recommend users of the LoD Service VM to replace the self signed key pair with one they may obtain from a Certificate Authority they trust. The files that should be replaced are <code>/etc/apache2/ssl/server.key</code> (private key) and <code>/etc/apache2/ssl/server.crt</code> (public certificate) respectively. Once the change is applied the apache web service should be restarted in order for the changes to take effect:</p>
+
+<pre>
+# service apache2 restart
+</pre>

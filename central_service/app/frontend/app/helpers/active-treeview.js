@@ -1,10 +1,11 @@
 import Ember from "ember";
 
-export default Ember.Helper.helper(function([curPath, path]) {
-  if (curPath.indexOf(path) === -1) {
-    return "";
-  }
-  else {
-    return "active treeview";
-  }
+export default Ember.Helper.helper(function([currentPath, mode]) {
+	var pathRoot = currentPath.split(".")[0];
+
+	if(pathRoot === mode){
+		return "active treeview";
+	}
+
+	return "";
 });

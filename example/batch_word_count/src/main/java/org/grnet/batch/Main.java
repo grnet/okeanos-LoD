@@ -65,7 +65,7 @@ public class Main {
             counts.writeAsText(outputHDFSDirectory, FileSystem.WriteMode.OVERWRITE);
 
             // execute program
-            env.execute();
+            env.execute("Batch word count");
 
             // Wait for a minute before repeating.
             Thread.sleep(1 * 60 * 1000);

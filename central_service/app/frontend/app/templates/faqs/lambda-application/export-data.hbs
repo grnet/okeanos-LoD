@@ -1,0 +1,102 @@
+<section class="content">
+  <div class="row">
+   <div class="col-xs-12">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">How to export my master dataset</h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+          <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div>
+      </div><!-- /.box-header -->
+      <div class="box-body no-padding">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="pad"> Follow the steps below to export your master dataset
+            </div>
+          </div><!-- /.col -->
+
+        </div><!-- /.row -->
+      </div><!-- /.box-body -->
+    </div><!--box box-primary-->
+  </div><!--col-xs-12-->
+</div><!--row -->
+
+
+<div class="row">
+  <div class="col-xs-12">
+    <!-- DIRECT CHAT DANGER -->
+    <div class="box box-success ">
+      <div class="box-header with-border">
+        <h3 class="box-title">Short guide on how to export the master dataset from a Lambda Instance</h3>
+      </div><!-- /.box-header -->
+      <div class="box-body">
+        <div class="row">
+          <div class="col-md-12">
+            <h1>Export Master Dataset</h1>
+
+            <p>
+              The master dataset of each Lambda Instance, is stored on its <a href="https://hadoop.apache.org">Hadoop Distributed File System (HDFS)</a>.
+              In order to export it, you will have to connect over ssh to the Master Node of your Lambda Instance and create a snapshot of the HDFS. After
+              that, you can move the snapshot on the file system of your VM and then, secure copy it on your local machine, upload it on the cloud etc...
+            </p>
+
+            <p>
+              The step-by-step directives you should execute are the following:
+
+              <ol>
+                <li>
+                  Connect over ssh on the Master Node of your Lambda Instance:
+                  <pre>
+ssh -l root snf-XXXXXX.vm.okeanos.grnet.gr
+                  </pre>
+                  where, XXXXXX should be replaced with the id of the VM (e.g. snf-543786.vm.okeanos.grnet.gr). To find the id of the Master Node of your
+                  Lambda Instance you can use {{#link-to 'faqs.lambda-instance.find-master-node-hostname'}}this{{/link-to}} guide.
+                </li><br>
+
+                <li>
+                  Allow snapshots for the root directory of the HDFS:
+                  <pre>
+/usr/local/hadoop/bin/hdfs dfsadmin -allowSnapshot /
+                  </pre>
+                  Note that you can choose to snapshot any other directory, not only the root. To do that, supplement the "/" symbol of the directive with the
+                  path of the directory you want to allow snapshots. For example, if you choose the directory "/flume/input", you should execute the directive:<br>
+                  <pre>
+/usr/local/hadoop/bin/hdfs dfsadmin -allowSnapshot /flume/input
+                  </pre>
+                </li><br>
+
+                <li>
+                  Create the SnapShot:
+                  <pre>
+/usr/local/hadoop/bin/hdfs dfs -createSnapshot / s0
+                  </pre>
+                  As stated on the previous step, you can choose to SnapShot a different directory. The full path of the directory you choose, should replace the "/"
+                  argument of the directive. This command will create a directory "/.snapshot/s0". Note that, "s0" is the name of the directory that is created.
+                  You can replace this on the directive with any name of your choice.
+                </li><br>
+
+                <li>
+                  Copy the SnapShot from HDFS to VM file system:
+                  <pre>
+/usr/local/hadoop/bin/hdfs dfs -get /.snapshot/s0
+                  </pre>
+                </li><br>
+
+                <li>
+                  Copy the snapshot on the local file system of your computer:
+                  <pre>
+scp -r root@snf-XXXXXX.vm.okeanos.grnet.gr:/root/s0 .
+                  </pre>
+                  In the above directive, you should again replace the XXXXXX with the id of your VM. Also, the path "/root/s0" indicates the place of the SnapShot directory on the
+                  VM and "." indicates the local directory in which the SnapShot will be copied to. You can change these paths to fit your needs. The format of the data is raw text.
+                </li>
+              </ol>
+            </p>
+          </div><!--col-->
+        </div><!--row-->
+      </div><!--class="box-body"-->
+    </div> <!--box-->
+  </div><!--col-md-3 -->
+</div>  <!--row-->
+</section><!-- /.content -->

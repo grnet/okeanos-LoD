@@ -6,8 +6,25 @@ var Router = Ember.Router.extend({
 });
 
 Router.map(function () {
-	this.route('lambda-instance');
-	this.route('lambda-application');
+	this.route('lambda-instance', function() {});
+	this.route('lambda-application', function() {});
+	this.route('faqs', function() {
+		this.route('lambda-instance', function() {
+    		this.route('create');
+    		this.route('start-stop');
+    		this.route('kafka-topics');
+    		this.route('find-master-node-hostname');
+		});
+
+		this.route('lambda-application', function() {
+			this.route('create');
+			this.route('run');
+			this.route('observe-running');
+			this.route('check-running');
+			this.route('view-results');
+			this.route('export-data');
+		});
+    });
 });
 
 export default Router;

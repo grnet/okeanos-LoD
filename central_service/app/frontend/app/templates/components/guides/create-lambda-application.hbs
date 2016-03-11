@@ -1,0 +1,535 @@
+<h3>Lambda Applications</h3>
+
+<p>One may find a guide on writing Lambda Applications on the landing page of the LoD service VM. The source code exhibited through that example is available on <a href="https://github.com/grnet/okeanos-LoD/tree/devel/example">github</a>. For easy reference, the aforementioned guide is also included in this page.</p>
+
+<p>In order to upload, deploy and start running a Lambda Application on top of a Lambda Instance you should go through the workflow shown below, again using the Web UI of the LoD service VM.</p>
+
+<div class="row margin-bottom">
+  <div class="col-sm-6">
+    <h4>Upload Application</h4>
+  </div>
+</div>
+
+<div class="row margin-bottom">
+  <div class="col-sm-6">
+    <div class="row margin-bottom">
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#LoginPage">
+          <img class="img-responsive" src="assets/img/faqs/login-sm.png" alt="Login" title="Login" >
+        </a>
+        <p class="text-center">Step 1</p>
+      </div>
+      <div class="col-sm-1 text-center">
+        <span class="fa fa-arrow-right"></span>
+      </div>
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#createStep2">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create-sm.png" alt=" Page" title="Home Page">
+        </a>
+        <p class="text-center">Step 2</p>
+      </div>
+      <div class="col-sm-1 text-center">
+        <span class="fa fa-arrow-right"></span>
+      </div>
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#applist">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step3-sm.png" alt="List Applications" title="List Applications">
+        </a>
+        <p class="text-center">Step 3</p>
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-sm-12 col-md-offset-9">
+        <span class="fa fa-arrow-down"></span>
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#appcomplete">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step6-sm.png" alt="Application has been successfully uploaded" title="Application has been successfully uploaded" >
+        </a>
+        <p class="text-center">Step 6</p>
+      </div>
+      <div class="col-sm-1 text-center">
+        <span class="fa fa-arrow-left"></span>
+      </div>
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#appprogress">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step5-sm.png" alt="Application Progress Bar"  title="Application Progress Bar" >
+        </a>
+        <p class="text-center">Step 5</p>
+      </div>
+      <div class="col-sm-1 text-center">
+        <span class="fa fa-arrow-left"></span>
+      </div>
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#appform">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step4-sm.png" alt="Application Form"  title="Application Form" >
+        </a>
+        <p class="text-center">Step 4</p>
+      </div>
+    </div>
+  </div>
+</div><!--row-->
+
+<ol>
+  <li>Log into the LoD service VM dashboard using your ~okeanos token (you can find your ~okeanos token <a href="https://accounts.okeanos.grnet.gr/ui/api_access">here</a>)</li>
+  <li>On the sidebar, select "Applications"</li>
+  <li>On the main window click the button "Upload an Application"</li>
+  <li>Fill in the form, select the jar file to upload and click "Submit" when ready</li>
+  <li>Notice the progress bar as the Application is being uploaded</li>
+  <li>Upload has been completed. On the Applications' page, you can select the Application you have just uploaded (click on its name)</li>
+</ol>
+
+<div class="row margin-bottom">
+  <div class="col-sm-6">
+    <h4>Deploy Application</h4>
+  </div>
+</div>
+
+<div class="row margin-bottom">
+  <div class="col-sm-6">
+    <div class="row margin-bottom">
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#listapps">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create-sm.png" alt="Application List" title="Application List" >
+        </a>
+        <p class="text-center">Step 7</p>
+      </div>
+      <div class="col-sm-1 text-center">
+        <span class="fa fa-arrow-right"></span>
+      </div>
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#appdeploy">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step8-sm.png" alt="Application deploy"  title="Application Deploy" >
+        </a>
+        <p class="text-center">Step 8</p>
+      </div>
+      <div class="col-sm-1 text-center">
+        <span class="fa fa-arrow-right"></span>
+      </div>
+      <div class="col-sm-3">
+        <a href="#" data-toggle="modal" data-target="#appdeploylist">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step9-sm.png" alt="Application Deploy list"  title="Application Deploy list" >
+        </a>
+        <p class="text-center">Step 9</p>
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-sm-12 col-md-offset-9">
+        <span class="fa fa-arrow-down"></span>
+      </div>
+    </div>
+    <div class="row ">
+      <div class="col-sm-3 col-md-offset-8">
+        <a href="#" data-toggle="modal" data-target="#apprunning">
+          <img class="img-responsive" src="assets/img/faqs/lambda-application/details-sm.png" alt="Application Running"  title="Application Running" >
+        </a>
+        <p class="text-center">Step 10</p>
+      </div>
+    </div>
+  </div>
+</div><!--row-->
+
+<ol start="7">
+  <li>On the sidebar, select "Applications"</li>
+  <li>Click the "Deploy on a Lambda Instance" button of the Application you wish to deploy</li>
+  <li>On the list of Lambda Instances available select the one you want to use for running this specific application</li>
+  <li>Select to start your application once it has been deployed on the Lambda Instance</li>
+</ol>
+
+You can read the following examples to find information regarding how to create an Application.
+<br><br>
+
+<h3>Introduction</h3>
+In order to showcase the full capabilities of your Lambda Instance this example consists of two (2) sections, a Stream Job Application and a Batch Job Application. In the following lines we are going to describe each one step by step but first, we will provide some definitions.
+<br><br>
+
+<h4>Application</h4>
+An application is program written in the Java programming language. Each application should be compiled and assembled in a single .jar file before being uploaded on Pithos+ through the LoD Service. Inside your Java code, you can use the <a href="https://ci.apache.org/projects/flink/flink-docs-release-0.10/quickstart/java_api_quickstart.html">Apache Flink Java API</a> to utilize the full capabilities of your Lambda Instance.
+<br><br>
+
+<h4>Apache Kafka Topic</h4>
+Apache Kafka is the data ingestion layer used by a Lambda Instance. It maintains feeds of messages in categories called topics. Each topic has its own name and can be used either to write or read data from it. Upon creation of a Lambda Instance, you can specify the names of the Kafka topics you want to be created. If no name is provided, then three topics will be created, named "input", "stream-output" and "batch-output". The topics created on a Lambda Instance are categorized to "input" and "output" topics. All the data
+sent to an input topic, will be automatically appended to the master dataset described below.<br>
+
+To get more information about Apache Kafka, you can visit <a href="kafka.apache.org">kafka.apache.org</a>
+<br><br>
+
+<h4>Master Dataset</h4>
+The master dataset is an immutable, append-only set of raw data that is stored in the Apache HDFS cluster of your Lambda Instance. As stated in the previous paragraph, any data sent on a topic categorized as input topic, will be appended to the master dataset automatically via Apache Flume.<br>
+
+For more information regarding Apache HDFS and Flume you can visit <a href="hadoop.apache.org">hadoop.apache.org</a> and <a href="flume.apache.org">flume.apache.org</a> respectively.
+<br><br>
+
+<h3>Stream Job</h3>
+A Stream Job, is an Apache Flink Job designed to process streams of data, in real time, with high throughput rates and low latency.
+You can find the example code for the Stream Job inside the <a href="https://github.com/grnet/okeanos-LoD/tree/master/example/stream_word_count">stream_word_count</a> directory.
+<br><br>
+
+<h4>Input-Output</h4>
+The Stream Job reads its input data from an Apache Kafka topic and sends its output to another. A <a href="https://ci.apache.org/projects/flink/flink-docs-release-0.8/streaming_guide.html#apache-kafka">connector</a> is provided by Apache Flink for this purpose. When using this connector, you should specify the machine on which Apache Kafka is deployed along with the names of the input and the output topics you want to use. In our example this is done with the following directives:
+
+<pre>
+  String zookeeper= "master:2181";
+  String kafkaBroker = "master:9092";
+  String inputTopic = "input";
+  String outputTopic = "stream-output";
+</pre>
+<br><br>
+
+<h4>Execution Flow</h4>
+The execution flow of your job describes the steps that the Stream Job will execute. It is a series of directives that specify the input source of the data, the method that will be used to process them and the output destination. In our example, the execution flow is determined by the following directives:
+
+<pre>
+  DataStream&lt;Tuple4&lt;String, Integer, String, String&gt;&gt; text = env
+  .addSource(new FlinkKafkaConsumer082&lt;&gt;(inputTopic, new SimpleStringSchema(), kafkaConsumerProperties))
+  .flatMap(new Splitter())
+  .groupBy(0)
+  .sum(1)
+  .addSink(new KafkaSin&lt;Tuple4&lt;String, Integer, String, String&gt;&gt;(kafkaBroker, outputTopic, new tuple4serialization()));
+</pre>
+
+The addSource method, is used in order to determine the input source of data, while the addSink method is used to add
+a sink as an output for the data. In our example, the source is an Apache Kafka Consumer while the sink is an
+Apache Kafka Producer. Finally, the flatMap method defines the way the data is going to be processed. We will cover
+this method in a separate paragraph, right below.
+<br><br>
+
+<h4>Flat Map Function</h4>
+The Flat Map Function is the core of the Stream Job. It describes the way the data is going to be processed. We use
+a Splitter as our Flat Map Function. From the code which we attach here for ease of reference
+
+<pre>
+  public static class Splitter implements FlatMapFunction&lt;String, Tuple4&lt;String, Integer, String, String&gt;&gt; {
+    public void flatMap(String sentence,Collector&lt;Tuple4&lt;String, Integer, String, String&gt;&gt; out) throws Exception {
+      String words[] = sentence.split(" ");
+
+      for (String word : words){
+      word = word.trim().replace("'", "");
+
+      SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+      SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+
+      Date date = new Date();
+      String dateFormatted = dateFormat.format(date);
+      String timeFormatted = timeFormat.format(date);
+
+      out.collect(new Tuple4&lt;String, Integer, String, String&gt;(word, 1, dateFormatted, timeFormatted));
+      }
+    }
+  }
+</pre>
+
+you can see that the Splitter breaks each input message to its words (words are defined by spaces, thus the input string "what?" will be
+considered a single word in our example). It then appends to each word a time and a date stamp, and sends it to the
+output increasing the respective word counter by one.
+<br><br>
+
+<h4>Serializer</h4>
+When adding a Sink, you should specify the way you want your data to be serialized before being sent to the output.
+The serializer you provide, will be applied on each message before sending it to the specified Sink. The serializer in our example implementation transforms the message into a String and then returns its bytes.
+<br><br>
+
+<h4>Execution Environment</h4>
+In order to use Apache Flink in your application, you need to create an execution environment. In our example this is done with the following directives
+
+<pre>
+  StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+  env.execute("Stream Word Count");
+</pre>
+
+<b><i>Note that, when calling the "execute" method of the environment, a name is provided in the form of a String. This name will be requested when uploading your application on a LoD Service VM, so you need to make sure this name is unique for each of your applications.</i></b>
+<br><br>
+
+
+<h4>Building the Job</h4>
+With the term "building" we refer to compiling the application and assembling it into a .jar file. In our example, we use <a href="https://maven.apache.org/">Apache Maven</a> to build our Applications. You can find the respective pom.xml
+file, required by Apache Maven in the <a href="https://github.com/grnet/okeanos-LoD/tree/master/example/stream_word_count">stream_word_count</a> directory.
+
+We suggest you statically compile your Jobs, so that every needed library is in place when the Job starts being executed on
+a Lambda Instance. To do that with our example, use the following directive:
+
+<pre>
+  mvn clean compile assembly:assembly
+</pre>
+
+After this directive is finished, a new directory, named "target" will have been created for you inside your current working directory. Inside "target" directory, you can find the .jar files that can be uploaded on a LoD Service VM. To upload the statically compiled version of your application, choose the .jar file that has the words "jar-with-dependencies" in its name.
+<br><br>
+<br><br>
+
+
+<h3>Batch Job</h3>
+A Batch Job is an Apache Flink Job designed to process big loads of data asynchronously. You can find the example code for
+out Batch Job inside the  <a href="https://github.com/grnet/okeanos-LoD/tree/master/example/batch_word_count">batch_word_count</a> directory.
+<br><br>
+
+<h4>Input-Output</h4>
+The Batch Job reads its input data from HDFS, processes it and then saves the output back to HDFS but also sends it
+to an Apache Kafka topic. The input and output HDFS directories, the machine where Apache Kafka is deployed and the
+name of the topic are configured at the beginning of our example:
+
+<pre>
+  // HDFS configuration.
+  String inputHDFSDirectory = "hdfs:///user/flink/input";
+  String outputHDFSDirectory = "hdfs:///user/flink/output";
+
+  // Apache Kafka configuration.
+  String outputTopic = "batch-output";
+  String kafkaBroker = "master:9092";
+</pre>
+You should change these values to meet your Lambda Instance configuration if you are not using the default one.
+<br><br>
+
+<h4>Execution Flow</h4>
+The execution flow of our Job consists of three stages. During the first stage, the input data are read from HDFS:
+
+<pre>
+  // get input data
+  DataSet&lt;String&gt; text = env.readTextFile(inputHDFSDirectory);
+</pre>
+
+During the second stage, this data is processed:
+
+<pre>
+  DataSet&lt;Tuple4&lt;String, Integer, String, String&gt;&gt; counts =
+  // split up the lines
+  text.flatMap(new LineSplitter())
+  // group by the tuple field "0" and sum up tuple field "1"
+  .groupBy(0)
+  .sum(1);
+</pre>
+
+The processing is done using a Flat Map Function which we will describe later.
+
+During the final stage of the execution, the results are sent to Apache Kafka output topic ("batch-output"):
+
+<pre>
+  // Write result to Kafka
+  KafkaConnection kb = new KafkaConnection(outputTopic, kafkaBroker);
+  List&lt;Tuple4&lt;String, Integer, String, String&gt;&gt; elements = counts.collect();
+  for (Tuple4&lt;String, Integer, String, String&gt; e : elements) {
+  kb.write((e.toString()));
+}
+</pre>
+
+while they are also saved onto HDFS:
+
+<pre>
+  counts.writeAsText(outputHDFSDirectory, FileSystem.WriteMode.OVERWRITE);
+</pre>
+
+The batch procedure then repeats itself at a chosen predefined interval.
+<br><br>
+
+<h4>Flat Map Function</h4>
+The Flat Map Function is the core of the processing procedure. It defines the way the data will be processed. In our example, we provide a Flat Map Function that will split every input line in words (words are defined again by spaces) and counts the occurrence of each word. After that, each word is also split into letters the occurrence of which is also computed.
+<br><br>
+
+<h4>Execution Environment</h4>
+In order to use Apache Flink in your application, you need to create an execution environment. In our example this is done with the following directives
+
+<pre>
+  final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+  env.execute("Batch word count");
+</pre>
+
+Note that, when calling the "execute" method of the environment, a name is provided in the form of a String. This name will be requested when uploading your application on a LoD Service VM, so you need to make sure this name is unique for each of your applications.
+<br><br>
+
+<h4>Building the Job</h4>
+Once again, we use <a href="https://maven.apache.org/">Apache Maven</a> to build our example application. You can find the respective pom.xml
+file, required by Apache Maven in the  <a href="https://github.com/grnet/okeanos-LoD/tree/master/example/batch_word_count">batch_word_count</a> directory.
+<br><br>
+
+We suggest you statically compile your Jobs, so that every needed library is in place when the Jobs is executed on
+a Lambda Instance. To do that, use the following directive:
+
+<pre>
+  mvn clean compile assembly:assembly
+</pre>
+
+After this directive is finished, a new directory, named "target" will have been created for you inside your current working directory. Inside "target" directory, you can find the .jar files that can be uploaded on a LoD Service VM. To upload the statically compiled version of your application, choose the .jar file that has the words "jar-with-dependencies" in its name.
+
+<!-- MODALS START -->
+<!-- modal login -->
+<div class="modal fade" id="LoginPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Step 1</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/login.png" alt="Login" title="Login">
+      </div>
+      <div class="modal-footer">
+        Log into the LoD service VM dashboard using your ~okeanos token
+      </div>
+    </div>
+  </div>
+</div>
+<!-- modal login  end-->
+
+<!-- modal step2-->
+<div class="modal fade" id="createStep2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Step 2</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/create.png" alt="Home" title="Home" >
+      </div>
+      <div class="modal-footer">
+        On the sidebar, select "Applications"
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!--- modal step3 -->
+<div class="modal fade" id="applist" tabindex="-1" role="dialog" aria-labelledby="applist">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createStep3">Step 3</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/list.png" alt="List Applications" title="List Applications" >
+      </div>
+      <div class="modal-footer">
+        On the main window click the button "Upload an Application"
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!--- appform -->
+<div class="modal fade" id="appform" tabindex="-1" role="dialog" aria-labelledby="appform">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="appform">Step 4</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step4.png" alt="Application Form"  title="Application Form" >
+      </div>
+      <div class="modal-footer">
+        Fill in the form, select the jar file to upload and click "Submit" when ready
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!--- appform -->
+<div class="modal fade" id="appprogress" tabindex="-1" role="dialog" aria-labelledby="appprogress">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="appprogress">Step 5</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step5.png" alt="Application Progress Bar"  title="Application Progress Bar" >
+      </div>
+      <div class="modal-footer">
+        Notice the progress bar as the Application is being uploaded
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!--- appcomplete -->
+<div class="modal fade" id="appcomplete" tabindex="-1" role="dialog" aria-labelledby="appcomplete">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="appcomplete">Step 6</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step6.png" alt="Application has been successfully uploaded" title="Application has been successfully uploaded" >
+      </div>
+      <div class="modal-footer">
+        Upload has been completed
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!-- modal step2-->
+<div class="modal fade" id="listapps" tabindex="-1" role="dialog" aria-labelledby="listapps">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="listapps">Step 7</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/create.png" alt="List Applications" title="List Applications" >
+      </div>
+      <div class="modal-footer">
+        On the sidebar, select "Applications"
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!--- apprunning -->
+<div class="modal fade" id="appdeploy" tabindex="-1" role="dialog" aria-labelledby="appdeploy">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="appdeploy">Step 8</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/list.png" alt="Application deploy"  title="Application Deploy" >
+      </div>
+      <div class="modal-footer">
+        Click the "Deploy on a Lambda Instance" button of the Application you wish to deploy
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!--app deploy list-->
+<div class="modal fade" id="appdeploylist" tabindex="-1" role="dialog" aria-labelledby="appdeploylist">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="appdeploylist">Step 9</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/create/step9.png" alt="Application Deploy list"  title="Application Deploy list" >
+      </div>
+      <div class="modal-footer">
+        On the list of Lambda Instances available select the one you want to use for running this specific application
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+
+<!--app running-->
+<div class="modal fade" id="apprunning" tabindex="-1" role="dialog" aria-labelledby="apprunning">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createStep3">Step 10</h4>
+      </div>
+      <div class="modal-body">
+        <img class="img-responsive" src="assets/img/faqs/lambda-application/details.png" alt="Application Running"  title="Application Running" >
+      </div>
+      <div class="modal-footer">
+        Select to start your application once it has been deployed on the Lambda Instance
+      </div>
+    </div> <!--<div class="modal-content">-->
+  </div><!--<div class="modal-dialog"-->
+</div><!--<div class="modal fade" -->
+<!-- MODALS END -->
