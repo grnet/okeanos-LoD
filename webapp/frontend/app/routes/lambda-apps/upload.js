@@ -17,6 +17,22 @@ var UploadRoute  = Ember.Route.extend(AuthenticatedRouteMixin, {
         }
       },
   },
+
+  afterModel: function(model) {
+    // After the models are loaded, check each project's quotas. If a least one project
+    // has enough quotas to upload a Lambda Application, set enoughQuotas to true.
+    // Delete every project that has no quotas on Pithos+.
+    for (var i = 0;i < model.userOkeanosProjects.get('length');i++){
+      if (model.userOkeanosProjects.objectAt(i).get('pithos_space') > 0) {
+        if(!this.controllerFor('lambda-apps.upload').get('enoughQuotas')){
+          this.controllerFor('lambda-apps.upload').set('enoughQuotas', true);
+        }
+      }
+      else{
+        model.userOkeanosProjects.objectAt(i).deleteRecord();
+      }
+    }
+  }
 });
 
 export default UploadRoute;

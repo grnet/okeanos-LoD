@@ -6,6 +6,7 @@ var UploadController = Ember.Controller.extend({
   outOfSpace: false,
   userHasEnteredData: false,
   submitDisabled: false,
+  enoughQuotas: false,
 
   actions : {
     upload: function() {
