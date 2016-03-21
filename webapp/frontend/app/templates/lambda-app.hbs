@@ -132,6 +132,66 @@
                             </table>
                         </div>
                         <!--col-xs-12-->
+                        <!-- About The Application -->
+                        <div class="col-md-4 pull-right">
+                            <div class="box box-primary">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title"><i class="fa  fa-bullhorn"></i> About The Application</h3>
+                                    <span style='margin-left:10px;'>
+                                      {{#if (compare model.application.status_message "===" "UPLOADING")}}
+                                          <i class="fa fa-circle text-danger "></i>
+                                      {{/if}}
+                                      {{#if (compare model.application.status_message "===" "FAILED")}}
+                                          <i class="fa fa-circle text-warning "></i>
+                                      {{/if}}
+                                      {{#if (compare model.application.status_message "===" "UPLOADED")}}
+                                          <i class="fa fa-circle text-success "></i>
+                                      {{/if}}
+                                      {{model.application.status_message}}
+                                    </span>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <strong><i class="fa fa-pencil margin-r-5"></i> Status</strong>
+                                    <p>
+                                    <ul class="timeline">
+                                        <!-- timeline time label -->
+                                        <li class="time-label">
+                                          {{#if (compare model.application.status_message "===" "UPLOADING")}}
+                                              <span class="bg-orange">Status: {{model.application.status_message}}</span>
+                                              <div class="spinner-loader" style="position: relative;top:0;bottom: 0;left: 15%;right: 0;margin: auto;"></div>
+                                          {{/if}}
+                                          {{#if (compare model.application.status_message "===" "FAILED")}}
+                                              <span class="bg-red">Status: {{model.application.status_message}}</span>
+                                          {{/if}}
+                                          {{#if (compare model.application.status_message "===" "UPLOADED")}}
+                                              <span class="bg-green">Status: {{model.application.status_message}}</span>
+                                          {{/if}}
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-clock-o bg-gray"></i>
+                                            <div class="timeline-item">
+                                                <span class="time"><i class="fa fa-clock-o"></i> Now </span>
+                                                <h3 class="timeline-header"><strong>{{model.application.status_message}}</strong> </h3>
+                                                <div class="timeline-body">{{model.application.status_detail}}</div> <!-- class="timeline-body"-->
+                                            </div> <!-- class="timeline-item" -->
+                                        </li>
+                                    </ul>
+                                    </p>
+                                    <strong><i class="fa fa-file-text-o margin-r-5"></i> Notes</strong>
+                                    {{#if (compare model.application.status_message "===" "UPLOADING")}}
+                                        <p>Your lambda application is being uploaded. Please wait...</p>
+                                    {{/if}}
+                                    {{#if (compare model.application.status_message "===" "FAILED")}}
+                                        <p>Your lambda application upload has failed. You can delete it an try uploading it again.</p>
+                                    {{/if}}
+                                    {{#if (compare model.application.status_message "===" "UPLOADED")}}
+                                        <p>Your lambda application has been uploaded. You can deploy it on a lambda instance.</p>
+                                    {{/if}}
+                                </div> <!-- /.box-body -->
+                            </div><!-- /.box -->
+                        </div> <!--col-md-3 pull-right -->
+                        <!-- About The Application -->
                     </div>
                     <!--row-->
                 </div>
