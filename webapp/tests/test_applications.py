@@ -38,11 +38,13 @@ class TestApplicationUpload(APITestCase):
     application_type_streaming = "streaming"
     # project_name
     project_name = "lambda.grnet.gr"
+    # project_id
+    project_id = uuid.uuid4()
     # execution_environment_name
     execution_environment_name = "Stream"
 
     user_projects = [
-        {'name': "lambda.grnet.gr", 'id': uuid.uuid4()},
+        {'name': "lambda.grnet.gr", 'id': project_id},
         {'name': "project_1", 'id': uuid.uuid4()},
         {'name': "project_2", 'id': uuid.uuid4()},
         {'name': "project_3", 'id': uuid.uuid4()},
@@ -109,10 +111,14 @@ class TestApplicationUpload(APITestCase):
 
     # Test for uploading an application when all the required information are provided
     # but there is already an application with the same name uploaded.
-    def test_existent_name(self):
+    @mock.patch('backend.views.get_user_okeanos_projects')
+    def test_existent_name(self, mock_get_user_okeanos_projects):
+        # Configure return values for mocks
+        mock_get_user_okeanos_projects.return_value = self.user_projects
+
         # Create an application on the database.
         Application.objects.create(uuid=uuid.uuid4(), name="existing_application.jar",
-                                   type=Application.BATCH)
+                                   type=Application.BATCH, project_id=self.project_id)
 
         # file
         existing_application = SimpleUploadedFile("existing_application.jar", "Hello World")
