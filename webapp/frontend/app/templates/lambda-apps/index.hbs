@@ -96,7 +96,19 @@
                     {{lambda-application.name}}
                   {{/link-to}}
                 </td>
-                <td>{{lambda-application.status_detail}}</td>
+                <td>
+                  {{#if (compare lambda-application.status_message "===" "UPLOADING")}}
+                      <span style="font-size: .9em;" class="label bg-orange">{{lambda-application.status_detail}}
+                        <i class="fa fa-spinner fa-spin" style="position: relative;left: 1%;"></i>
+                    </span>
+                  {{/if}}
+                  {{#if (compare lambda-application.status_message "===" "FAILED")}}
+                      <span style="font-size: .9em;" class="label bg-red">{{lambda-application.status_detail}}</span>
+                  {{/if}}
+                  {{#if (compare lambda-application.status_message "===" "UPLOADED")}}
+                      <span style="font-size: .9em;" class="label bg-green">{{lambda-application.status_detail}}</span>
+                  {{/if}}
+                </td>
                 <td>{{lower-case lambda-application.app_type}}</td>
 
 
