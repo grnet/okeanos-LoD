@@ -51,18 +51,18 @@ export default Ember.Controller.extend({
       newLambdaInstance.set('instanceName', this.get('instanceName'));
       newLambdaInstance.set('masterName', this.get('masterName'));
 
-      newLambdaInstance.set('slaves', $("input[name='slaves']")[0].value);
+      newLambdaInstance.set('slaves', Ember.$("input[name='slaves']")[0].value);
 
-      newLambdaInstance.set('projectName', $("select[name='okeanos_project']")[0].value);
-      newLambdaInstance.set('VCPUsMaster', $("select[name='vcpus_master']")[0].value);
-      newLambdaInstance.set('VCPUsSlave', $("select[name='vcpus_slave']")[0].value);
-      newLambdaInstance.set('RamMaster', $("select[name='ram_master']")[0].value);
-      newLambdaInstance.set('RamSlave', $("select[name='ram_slave']")[0].value);
-      newLambdaInstance.set('DiskMaster', $("select[name='disk_master']")[0].value);
-      newLambdaInstance.set('DiskSlave', $("select[name='disk_slave']")[0].value);
+      newLambdaInstance.set('projectName', Ember.$("select[name='okeanos_project']")[0].value);
+      newLambdaInstance.set('VCPUsMaster', Ember.$("select[name='vcpus_master']")[0].value);
+      newLambdaInstance.set('VCPUsSlave', Ember.$("select[name='vcpus_slave']")[0].value);
+      newLambdaInstance.set('RamMaster', Ember.$("select[name='ram_master']")[0].value);
+      newLambdaInstance.set('RamSlave', Ember.$("select[name='ram_slave']")[0].value);
+      newLambdaInstance.set('DiskMaster', Ember.$("select[name='disk_master']")[0].value);
+      newLambdaInstance.set('DiskSlave', Ember.$("select[name='disk_slave']")[0].value);
 
       var requestedPublicKeys = [];
-      var options = $("select[name='public_key_name']")[0].options;
+      var options = Ember.$("select[name='public_key_name']")[0].options;
       for(var i = 0;i < options.length;i++){
         if(options[i].selected){
           requestedPublicKeys.push(options[i].value);
@@ -121,10 +121,7 @@ export default Ember.Controller.extend({
     selectFromDropDownList: function(variable, event){
       this.set(variable, event.target.value);
 
-      var self = this;
-      Ember.run.schedule('render', function task(){
-        self.calculateDropDownListValues();
-      });
+      this.calculateDropDownListValues();
     }
   },
 
@@ -138,7 +135,7 @@ export default Ember.Controller.extend({
     for(var i = 0, n = model.userOkeanosProjects.get('length');i < n;i++){
       var currentProject = model.userOkeanosProjects.objectAt(i);
 
-      if(currentProject.get('name').localeCompare(selectedProjectName) == 0){
+      if(currentProject.get('name').localeCompare(selectedProjectName) === 0){
         this.set('selectedProjectVMs', currentProject.get('vm'));
         this.set('selectedProjectCPUs', currentProject.get('cpu'));
         this.set('selectedProjectRAM', {'megaBytes': currentProject.get('ram') / 1048576});
@@ -178,38 +175,117 @@ export default Ember.Controller.extend({
     var maxDiskForMaster = availableDisk - leastDiskForSlaves;
 
     masterNodeCPUValues.forEach(function(item){
-      item.set('enabled', !(item.get('value') > maxCPUsForMaster));
+      item.set('enabled', item.get('value') <= maxCPUsForMaster);
     });
-    this.set('masterCPUsSelectDisabled', masterNodeCPUValues.isEvery('enabled', false));
+    if(masterNodeCPUValues.isEvery('enabled', false)){
+      this.set('masterCPUsSelectDisabled', true);
+      Ember.run.schedule('render', function task(){
+        Ember.$("select[name='vcpus_master']")[0].selectedIndex = -1;
+      });
+    }
+    else{
+      if(this.get('masterCPUsSelectDisabled')){
+        Ember.run.schedule('render', function task(){
+          Ember.$("select[name='vcpus_master']")[0].selectedIndex = 0;
+        });
+      }
+      this.set('masterCPUsSelectDisabled', false);
+    }
 
     masterNodeRAMValues.forEach(function(item){
-      item.set('enabled', !(item.get('value') > maxRAMForMaster));
+      item.set('enabled', item.get('value') <= maxRAMForMaster);
     });
-    this.set('masterRAMSelectDisabled', masterNodeRAMValues.isEvery('enabled', false));
+    if(masterNodeRAMValues.isEvery('enabled', false)){
+      this.set('masterRAMSelectDisabled', true);
+      Ember.run.schedule('render', function task(){
+        Ember.$("select[name='ram_master']")[0].selectedIndex = -1;
+      });
+    }
+    else{
+      if(this.get('masterRAMSelectDisabled')){
+        Ember.run.schedule('render', function task(){
+          Ember.$("select[name='ram_master']")[0].selectedIndex = 0;
+        });
+      }
+      this.set('masterRAMSelectDisabled', false);
+    }
 
     masterNodeDiskValues.forEach(function(item){
-      item.set('enabled', !(item.get('value') > maxDiskForMaster));
+      item.set('enabled', item.get('value') <= maxDiskForMaster);
     });
-    this.set('masterDiskSelectDisabled', masterNodeDiskValues.isEvery('enabled', false));
+    if(masterNodeDiskValues.isEvery('enabled', false)){
+      this.set('masterDiskSelectDisabled', true);
+      Ember.run.schedule('render', function task(){
+        Ember.$("select[name='disk_master']")[0].selectedIndex = -1;
+      });
+    }
+    else{
+      if(this.get('masterDiskSelectDisabled')){
+        Ember.run.schedule('render', function task(){
+          Ember.$("select[name='disk_master']")[0].selectedIndex = 0;
+        });
+      }
+      this.set('masterDiskSelectDisabled', false);
+    }
 
     var maxCPUsForSlave = (availableCPUs - this.get('selectedMasterNodeCPUs')) / selectedNumberOfSlaves;
     var maxRAMForSlave = (availableRAM - this.get('selectedMasterNodeRAM')) / selectedNumberOfSlaves;
     var maxDiskForSlave = (availableDisk - this.get('selectedMasterNodeDisk')) / selectedNumberOfSlaves;
 
     slaveNodeCPUValues.forEach(function(item){
-      item.set('enabled', !(item.get('value') > maxCPUsForSlave));
+      item.set('enabled', item.get('value') <= maxCPUsForSlave);
     });
-    this.set('slaveCPUsSelectDisabled', slaveNodeCPUValues.isEvery('enabled', false));
+    if(slaveNodeCPUValues.isEvery('enabled', false)){
+      this.set('slaveCPUsSelectDisabled', true);
+      Ember.run.schedule('render', function task(){
+        Ember.$("select[name='vcpus_slave']")[0].selectedIndex = -1;
+      });
+    }
+    else{
+      if(this.get('slaveCPUsSelectDisabled')){
+        Ember.run.schedule('render', function task(){
+          Ember.$("select[name='vcpus_slave']")[0].selectedIndex = 0;
+        });
+      }
+      this.set('slaveCPUsSelectDisabled', false);
+
+    }
 
     slaveNodeRAMValues.forEach(function(item){
-      item.set('enabled', !(item.get('value') > maxRAMForSlave));
+      item.set('enabled', item.get('value') <= maxRAMForSlave);
     });
-    this.set('slaveRAMSelectDisabled', slaveNodeRAMValues.isEvery('enabled', false));
+    if(slaveNodeRAMValues.isEvery('enabled', false)){
+      this.set('slaveRAMSelectDisabled', true);
+      Ember.run.schedule('render', function task(){
+        Ember.$("select[name='ram_slave']")[0].selectedIndex = -1;
+      });
+    }
+    else{
+      if(this.get('slaveRAMSelectDisabled')){
+        Ember.run.schedule('render', function task(){
+          Ember.$("select[name='ram_slave']")[0].selectedIndex = 0;
+        });
+      }
+      this.set('slaveRAMSelectDisabled', false);
+    }
 
     slaveNodeDiskValues.forEach(function(item){
-      item.set('enabled', !(item.get('value') > maxDiskForSlave));
+      item.set('enabled', item.get('value') <= maxDiskForSlave);
     });
-    this.set('slaveDiskSelectDisabled', slaveNodeDiskValues.isEvery('enabled', false));
+    if(slaveNodeDiskValues.isEvery('enabled', false)){
+      this.set('slaveDiskSelectDisabled', true);
+      Ember.run.schedule('render', function task(){
+        Ember.$("select[name='disk_slave']")[0].selectedIndex = -1;
+      });
+    }
+    else{
+      if(this.get('slaveDiskSelectDisabled')){
+        Ember.run.schedule('render', function task(){
+          Ember.$("select[name='disk_slave']")[0].selectedIndex = 0;
+        });
+      }
+      this.set('slaveDiskSelectDisabled', false);
+    }
 
     this.set('submitButtonDisabled', (
       this.get('masterCPUsSelectDisabled') || this.get('masterRAMSelectDisabled') ||

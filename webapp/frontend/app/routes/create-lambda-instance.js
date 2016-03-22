@@ -62,7 +62,8 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
       var masterNodeDiskValues = controller.get('masterNodeDiskValues');
       var slaveNodeDiskValues = controller.get('slaveNodeDiskValues');
 
-      for(var i = 0, n = model.VMParameterValues.get('length');i < n;i++){
+      var n = model.VMParameterValues.get('length');
+      for(i = 0;i < n;i++){
 
         var cpus = model.VMParameterValues.objectAt(i).get('vcpus');
         for(var j = 0, m = cpus.get('length');j < m;j++){
@@ -73,7 +74,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
         }
 
         var ram = model.VMParameterValues.objectAt(i).get('ram');
-        for(var j = 0, m = ram.get('length');j < m;j++){
+        for(j = 0, m = ram.get('length');j < m;j++){
           if(ram[j] >= minQuotasPerVM['ram']){
             masterNodeRAMValues.pushObject(Ember.Object.create({'value': ram[j], 'enabled': true}));
             slaveNodeRAMValues.pushObject(Ember.Object.create({'value': ram[j], 'enabled': true}));
@@ -81,7 +82,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
         }
 
         var disk = model.VMParameterValues.objectAt(i).get('disk');
-        for(var j = 0, m = disk.get('length');j < m;j++){
+        for(j = 0, m = disk.get('length');j < m;j++){
           if(disk[j] >= minQuotasPerVM['disk']){
             masterNodeDiskValues.pushObject(Ember.Object.create({'value': disk[j], 'enabled': true}));
             slaveNodeDiskValues.pushObject(Ember.Object.create({'value': disk[j], 'enabled': true}));
