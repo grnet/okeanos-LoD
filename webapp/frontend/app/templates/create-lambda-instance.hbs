@@ -81,7 +81,7 @@
             <div class="row">
               <div class="form-group col-sm-8">
                 <label for="okeanos_project" class="col-sm-6">~okeanos Project (*):</label>
-                  <select name="okeanos_project" class="form-control" onchange={{action "selectFromDropDownList" "selectedProject"}}>
+                  <select name="okeanos_project" class="form-control" onchange={{action "selectFromDropDownList" "selectedProjectName"}}>
                     {{#each model.userOkeanosProjects as |project|}}
                     <option value={{project.name}}>{{project.name}} (VMs: {{project.vm}}, CPUs: {{project.cpu}}, RAM: {{normalize-bytes project.ram}}, Disk: {{normalize-bytes project.disk}}, Floating IPs: {{project.floating_ip}}, Private Networks: {{project.private_network}})</option>
                     {{/each}}
@@ -90,7 +90,7 @@
               </div>	<!--class="col-sm-6"-->
               <div class="form-group col-sm-3">
                 <label for="slaves">Number of slaves:</label>
-                  <input type="number" min="1" value={{selectedNumberOfSlaves}} name="slaves" class="form-control" oninput={{action "selectFromDropDownList" "selectedNumberOfSlaves"}}>
+                  {{input type="number" value=selectedNumberOfSlaves min=1 max=(math-op selectedProjectVMs '-' 1) name="slaves" class="form-control" change=(action "selectFromDropDownList" "selectedNumberOfSlaves")}}
                   <span id="helpBlock" class="help-block">Select the number of slaves</span>
               </div>	<!--class="form-group col-sm-3"-->
             </div>
@@ -147,13 +147,15 @@
             <div class="row">
               <div class="form-group col-sm-4">
                 <label for="vcpus_master">Number of CPUs on Master Node:</label>
-                  <select name="vcpus_master" class="form-control" onchange={{action "selectFromDropDownList" "selectedMasterNodeCPUs"}}>
+                  <select name="vcpus_master" class="form-control" onchange={{action "selectFromDropDownList" "selectedMasterNodeCPUs"}} disabled={{masterCPUsSelectDisabled}}>
                     {{#each masterNodeCPUValues as |vcpusValue|}}
-                      {{#if (compare vcpusValue ">=" minQuotasPerVM.cpus)}}
-                        {{#if (compare vcpusValue "!==" selectedMasterNodeCPUs)}}
-                          <option value={{vcpusValue}}>{{vcpusValue}}</option>
+                      {{#if (compare vcpusValue.value "==" selectedMasterNodeCPUs)}}
+                        <option value={{vcpusValue.value}} selected>{{vcpusValue.value}}</option>
+                      {{else}}
+                        {{#if vcpusValue.enabled}}
+                          <option value={{vcpusValue.value}}>{{vcpusValue.value}}</option>
                         {{else}}
-                          <option value={{vcpusValue}} selected>{{vcpusValue}}</option>
+                          <option value={{vcpusValue.value}} disabled>{{vcpusValue.value}}</option>
                         {{/if}}
                       {{/if}}
                     {{/each}}
@@ -162,13 +164,15 @@
               </div>	<!--class="col-sm-4"-->
               <div class="form-group col-sm-4">
                 <label for="ram_master" >Amount or RAM memory on Master Node: </label>
-                <select name="ram_master"  class="form-control" onchange={{action "selectFromDropDownList" "selectedMasterNodeRAM"}}>
+                <select name="ram_master"  class="form-control" onchange={{action "selectFromDropDownList" "selectedMasterNodeRAM"}} disabled={{masterRAMSelectDisabled}}>
                   {{#each masterNodeRAMValues as |ramValue|}}
-                    {{#if (compare ramValue ">=" minQuotasPerVM.ram)}}
-                      {{#if (compare ramValue "!==" selectedMasterNodeRAM)}}
-                        <option value={{ramValue}}>{{ramValue}}</option>
+                    {{#if (compare ramValue.value "==" selectedMasterNodeRAM)}}
+                      <option value={{ramValue.value}} selected>{{ramValue.value}}</option>
+                    {{else}}
+                      {{#if ramValue.enabled}}
+                        <option value={{ramValue.value}}>{{ramValue.value}}</option>
                       {{else}}
-                        <option value={{ramValue}} selected>{{ramValue}}</option>
+                        <option value={{ramValue.value}} disabled>{{ramValue.value}}</option>
                       {{/if}}
                     {{/if}}
                   {{/each}}
@@ -177,13 +181,15 @@
               </div><!--class="form-group col-sm-6"-->
               <div class="form-group col-sm-4">
                 <label for="disk_master"> Size of hard disk on Master Node: </label>
-                <select name="disk_master" class="form-control" onchange={{action "selectFromDropDownList" "selectedMasterNodeDisk"}}>
+                <select name="disk_master" class="form-control" onchange={{action "selectFromDropDownList" "selectedMasterNodeDisk"}} disabled={{masterDiskSelectDisabled}}>
                   {{#each masterNodeDiskValues as |diskValue|}}
-                    {{#if (compare diskValue ">=" minQuotasPerVM.disk)}}
-                      {{#if (compare diskValue "!==" selectedMasterNodeDisk)}}
-                        <option value={{diskValue}}>{{diskValue}}</option>
+                    {{#if (compare diskValue.value "==" selectedMasterNodeDisk)}}
+                      <option value={{diskValue.value}} selected>{{diskValue.value}}</option>
+                    {{else}}
+                      {{#if diskValue.enabled}}
+                        <option value={{diskValue.value}}>{{diskValue.value}}</option>
                       {{else}}
-                        <option value={{diskValue}} selected>{{diskValue}}</option>
+                        <option value={{diskValue.value}} disabled>{{diskValue.value}}</option>
                       {{/if}}
                     {{/if}}
                   {{/each}}
@@ -206,13 +212,15 @@
              <div class="row">
               <div class="form-group col-sm-4">
                 <label for="vcpus_slave">Number of CPUs on each Slave Node:</label>
-                  <select name="vcpus_slave" class="form-control" onchange={{action "selectFromDropDownList" "selectedSlaveNodeCPUs"}}>
+                  <select name="vcpus_slave" class="form-control" onchange={{action "selectFromDropDownList" "selectedSlaveNodeCPUs"}} disabled={{slaveCPUsSelectDisabled}}>
                     {{#each slaveNodeCPUValues as |vcpusValue|}}
-                      {{#if (compare vcpusValue ">=" minQuotasPerVM.cpus)}}
-                        {{#if (compare vcpusValue "!==" selectedSlaveNodeCPUs)}}
-                          <option value={{vcpusValue}}>{{vcpusValue}}</option>
+                      {{#if (compare vcpusValue.value "==" selectedSlaveNodeCPUs)}}
+                        <option value={{vcpusValue.value}} selected>{{vcpusValue.value}}</option>
+                      {{else}}
+                        {{#if vcpusValue.enabled}}
+                          <option value={{vcpusValue.value}}>{{vcpusValue.value}}</option>
                         {{else}}
-                          <option value={{vcpusValue}} selected>{{vcpusValue}}</option>
+                          <option value={{vcpusValue.value}} disabled>{{vcpusValue.value}}</option>
                         {{/if}}
                       {{/if}}
                     {{/each}}
@@ -221,13 +229,15 @@
               </div>	<!--class="col-sm-4"-->
               <div class="form-group col-sm-4">
                 <label for="ram_slave" >Amount or RAM memory on each Slave Node:</label>
-                <select name="ram_slave"  class="form-control" onchange={{action "selectFromDropDownList" "selectedSlaveNodeRAM"}}>
+                <select name="ram_slave"  class="form-control" onchange={{action "selectFromDropDownList" "selectedSlaveNodeRAM"}} disabled={{slaveRAMSelectDisabled}}>
                   {{#each slaveNodeRAMValues as |ramValue|}}
-                    {{#if (compare ramValue ">=" minQuotasPerVM.ram)}}
-                      {{#if (compare ramValue "!==" selectedSlaveNodeRAM)}}
-                        <option value={{ramValue}}>{{ramValue}}</option>
+                    {{#if (compare ramValue.value "==" selectedSlaveNodeRAM)}}
+                      <option value={{ramValue.value}} selected>{{ramValue.value}}</option>
+                    {{else}}
+                      {{#if ramValue.enabled}}
+                        <option value={{ramValue.value}}>{{ramValue.value}}</option>
                       {{else}}
-                        <option value={{ramValue}} selected>{{ramValue}}</option>
+                        <option value={{ramValue.value}} disabled>{{ramValue.value}}</option>
                       {{/if}}
                     {{/if}}
                   {{/each}}
@@ -237,13 +247,15 @@
 
               <div class="form-group col-sm-4">
                 <label for="disk_slave"> Size of hard disk on each Slave Node:</label>
-                <select name="disk_slave" class="form-control" onchange={{action "selectFromDropDownList" "selectedSlaveNodeDisk"}}>
+                <select name="disk_slave" class="form-control" onchange={{action "selectFromDropDownList" "selectedSlaveNodeDisk"}} disabled={{slaveDiskSelectDisabled}}>
                   {{#each slaveNodeDiskValues as |diskValue|}}
-                    {{#if (compare diskValue ">=" minQuotasPerVM.disk)}}
-                      {{#if (compare diskValue "!==" selectedSlaveNodeDisk)}}
-                        <option value={{diskValue}}>{{diskValue}}</option>
+                    {{#if (compare diskValue.value "==" selectedSlaveNodeDisk)}}
+                      <option value={{diskValue.value}} selected>{{diskValue.value}}</option>
+                    {{else}}
+                      {{#if diskValue.enabled}}
+                        <option value={{diskValue.value}}>{{diskValue.value}}</option>
                       {{else}}
-                        <option value={{diskValue}} selected>{{diskValue}}</option>
+                        <option value={{diskValue.value}} disabled>{{diskValue.value}}</option>
                       {{/if}}
                     {{/if}}
                   {{/each}}
@@ -256,7 +268,7 @@
       </div><!--col-->
     </div><!--row-->
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary" disabled={{submitButtonDisabled}}>Submit</button>
 	<div class="row">
 		<div class="col-xs-12">
 			&nbsp;

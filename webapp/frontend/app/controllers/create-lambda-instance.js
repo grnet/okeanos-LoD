@@ -1,7 +1,12 @@
 import Ember from "ember";
 
 export default Ember.Controller.extend({
-  selectedProject: null,
+  selectedProjectName: null,
+  selectedProjectVMs: null,
+  selectedProjectCPUs: null,
+  selectedProjectRAM: [],
+  selectedProjectDisk: [],
+
   selectedNumberOfSlaves: null,
   selectedMasterNodeCPUs: null,
   selectedSlaveNodeCPUs: null,
@@ -21,31 +26,43 @@ export default Ember.Controller.extend({
   minQuotasPerProject: {
     'vms': 2,
     'cpus': 4,
-    'ram': {"bytes": 4294967296, "megaBytes": 4096},
-    'disk': {"bytes": 21474836480, "gigaBytes": 20},
+    'ram': {'bytes': 4294967296, 'megaBytes': 4096},
+    'disk': {'bytes': 21474836480, 'gigaBytes': 20},
     'floatingIPs': 1,
     'privateNetworks': 1
   },
 
   enoughQuotas: false,
 
+  submitButtonDisabled: false,
+
+  masterCPUsSelectDisabled: false,
+  masterRAMSelectDisabled: false,
+  masterDiskSelectDisabled: false,
+
+  slaveCPUsSelectDisabled: false,
+  slaveRAMSelectDisabled: false,
+  slaveDiskSelectDisabled: false,
+
+  myValue: 1,
+
   actions: {
     saveLambdaInstance: function(newLambdaInstance){
       newLambdaInstance.set('instanceName', this.get('instanceName'));
       newLambdaInstance.set('masterName', this.get('masterName'));
 
-      newLambdaInstance.set('slaves', this.$("input[name='slaves']")[0].value);
+      newLambdaInstance.set('slaves', $("input[name='slaves']")[0].value);
 
-      newLambdaInstance.set('projectName', this.$("select[name='okeanos_project']")[0].value);
-      newLambdaInstance.set('VCPUsMaster', this.$("select[name='vcpus_master']")[0].value);
-      newLambdaInstance.set('VCPUsSlave', this.$("select[name='vcpus_slave']")[0].value);
-      newLambdaInstance.set('RamMaster', this.$("select[name='ram_master']")[0].value);
-      newLambdaInstance.set('RamSlave', this.$("select[name='ram_slave']")[0].value);
-      newLambdaInstance.set('DiskMaster', this.$("select[name='disk_master']")[0].value);
-      newLambdaInstance.set('DiskSlave', this.$("select[name='disk_slave']")[0].value);
+      newLambdaInstance.set('projectName', $("select[name='okeanos_project']")[0].value);
+      newLambdaInstance.set('VCPUsMaster', $("select[name='vcpus_master']")[0].value);
+      newLambdaInstance.set('VCPUsSlave', $("select[name='vcpus_slave']")[0].value);
+      newLambdaInstance.set('RamMaster', $("select[name='ram_master']")[0].value);
+      newLambdaInstance.set('RamSlave', $("select[name='ram_slave']")[0].value);
+      newLambdaInstance.set('DiskMaster', $("select[name='disk_master']")[0].value);
+      newLambdaInstance.set('DiskSlave', $("select[name='disk_slave']")[0].value);
 
       var requestedPublicKeys = [];
-      var options = this.$("select[name='public_key_name']")[0].options;
+      var options = $("select[name='public_key_name']")[0].options;
       for(var i = 0;i < options.length;i++){
         if(options[i].selected){
           requestedPublicKeys.push(options[i].value);
@@ -102,14 +119,103 @@ export default Ember.Controller.extend({
     },
 
     selectFromDropDownList: function(variable, event){
-      var value = event.target.value;
-      this.set(variable, value);
+      this.set(variable, event.target.value);
 
-      this.calculateDropDownListValues();
+      var self = this;
+      Ember.run.schedule('render', function task(){
+        self.calculateDropDownListValues();
+      });
     }
   },
 
   calculateDropDownListValues: function(){
+    var model = this.get('model');
 
+    // Get the quotas of the selected project. Each project inside the model has the minimum
+    // quotas needed for the creation of a Lambda Instance since those that didn't, were removed
+    // from the router.
+    var selectedProjectName = this.get('selectedProjectName');
+    for(var i = 0, n = model.userOkeanosProjects.get('length');i < n;i++){
+      var currentProject = model.userOkeanosProjects.objectAt(i);
+
+      if(currentProject.get('name').localeCompare(selectedProjectName) == 0){
+        this.set('selectedProjectVMs', currentProject.get('vm'));
+        this.set('selectedProjectCPUs', currentProject.get('cpu'));
+        this.set('selectedProjectRAM', {'megaBytes': currentProject.get('ram') / 1048576});
+        this.set('selectedProjectDisk', {'gigaBytes': currentProject.get('disk') / 1073741824});
+
+        break;
+      }
+    }
+
+    // Set the selected number of slaves to a proper value.
+    if(this.get('selectedNumberOfSlaves') <= 0){
+      this.set('selectedNumberOfSlaves', 1);
+    }
+    else if(this.get('selectedNumberOfSlaves') >= this.get('selectedProjectVMs')){
+      this.set('selectedNumberOfSlaves', this.get('selectedProjectVMs') - 1);
+    }
+
+    var selectedNumberOfSlaves = this.get('selectedNumberOfSlaves');
+
+    var masterNodeCPUValues = this.get('masterNodeCPUValues'); 
+    var slaveNodeCPUValues  = this.get('slaveNodeCPUValues');
+    var masterNodeRAMValues = this.get('masterNodeRAMValues');
+    var slaveNodeRAMValues  = this.get('slaveNodeRAMValues');
+    var masterNodeDiskValues= this.get('masterNodeDiskValues');
+    var slaveNodeDiskValues = this.get('slaveNodeDiskValues');
+
+    var availableCPUs = this.get('selectedProjectCPUs');
+    var availableRAM = this.get('selectedProjectRAM')['megaBytes'];
+    var availableDisk = this.get('selectedProjectDisk')['gigaBytes'];
+
+    var leastCPUsForSlaves = selectedNumberOfSlaves * slaveNodeCPUValues.objectAt(0).get('value');
+    var leastRAMForSlaves = selectedNumberOfSlaves * slaveNodeRAMValues.objectAt(0).get('value');
+    var leastDiskForSlaves = selectedNumberOfSlaves * slaveNodeDiskValues.objectAt(0).get('value');
+
+    var maxCPUsForMaster = availableCPUs - leastCPUsForSlaves;
+    var maxRAMForMaster = availableRAM - leastRAMForSlaves;
+    var maxDiskForMaster = availableDisk - leastDiskForSlaves;
+
+    masterNodeCPUValues.forEach(function(item){
+      item.set('enabled', !(item.get('value') > maxCPUsForMaster));
+    });
+    this.set('masterCPUsSelectDisabled', masterNodeCPUValues.isEvery('enabled', false));
+
+    masterNodeRAMValues.forEach(function(item){
+      item.set('enabled', !(item.get('value') > maxRAMForMaster));
+    });
+    this.set('masterRAMSelectDisabled', masterNodeRAMValues.isEvery('enabled', false));
+
+    masterNodeDiskValues.forEach(function(item){
+      item.set('enabled', !(item.get('value') > maxDiskForMaster));
+    });
+    this.set('masterDiskSelectDisabled', masterNodeDiskValues.isEvery('enabled', false));
+
+    var maxCPUsForSlave = (availableCPUs - this.get('selectedMasterNodeCPUs')) / selectedNumberOfSlaves;
+    var maxRAMForSlave = (availableRAM - this.get('selectedMasterNodeRAM')) / selectedNumberOfSlaves;
+    var maxDiskForSlave = (availableDisk - this.get('selectedMasterNodeDisk')) / selectedNumberOfSlaves;
+
+    slaveNodeCPUValues.forEach(function(item){
+      item.set('enabled', !(item.get('value') > maxCPUsForSlave));
+    });
+    this.set('slaveCPUsSelectDisabled', slaveNodeCPUValues.isEvery('enabled', false));
+
+    slaveNodeRAMValues.forEach(function(item){
+      item.set('enabled', !(item.get('value') > maxRAMForSlave));
+    });
+    this.set('slaveRAMSelectDisabled', slaveNodeRAMValues.isEvery('enabled', false));
+
+    slaveNodeDiskValues.forEach(function(item){
+      item.set('enabled', !(item.get('value') > maxDiskForSlave));
+    });
+    this.set('slaveDiskSelectDisabled', slaveNodeDiskValues.isEvery('enabled', false));
+
+    this.set('submitButtonDisabled', (
+      this.get('masterCPUsSelectDisabled') || this.get('masterRAMSelectDisabled') ||
+      this.get('masterDiskSelectDisabled') || this.get('slaveCPUsSelectDisabled') ||
+      this.get('slaveRAMSelectDisabled') || this.get('slaveDiskSelectDisabled')
+      )
+    );
   }
 });
