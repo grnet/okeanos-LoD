@@ -20,7 +20,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
       application: this.store.findRecord('lambda-app', params.app_uuid,  { reload: true }),
       instances: this.store.peekAll('lambda-instance')
     };
-    if (this.store.peekAll('lambda-instance').get('length') === 0) {
+    if (this.store.peekAll('app-action').get('length') === 0) {
       hash.app = this.store.createRecord('app-action', {});
     }
     return Ember.RSVP.hash(hash);
