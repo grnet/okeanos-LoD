@@ -143,7 +143,7 @@
     </div>
     <!--row-->
 
-  {{#if model.instances}}
+  {{#if (logical-op 'or' model.instances deployWait)}}
 
   {{#if failure}}
       {{#each model.app.errors as |error|}}
@@ -181,14 +181,25 @@
                           <div class="col-ms-8 col-xs-8">
                                <table class="table table-bordered table-hover table-responsive">
                                     <thead>
+                                    {{#if model.instances}}
                                       <tr>
                                           <th>Instance Name</th>
                                           <th>Instance Status</th>
                                           <th>App started</th>
                                           <th>Actions</th>
                                       </tr>
+                                    {{/if}}
+                                    {{#if deployWait}}
+                                      <tr>
+                                          <th><span style="font-size: .9em;" class="label bg-orange">
+                                              The application is currently being deployed on an instance
+                                              <i class="fa fa-spinner fa-spin"></i>
+                                          </span></th>
+                                      </tr>
+                                    {{/if}}
                                     </thead>
                                     <tbody>
+
                                       {{#each sortedInstances as |li|}}
                                           <tr>
                                               <td>

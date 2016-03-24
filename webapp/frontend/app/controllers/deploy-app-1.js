@@ -10,6 +10,7 @@ export default Ember.Controller.extend({
         var _this = this;
         Ember.run.later((function () {
           _this.set("request", false);
+          _this.controllerFor('lambda-app').set('deployWait', true);
           _this.transitionToRoute('lambda-app', application_id);
         }), ENV.redirect_delay);
       }
