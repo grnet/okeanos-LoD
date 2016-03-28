@@ -44,8 +44,6 @@ export default Ember.Controller.extend({
   slaveRAMSelectDisabled: false,
   slaveDiskSelectDisabled: false,
 
-  myValue: 1,
-
   actions: {
     saveLambdaInstance: function(newLambdaInstance){
       newLambdaInstance.set('instanceName', this.get('instanceName'));
@@ -155,12 +153,12 @@ export default Ember.Controller.extend({
 
     var selectedNumberOfSlaves = this.get('selectedNumberOfSlaves');
 
-    var masterNodeCPUValues = this.get('masterNodeCPUValues'); 
-    var slaveNodeCPUValues  = this.get('slaveNodeCPUValues');
-    var masterNodeRAMValues = this.get('masterNodeRAMValues');
-    var slaveNodeRAMValues  = this.get('slaveNodeRAMValues');
-    var masterNodeDiskValues= this.get('masterNodeDiskValues');
-    var slaveNodeDiskValues = this.get('slaveNodeDiskValues');
+    var masterNodeCPUValues  = this.get('masterNodeCPUValues');
+    var slaveNodeCPUValues   = this.get('slaveNodeCPUValues');
+    var masterNodeRAMValues  = this.get('masterNodeRAMValues');
+    var slaveNodeRAMValues   = this.get('slaveNodeRAMValues');
+    var masterNodeDiskValues = this.get('masterNodeDiskValues');
+    var slaveNodeDiskValues  = this.get('slaveNodeDiskValues');
 
     var availableCPUs = this.get('selectedProjectCPUs');
     var availableRAM = this.get('selectedProjectRAM')['megaBytes'];
@@ -174,8 +172,15 @@ export default Ember.Controller.extend({
     var maxRAMForMaster = availableRAM - leastRAMForSlaves;
     var maxDiskForMaster = availableDisk - leastDiskForSlaves;
 
+    var controller = this;
+
     masterNodeCPUValues.forEach(function(item){
       item.set('enabled', item.get('value') <= maxCPUsForMaster);
+
+      // Check if the selectedMasterNodeCPUs value has become disabled.
+      if(item.get('value') === controller.get('selectedMasterNodeCPUs') && !item.get('enabled')){
+        controller.set('selectedMasterNodeCPUs', masterNodeCPUValues[0]['value']);
+      }
     });
     if(masterNodeCPUValues.isEvery('enabled', false)){
       this.set('masterCPUsSelectDisabled', true);
@@ -194,6 +199,11 @@ export default Ember.Controller.extend({
 
     masterNodeRAMValues.forEach(function(item){
       item.set('enabled', item.get('value') <= maxRAMForMaster);
+
+      // Check if the selectedMasterNodeRAM value has become disabled.
+      if(item.get('value') === controller.get('selectedMasterNodeRAM') && !item.get('enabled')){
+        controller.set('selectedMasterNodeRAM', masterNodeRAMValues[0]['value']);
+      }
     });
     if(masterNodeRAMValues.isEvery('enabled', false)){
       this.set('masterRAMSelectDisabled', true);
@@ -212,6 +222,11 @@ export default Ember.Controller.extend({
 
     masterNodeDiskValues.forEach(function(item){
       item.set('enabled', item.get('value') <= maxDiskForMaster);
+
+      // Check if the selectedMasterNodeDisk value has become disabled.
+      if(item.get('value') === controller.get('selectedMasterNodeDisk') && !item.get('enabled')){
+        controller.set('selectedMasterNodeDisk', masterNodeDiskValues[0]['value']);
+      }
     });
     if(masterNodeDiskValues.isEvery('enabled', false)){
       this.set('masterDiskSelectDisabled', true);
@@ -234,6 +249,11 @@ export default Ember.Controller.extend({
 
     slaveNodeCPUValues.forEach(function(item){
       item.set('enabled', item.get('value') <= maxCPUsForSlave);
+
+      // Check if the selectedSlaveNodeCPUs value has becomed disabled.
+      if(item.get('value') === controller.get('selectedSlaveNodeCPUs') && !item.get('enabled')){
+        controller.set('selectedSlaveNodeCPUs', slaveNodeCPUValues[0]['value']);
+      }
     });
     if(slaveNodeCPUValues.isEvery('enabled', false)){
       this.set('slaveCPUsSelectDisabled', true);
@@ -253,6 +273,11 @@ export default Ember.Controller.extend({
 
     slaveNodeRAMValues.forEach(function(item){
       item.set('enabled', item.get('value') <= maxRAMForSlave);
+
+      // Check if the selectedSlaveNodeRAM value has becomed disabled.
+      if(item.get('value') === controller.get('selectedSlaveNodeRAM') && !item.get('enabled')){
+        controller.set('selectedSlaveNodeRAM', slaveNodeRAMValues[0]['value']);
+      }
     });
     if(slaveNodeRAMValues.isEvery('enabled', false)){
       this.set('slaveRAMSelectDisabled', true);
@@ -271,6 +296,11 @@ export default Ember.Controller.extend({
 
     slaveNodeDiskValues.forEach(function(item){
       item.set('enabled', item.get('value') <= maxDiskForSlave);
+
+      // Check if the selectedSlaveNodeDisk value has become disabled.
+      if(item.get('value') === controller.get('selectedSlaveNodeDisk') && !item.get('enabled')){
+        controller.set('selectedSlaveNodeDisk', slaveNodeDiskValues[0]['value']);
+      }
     });
     if(slaveNodeDiskValues.isEvery('enabled', false)){
       this.set('slaveDiskSelectDisabled', true);
@@ -294,4 +324,5 @@ export default Ember.Controller.extend({
       )
     );
   }
+
 });
