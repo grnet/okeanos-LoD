@@ -19,7 +19,7 @@ module.exports = function(defaults) {
   // please specify an object with the list of modules as keys
   // along with the exports of each module as its value.
 
-  app.import(app.bowerDirectory + '/AdminLTE/plugins/jQuery/jQuery-2.1.4.min.js');
+  app.import(app.bowerDirectory + '/AdminLTE/plugins/jQuery/jQuery-2.2.0.min.js');
   app.import(app.bowerDirectory + '/AdminLTE/plugins/jQueryUI/jquery-ui.min.js');
   app.import(app.bowerDirectory + '/handlebars/handlebars.js');
   //app.import(app.bowerDirectory + '/bootstrap/dist/js/bootstrap.js');
