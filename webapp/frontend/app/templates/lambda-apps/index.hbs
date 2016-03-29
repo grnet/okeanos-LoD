@@ -105,7 +105,7 @@
                   <button class="btn btn-info btn-xs"><i class="fa fa-file-code-o"></i> Details</button>
                   {{/link-to}}
                 </td>
-                  <td>
+                <td>
                   {{#if (compare lambda-application.status_code '==' '0')}}
                     {{#link-to 'deploy-app-1' lambda-application.id}}
                         <button class="btn btn-primary btn-xs"
@@ -123,10 +123,20 @@
                         </button>
                     {{/tool-tip}}
                   {{/if}}
-                  </td>
-                  <td>
-                      <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs" {{action "delete_app" lambda-application.id}}><i class="fa fa-times"></i> Delete</button>
-                  </td>
+                </td>
+                <td>
+                  {{#if lambda-application.deleting}}
+                    {{#tool-tip}}
+                      <button class="btn btn-danger btn-xs disabled has-tooltip"
+                              data-tooltip-content="<center>The application is being deleted!</center>">
+                          <i class="fa fa-times"></i> Deleting <i class="fa fa-spinner fa-spin"></i></button>
+                    {{/tool-tip}}
+                  {{else}}
+                    <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs"
+                            {{action "delete_app" lambda-application.id}}>
+                        <i class="fa fa-times"></i> Delete</button>
+                  {{/if}}
+                </td>
               </tr>
               {{/each}}
 

@@ -49,8 +49,18 @@
                           <br> The visible buttons represent the available
                           actions you may take depending on the <i>status</i> of the Application.
                           </div>
+                          {{#if model.application.deleting}}
+                            {{#tool-tip}}
+                              <button class="btn btn-danger btn-primary pull-right disabled has-tooltip"
+                                      data-tooltip-content="<center>The application is being deleted!</center>">
+                                  <i class="fa fa-times"></i> Deleting <i class="fa fa-spinner fa-spin"></i></button>
+                            {{/tool-tip}}
+                          {{else}}
+                            <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right"
+                              {{action "delete_app" model.application.id}}><i class="fa fa-times"></i> Delete</button>
+                          {{/if}}
 
-                          <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right" {{action "delete_app" model.application.id}}><i class="fa fa-times"></i> Delete</button>
+
                           {{#if (compare model.application.status_code '==' '0')}}
                             {{#link-to 'deploy-app-1' model.application.id}}
                                 <button class="btn btn-primary pull-right"

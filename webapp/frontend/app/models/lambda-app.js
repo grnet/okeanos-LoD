@@ -13,7 +13,8 @@ var LambdaApp = DS.Model.extend({
   lambda_instances: DS.hasMany('lambda-instance'),
   started: DS.attr('boolean'),
   deployed: DS.attr('boolean'),
-  execution_environment_name: DS.attr()
+  execution_environment_name: DS.attr(),
+  deleting: DS.attr('boolean')
 });
 
 export default LambdaApp;

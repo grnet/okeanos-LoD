@@ -62,6 +62,7 @@ export default Ember.ArrayController.extend({
             success: function () {
               _this.set('success_delete', true);
               _this.set('delete_success_message', 'Your request to delete the application was successfully sent to the server.');
+              _this.get('model').findBy('id', app_id).set('deleting', true);
               Ember.run.later((function () {
                 _this.set('success_delete', false);
               }), ENV.message_dismiss);
