@@ -2,7 +2,7 @@ import Ember from "ember";
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
-  model() {
+  model: function() {
     return Ember.RSVP.hash({
       newLambdaInstance: this.store.createRecord('create-lambda-instance', {}),
       userPublicKeys: this.store.findAll('user-public-key'),
@@ -18,9 +18,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
     var controller = this.controllerFor('create-lambda-instance');
     var minQuotasPerProject = controller.get('minQuotasPerProject');
 
-    // Keep the index of the first project that satisfies the restrictions since deleted
-    // records are not immediately removed from the model.
-    var selectedProjectIndex = -1;
     for (var i = 0;i < model.userOkeanosProjects.get('length');i++){
     	if (model.userOkeanosProjects.objectAt(i).get('vm') >= minQuotasPerProject['vms'] &&
     	    model.userOkeanosProjects.objectAt(i).get('cpu') >= minQuotasPerProject['cpus'] &&
@@ -31,19 +28,20 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
         if(!controller.get('enoughQuotas')){
     		  controller.set('enoughQuotas', true);
-          selectedProjectIndex = i;
         }
     	}
       else{
         model.userOkeanosProjects.objectAt(i).deleteRecord();
       }
     }
+  },
+  setupController: function(controller, model){
+    this._super(controller, model);
 
-    // If at least one project has enough quotas, set the default values for the drop down lists.
-    // If there is no project with enough quotas, then 'enoughQuotas' will be set to false and
-    // the form will never be presented to the user.
-    if(selectedProjectIndex > - 1){
-      var selectedProject = model.userOkeanosProjects.objectAt(selectedProjectIndex);
+    if(model.userOkeanosProjects.get('length') > 0){
+      var minQuotasPerProject = controller.get('minQuotasPerProject');
+
+      var selectedProject = model.userOkeanosProjects.objectAt(0);
       controller.set('selectedProjectName', selectedProject.get('name'));
       controller.set('selectedProjectVMs', selectedProject.get('vm'));
       controller.set('selectedProjectCPUs', selectedProject.get('cpu'));
@@ -63,29 +61,29 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
       var slaveNodeDiskValues = controller.get('slaveNodeDiskValues');
 
       var n = model.VMParameterValues.get('length');
-      for(i = 0;i < n;i++){
+      for(var i = 0;i < n;i++){
 
         var cpus = model.VMParameterValues.objectAt(i).get('vcpus');
         for(var j = 0, m = cpus.get('length');j < m;j++){
           if(cpus[j] >= minQuotasPerVM['cpus']){
-            masterNodeCPUValues.pushObject(Ember.Object.create({'value': cpus[j], 'enabled': true}));
-            slaveNodeCPUValues.pushObject(Ember.Object.create({'value': cpus[j], 'enabled': true}));
+            masterNodeCPUValues.pushObject(Ember.Object.create({'value': parseInt(cpus[j]), 'enabled': true}));
+            slaveNodeCPUValues.pushObject(Ember.Object.create({'value': parseInt(cpus[j]), 'enabled': true}));
           }
         }
 
         var ram = model.VMParameterValues.objectAt(i).get('ram');
         for(j = 0, m = ram.get('length');j < m;j++){
           if(ram[j] >= minQuotasPerVM['ram']){
-            masterNodeRAMValues.pushObject(Ember.Object.create({'value': ram[j], 'enabled': true}));
-            slaveNodeRAMValues.pushObject(Ember.Object.create({'value': ram[j], 'enabled': true}));
+            masterNodeRAMValues.pushObject(Ember.Object.create({'value': parseInt(ram[j]), 'enabled': true}));
+            slaveNodeRAMValues.pushObject(Ember.Object.create({'value': parseInt(ram[j]), 'enabled': true}));
           }
         }
 
         var disk = model.VMParameterValues.objectAt(i).get('disk');
         for(j = 0, m = disk.get('length');j < m;j++){
           if(disk[j] >= minQuotasPerVM['disk']){
-            masterNodeDiskValues.pushObject(Ember.Object.create({'value': disk[j], 'enabled': true}));
-            slaveNodeDiskValues.pushObject(Ember.Object.create({'value': disk[j], 'enabled': true}));
+            masterNodeDiskValues.pushObject(Ember.Object.create({'value': parseInt(disk[j]), 'enabled': true}));
+            slaveNodeDiskValues.pushObject(Ember.Object.create({'value': parseInt(disk[j]), 'enabled': true}));
           }
         }
       }

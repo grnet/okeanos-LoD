@@ -117,7 +117,12 @@ export default Ember.Controller.extend({
     },
 
     selectFromDropDownList: function(variable, event){
-      this.set(variable, event.target.value);
+      if(variable === "selectedProjectName"){
+        this.set(variable, event.target.value);
+      }
+      else{
+        this.set(variable, parseInt(event.target.value));
+      }
 
       this.calculateDropDownListValues();
     }
