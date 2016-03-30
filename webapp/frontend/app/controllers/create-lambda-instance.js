@@ -44,6 +44,9 @@ export default Ember.Controller.extend({
   slaveRAMSelectDisabled: false,
   slaveDiskSelectDisabled: false,
 
+  kafkaInputTopics: ["input"],
+  kafkaOutputTopics: ["batch-output", "stream-output"],
+
   actions: {
     saveLambdaInstance: function(newLambdaInstance){
       newLambdaInstance.set('instanceName', this.get('instanceName'));
@@ -68,52 +71,19 @@ export default Ember.Controller.extend({
       }
       newLambdaInstance.set('publicKeyName', requestedPublicKeys);
 
-      var kafkaOutputTopics, kafkaInputTopics;
+      newLambdaInstance.set('kafkaInputTopics', this.get('kafkaInputTopics'));
+      newLambdaInstance.set('kafkaOutputTopics', this.get('kafkaOutputTopics'));
 
-      var kafkaInputTopicsString = this.get('kafkaInputTopics');
-      if (kafkaInputTopicsString) {
-        kafkaInputTopics = kafkaInputTopicsString.replace(/\s+/g, '').split(',');
-      }
-
-      var kafkaOutputTopicsString = this.get('kafkaOutputTopics');
-      if (kafkaOutputTopicsString) {
-        kafkaOutputTopics = kafkaOutputTopicsString.replace(/\s+/g, '').split(',');
-      }
-
-      var duplicateTopic = false;
-      if (kafkaInputTopics && kafkaOutputTopics) {
-        kafkaInputTopics.forEach(function (inputTopic) {
-          if (kafkaOutputTopics.indexOf(inputTopic) !== -1) {
-            duplicateTopic = true;
-          }
-        });
-      }
-
-      if (duplicateTopic) {
-        this.set('duplicate_message', 'Apache Kafka input and output topics must be different!');
-        this.set('duplicate', true);
-        document.getElementById('inputTopics').focus();
-      }
-      else {
-        newLambdaInstance.set('kafkaInputTopics', kafkaInputTopics);
-        newLambdaInstance.set('kafkaOutputTopics', kafkaOutputTopics);
-
-        var self = this;
-        newLambdaInstance.save().then(function(){
-          self.transitionToRoute('lambda-instance', newLambdaInstance.get('id')).catch(function() {
-            self.transitionToRoute('lambda-instances.index').then(function(newRoute) {
-              newRoute.controller.set('message', 'Your lambda instance creation will begin shortly.');
-              newRoute.controller.set('request', true);
-              newRoute.controller.send('start_stop');
-            });
+      var self = this;
+      newLambdaInstance.save().then(function(){
+        self.transitionToRoute('lambda-instance', newLambdaInstance.get('id')).catch(function() {
+          self.transitionToRoute('lambda-instances.index').then(function(newRoute) {
+            newRoute.controller.set('message', 'Your lambda instance creation will begin shortly.');
+            newRoute.controller.set('request', true);
+            newRoute.controller.send('start_stop');
           });
         });
-      }
-    },
-
-    close_alert: function()
-    {
-      this.set('duplicate', false);
+      });
     },
 
     selectFromDropDownList: function(variable, event){
@@ -328,6 +298,18 @@ export default Ember.Controller.extend({
       this.get('slaveRAMSelectDisabled') || this.get('slaveDiskSelectDisabled')
       )
     );
+  },
+
+  kafkaInputTopicsObserver: Ember.observer('kafkaInputTopics', function() {
+    this.parseKafkaTopics("Input");
+  }),
+
+  kafkaOutputTopicsObserver: Ember.observer('kafkaOutputTopics', function() {
+    this.parseKafkaTopics("Output");
+  }),
+
+  parseKafkaTopics: function(message){
+    console.log(message);
   }
 
 });
