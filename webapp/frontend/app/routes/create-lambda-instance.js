@@ -18,6 +18,8 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
     var controller = this.controllerFor('create-lambda-instance');
     var minQuotasPerProject = controller.get('minQuotasPerProject');
 
+    controller.set('enoughQuotas', false);
+
     for (var i = 0;i < model.userOkeanosProjects.get('length');i++){
     	if (model.userOkeanosProjects.objectAt(i).get('vm') >= minQuotasPerProject['vms'] &&
     	    model.userOkeanosProjects.objectAt(i).get('cpu') >= minQuotasPerProject['cpus'] &&
