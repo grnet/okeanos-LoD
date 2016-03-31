@@ -1,6 +1,289 @@
-{{create-lambda-instance-form newLambdaInstance=model.newLambdaInstance
-                              userPublicKeys=model.userPublicKeys
-                              userOkeanosProjects=model.userOkeanosProjects
-                              VMParameterValues=model.VMParameterValues
-                              saveAction=(action "saveLambdaInstance")
-                              enoughQuotas=enoughQuotas}}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <h1>
+    Dashboard
+    <small>Create a Lambda Instance</small>
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box box-info">
+        <div class="box-header with-border">
+          <h3 class="box-title">Create a new Lambda Instance</h3>
+          <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+          </div>
+        </div><!-- /.box-header -->
+        <div class="box-body no-padding">
+          <div class="row">
+            <div class="col-md-9 col-sm-8">
+              <div class="pad">
+                Here you can create your own Lambda Instance
+              </div>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div><!--box-->
+      </div> <!-- box-primary -->
+    </div> <!--col -->
+  </div> <!--row-->
+
+  {{#unless enoughQuotas}}
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="alert alert-warning alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <h4><i class="icon fa fa-warning"></i> Alert! - No resources available to create a new lambda instance!</h4>
+        Based on the ~okeanos projects we found on your ~okeanos profile, you don't have the resources needed to create a lambda instance.
+        A lambda instance requires at least <ul><li> 1 public ip</li> <li>2 VMs</li><li>4 CPU's per VM </li> <li>4096MB of RAM per VM </li><li> 20GB of hard disk per VM</li></ul>Please join a project or create your own project and ask for resources so as to create a lambda Instance. In order to join or create an ~okeanos project follow this <a href="https://accounts.okeanos.grnet.gr/ui/projects" target="_blank">link</a>!.
+      </div> <!-- class="alert alert-warning alert-dismissable" -->
+    </div> <!-- col-xs-12 -->
+  </div><!-- row -->
+  {{/unless}}
+
+  {{#if enoughQuotas}}
+  <form {{action "saveLambdaInstance" model.newLambdaInstance on="submit"}} method="post">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+            <h3 class="box-title">Main</h3>: Lambda Instance details
+          </div><!-- /.box-header -->
+          <div class="box-body">
+
+            <div class="row">
+              <div class="col-sm-12">
+                <p><i class="fa fa-info"></i>  All inputs marked with (*) are required. </p>
+            </div>
+          </div>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="name1"> Name of Lamdba Instance (*): </label>
+                {{input type="text" value=instanceName placeholder="Lambda Instance name" size="50" class="form-control" required="true"}}
+                {{#each model.newLambdaInstance.errors.instanceName as |error|}}
+                  <div class="alert alert-danger alert-dismissable">
+                    {{error.message}}
+                  </div>
+                {{/each}}
+              </div>
+              <div class="form-group col-sm-6">
+                <label for="name1"> Name of Master Node (*): </label>
+                {{input type="text" value=masterName placeholder="Master node name" size="50" class="form-control" required="true"}}
+                {{#each model.newLambdaInstance.errors.masterName as |error|}}
+                  <div class="alert alert-danger alert-dismissable">
+                    {{error.message}}
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-8">
+                <label for="okeanos_project" class="col-sm-6">~okeanos Project (*):</label>
+                  <select name="okeanos_project" class="form-control" onchange={{action "selectFromDropDownList" "selectedProjectName"}}>
+                    {{#each model.userOkeanosProjects as |project|}}
+                    <option value={{project.name}}>{{project.name}} (VMs: {{project.vm}}, CPUs: {{project.cpu}}, RAM: {{normalize-bytes project.ram}}, Disk: {{normalize-bytes project.disk}}, Floating IPs: {{project.floating_ip}}, Private Networks: {{project.private_network}})</option>
+                    {{/each}}
+                  </select>
+                <span id="helpBlock" class="help-block">Select a project</span>
+              </div>	<!--class="col-sm-6"-->
+              <div class="form-group col-sm-3">
+                <label for="slaves">Number of slaves:</label>
+                  {{input type="number" value=selectedNumberOfSlaves min=1 max=(math-op selectedProjectVMs '-' 1) name="slaves" class="form-control" change=(action "selectFromDropDownList" "selectedNumberOfSlaves")}}
+                  <span id="helpBlock" class="help-block">Select the number of slaves</span>
+              </div>	<!--class="form-group col-sm-3"-->
+            </div>
+
+            <style>.tokenfield.form-control { height: auto; }</style>
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="kafka_topics">Apache Kafka input topics:</label>
+                  {{input-tokenfield value=kafkaInputTopics createTokensOnBlur=true
+                  placeholder="e.g. topic1, topic2, topic3" id="inputTopics"}}
+                  <span id="helpBlock" class="help-block">Names of Apache Kafka input topics<br>
+                  Default input topic, if no names are given: "input"</span>
+              </div>
+              <div class="form-group col-sm-6 pull-right">
+                <label for="kafka_topics">Apache Kafka output topics:</label>
+                  {{input-tokenfield value=kafkaOutputTopics createTokensOnBlur=true
+                  placeholder="e.g. topic1, topic2, topic3"}}
+                  <span id="helpBlock" class="help-block">Names of Apache Kafka output topics<br>
+                  Default output topics, if no names are given: "batch-output", "stream-output"</span>
+              </div>
+            </div><!--row-->
+            {{#if duplicate}}
+                <div  class="alert alert-dismissable alert-danger" id="alert">
+                    <button type="button" class="close" {{action "close_alert"}}>×</button>
+                  {{duplicate_message}}
+                </div>
+            {{/if}}
+            <div class="row">
+              <div class="form-group col-sm-3">
+                <label for="public_key_name">Public SSH keys (*):</label>
+                  <select required="required" multiple name="public_key_name" class="form-control">
+                    {{#each model.userPublicKeys as |publicKey|}}
+                    <option value={{publicKey.name}}>{{publicKey.name}}</option>
+                    {{/each}}
+                  </select>
+              </div>
+              <div class="form-group col-sm-2">
+              <br/>
+                  <span id="helpBlock" class="help-block">Select the public SSH keys to upload to the lamdba instance vms. By selecting ssh keys, you will get access to these vms.</span>
+              </div><!--class="form-group col-sm-6"-->
+            </div><!--row-->
+          </div><!--box-body-->
+        </div><!--box-->
+      </div><!--col-->
+    </div><!--row-->
+
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+            <h3 class="box-title">Master</h3>: Master Node details
+          </div><!-- /.box-header -->
+          <div class="box-body">
+            <div class="row">
+              <div class="form-group col-sm-4">
+                <label for="vcpus_master">Number of CPUs on Master Node:</label>
+                  <select name="vcpus_master" class="form-control" onchange={{action "selectFromDropDownList" "selectedMasterNodeCPUs"}} disabled={{masterCPUsSelectDisabled}}>
+                    {{#each masterNodeCPUValues as |vcpusValue|}}
+                      {{#if (compare vcpusValue.value "===" selectedMasterNodeCPUs)}}
+                        <option value={{vcpusValue.value}} selected>{{vcpusValue.value}}</option>
+                      {{else}}
+                        {{#if vcpusValue.enabled}}
+                          <option value={{vcpusValue.value}}>{{vcpusValue.value}}</option>
+                        {{else}}
+                          <option value={{vcpusValue.value}} disabled>{{vcpusValue.value}}</option>
+                        {{/if}}
+                      {{/if}}
+                    {{/each}}
+                  </select>
+                  <span id="helpBlock" class="help-block">We recommend using 4 CPUs</span>
+              </div>	<!--class="col-sm-4"-->
+              <div class="form-group col-sm-4">
+                <label for="ram_master" >Amount or RAM memory on Master Node: </label>
+                <select name="ram_master"  class="form-control" onchange={{action "selectFromDropDownList" "selectedMasterNodeRAM"}} disabled={{masterRAMSelectDisabled}}>
+                  {{#each masterNodeRAMValues as |ramValue|}}
+                    {{#if (compare ramValue.value "===" selectedMasterNodeRAM)}}
+                      <option value={{ramValue.value}} selected>{{ramValue.value}}</option>
+                    {{else}}
+                      {{#if ramValue.enabled}}
+                        <option value={{ramValue.value}}>{{ramValue.value}}</option>
+                      {{else}}
+                        <option value={{ramValue.value}} disabled>{{ramValue.value}}</option>
+                      {{/if}}
+                    {{/if}}
+                  {{/each}}
+                </select>
+                <span id="helpBlock" class="help-block">We recommend using 4096MB of RAM</span>
+              </div><!--class="form-group col-sm-6"-->
+              <div class="form-group col-sm-4">
+                <label for="disk_master"> Size of hard disk on Master Node: </label>
+                <select name="disk_master" class="form-control" onchange={{action "selectFromDropDownList" "selectedMasterNodeDisk"}} disabled={{masterDiskSelectDisabled}}>
+                  {{#each masterNodeDiskValues as |diskValue|}}
+                    {{#if (compare diskValue.value "===" selectedMasterNodeDisk)}}
+                      <option value={{diskValue.value}} selected>{{diskValue.value}}</option>
+                    {{else}}
+                      {{#if diskValue.enabled}}
+                        <option value={{diskValue.value}}>{{diskValue.value}}</option>
+                      {{else}}
+                        <option value={{diskValue.value}} disabled>{{diskValue.value}}</option>
+                      {{/if}}
+                    {{/if}}
+                  {{/each}}
+                </select>
+                <span id="helpBlock" class="help-block">We recommend using 20GB of hard disk</span>
+              </div>
+            </div><!--row-->
+          </div><!--box-body-->
+        </div><!--box-->
+      </div><!--col-->
+    </div><!--row-->
+
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+            <h3 class="box-title">Slaves</h3>: Slave Nodes details
+          </div><!-- /.box-header -->
+          <div class="box-body">
+             <div class="row">
+              <div class="form-group col-sm-4">
+                <label for="vcpus_slave">Number of CPUs on each Slave Node:</label>
+                  <select name="vcpus_slave" class="form-control" onchange={{action "selectFromDropDownList" "selectedSlaveNodeCPUs"}} disabled={{slaveCPUsSelectDisabled}}>
+                    {{#each slaveNodeCPUValues as |vcpusValue|}}
+                      {{#if (compare vcpusValue.value "===" selectedSlaveNodeCPUs)}}
+                        <option value={{vcpusValue.value}} selected>{{vcpusValue.value}}</option>
+                      {{else}}
+                        {{#if vcpusValue.enabled}}
+                          <option value={{vcpusValue.value}}>{{vcpusValue.value}}</option>
+                        {{else}}
+                          <option value={{vcpusValue.value}} disabled>{{vcpusValue.value}}</option>
+                        {{/if}}
+                      {{/if}}
+                    {{/each}}
+                  </select>
+                  <span id="helpBlock" class="help-block">We recommend using 4 CPUs</span>
+              </div>	<!--class="col-sm-4"-->
+              <div class="form-group col-sm-4">
+                <label for="ram_slave" >Amount or RAM memory on each Slave Node:</label>
+                <select name="ram_slave"  class="form-control" onchange={{action "selectFromDropDownList" "selectedSlaveNodeRAM"}} disabled={{slaveRAMSelectDisabled}}>
+                  {{#each slaveNodeRAMValues as |ramValue|}}
+                    {{#if (compare ramValue.value "===" selectedSlaveNodeRAM)}}
+                      <option value={{ramValue.value}} selected>{{ramValue.value}}</option>
+                    {{else}}
+                      {{#if ramValue.enabled}}
+                        <option value={{ramValue.value}}>{{ramValue.value}}</option>
+                      {{else}}
+                        <option value={{ramValue.value}} disabled>{{ramValue.value}}</option>
+                      {{/if}}
+                    {{/if}}
+                  {{/each}}
+                  </select>
+                  <span id="helpBlock" class="help-block">We recommend using 4096MB of RAM</span>
+              </div><!--class="form-group col-sm-4"-->
+
+              <div class="form-group col-sm-4">
+                <label for="disk_slave"> Size of hard disk on each Slave Node:</label>
+                <select name="disk_slave" class="form-control" onchange={{action "selectFromDropDownList" "selectedSlaveNodeDisk"}} disabled={{slaveDiskSelectDisabled}}>
+                  {{#each slaveNodeDiskValues as |diskValue|}}
+                    {{#if (compare diskValue.value "===" selectedSlaveNodeDisk)}}
+                      <option value={{diskValue.value}} selected>{{diskValue.value}}</option>
+                    {{else}}
+                      {{#if diskValue.enabled}}
+                        <option value={{diskValue.value}}>{{diskValue.value}}</option>
+                      {{else}}
+                        <option value={{diskValue.value}} disabled>{{diskValue.value}}</option>
+                      {{/if}}
+                    {{/if}}
+                  {{/each}}
+                </select>
+                <span id="helpBlock" class="help-block">We recommend using 20GB of hard disk</span>
+              </div>
+            </div><!--row-->
+          </div><!--box-body-->
+        </div><!--box-->
+      </div><!--col-->
+    </div><!--row-->
+
+    <button type="submit" class="btn btn-primary" disabled={{submitButtonDisabled}}>Submit</button>
+	<div class="row">
+		<div class="col-xs-12">
+			&nbsp;
+		</div>
+	</div>
+  {{#if model.newLambdaInstance.isSaving}}
+          <div class="row">
+              <div class="col-xs-12">
+                  <div class="alert alert-info alert-dismissable">
+                      Your request to create a new Lambda Instance is being sent to the server...
+                  </div>
+              </div><!--col-xs-12-->
+          </div><!--row-->
+  {{/if}}
+  </form>
+
+  {{/if}}
+</section><!-- /.content -->
