@@ -330,8 +330,16 @@ export default Ember.Controller.extend({
             if(inputTopicsElement !== undefined && outputTopicsElement !== undefined){
               inputTopicsElement.setCustomValidity(this.get('kafkaTopicsConflictMessage'));
               outputTopicsElement.setCustomValidity(this.get('kafkaTopicsConflictMessage'));
-              inputTopicsElement.reportValidity();
-              outputTopicsElement.reportValidity();
+
+              // Some browsers (e.g. Firefox) haven't yet implemented the "reportValidity" API.
+              // https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reportValidity
+              try{
+                inputTopicsElement.reportValidity();
+                outputTopicsElement.reportValidity();
+              }
+              catch(error){
+                console.log("Logging caught error: " + error);
+              }
 
               this.set('kafkaTopicsValidityReported', true);
             }
