@@ -46,6 +46,9 @@ export default Ember.Controller.extend({
 
   kafkaInputTopics: ["input"],
   kafkaOutputTopics: ["batch-output", "stream-output"],
+  conflictingKafkaTopics: false,
+  kafkaTopicsValidityReported: false,
+  kafkaTopicsConflictMessage: "Using the same name for input and output topic will result only in input topic creation!",
 
   actions: {
     saveLambdaInstance: function(newLambdaInstance){
@@ -301,15 +304,53 @@ export default Ember.Controller.extend({
   },
 
   kafkaInputTopicsObserver: Ember.observer('kafkaInputTopics', function() {
-    this.parseKafkaTopics("Input");
+    this.parseKafkaTopics();
   }),
 
   kafkaOutputTopicsObserver: Ember.observer('kafkaOutputTopics', function() {
-    this.parseKafkaTopics("Output");
+    this.parseKafkaTopics();
   }),
 
-  parseKafkaTopics: function(message){
-    console.log(message);
+  parseKafkaTopics: function(){
+    // In case this method has been called due to a change in kafkaInputTopics or kafkaOutputTopics
+    // from inside the route, then these elements will be undefined since the HTML hasn't yet been
+    // rendered.
+    var inputTopicsElement = Ember.$('#kafka-input-topics #kafka-input-topics-tokenfield')[0];
+    var outputTopicsElement = Ember.$('#kafka-output-topics #kafka-output-topics-tokenfield')[0];
+
+    var kafkaInputTopics = this.get('kafkaInputTopics');
+    var kafkaOutputTopics = this.get('kafkaOutputTopics');
+
+    for (var i = 0, n = kafkaInputTopics.get('length');i < n;i++) {
+      for (var j = 0, m = kafkaOutputTopics.get('length'); j < m;j++) {
+        if (kafkaInputTopics.objectAt(i) === kafkaOutputTopics.objectAt(j)) {
+          this.set('conflictingKafkaTopics', true);
+
+          if(!this.get('kafkaTopicsValidityReported')){
+            if(inputTopicsElement !== undefined && outputTopicsElement !== undefined){
+              inputTopicsElement.setCustomValidity(this.get('kafkaTopicsConflictMessage'));
+              outputTopicsElement.setCustomValidity(this.get('kafkaTopicsConflictMessage'));
+              inputTopicsElement.reportValidity();
+              outputTopicsElement.reportValidity();
+
+              this.set('kafkaTopicsValidityReported', true);
+            }
+          }
+
+          return;
+        }
+      }
+    }
+
+    this.set('conflictingKafkaTopics', false);
+    if(this.get('kafkaTopicsValidityReported')){
+      if(inputTopicsElement !== undefined && outputTopicsElement !== undefined){
+        inputTopicsElement.setCustomValidity("");
+        outputTopicsElement.setCustomValidity("");
+
+        this.set('kafkaTopicsValidityReported', false);
+      }
+    }
   }
 
 });

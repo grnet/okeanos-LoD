@@ -3,11 +3,13 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   topics: [],
 
+  id: "",
+
   didInsertElement: function(){
     this._super(...arguments);
 
     // Initialize tokenfield.
-    this.$('#tokenfield')
+    this.$('#' + this.get('id'))
       .on('tokenfield:createtoken', this.createTokenEvent)
       .tokenfield({
         createTokensOnBlur: true
@@ -26,7 +28,14 @@ export default Ember.Component.extend({
 
   actions: {
     updateTopics: function(){
-      this.set('topics', this.$('#tokenfield').tokenfield('getTokensList').replace(/\s+/g, '').split(','));
+      var tokenList = this.$('#' + this.get('id')).tokenfield('getTokensList', ',', false, false);
+
+      if (tokenList === "") {
+        this.set('topics', []);
+      }
+      else{
+        this.set('topics', tokenList.split(','));
+      }
     }
   }
 

@@ -114,6 +114,8 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
       controller.set('kafkaInputTopics', ["input"]);
       controller.set('kafkaOutputTopics', ["batch-output", "stream-output"]);
+      controller.set('conflictingKafkaTopics', false);
+      controller.set('kafkaTopicsValidityReported', false);
     }
   }
 });
