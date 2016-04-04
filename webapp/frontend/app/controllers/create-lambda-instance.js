@@ -304,10 +304,18 @@ export default Ember.Controller.extend({
   },
 
   kafkaInputTopicsObserver: Ember.observer('kafkaInputTopics', function() {
+    if(this.get('kafkaInputTopics').get('length') === 0){
+      this.set('kafkaInputTopics', ["input"]);
+    }
+
     this.parseKafkaTopics();
   }),
 
   kafkaOutputTopicsObserver: Ember.observer('kafkaOutputTopics', function() {
+    if(this.get('kafkaOutputTopics').get('length') === 0){
+      this.set('kafkaOutputTopics', ["batch-output", "stream-output"]);
+    }
+
     this.parseKafkaTopics();
   }),
 
