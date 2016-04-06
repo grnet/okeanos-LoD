@@ -305,7 +305,11 @@ export default Ember.Controller.extend({
 
   kafkaInputTopicsObserver: Ember.observer('kafkaInputTopics', function() {
     if(this.get('kafkaInputTopics').get('length') === 0){
+      // The observer will fire again after this change. Return so that parseKafkaTopics
+      // is only called once from the upcoming observer firing
       this.set('kafkaInputTopics', ["input"]);
+
+      return;
     }
 
     this.parseKafkaTopics();
@@ -313,7 +317,11 @@ export default Ember.Controller.extend({
 
   kafkaOutputTopicsObserver: Ember.observer('kafkaOutputTopics', function() {
     if(this.get('kafkaOutputTopics').get('length') === 0){
+      // The observer will fire again after this change. Return so that parseKafkaTopics
+      // is only called once from the upcoming observer firing
       this.set('kafkaOutputTopics', ["batch-output", "stream-output"]);
+
+      return;
     }
 
     this.parseKafkaTopics();
