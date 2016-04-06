@@ -19,11 +19,24 @@ export default Ember.Component.extend({
   createTokenEvent: function(event){
     var existingTokens = Ember.$(this).tokenfield('getTokens');
 
+    var duplicate = false;
     Ember.$.each(existingTokens, function(index, token) {
       if (token.value === event.attrs.value){
-        event.preventDefault();
+        duplicate = true;
+
+        return false;
       }
+
+      return true;
     });
+
+    // If the provided name for the new token already exists, delete the input text
+    if(duplicate){
+      var componentId = Ember.$(this)[0].id;
+      Ember.$('#' + componentId + " #" + componentId + "-tokenfield")[0].value = "";
+    }
+
+    return !duplicate;
   },
 
   actions: {
