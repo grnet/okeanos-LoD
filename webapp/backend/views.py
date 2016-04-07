@@ -276,11 +276,6 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         if not uploaded_file:
             raise CustomParseError(CustomParseError.messages['no_file_error'])
 
-        # Check if another file with same name already exists.
-        if self.get_queryset().filter(name=uploaded_file.name).count() > 0:
-            raise CustomParseError(CustomParseError
-                                        .messages['filename_already_exists_error'])
-
         # Get the description provided with the request.
         description = request.data.get('description', '')
 
@@ -305,6 +300,12 @@ class ApplicationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         else:
             chosen_project = [project for project in user_projects
                               if project['name'] == project_name][0]
+
+        # Check if another file with same name, in the same project, already exists
+        if self.get_queryset().filter(name=uploaded_file.name,
+                                      project_id=chosen_project['id']).count() > 0:
+            raise CustomParseError(CustomParseError
+                                   .messages['filename_already_exists_error'])
 
         # Generate a uuid for the uploaded application.
         application_uuid = uuid.uuid4()
