@@ -110,9 +110,9 @@ class TestApplicationUpload(APITestCase):
                                application_id, self.application.name, self.application_description)
 
     # Test for uploading an application when all the required information are provided
-    # but there is already an application with the same name uploaded.
+    # but there is already an application with the same name, in the same project uploaded
     @mock.patch('backend.views.get_user_okeanos_projects')
-    def test_existent_name(self, mock_get_user_okeanos_projects):
+    def test_existent_name_on_same_project(self, mock_get_user_okeanos_projects):
         # Configure return values for mocks
         mock_get_user_okeanos_projects.return_value = self.user_projects
 
@@ -138,6 +138,60 @@ class TestApplicationUpload(APITestCase):
         self.assertEqual(response.data['errors'][0]['status'], status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['errors'][0]['detail'],
                          CustomParseError.messages['filename_already_exists_error'])
+
+    # Test for uploading an application when all the required information are provided
+    # and there is already an application with the same name, on a different project uploaded
+    @mock.patch('backend.views.get_user_okeanos_projects')
+    @mock.patch('backend.views.events.create_new_application')
+    @mock.patch('backend.views.tasks.upload_application_to_pithos')
+    def test_existent_name_on_other_project(self, mock_upload_application_to_pithos_task,
+                                            mock_create_new_application_event,
+                                            mock_get_user_okeanos_projects):
+        # Configure return values for mocks.
+        chosen_project = self.user_projects[0]
+        mock_get_user_okeanos_projects.return_value = self.user_projects
+
+        # Create an application on the database.
+        Application.objects.create(uuid=uuid.uuid4(), name="existing_application.jar",
+                                   type=Application.BATCH)
+
+        # Make a request to upload an application.
+        response = self.client.post("/api/apps/", {'description': self.application_description,
+                                                   'file': self.application,
+                                                   'type': self.application_type_batch,
+                                                   'project_name': self.project_name,
+                                                   'execution_environment_name':
+                                                   self.execution_environment_name})
+
+        # Assert the structure of the response.
+        self._assert_accepted_response_structure(response)
+
+        # Assert the contents of the response.
+        self.assertEqual(response.data['status']['code'], status.HTTP_202_ACCEPTED)
+        self.assertEqual(response.data['status']['short_description'],
+                         ResponseMessages.short_descriptions['application_upload'])
+
+        self.assertIsInstance(response.data['data'][0]['id'], uuid.UUID)
+
+        self.assertRegexpMatches(response.data['data'][0]['links']['self'],
+                                 r'^http://testserver/api/apps/([^/.]+)$')
+
+        # Get the id of the uploaded application.
+        application_id = response.data['data'][0]['id']
+
+        # Assert that the proper tasks and views have been called.
+        mock_create_new_application_event.delay.\
+            assert_called_with(application_id, self.application.name, chosen_project['id'],
+                               ApplicationViewSet.pithos_container + "_" + chosen_project['name'],
+                               self.application_description, self.application_type_batch,
+                               self.user, self.execution_environment_name)
+
+        mock_upload_application_to_pithos_task.delay.\
+            assert_called_with(self.AUTHENTICATION_URL, self.AUTHENTICATION_TOKEN,
+                               ApplicationViewSet.pithos_container + "_" + chosen_project['name'],
+                               chosen_project['id'],
+                               path.join(settings.TEMPORARY_FILE_STORAGE, self.application.name),
+                               application_id, self.application.name, self.application_description)
 
     # Test for uploading an application when no description is provided.
     @mock.patch('backend.views.get_user_okeanos_projects')
