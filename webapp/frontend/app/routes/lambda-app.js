@@ -8,7 +8,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
     this._super(transition);
     this.store.unloadAll('lambda-instance');
     this.store.unloadAll('app-action');
-    this.controllerFor('lambda-app').set('numInstances', -1);
   },
 
   model: function (params) {
@@ -26,12 +25,13 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
     }
 
     if (this.controllerFor('lambda-app').get('deployWait')) {
-      var numInstances = hash.instances.get('length');
-      var prevNumInstances = this.controllerFor('lambda-app').get('numInstances');
-      if ((prevNumInstances >= 0) && (prevNumInstances !== numInstances)) {
-        this.controllerFor('lambda-app').set('deployWait', false);
-      }
-      this.controllerFor('lambda-app').set('numInstances', numInstances);
+      var deployID = this.controllerFor('lambda-app').get('deployID');
+      var _this = this;
+      hash.instances.forEach(function(instance) {
+        if (instance.id === deployID) {
+          _this.controllerFor('lambda-app').set('deployWait', false);
+        }
+      });
     }
 
     return Ember.RSVP.hash(hash);
@@ -47,6 +47,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
   deactivate: function () {
     Ember.run.cancel(this.poll);
     this.controllerFor('lambda-app').set('deployWait', false);
+    this.controllerFor('lambda-app').set('deployID', -1);
   },
 
   actions: {

@@ -11,7 +11,7 @@ export default Ember.Controller.extend({
   delete_success_message: '',
   delete_error_message: '',
   deployWait: false,
-  numInstances: -1,
+  deployID: -1,
   actions: {
     withdraw: function(application_id, instance_id)
     {

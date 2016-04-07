@@ -10,7 +10,7 @@ export default Ember.Controller.extend({
   delete_success_message: '',
   delete_error_message: '',
   deployWait: false,
-  numApps: -1,
+  deployID: -1,
   actions: {
     close_alert: function()
     {
