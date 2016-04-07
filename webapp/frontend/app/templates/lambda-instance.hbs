@@ -57,22 +57,28 @@
               actions you may take depending on the <i>status</i> of the lambda instance.
               </div>
 
-              {{#if (logical-op 'and'
-                (compare (lambda-instance-state model.instance.status_message) "!==" "DESTROYING")
-                (compare (lambda-instance-state model.instance.status_message) "!==" "DESTROYED")
-              )}}
-                <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right"
-                  {{action "delete_instance" model.instance.id}}>
-                    <i class="fa fa-times"></i> Delete
-                </button>
-              {{else}}
+              {{#if (logical-op 'or'
+                (compare (lambda-instance-state model.instance.status_message) "===" "DESTROYING")
+                model.instance.deleting)
+              }}
                 {{#tool-tip}}
-                <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right disabled has-tooltip"
-                        data-tooltip-content="<center>Cannot delete a lambda instance, while its
-                        status is {{lower-case model.instance.status_message}}!</center>">
-                    <i class="fa fa-times"></i> Delete
-                </button>
+                    <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right disabled has-tooltip"
+                            data-tooltip-content="<center>The lambda instance is being destroyed!</center>">
+                        <i class="fa fa-times"></i> Deleting <i class="fa fa-spinner fa-spin"></i>
+                    </button>
                 {{/tool-tip}}
+              {{else if (compare (lambda-instance-state model.instance.status_message) "===" "DESTROYED")}}
+                {{#tool-tip}}
+                    <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right disabled has-tooltip"
+                            data-tooltip-content="<center>The lambda instance is destroyed!</center>">
+                        <i class="fa fa-times"></i> Delete
+                    </button>
+                {{/tool-tip}}
+              {{else}}
+                  <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right"
+                    {{action "delete_instance" model.instance.id}}>
+                      <i class="fa fa-times"></i> Delete
+                  </button>
               {{/if}}
                 {{#if (compare model.instance.status_code '==' '0')}}
                 {{#link-to 'deploy-app-2' model.instance.id}}
