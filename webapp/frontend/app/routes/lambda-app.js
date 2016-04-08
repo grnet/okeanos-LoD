@@ -24,17 +24,18 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
       hash.app = this.store.createRecord('app-action', {});
     }
 
-    if (this.controllerFor('lambda-app').get('deployWait')) {
-      var deployID = this.controllerFor('lambda-app').get('deployID');
-      var _this = this;
-      hash.instances.forEach(function(instance) {
-        if (instance.id === deployID) {
-          _this.controllerFor('lambda-app').set('deployWait', false);
-        }
-      });
-    }
-
-    return Ember.RSVP.hash(hash);
+    var _this = this;
+    return Ember.RSVP.hash(hash).then(function (hash) {
+      if (_this.controllerFor('lambda-app').get('deployWait')) {
+        var deployID = _this.controllerFor('lambda-app').get('deployID');
+        hash.instances.forEach(function (instance) {
+          if (instance.id === deployID) {
+            _this.controllerFor('lambda-app').set('deployWait', false);
+          }
+        });
+      }
+      return hash;
+    });
 
   },
 
