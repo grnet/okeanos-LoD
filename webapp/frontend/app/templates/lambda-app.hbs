@@ -49,8 +49,18 @@
                           <br> The visible buttons represent the available
                           actions you may take depending on the <i>status</i> of the Application.
                           </div>
+                          {{#if model.application.deleting}}
+                            {{#tool-tip}}
+                              <button class="btn btn-danger btn-primary pull-right disabled has-tooltip"
+                                      data-tooltip-content="<center>The application is being deleted!</center>">
+                                  <i class="fa fa-times"></i> Deleting <i class="fa fa-spinner fa-spin"></i></button>
+                            {{/tool-tip}}
+                          {{else}}
+                            <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right"
+                              {{action "delete_app" model.application.id}}><i class="fa fa-times"></i> Delete</button>
+                          {{/if}}
 
-                          <button name="del-btn" id="del-btn" class="btn btn-danger btn-primary pull-right" {{action "delete_app" model.application.id}}><i class="fa fa-times"></i> Delete</button>
+
                           {{#if (compare model.application.status_code '==' '0')}}
                             {{#link-to 'deploy-app-1' model.application.id}}
                                 <button class="btn btn-primary pull-right"
@@ -203,7 +213,7 @@
     </div>
     <!--row-->
 
-  {{#if model.instances}}
+  {{#if (logical-op 'or' model.instances deployWait)}}
 
   {{#if failure}}
       {{#each model.app.errors as |error|}}
@@ -241,14 +251,25 @@
                           <div class="col-ms-8 col-xs-8">
                                <table class="table table-bordered table-hover table-responsive">
                                     <thead>
+                                    {{#if model.instances}}
                                       <tr>
                                           <th>Instance Name</th>
                                           <th>Instance Status</th>
                                           <th>App started</th>
                                           <th>Actions</th>
                                       </tr>
+                                    {{/if}}
+                                    {{#if deployWait}}
+                                      <tr>
+                                          <th><span style="font-size: .9em;" class="label bg-orange">
+                                              The application is currently being deployed on an instance
+                                              <i class="fa fa-spinner fa-spin"></i>
+                                          </span></th>
+                                      </tr>
+                                    {{/if}}
                                     </thead>
                                     <tbody>
+
                                       {{#each sortedInstances as |li|}}
                                           <tr>
                                               <td>

@@ -315,16 +315,17 @@
       </div> <!-- box-primary -->
     </div> <!--col -->
   </div> <!--row-->
-  {{#if (compare model.apps.length "!==" 0)}}
 
-{{#if app_failure}}
-    {{#each model.app.errors as |error|}}
-          <div  class="alert alert-dismissable alert-danger" id="app_alert">
-            <button type="button" class="close" {{action "close_app_alert"}}>×</button>
-            {{error.message}}
-          </div>
-    {{/each}}
-{{/if}}
+  {{#if (logical-op 'or' model.apps deployWait)}}
+
+  {{#if app_failure}}
+      {{#each model.app.errors as |error|}}
+            <div  class="alert alert-dismissable alert-danger" id="app_alert">
+              <button type="button" class="close" {{action "close_app_alert"}}>×</button>
+              {{error.message}}
+            </div>
+      {{/each}}
+  {{/if}}
 
   {{#if app_request}}
         <div  class="alert alert-dismissable alert-success" id="app_alert">
@@ -349,12 +350,22 @@
             <div class="col-ms-7 col-xs-7">
               <table class="table table-bordered table-hover table-responsive">
                 <thead>
+                {{#if model.apps}}
                   <tr>
                     <th>Name</th>
                     <th>Type</th>
                     <th>Started</th>
                     <th>Actions</th>
                   </tr>
+                {{/if}}
+                {{#if deployWait}}
+                    <tr>
+                        <th><span style="font-size: .9em;" class="label bg-orange">
+                                              An application is currently being deployed on the instance
+                                              <i class="fa fa-spinner fa-spin"></i>
+                                          </span></th>
+                    </tr>
+                {{/if}}
                 </thead>
                 <tbody>
                   {{#each sortedApps as |application|}}

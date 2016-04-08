@@ -10,6 +10,8 @@ export default Ember.Controller.extend({
   success_delete: false,
   delete_success_message: '',
   delete_error_message: '',
+  deployWait: false,
+  deployID: -1,
   actions: {
     withdraw: function(application_id, instance_id)
     {
@@ -61,6 +63,7 @@ export default Ember.Controller.extend({
             success: function () {
               _this.set('delete_success_message', 'Your request to delete the application was successfully sent to the server.');
               _this.set('success_delete', true);
+              _this.get('model.application').set('deleting', true);
               Ember.run.later((function () {
                 _this.set('success_delete', false);
                 _this.transitionToRoute('dashboard');

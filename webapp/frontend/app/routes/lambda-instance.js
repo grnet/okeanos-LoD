@@ -19,7 +19,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
     var hash = {
       instance: this.store.findRecord('lambda-instance', params.instance_uuid,  { reload: true }),
-      apps: this.store.peekAll('lambda-app'),
+      apps: this.store.peekAll('lambda-app')
     };
     if (this.store.peekAll('app-action').get('length') === 0) {
       hash.app = this.store.createRecord('app-action', {});
@@ -27,7 +27,19 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
     if (this.store.peekAll('instance-action').get('length') === 0) {
       hash.instance_action = this.store.createRecord('instance-action', {});
     }
-    return Ember.RSVP.hash(hash);
+
+    var _this = this;
+    return Ember.RSVP.hash(hash).then(function (hash) {
+      if (_this.controllerFor('lambda-instance').get('deployWait')) {
+        var deployID = _this.controllerFor('lambda-instance').get('deployID');
+        hash.apps.forEach(function (app) {
+          if (app.id === deployID) {
+            _this.controllerFor('lambda-instance').set('deployWait', false);
+          }
+        });
+      }
+      return hash;
+    });
 
   },
 
@@ -39,6 +51,8 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
   deactivate: function () {
     Ember.run.cancel(this.poll);
+    this.controllerFor('lambda-instance').set('deployWait', false);
+    this.controllerFor('lambda-instance').set('deployID', -1);
   },
 
   actions: {

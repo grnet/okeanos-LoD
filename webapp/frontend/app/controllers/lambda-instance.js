@@ -9,6 +9,8 @@ export default Ember.Controller.extend({
   success_delete: false,
   delete_success_message: '',
   delete_error_message: '',
+  deployWait: false,
+  deployID: -1,
   actions: {
     close_alert: function()
     {
