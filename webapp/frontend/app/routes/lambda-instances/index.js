@@ -23,7 +23,20 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
     if (this.store.peekAll('instance-action').get('length') === 0) {
       hash.instance_action = this.store.createRecord('instance-action', {});
     }
-    return Ember.RSVP.hash(hash);
+
+    var _this = this;
+    return Ember.RSVP.hash(hash).then(function (hash) {
+      if (!_this.controllerFor('lambda-instances.index').get('showFailed')) {
+        hash.instances.forEach(function (instance) {
+          let status_code = instance.get('status_code');
+          if (status_code === 9) {
+            instance.unloadRecord();
+          }
+        });
+      }
+      _this.controllerFor('lambda-instances.index').send('checkPage');
+      return hash;
+    });
 
   },
 
@@ -32,6 +45,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
     controller.set('instance_action', model.instance_action);
     controller.set('failure', false);
     controller.set('failed_delete', false);
+    controller.set('showFailed', false);
     controller.send('checkPage');
   },
 

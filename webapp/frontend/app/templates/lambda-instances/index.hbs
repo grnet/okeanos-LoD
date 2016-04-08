@@ -85,7 +85,10 @@
                     <i class="fa fa-laptop"></i> Create New Instance</a>
             {{/link-to}}
           </div><!--box-tools-->
+            <h5><label>{{input type="checkbox" name="showFailed" checked=showFailed}}
+                Show failed Lambda Instances</label></h5>
         </div><!-- /.box-header -->
+
         {{#if model.length}}
         <div class="box-body">
          <div class="row">
