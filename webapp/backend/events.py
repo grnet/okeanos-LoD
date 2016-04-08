@@ -39,6 +39,9 @@ def set_lambda_instance_status(instance_uuid, status, failure_message=""):
     if (LambdaInstance.status_choices[int(status)][1] == 'STOPPING'):
         LambdaInstanceApplicationConnection.objects.filter(
             lambda_instance=lambda_instance).update(started=False)
+        lambda_instance.started_batch = False
+        lambda_instance.started_streaming = False
+        lambda_instance.save()
 
     if (LambdaInstance.status_choices[int(status)][1] == 'DESTROYING'):
         LambdaInstanceApplicationConnection.objects.filter(
