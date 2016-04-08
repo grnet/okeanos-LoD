@@ -48,7 +48,7 @@ export default Ember.Controller.extend({
   kafkaOutputTopics: ["batch-output", "stream-output"],
   conflictingKafkaTopics: false,
   kafkaTopicsValidityReported: false,
-  kafkaTopicsConflictMessage: "Using the same name for input and output topic will result only in input topic creation!",
+  kafkaTopicsConflictMessage: "You cannot use the same name for both an input and an output topic!",
 
   actions: {
     saveLambdaInstance: function(newLambdaInstance){

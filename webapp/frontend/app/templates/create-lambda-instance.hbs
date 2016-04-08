@@ -97,13 +97,13 @@
 
             <style>.tokenfield.form-control { height: auto; }</style>
             <div class="row">
-              <div class="form-group col-sm-6 {{if conflictingKafkaTopics 'has-warning'}}">
+              <div class="form-group col-sm-6 {{if conflictingKafkaTopics 'has-error'}}">
                 <label for="kafka_topics">Apache Kafka input topics:</label>
                   {{kafka-topics topics=kafkaInputTopics id="kafka-input-topics"}}
                   <span id="helpBlock" class="help-block">Names of Apache Kafka input topics<br>
                   Default input topic, if no names are given: "input"</span>
               </div>
-              <div class="form-group col-sm-6 pull-right {{if conflictingKafkaTopics 'has-warning'}}">
+              <div class="form-group col-sm-6 pull-right {{if conflictingKafkaTopics 'has-error'}}">
                 <label for="kafka_topics">Apache Kafka output topics:</label>
                   {{kafka-topics topics=kafkaOutputTopics id="kafka-output-topics"}}
                   <span id="helpBlock" class="help-block">Names of Apache Kafka output topics<br>
