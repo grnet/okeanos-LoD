@@ -60,7 +60,11 @@
           </div>
             <div class="row">
               <div class="form-group col-sm-6">
-                <label for="name1"> Name of Lamdba Instance (*): </label>
+                {{#tool-tip}}
+                  <label for="name1"> Name of Lamdba Instance (*) </label>
+                  <i class="fa fa-info-circle has-tooltip"
+                  data-tooltip-content="<center></center>"></i>
+                {{/tool-tip}}
                 {{input type="text" value=instanceName placeholder="Lambda Instance name" size="50" class="form-control" required="true"}}
                 {{#each model.newLambdaInstance.errors.instanceName as |error|}}
                   <div class="alert alert-danger alert-dismissable">
@@ -69,7 +73,11 @@
                 {{/each}}
               </div>
               <div class="form-group col-sm-6">
-                <label for="name1"> Name of Master Node (*): </label>
+                {{#tool-tip}}
+                  <label for="name1"> Name of Master Node (*) </label>
+                  <i class="fa fa-info-circle has-tooltip"
+                  data-tooltip-content="<center></center>"></i>
+                {{/tool-tip}}
                 {{input type="text" value=masterName placeholder="Master node name" size="50" class="form-control" required="true"}}
                 {{#each model.newLambdaInstance.errors.masterName as |error|}}
                   <div class="alert alert-danger alert-dismissable">
@@ -80,7 +88,11 @@
             </div>
             <div class="row">
               <div class="form-group col-sm-8">
-                <label for="okeanos_project" class="col-sm-6">~okeanos Project (*):</label>
+                {{#tool-tip}}
+                  <label for="okeanos_project">~okeanos Project (*)</label>
+                  <i class="fa fa-info-circle has-tooltip"
+                  data-tooltip-content="<center></center>"></i>
+                {{/tool-tip}}
                   <select name="okeanos_project" class="form-control" onchange={{action "selectFromDropDownList" "selectedProjectName"}}>
                     {{#each model.userOkeanosProjects as |project|}}
                     <option value={{project.name}}>{{project.name}} (VMs: {{project.vm}}, CPUs: {{project.cpu}}, RAM: {{normalize-bytes project.ram}}, Disk: {{normalize-bytes project.disk}}, Floating IPs: {{project.floating_ip}}, Private Networks: {{project.private_network}})</option>
@@ -89,7 +101,11 @@
                 <span id="helpBlock" class="help-block">Select a project</span>
               </div>	<!--class="col-sm-6"-->
               <div class="form-group col-sm-3">
-                <label for="slaves">Number of slaves:</label>
+                {{#tool-tip}}
+                  <label for="slaves">Number of slaves</label>
+                  <i class="fa fa-info-circle has-tooltip"
+                  data-tooltip-content="<center></center>"></i>
+                {{/tool-tip}}
                   {{input type="number" value=selectedNumberOfSlaves min=1 max=(math-op selectedProjectVMs '-' 1) name="slaves" class="form-control" change=(action "selectFromDropDownList" "selectedNumberOfSlaves")}}
                   <span id="helpBlock" class="help-block">Select the number of slaves</span>
               </div>	<!--class="form-group col-sm-3"-->
@@ -98,13 +114,21 @@
             <style>.tokenfield.form-control { height: auto; }</style>
             <div class="row">
               <div class="form-group col-sm-6 {{if conflictingKafkaTopics 'has-error'}}">
-                <label for="kafka_topics">Apache Kafka input topics:</label>
+                {{#tool-tip}}
+                  <label for="kafka_topics">Apache Kafka input topics</label>
+                  <i class="fa fa-info-circle has-tooltip"
+                  data-tooltip-content="<center></center>"></i>
+                {{/tool-tip}}
                   {{kafka-topics topics=kafkaInputTopics id="kafka-input-topics"}}
                   <span id="helpBlock" class="help-block">Names of Apache Kafka input topics<br>
                   Default input topic, if no names are given: "input"</span>
               </div>
               <div class="form-group col-sm-6 pull-right {{if conflictingKafkaTopics 'has-error'}}">
-                <label for="kafka_topics">Apache Kafka output topics:</label>
+                {{#tool-tip}}
+                  <label for="kafka_topics">Apache Kafka output topics</label>
+                  <i class="fa fa-info-circle has-tooltip"
+                  data-tooltip-content="<center></center>"></i>
+                {{/tool-tip}}
                   {{kafka-topics topics=kafkaOutputTopics id="kafka-output-topics"}}
                   <span id="helpBlock" class="help-block">Names of Apache Kafka output topics<br>
                   Default output topics, if no names are given: "batch-output", "stream-output"</span>
@@ -112,7 +136,11 @@
             </div><!--row-->
             <div class="row">
               <div class="form-group col-sm-3">
-                <label for="public_key_name">Public SSH keys (*):</label>
+                {{#tool-tip}}
+                  <label for="public_key_name">Public SSH keys (*)</label>
+                  <i class="fa fa-info-circle has-tooltip"
+                  data-tooltip-content="<center></center>"></i>
+                {{/tool-tip}}
                   <select required="required" multiple name="public_key_name" class="form-control">
                     {{#each model.userPublicKeys as |publicKey|}}
                     <option value={{publicKey.name}}>{{publicKey.name}}</option>
