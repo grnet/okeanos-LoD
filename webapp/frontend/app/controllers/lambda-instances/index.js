@@ -37,12 +37,27 @@ export default Ember.ArrayController.extend({
 
   actions: {
 
-    start_stop: function()
+    start_stop: function (action, instance_id)
     {
+      var instance = this.get('model').findBy('id', instance_id);
+      if (action === 'start') {
+        instance.set('starting', true);
+      }
+      else if (action === 'stop') {
+        instance.set('stopping', true);
+      }
       var _this = this;
       Ember.run.later((function () {
         _this.set('request', false);
       }), ENV.message_dismiss);
+      Ember.run.later((function () {
+        if (action === 'start') {
+          instance.set('starting', false);
+        }
+        else if (action === 'stop') {
+          instance.set('stopping', false);
+        }
+      }), ENV.button_delay);
     },
 
     delete_instance: function(instance_id) {

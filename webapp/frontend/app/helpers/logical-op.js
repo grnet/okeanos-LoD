@@ -14,6 +14,9 @@ export default Ember.Helper.helper(function (params) {
         result = params[i] && result;
       }
       break;
+    case 'not':
+      result = !result;
+      break;
   }
   return result;
 });

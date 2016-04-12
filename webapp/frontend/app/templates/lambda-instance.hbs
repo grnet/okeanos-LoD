@@ -99,10 +99,16 @@
                 {{/tool-tip}}
               {{/if}}
               {{#tool-tip}}
-                {{#if (compare model.instance.status_code '==' '0')}}
+                {{#if (logical-op 'and'
+                  (compare model.instance.status_code '==' '0')
+                  (logical-op 'not' model.instance.stopping)
+                )}}
                   {{instance-action apps=model.apps check_apps=true stop=true instance=model.instance_action failure=failure instance-id=model.instance.id request=request message=message action="start_stop"}}
                   {{instance-action start=true disabled=true status_message=model.instance.status_message}}
-                {{else if (compare model.instance.status_code '==' '1')}}
+                {{else if (logical-op 'and'
+                  (compare model.instance.status_code '==' '1')
+                  (logical-op 'not' model.instance.starting)
+                )}}
                   {{instance-action stop=true disabled=true status_message=model.instance.status_message}}
                   {{instance-action start=true instance=model.instance_action instance-id=model.instance.id failure=failure request=request message=message action="start_stop"}}
                 {{else}}

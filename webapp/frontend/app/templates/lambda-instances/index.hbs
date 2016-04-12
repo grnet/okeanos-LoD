@@ -139,7 +139,10 @@
                         <a class="btn btn-info btn-xs"  title="View Details" alt="View Details"><i class="fa fa-file-code-o"></i> Details</a>
                       {{/link-to}}
                     </td>
-                    {{#if (compare lambda-instance.status_code '==' '0')}}
+                    {{#if (logical-op 'and'
+                      (compare lambda-instance.status_code '==' '0')
+                      (logical-op 'not' lambda-instance.stopping)
+                    )}}
                       <td style="padding-right: 5px;">
                         {{#tool-tip}}
                             {{instance-action start=true xs=true disabled=true status_message=lambda-instance.status_message}}
@@ -157,7 +160,10 @@
                             </button>
                         {{/link-to}}
                       </td>
-                    {{else if (compare lambda-instance.status_code '==' '1')}}
+                    {{else if (logical-op 'and'
+                      (compare lambda-instance.status_code '==' '1')
+                      (logical-op 'not' lambda-instance.starting)
+                    )}}
                       <td style="padding-right: 5px;">
                         {{instance-action start=true xs=true instance=instance_action instance-id=lambda-instance.id failure=failure request=request message=message action="start_stop"}}
                       </td>

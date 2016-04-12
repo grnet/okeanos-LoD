@@ -23,13 +23,28 @@ export default Ember.Controller.extend({
       var alert = document.getElementById('app_alert');
       alert.hidden=true;
     },
-    start_stop: function()
+    start_stop: function (action)
     {
+      var instance = this.get('model.instance');
+      if (action === 'start') {
+        instance.set('starting', true);
+      }
+      else if (action === 'stop') {
+        instance.set('stopping', true);
+      }
       var _this = this;
       Ember.run.later((function () {
         _this.set('request', false);
         _this.set('app_request', false);
       }), ENV.message_dismiss);
+      Ember.run.later((function () {
+        if (action === 'start') {
+          instance.set('starting', false);
+        }
+        else if (action === 'stop') {
+          instance.set('stopping', false);
+        }
+      }), ENV.button_delay);
     },
     withdraw: function(application_id)
     {
