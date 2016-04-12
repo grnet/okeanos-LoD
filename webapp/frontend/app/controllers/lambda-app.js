@@ -13,8 +13,11 @@ export default Ember.Controller.extend({
   deployWait: false,
   deployID: -1,
   actions: {
+
     withdraw: function(application_id, instance_id)
     {
+      var instance = this.get('model.instances').findBy('id', instance_id);
+      instance.set('undeploying', true);
       var _this = this;
       Ember.run.later((function () {
         _this.store.find('lambda-instance', instance_id).then(function (instance) {
@@ -23,19 +26,37 @@ export default Ember.Controller.extend({
         _this.set('request', false);
       }), ENV.message_dismiss);
     },
-    start_stop: function()
+
+    start_stop: function (action, application_id, instance_id)
     {
+      var app_instance = this.get('model.instances').findBy('id', instance_id);
+      if (action === 'start') {
+        app_instance.set('starting', true);
+      }
+      else if (action === 'stop') {
+        app_instance.set('stopping', true);
+      }
       var _this = this;
       Ember.run.later((function () {
         _this.set('request', false);
       }), ENV.message_dismiss);
+      Ember.run.later((function () {
+        if (action === 'start') {
+          app_instance.set('starting', false);
+        }
+        else if (action === 'stop') {
+          app_instance.set('stopping', false);
+        }
+      }), ENV.button_delay);
     },
+
     close_alert: function()
     {
       var alert = document.getElementById('alert');
       this.set('failed_delete', false);
       alert.hidden=true;
     },
+
     delete_app: function(app_id) {
       if (this.get('model.instances.length')) {
         alert("The application is deployed on one or more lambda-instance(s).\nPlease undeploy it before deleting.");
@@ -88,5 +109,6 @@ export default Ember.Controller.extend({
         }
       }
     },
+
   },
 });

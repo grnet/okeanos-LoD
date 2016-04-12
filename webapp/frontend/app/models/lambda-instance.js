@@ -28,7 +28,9 @@ var LambdaInstance = DS.Model.extend({
   starting: DS.attr('boolean',
     { defaultValue: false }),               // has a start request been sent?
   stopping: DS.attr('boolean',
-    { defaultValue: false })                // has a stop request been sent?
+    { defaultValue: false }),               // has a stop request been sent?
+  undeploying: DS.attr('boolean',
+    { defaultValue: false })                // has an app undeploy request been sent?
 });
 
 export default LambdaInstance;

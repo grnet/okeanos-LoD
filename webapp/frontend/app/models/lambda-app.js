@@ -14,7 +14,14 @@ var LambdaApp = DS.Model.extend({
   started: DS.attr('boolean'),
   deployed: DS.attr('boolean'),
   execution_environment_name: DS.attr(),
-  deleting: DS.attr('boolean')
+  deleting: DS.attr('boolean',
+    { defaultValue: false }),
+  starting: DS.attr('boolean',
+    { defaultValue: false }),
+  stopping: DS.attr('boolean',
+    { defaultValue: false }),
+  undeploying: DS.attr('boolean',
+    { defaultValue: false })
 });
 
 export default LambdaApp;
