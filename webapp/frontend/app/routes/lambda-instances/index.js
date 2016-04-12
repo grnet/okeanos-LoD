@@ -29,7 +29,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
       if (!_this.controllerFor('lambda-instances.index').get('showFailed')) {
         hash.instances.forEach(function (instance) {
           let status_code = instance.get('status_code');
-          if (status_code === 9) {
+          if (status_code >= 9 && status_code <=23 && (status_code % 2) === 1) {
             instance.unloadRecord();
           }
         });
