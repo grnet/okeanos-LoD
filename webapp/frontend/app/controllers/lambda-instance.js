@@ -69,6 +69,7 @@ export default Ember.Controller.extend({
           success: function(){
             _this.set('success_delete', true);
             _this.set('delete_success_message', 'Your request to delete the lambda instance was successfully sent to the server.');
+            _this.get('model.instance').set('deleting', true);
             Ember.run.later((function () {
               _this.set('success_delete', false);
               _this.transitionToRoute('dashboard');

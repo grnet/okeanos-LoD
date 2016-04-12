@@ -85,7 +85,10 @@
                     <i class="fa fa-laptop"></i> Create New Instance</a>
             {{/link-to}}
           </div><!--box-tools-->
+            <h5><label>{{input type="checkbox" name="showFailed" checked=showFailed}}
+                Show failed Lambda Instances</label></h5>
         </div><!-- /.box-header -->
+
         {{#if model.length}}
         <div class="box-body">
          <div class="row">
@@ -196,19 +199,21 @@
                       </td>
                     {{/if}}
                     <td>
-                      {{#if (compare (lambda-instance-state lambda-instance.status_message) "!==" "DESTROYING")}}
-                          <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs"
-                                  {{action "delete_instance" lambda-instance.id}}>
-                              <i class="fa fa-times"></i> Delete
-                          </button>
-                    {{else}}
-                      {{#tool-tip}}
+                      {{#if (logical-op 'or'
+                        (compare (lambda-instance-state lambda-instance.status_message) "===" "DESTROYING")
+                        lambda-instance.deleting)
+                      }}
+                        {{#tool-tip}}
                           <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs disabled has-tooltip"
-                                  data-tooltip-content="<center>Cannot delete a lambda instance, while its
-                                  status is {{lower-case lambda-instance.status_message}}!</center>">
-                              <i class="fa fa-times"></i> Delete
+                                  data-tooltip-content="<center>The lambda instance is being destroyed!</center>">
+                              <i class="fa fa-times"></i> Deleting <i class="fa fa-spinner fa-spin"></i>
                           </button>
-                      {{/tool-tip}}
+                        {{/tool-tip}}
+                      {{else}}
+                        <button name="del-btn" id="del-btn" class="btn btn-danger btn-xs"
+                          {{action "delete_instance" lambda-instance.id}}>
+                            <i class="fa fa-times"></i> Delete
+                        </button>
                     {{/if}}
                     </td>
                 </td>

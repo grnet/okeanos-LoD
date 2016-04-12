@@ -8,9 +8,14 @@ export default Ember.ArrayController.extend({
   session: Ember.inject.service('session'),
   delete_success_message: '',
   delete_error_message: '',
+  showFailed: false,
   queryParams: ["page", "perPage"],
   sortAscending: true,
   sortProperties: ['name'],
+
+  instanceCount: Ember.computed('model.length', function() {
+    return this.get('model.length');
+  }),
 
   page: 1,
   perPage: 10,
@@ -22,8 +27,8 @@ export default Ember.ArrayController.extend({
       return (this.get('page')-1)*(this.get('perPage'))+1;
     }
   }),
-  lastOfCurrentPage: Ember.computed('page', 'perPage', 'content', function() {
-    return Math.min(this.get('content.length'), (this.get('page'))*(this.get('perPage')));
+  lastOfCurrentPage: Ember.computed('page', 'perPage', 'instanceCount', function() {
+    return Math.min(this.get('instanceCount'), (this.get('page'))*(this.get('perPage')));
   }),
 
   pagedContent: pagedArray('arrangedContent', {pageBinding: "page", perPageBinding: "perPage"}),
@@ -65,6 +70,7 @@ export default Ember.ArrayController.extend({
           success: function(){
             _this.set('success_delete', true);
             _this.set('delete_success_message', 'Your request to delete the lambda instance was successfully sent to the server.');
+            _this.get('model').findBy('id', instance_id).set('deleting', true);
             Ember.run.later((function () {
               _this.set('success_delete', false);
             }), ENV.message_dismiss);
