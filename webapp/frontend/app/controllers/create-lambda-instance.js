@@ -44,6 +44,12 @@ export default Ember.Controller.extend({
   slaveRAMSelectDisabled: false,
   slaveDiskSelectDisabled: false,
 
+  kafkaInputTopics: ["input"],
+  kafkaOutputTopics: ["batch-output", "stream-output"],
+  conflictingKafkaTopics: false,
+  kafkaTopicsValidityReported: false,
+  kafkaTopicsConflictMessage: "You cannot use the same name for both an input and an output topic!",
+
   actions: {
     saveLambdaInstance: function(newLambdaInstance){
       newLambdaInstance.set('instanceName', this.get('instanceName'));
@@ -68,52 +74,19 @@ export default Ember.Controller.extend({
       }
       newLambdaInstance.set('publicKeyName', requestedPublicKeys);
 
-      var kafkaOutputTopics, kafkaInputTopics;
+      newLambdaInstance.set('kafkaInputTopics', this.get('kafkaInputTopics'));
+      newLambdaInstance.set('kafkaOutputTopics', this.get('kafkaOutputTopics'));
 
-      var kafkaInputTopicsString = this.get('kafkaInputTopics');
-      if (kafkaInputTopicsString) {
-        kafkaInputTopics = kafkaInputTopicsString.replace(/\s+/g, '').split(',');
-      }
-
-      var kafkaOutputTopicsString = this.get('kafkaOutputTopics');
-      if (kafkaOutputTopicsString) {
-        kafkaOutputTopics = kafkaOutputTopicsString.replace(/\s+/g, '').split(',');
-      }
-
-      var duplicateTopic = false;
-      if (kafkaInputTopics && kafkaOutputTopics) {
-        kafkaInputTopics.forEach(function (inputTopic) {
-          if (kafkaOutputTopics.indexOf(inputTopic) !== -1) {
-            duplicateTopic = true;
-          }
-        });
-      }
-
-      if (duplicateTopic) {
-        this.set('duplicate_message', 'Apache Kafka input and output topics must be different!');
-        this.set('duplicate', true);
-        document.getElementById('inputTopics').focus();
-      }
-      else {
-        newLambdaInstance.set('kafkaInputTopics', kafkaInputTopics);
-        newLambdaInstance.set('kafkaOutputTopics', kafkaOutputTopics);
-
-        var self = this;
-        newLambdaInstance.save().then(function(){
-          self.transitionToRoute('lambda-instance', newLambdaInstance.get('id')).catch(function() {
-            self.transitionToRoute('lambda-instances.index').then(function(newRoute) {
-              newRoute.controller.set('message', 'Your lambda instance creation will begin shortly.');
-              newRoute.controller.set('request', true);
-              newRoute.controller.send('start_stop');
-            });
+      var self = this;
+      newLambdaInstance.save().then(function(){
+        self.transitionToRoute('lambda-instance', newLambdaInstance.get('id')).catch(function() {
+          self.transitionToRoute('lambda-instances.index').then(function(newRoute) {
+            newRoute.controller.set('message', 'Your lambda instance creation will begin shortly.');
+            newRoute.controller.set('request', true);
+            newRoute.controller.send('start_stop');
           });
         });
-      }
-    },
-
-    close_alert: function()
-    {
-      this.set('duplicate', false);
+      });
     },
 
     selectFromDropDownList: function(variable, event){
@@ -328,6 +301,80 @@ export default Ember.Controller.extend({
       this.get('slaveRAMSelectDisabled') || this.get('slaveDiskSelectDisabled')
       )
     );
+  },
+
+  kafkaInputTopicsObserver: Ember.observer('kafkaInputTopics', function() {
+    if(this.get('kafkaInputTopics').get('length') === 0){
+      // The observer will fire again after this change. Return so that parseKafkaTopics
+      // is only called once from the upcoming observer firing
+      this.set('kafkaInputTopics', ["input"]);
+
+      return;
+    }
+
+    this.parseKafkaTopics();
+  }),
+
+  kafkaOutputTopicsObserver: Ember.observer('kafkaOutputTopics', function() {
+    if(this.get('kafkaOutputTopics').get('length') === 0){
+      // The observer will fire again after this change. Return so that parseKafkaTopics
+      // is only called once from the upcoming observer firing
+      this.set('kafkaOutputTopics', ["batch-output", "stream-output"]);
+
+      return;
+    }
+
+    this.parseKafkaTopics();
+  }),
+
+  parseKafkaTopics: function(){
+    // In case this method has been called due to a change in kafkaInputTopics or kafkaOutputTopics
+    // from inside the route, then these elements will be undefined since the HTML hasn't yet been
+    // rendered.
+    var inputTopicsElement = Ember.$('#kafka-input-topics #kafka-input-topics-tokenfield')[0];
+    var outputTopicsElement = Ember.$('#kafka-output-topics #kafka-output-topics-tokenfield')[0];
+
+    var kafkaInputTopics = this.get('kafkaInputTopics');
+    var kafkaOutputTopics = this.get('kafkaOutputTopics');
+
+    for (var i = 0, n = kafkaInputTopics.get('length');i < n;i++) {
+      for (var j = 0, m = kafkaOutputTopics.get('length'); j < m;j++) {
+        if (kafkaInputTopics.objectAt(i) === kafkaOutputTopics.objectAt(j)) {
+          this.set('conflictingKafkaTopics', true);
+
+          if(!this.get('kafkaTopicsValidityReported')){
+            if(inputTopicsElement !== undefined && outputTopicsElement !== undefined){
+              inputTopicsElement.setCustomValidity(this.get('kafkaTopicsConflictMessage'));
+              outputTopicsElement.setCustomValidity(this.get('kafkaTopicsConflictMessage'));
+
+              // Some browsers (e.g. Firefox) haven't yet implemented the "reportValidity" API.
+              // https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/reportValidity
+              try{
+                inputTopicsElement.reportValidity();
+                outputTopicsElement.reportValidity();
+              }
+              catch(error){
+                console.log("Logging caught error: " + error);
+              }
+
+              this.set('kafkaTopicsValidityReported', true);
+            }
+          }
+
+          return;
+        }
+      }
+    }
+
+    this.set('conflictingKafkaTopics', false);
+    if(this.get('kafkaTopicsValidityReported')){
+      if(inputTopicsElement !== undefined && outputTopicsElement !== undefined){
+        inputTopicsElement.setCustomValidity("");
+        outputTopicsElement.setCustomValidity("");
+
+        this.set('kafkaTopicsValidityReported', false);
+      }
+    }
   }
 
 });

@@ -42,11 +42,6 @@
     tags:
       - ember-install
 
-  - name: Fix ember-cli-bootstrap-tokenfield bug
-    replace: dest={{ install_dir }}/node_modules/ember-cli-bootstrap-tokenfield/addon/components/input-tokenfield.js
-             regexp='(.*)createTokenOnBlur(.*)'
-             replace='\1createTokensOnBlur\2'
-
   - name: Create Ember config directory
     file: path={{install_dir}}/config state=directory
     tags:

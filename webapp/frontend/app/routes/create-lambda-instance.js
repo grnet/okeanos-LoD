@@ -111,6 +111,11 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
       controller.set('selectedMasterNodeDisk', masterNodeDiskValues[0]['value']);
       controller.set('selectedSlaveNodeDisk', slaveNodeDiskValues[0]['value']);
+
+      controller.set('kafkaInputTopics', ["input"]);
+      controller.set('kafkaOutputTopics', ["batch-output", "stream-output"]);
+      controller.set('conflictingKafkaTopics', false);
+      controller.set('kafkaTopicsValidityReported', false);
     }
   }
 });
