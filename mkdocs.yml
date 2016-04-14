@@ -39,6 +39,11 @@ pages:
   - 'Lamdba Instances API calls': 'central-api/API_lambda_instances.md'
   - 'Lamdba Applications API calls': 'central-api/API_lambda_applications.md'
 
+- Administration:
+  - Service VM image: 'admin/service.md'
+  - Lambda nodes images: 'admin/lambda.md'
+  - Service Messages: 'admin/messages.md'
+
 
 - 'License': 'about/license.md'
 
