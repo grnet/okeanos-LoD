@@ -4,8 +4,6 @@
 
 This guide describes how to publish a message on the [Central service](https://lambda.grnet.gr) of the service. This guide is intended to be used only by the administrators of the central service VM. 
 
-## 
-
 The administrator of the central service must first login the machine using ssh and become the `root` user. From the command line provide the following command 
 
 ```sh
