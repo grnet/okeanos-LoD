@@ -11,14 +11,16 @@ export default Ember.Component.extend({
       }
       //send request to start application
       var _this = this;
-      app.set('application_id', this.get("application-id"));
-      app.set('lambda_instance_id', this.get("instance-id"));
+      var application_id = this.get('application-id');
+      var instance_id = this.get('instance-id');
+      app.set('application_id', application_id);
+      app.set('lambda_instance_id', instance_id);
       app.set('call', "start");
       app.save().then(
       function success() {
         _this.set("request", true);
         _this.set("message", "Your request to start the application was successfully sent to the server.");
-        _this.sendAction('action');
+        _this.sendAction('action', 'start', application_id, instance_id);
       }).catch(
       function failure() {
         _this.set("failure", true);
@@ -31,14 +33,16 @@ export default Ember.Component.extend({
       }
       //send request to stop application
       var _this = this;
-      app.set('application_id', this.get("application-id"));
-      app.set('lambda_instance_id', this.get("instance-id"));
+      var application_id = this.get('application-id');
+      var instance_id = this.get('instance-id');
+      app.set('application_id', application_id);
+      app.set('lambda_instance_id', instance_id);
       app.set('call', "stop");
       app.save().then(
       function success() {
         _this.set("request", true);
         _this.set("message", "Your request to stop the application was successfully sent to the server.");
-        _this.sendAction('action');
+        _this.sendAction('action', 'stop', application_id, instance_id);
       }).catch(
       function failure() {
         _this.set("failure", true);

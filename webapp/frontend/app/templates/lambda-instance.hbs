@@ -99,12 +99,18 @@
                 {{/tool-tip}}
               {{/if}}
               {{#tool-tip}}
-                {{#if (compare model.instance.status_code '==' '0')}}
-                  {{instance-action apps=model.apps check_apps=true stop=true instance=model.instance_action failure=failure instance-id=model.instance.id request=request message=message action="start_stop"}}
+                {{#if (logical-op 'and'
+                  (compare model.instance.status_code '==' '0')
+                  (logical-op 'not' model.instance.stopping)
+                )}}
+                  {{instance-action apps=model.apps check_apps=true stop=true instance=model.instance_action failure=failure instance-id=model.instance.id request=request message=message action="start_stop_instance"}}
                   {{instance-action start=true disabled=true status_message=model.instance.status_message}}
-                {{else if (compare model.instance.status_code '==' '1')}}
+                {{else if (logical-op 'and'
+                  (compare model.instance.status_code '==' '1')
+                  (logical-op 'not' model.instance.starting)
+                )}}
                   {{instance-action stop=true disabled=true status_message=model.instance.status_message}}
-                  {{instance-action start=true instance=model.instance_action instance-id=model.instance.id failure=failure request=request message=message action="start_stop"}}
+                  {{instance-action start=true instance=model.instance_action instance-id=model.instance.id failure=failure request=request message=message action="start_stop_instance"}}
                 {{else}}
                   {{instance-action stop=true disabled=true status_message=model.instance.status_message}}
                   {{instance-action start=true disabled=true status_message=model.instance.status_message}}
@@ -387,41 +393,96 @@
                     <td>{{application.started}}</td>
                     <td>
                       {{#if (compare model.instance.status_code '==' '0')}}
-                          {{#if application.started}}
+                          {{#if (logical-op 'and'
+                            application.started
+                            (logical-op 'not' application.stopping)
+                          )}}
                               <td style="padding-right: 5px;">
                                 {{#tool-tip}}
                                 {{app-action start=true disabled=true
-                                tool-tip-message="it is started!"}}
+                                tool-tip-message="it is started"}}
                                 {{/tool-tip}}
                               </td>
                               <td style="padding-right: 5px;">
                                 {{#tool-tip}}
-                                  {{app-action stop=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop"}}
+                                  {{app-action stop=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop_app"}}
                                 {{/tool-tip}}
                               </td>
                               <td style="padding-right: 5px;">
                                 {{#tool-tip}}
                                 {{app-action withdraw=true disabled=true
-                                tool-tip-message="it is started!"}}
+                                tool-tip-message="it is started"}}
                                 {{/tool-tip}}
                               </td>
-                          {{else}}
+                          {{else if (logical-op 'and'
+                            (logical-op 'not' application.started)
+                            (logical-op 'not' application.starting)
+                          )}}
                               <td style="padding-right: 5px;">
                               {{#tool-tip}}
-                                {{app-action start=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop"}}
+                                {{app-action start=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="start_stop_app"}}
                               {{/tool-tip}}
                               </td>
                               <td style="padding-right: 5px;">
                                 {{#tool-tip}}
                                   {{app-action stop=true disabled=true
-                                  tool-tip-message="it is already stopped!"}}
+                                  tool-tip-message="it is already stopped"}}
                                 {{/tool-tip}}
                               </td>
-                              <td style="padding-right: 5px;">
-                            {{#tool-tip}}
-                                {{app-action withdraw=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="withdraw"}}
-                            {{/tool-tip}}
-                              </td>
+                              {{#if application.undeploying}}
+                                  <td style="padding-right: 5px;">
+                                    {{#tool-tip}}
+                                      {{app-action withdraw=true disabled=true
+                                      tool-tip-message="it is being undeployed"}}
+                                    {{/tool-tip}}
+                                  </td>
+                              {{else}}
+                                <td style="padding-right: 5px;">
+                                  {{#tool-tip}}
+                                    {{app-action withdraw=true app=model.app application-id=application.id instance-id=model.instance.id request=app_request failure=app_failure message=message action="withdraw"}}
+                                  {{/tool-tip}}
+                                </td>
+                              {{/if}}
+                          {{else}}
+                              {{#if application.starting}}
+                                <td style="padding-right: 5px;">
+                                  {{#tool-tip}}
+                                    {{app-action start=true disabled=true
+                                    tool-tip-message="it is starting"}}
+                                  {{/tool-tip}}
+                                </td>
+                                <td style="padding-right: 5px;">
+                                  {{#tool-tip}}
+                                    {{app-action stop=true disabled=true
+                                    tool-tip-message="it is starting"}}
+                                  {{/tool-tip}}
+                                </td>
+                                <td style="padding-right: 5px;">
+                                  {{#tool-tip}}
+                                    {{app-action withdraw=true disabled=true
+                                    tool-tip-message="it is starting"}}
+                                  {{/tool-tip}}
+                                </td>
+                              {{else}}
+                                  <td style="padding-right: 5px;">
+                                    {{#tool-tip}}
+                                      {{app-action start=true disabled=true
+                                      tool-tip-message="it is stopping"}}
+                                    {{/tool-tip}}
+                                  </td>
+                                  <td style="padding-right: 5px;">
+                                    {{#tool-tip}}
+                                      {{app-action stop=true disabled=true
+                                      tool-tip-message="it is stopping"}}
+                                    {{/tool-tip}}
+                                  </td>
+                                  <td style="padding-right: 5px;">
+                                    {{#tool-tip}}
+                                      {{app-action withdraw=true disabled=true
+                                      tool-tip-message="it is stopping"}}
+                                    {{/tool-tip}}
+                                  </td>
+                              {{/if}}
                           {{/if}}
                       {{else}}
                               <td style="padding-right: 5px;">

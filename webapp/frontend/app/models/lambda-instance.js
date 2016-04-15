@@ -23,7 +23,14 @@ var LambdaInstance = DS.Model.extend({
   running_app: DS.attr('boolean'),          // is any app running on the lambda instance?
   kafka_input_topics: DS.attr(),            // kafka input topics of lambda instance
   kafka_output_topics: DS.attr(),           // kafka output topics of lambda instance
-  deleting: DS.attr('boolean')              // has a delete request been sent?
+  deleting: DS.attr('boolean',
+    { defaultValue: false }),               // has a delete request been sent?
+  starting: DS.attr('boolean',
+    { defaultValue: false }),               // has a start request been sent?
+  stopping: DS.attr('boolean',
+    { defaultValue: false }),               // has a stop request been sent?
+  undeploying: DS.attr('boolean',
+    { defaultValue: false })                // has an app undeploy request been sent?
 });
 
 export default LambdaInstance;

@@ -12,27 +12,72 @@ export default Ember.Controller.extend({
   deployWait: false,
   deployID: -1,
   actions: {
+
     close_alert: function()
     {
       var alert = document.getElementById('alert');
       alert.hidden=true;
       this.set('failed_delete', false);
     },
+
     close_app_alert: function()
     {
       var alert = document.getElementById('app_alert');
       alert.hidden=true;
     },
-    start_stop: function()
+
+    start_stop_instance: function (action)
     {
+      var instance = this.get('model.instance');
+      if (action === 'start') {
+        instance.set('starting', true);
+      }
+      else if (action === 'stop') {
+        instance.set('stopping', true);
+      }
       var _this = this;
       Ember.run.later((function () {
         _this.set('request', false);
         _this.set('app_request', false);
       }), ENV.message_dismiss);
+      Ember.run.later((function () {
+        if (action === 'start') {
+          instance.set('starting', false);
+        }
+        else if (action === 'stop') {
+          instance.set('stopping', false);
+        }
+      }), ENV.button_delay);
     },
+
+    start_stop_app: function (action, application_id)
+    {
+      var app = this.get('model.apps').findBy('id', application_id);
+      if (action === 'start') {
+        app.set('starting', true);
+      }
+      else if (action === 'stop') {
+        app.set('stopping', true);
+      }
+      var _this = this;
+      Ember.run.later((function () {
+        _this.set('request', false);
+        _this.set('app_request', false);
+      }), ENV.message_dismiss);
+      Ember.run.later((function () {
+        if (action === 'start') {
+          app.set('starting', false);
+        }
+        else if (action === 'stop') {
+          app.set('stopping', false);
+        }
+      }), ENV.button_delay);
+    },
+
     withdraw: function(application_id)
     {
+      var app = this.get('model.apps').findBy('id', application_id);
+      app.set('undeploying', true);
       var _this = this;
       Ember.run.later((function () {
         _this.store.find('lambda-app', application_id).then(function (application) {
@@ -42,6 +87,7 @@ export default Ember.Controller.extend({
         _this.set('app_request', false);
       }), ENV.message_dismiss);
     },
+
     delete_instance: function(instance_id) {
       var running_warning = "";
       this.get('model.apps').forEach(function (item) {
@@ -93,5 +139,6 @@ export default Ember.Controller.extend({
         });
       }
     },
+
   }
 });
