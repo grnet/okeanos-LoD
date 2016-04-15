@@ -13,6 +13,10 @@ export default Ember.ArrayController.extend({
   sortProperties: ['name'],
   sortAscending: true,
 
+  appCount: Ember.computed('model.length', function() {
+    return this.get('model.length');
+  }),
+
   page: 1,
   perPage: 10,
   firstOfCurrentPage: Ember.computed('page', 'perPage', function() {
@@ -23,8 +27,8 @@ export default Ember.ArrayController.extend({
       return (this.get('page')-1)*(this.get('perPage'))+1;
     }
   }),
-  lastOfCurrentPage: Ember.computed('page', 'perPage', 'content', function() {
-    return Math.min(this.get('content.length'), (this.get('page'))*(this.get('perPage')));
+  lastOfCurrentPage: Ember.computed('page', 'perPage', 'appCount', function() {
+    return Math.min(this.get('appCount'), (this.get('page'))*(this.get('perPage')));
   }),
 
   pagedContent: pagedArray('arrangedContent', {pageBinding: "page", perPageBinding: "perPage"}),
