@@ -45,7 +45,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
     controller.set('instance_action', model.instance_action);
     controller.set('failure', false);
     controller.set('failed_delete', false);
-    controller.set('showFailed', false);
     controller.send('checkPage');
   },
 
