@@ -23,5 +23,5 @@ cp /var/www/okeanos-LoD/webapp/frontend/bower_components/AdminLTE/bootstrap/css/
 cp /var/www/okeanos-LoD/webapp/image/index.html /var/www/html
 
 # Fetch jquery-plainoverlay js
-wget --quiet https://raw.githubusercontent.com/anseki/jquery-plainoverlay/master/jquery.plainoverlay.min.js -P /var/www/html/files/js
+wget --quiet -N https://raw.githubusercontent.com/anseki/jquery-plainoverlay/master/jquery.plainoverlay.min.js -P /var/www/html/files/js
 
