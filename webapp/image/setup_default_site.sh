@@ -11,7 +11,7 @@ mkdir -p /var/www/html/files/css
 cp /var/www/okeanos-LoD/webapp/frontend/bower_components/AdminLTE/dist/css/AdminLTE.min.css /var/www/html/files/css
 cp /var/www/okeanos-LoD/webapp/frontend/bower_components/AdminLTE/dist/css/skins/skin-blue.css /var/www/html/files/css
 mkdir -p /var/www/html/files/js/plugins/jQuery
-cp /var/www/okeanos-LoD/webapp/frontend/bower_components/AdminLTE/plugins/jQuery/jQuery-2.1.4.min.js /var/www/html/files/js/plugins/jQuery/
+cp /var/www/okeanos-LoD/webapp/frontend/bower_components/AdminLTE/plugins/jQuery/jQuery-*.min.js /var/www/html/files/js/plugins/jQuery/
 mkdir -p /var/www/html/files/js/plugins/jQueryUI
 cp /var/www/okeanos-LoD/webapp/frontend/bower_components/AdminLTE/plugins/jQueryUI/jquery-ui.min.js /var/www/html/files/js/plugins/jQueryUI/
 mkdir -p /var/www/html/files/bootstrap/js
