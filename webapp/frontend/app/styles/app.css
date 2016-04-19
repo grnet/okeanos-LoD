@@ -1,0 +1,7 @@
+html, body, body > .ember-view {
+  height:100%;
+}
+
+body > .ember-view ~ .ember-view {
+  height: auto;
+}

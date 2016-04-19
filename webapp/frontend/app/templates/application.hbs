@@ -1,4 +1,4 @@
-<div class="wrapper">
+<div class="wrapper" style="display: flex; flex-direction: column;">
 
   <header class="main-header">
     <!-- Logo -->
@@ -88,13 +88,13 @@
   {{/if}}
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+  <div class="content-wrapper" style="flex: 1 0 auto;">
     <!-- Main content -->
     {{outlet}}
     <!-- /.content -->
   </div><!-- /.content-wrapper -->
 
-  <footer class="main-footer">
+  <footer class="main-footer" style="flex: none;">
     <div class="row">
       <div class="col-md-12">
         <a href="http://europa.eu/" target="_blank" title="European Union"><img src="assets/img/european_union.png" alt="European Union" width="130"></a>
