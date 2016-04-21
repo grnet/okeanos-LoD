@@ -1,43 +1,34 @@
 <!-- Content Header (Page header) -->
-  <section class="content-header">
-    <h1>
-      Dashboard
-      <small>Upload an application</small>
-    </h1>
+<section class="content-header">
+  <h1>
+    Dashboard
+    <small>Upload an application</small>
+  </h1>
+</section>
 
-  </section>
-
-  <!-- Main content -->
-  <section class="content">
-
-    <div class="row">
-     <div class="col-xs-12">
-        <div class="box box-warning">
-          <div class="box-header with-border">
-            <h3 class="box-title">Upload an application</h3>
-            <div class="box-tools pull-right">
-              <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-              <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-            </div>
-          </div><!-- /.box-header -->
-          <div class="box-body no-padding">
-            <div class="row">
-              <div class="col-md-11 col-sm-8">
-                <div class="pad">
-                From this page you can upload a Java or Scala application on the Pithos+ storage service. Your Application will be stored within the folder <i>lambda_applications_&lt;~okeanos_project_name&gt;</i>.
-                Each application you upload may be deployed later onto your Lambda Instance(s).
-                </div>
-              </div><!-- /.col -->
-
-            </div><!-- /.row -->
-      </div><!--box-->
-    </div> <!-- box-primary -->
-    </div> <!--col -->
-  </div> <!--row-->
+<section class="content">
   <div class="row">
     <div class="col-xs-12">
-    </div><!--col-xs-12-->
-  </div><!--row-->
+      <div class="box box-warning">
+        <div class="box-header with-border">
+          <h3 class="box-title">Upload an Application</h3>
+          <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+          </div>
+        </div><!-- /.box-header -->
+        <div class="box-body no-padding">
+          <div class="row">
+            <div class="col-md-9 col-sm-8">
+              <div class="pad">
+                From this page you can upload a Java or Scala application on the Pithos+ storage service. Your Application will be stored within the folder <i>lambda_applications_&lt;~okeanos_project_name&gt;</i>. Each application you upload may be deployed later onto your Lambda Instance(s).
+              </div>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div><!--box-->
+      </div> <!-- box-primary -->
+    </div> <!--col -->
+  </div> <!--row-->
 
   {{#unless enoughQuotas}}
   <div class="row">
@@ -54,116 +45,117 @@
 
   {{#if enoughQuotas}}
   <form method="post" id="upload-app-form" {{action "upload" on="submit"}}>
-  <div class="row">
-          <div class="col-xs-12">
-            <div class="box box-primary">
-              <div class="box-header with-border">
-                <h3 class="box-title">Main</h3>: Select the data for your application
-                          </div><!-- /.box-header -->
-              <div class="box-body">
-                  <div class="row">
-                      <div class="col-sm-12">
-                          <p><i class="fa fa-info"></i>  All inputs marked with (*) are required. </p>
-                      </div>
-                  </div>
-               <div class="row">
-        <div class="form-group col-sm-6">
-              <label for="project_name" class="col-sm-6">~okeanos Project (*):</label>
-              <div class="col-sm-6">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+            <h3 class="box-title">Main</h3>: Select the data for your application
+          </div><!-- /.box-header -->
+          <div class="box-body">
+            <div class="row">
+              <div class="col-sm-12">
+                <p><i class="fa fa-info"></i>  All inputs marked with (*) are required. </p>
+              </div>
+            </div>
 
+            <div class="row">
 
-               <select name="project_name" class="form-control" id="project-name">
-                 {{#each model.userOkeanosProjects as |project|}}
-                   <option value={{project.name}}>{{project.name}} (pithos_space: {{normalize-bytes project.pithos_space}})</option>
-                 {{/each}}
-               </select>
+              <div class="form-group col-sm-6">
+                {{#tool-tip}}
+                <label for="project_name">~okeanos Project (*)</label>
+                <i class="fa fa-info-circle has-tooltip" data-tooltip-content="<center>This is the ~okeanos project that will provide the needed quotas for the storing of the Application</center>"></i>
+                {{/tool-tip}}
 
+                <select name="project_name" class="form-control" id="project-name">
+                  {{#each model.userOkeanosProjects as |project|}}
+                  <option value={{project.name}}>{{project.name}} (pithos_space: {{normalize-bytes project.pithos_space}})</option>
+                  {{/each}}
+                </select>
+              </div>
 
-            <span id="helpBlock" class="help-block">Select an ~okeanos project</span>
+              <div class="form-group col-sm-6">
+                {{#tool-tip}}
+                <label for="type">Application type (*)</label>
+                <i class="fa fa-info-circle has-tooltip" data-tooltip-content="<center>The type you select, will define your Application as streaming or batch in order to later deploy and execute it appropriately within your Lambda Instance(s)</center>"></i>
+                {{/tool-tip}}
 
+                <select name="type" class="form-control">
+                  <option value="batch">batch</option>
+                  <option value="streaming" selected>streaming</option>
+                </select>
+              </div>
 
-          </div>	<!--class="col-sm-6"-->
-          <label for="description" class="col-sm-6">Description:</label>
-              <div class="col-sm-6">
+            </div>
 
-          <textarea type="textarea" name="description" class="center-block form-control input-lg" id="description" style="font-size: 14px;"></textarea>
+            <div class="row">
 
+              <div class="form-group col-sm-6">
+                {{#tool-tip}}
+                <label for="execution-environment">Execution Environment Name (*)</label>
+                <i class="fa fa-info-circle has-tooltip" data-tooltip-content="<center>The name used for the Apache Flink Execution Environment. The Execution Environment Name is the (String) argument given to the execute() function in the Flink job</center>"></i>
+                {{/tool-tip}}
 
-          <span id="helpBlock" class="help-block">Add a small description of your application</span>
-          </div>
+                <textarea type="textarea" name="execution_environment_name" class="center-block form-control input-lg" id="execution_environment_name" style="font-size: 14px;" required="true"></textarea>
+              </div>
 
-          <label for="description" class="col-sm-6">Execution Environment Name (*):</label>
-              <div class="col-sm-6">
+              <div class="form-group col-sm-6">
+                {{#tool-tip}}
+                <label for="description">Description</label>
+                <i class="fa fa-info-circle has-tooltip" data-tooltip-content="<center>A small description of your Application</center>"></i>
+                {{/tool-tip}}
 
-          <textarea type="textarea" name="execution_environment_name" class="center-block form-control input-lg" id="execution_environment_name" style="font-size: 14px;" required="true"></textarea>
+                <textarea type="textarea" name="description" class="center-block form-control input-lg" id="description" style="font-size: 14px;"></textarea>
+              </div>
 
+            </div>
 
-          <span id="helpBlock" class="help-block">Add the name used for the Apache Flink Execution Environment.
-          The Execution Environment Name is the (String) argument given to the execute() function in the Flink job.</span>
+            <div class="row">
 
+              <div class="form-group col-sm-12">
+                {{#tool-tip}}
+                <label for="file">File to upload (*)</label>
+                <i class="fa fa-info-circle has-tooltip" data-tooltip-content="<center>The file of the Application. Only .jar files accepted with, at most, 100 characters of length</center>"></i>
+                {{/tool-tip}}
 
-          </div>	<!--class="col-sm-6"-->
+                <input type="file" id="file" name="file" required="true" accept=".jar" style="width:100%;" maxlength="100"/>
+              </div>
 
-        </div>	<!--class="col-sm-6"-->
-          <div class="form-group col-sm-6">
-              <label for="type"  class="col-sm-6">Application type (*): </label>
-                <div class="col-sm-6" >
-                  <select name="type" class="form-control">
-                    <option value="batch">batch</option>
-                    <option value="streaming" selected>streaming</option>
-                  </select>
+            </div>
 
-              <span id="helpBlock" class="help-block">Select the type of your Application.<br>
-              The type you select, will define your Application as streaming or batch in order to later deploy and execute it appropriately within your Lambda Instance(s).</span>
-              </div><!--class="col-sm-6"-->
-           </div><!--class="form-group col-sm-6"-->
+            <div class="progress col-sm-6 col-sm-offset-3" id="progress_bar" hidden>
+              <div class="progress-bar progress-bar-striped active" role="progressbar" id="progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
 
-      <div class="form-group col-sm-6">
-      <label for="type"  class="col-sm-6">File to upload (*): </label>
-      <div class="col-sm-6" >
-          {{input type="file" name="file" id="file" required="true" accept=".jar"}}
-        <span id="helpBlock" class="help-block">Upload the file of the application.<br>Only jar files are accepted.</span>
-      </div>
-      </div>
+            <p id="progress_text" class="col-sm-6 col-sm-offset-3"></p>
 
-      <div class="progress col-sm-6 col-sm-offset-3" id="progress_bar" hidden>
-       <div class="progress-bar progress-bar-striped active" role="progressbar" id="progress"
-       aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-       </div>
-     </div>
-     <p id="progress_text" class="col-sm-6 col-sm-offset-3"></p>
+            {{#if outOfSpace}}
+            <div class="alert alert-danger col-sm-8 col-sm-offset-3">
+              The size of the file you are trying to upload ({{normalize-bytes fileSize}}) is bigger than your pithos quotas in the selected ~okeanos project. Please select another ~okeanos project, or another file.
+            </div>
+            {{/if}}
 
-    {{#if outOfSpace}}
-       <div class="alert alert-danger col-sm-8 col-sm-offset-3">
-           The size of the file you are trying to upload ({{normalize-bytes fileSize}}) is bigger than your pithos
-           quotas in the selected ~okeanos project. Please select another ~okeanos project, or another file.
-       </div>
-    {{/if}}
+            {{#if wrongExt}}
+            <div class="alert alert-danger col-sm-6 col-sm-offset-3">File extension error. Only <strong>.jar</strong> files may be uploaded</div>
+            {{/if}}
 
-    {{#if wrongExt}}
-      <div class="alert alert-danger col-sm-6 col-sm-offset-3">
-        File extension error. Only <strong>.jar</strong> files may be uploaded
-      </div>
-    {{/if}}
+            {{#if tooLongName}}
+            <div class="alert alert-danger col-sm-6 col-sm-offset-3">
+              Name length error. Maximum number of characters (100) exceeded
+            </div>
+            {{/if}}
 
-    </div><!--row-->
-
-    </div><!--box-body-->
-    </div><!--box-->
-    </div><!--col-->
+          </div><!--box-body-->
+        </div><!--box-->
+      </div><!--col-->
     </div><!--row-->
 
     {{#unless submitDisabled}}
-      <button type="submit" class="btn btn-primary" id="submit-button">Submit</button>
+    <button type="submit" class="btn btn-primary" id="submit-button">Submit</button>
     {{else}}
       {{#tool-tip}}
-          <button type="button" class="btn btn-primary has-tooltip"
-                  data-tooltip-content="<center>An application is already uploading!</center>"
-                  id="submit-button">Submit</button>
+      <button type="button" class="btn btn-primary has-tooltip" data-tooltip-content="<center>An application is already uploading!</center>" id="submit-button">Submit</button>
       {{/tool-tip}}
     {{/unless}}
-
-      </form>
-
+  </form>
   {{/if}}
-  </section><!-- /.content -->
+</section><!-- /.content -->
