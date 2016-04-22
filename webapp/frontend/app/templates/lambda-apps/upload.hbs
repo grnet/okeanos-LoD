@@ -63,7 +63,7 @@
               <div class="form-group col-sm-6">
                 {{#tool-tip}}
                 <label for="project_name">~okeanos Project (*)</label>
-                <i class="fa fa-info-circle has-tooltip" data-tooltip-content="<center>This is the ~okeanos project that will provide the needed quotas for the storing of the Application</center>"></i>
+                <i class="fa fa-info-circle has-tooltip" data-tooltip-content="<center>This is the ~okeanos project that will provide the needed quotas for storing the Application</center>"></i>
                 {{/tool-tip}}
 
                 <select name="project_name" class="form-control" id="project-name">
@@ -114,7 +114,7 @@
               <div class="form-group col-sm-12">
                 {{#tool-tip}}
                 <label for="file">File to upload (*)</label>
-                <i class="fa fa-info-circle has-tooltip" data-tooltip-content="<center>The file of the Application. Only .jar files accepted with, at most, 100 characters of length</center>"></i>
+                <i class="fa fa-info-circle has-tooltip" data-tooltip-content="<center>The file of the Application. Only .jar files accepted with, at most, 100 characters of filename length</center>"></i>
                 {{/tool-tip}}
 
                 <input type="file" id="file" name="file" required="true" accept=".jar" style="width:100%;" maxlength="100"/>
@@ -130,7 +130,7 @@
 
             {{#if outOfSpace}}
             <div class="alert alert-danger col-sm-8 col-sm-offset-3">
-              The size of the file you are trying to upload ({{normalize-bytes fileSize}}) is bigger than your pithos quotas in the selected ~okeanos project. Please select another ~okeanos project, or another file.
+              The size of the file you are trying to upload ({{normalize-bytes fileSize}}) is larger than your pithos quotas in the selected ~okeanos project. Please select another ~okeanos project, or another file.
             </div>
             {{/if}}
 
