@@ -36,6 +36,15 @@ var UploadRoute  = Ember.Route.extend(AuthenticatedRouteMixin, {
         model.userOkeanosProjects.objectAt(i).deleteRecord();
       }
     }
+  },
+
+  setupController: function(controller, model){
+    this._super(controller, model);
+
+    controller.set('wrongExt', false);
+    controller.set('outOfSpace', false);
+    controller.set('tooLongName', false);
+    controller.set('emptyFile', false);
   }
 });
 

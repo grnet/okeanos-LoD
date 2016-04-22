@@ -4,6 +4,8 @@ var UploadController = Ember.Controller.extend({
   session: Ember.inject.service('session'),
   wrongExt: false,
   outOfSpace: false,
+  tooLongName: false,
+  emptyFile: false,
   userHasEnteredData: false,
   submitDisabled: false,
   enoughQuotas: false,
@@ -14,6 +16,8 @@ var UploadController = Ember.Controller.extend({
       this.setProperties({
         wrongExt: false,
         outOfSpace: false,
+        tooLongName: false,
+        emptyFile: false
       });
 
       var host = this.store.adapterFor('upload-app').get('host'),
@@ -46,6 +50,12 @@ var UploadController = Ember.Controller.extend({
       if (pithos_space < file_size) {
         this.set('fileSize', file_size);
         this.set('outOfSpace', true);
+      }
+      else if (file_size === 0) {
+        this.set('emptyFile', true);
+      }
+      else if (file.files[0].name.length > 100){
+        this.set('tooLongName', true);
       }
       else if (ext !== "jar")
       {
