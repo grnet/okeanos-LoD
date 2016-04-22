@@ -44,6 +44,7 @@ var UploadRoute  = Ember.Route.extend(AuthenticatedRouteMixin, {
     controller.set('wrongExt', false);
     controller.set('outOfSpace', false);
     controller.set('tooLongName', false);
+    controller.set('emptyFile', false);
   }
 });
 

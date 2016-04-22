@@ -144,6 +144,12 @@
             </div>
             {{/if}}
 
+            {{#if emptyFile}}
+            <div class="alert alert-danger col-sm-6 col-sm-offset-3">
+              File size error. You cannot upload empty files
+            </div>
+            {{/if}}
+
           </div><!--box-body-->
         </div><!--box-->
       </div><!--col-->
