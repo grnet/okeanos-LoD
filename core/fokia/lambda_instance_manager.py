@@ -103,9 +103,8 @@ def run_playbook(ansible_manager, playbook, only_tags=None, skip_tags=None, extr
     return ansible_result
 
 
-def lambda_instance_destroy(instance_uuid, auth_token,
-                            master_id, slave_ids,
-                            public_ip_id, private_network_id):
+def lambda_instance_destroy(instance_uuid, auth_token, master_id, slave_ids, public_ip_id,
+                            private_network_id):
     """
     Destroys the specified lambda instance. The VMs of the lambda instance, along with the public
     ip and the private network used are destroyed and the status of the lambda instance gets
@@ -127,47 +126,55 @@ def lambda_instance_destroy(instance_uuid, auth_token,
     # Retrieve cyclades network client
     cyclades_network_client = provisioner.network_client
 
-    # Detach the public ip
-    port_id = cyclades_network_client.get_floatingip_details(public_ip_id)['port_id']
-    if port_id:
-        port_status = cyclades_network_client.get_port_details(port_id)['status']
-        cyclades_network_client.delete_port(port_id)
-        try:
-            cyclades_network_client.wait_port_while(port_id, port_status)
-        except ClientError as ce:
-            if ce.status != 404:
-                raise
+    server_ids = list()
+    if master_id:
+        server_ids.append(master_id)
+    if slave_ids:
+        server_ids.extend(slave_ids)
 
-    # Check if the public ip is attached
-    attached_vm = cyclades_network_client.get_floatingip_details(public_ip_id)['instance_id']
-    if not attached_vm:
-        # Destroy the public ip
-        cyclades_network_client.delete_floatingip(public_ip_id)
-    else:
-        if attached_vm in [master_id] + slave_ids:
-            raise ClientError("Destroy failed. Reason: The public IP was not detached")
+    # Detach the public ip
+    if public_ip_id:
+        port_id = cyclades_network_client.get_floatingip_details(public_ip_id)['port_id']
+        if port_id:
+            port_status = cyclades_network_client.get_port_details(port_id)['status']
+            cyclades_network_client.delete_port(port_id)
+            try:
+                cyclades_network_client.wait_port_while(port_id, port_status)
+            except ClientError as ce:
+                if ce.status != 404:
+                    raise
+
+        # Check if the public ip is attached
+        attached_vm = cyclades_network_client.get_floatingip_details(public_ip_id)['instance_id']
+        if not attached_vm:
+            # Destroy the public ip
+            cyclades_network_client.delete_floatingip(public_ip_id)
+        else:
+            if attached_vm in server_ids:
+                raise ClientError("Destroy failed. Reason: The public IP was not detached")
 
     # Detach the VMs from the private network
-    for server_id in [master_id] + slave_ids:
-        ports = [port for port in
-                 cyclades_compute_client.get_server_details(server_id)['attachments'] if
-                 (int(port['network_id']) == private_network_id)]
-        if ports:
-            for port in ports:
-                port['status'] = cyclades_network_client.get_port_details(port['id'])['status']
-                cyclades_network_client.delete_port(port['id'])
-                try:
-                    cyclades_network_client.wait_port_while(port['id'], port['status'])
-                except ClientError as ce:
-                    if ce.status != 404:
-                        raise
+    if private_network_id:
+        for server_id in server_ids:
+            ports = [port for port in
+                     cyclades_compute_client.get_server_details(server_id)['attachments'] if
+                     (int(port['network_id']) == private_network_id)]
+            if ports:
+                for port in ports:
+                    port['status'] = cyclades_network_client.get_port_details(port['id'])['status']
+                    cyclades_network_client.delete_port(port['id'])
+                    try:
+                        cyclades_network_client.wait_port_while(port['id'], port['status'])
+                    except ClientError as ce:
+                        if ce.status != 404:
+                            raise
 
-    # Destroy the private network
-    cyclades_network_client.delete_network(private_network_id)
+        # Destroy the private network
+        cyclades_network_client.delete_network(private_network_id)
 
     # Destroy all the VMs without caring for properly stopping the lambda services.
     # Destroy master node.
-    if cyclades_compute_client.get_server_details(master_id)["status"] != "DELETED":
+    if master_id and cyclades_compute_client.get_server_details(master_id)["status"] != "DELETED":
         cyclades_compute_client.delete_server(master_id)
 
     # Destroy all slave nodes.
@@ -176,7 +183,9 @@ def lambda_instance_destroy(instance_uuid, auth_token,
             cyclades_compute_client.delete_server(slave_id)
 
     # Wait for all VMs to be destroyed
-    cyclades_compute_client.wait_server_until(master_id, target_status="DELETED", max_wait=300)
+    if master_id:
+        cyclades_compute_client.wait_server_until(master_id, target_status="DELETED", max_wait=300)
+
     for slave_id in slave_ids:
         cyclades_compute_client.wait_server_until(slave_id, target_status="DELETED", max_wait=300)
 
