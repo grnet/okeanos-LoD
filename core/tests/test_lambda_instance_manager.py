@@ -2,6 +2,8 @@ from mock import patch, MagicMock, call
 
 from fokia.lambda_instance_manager import lambda_instance_destroy, create_cluster
 
+from uuid import uuid4
+
 test_flavors = [{
     u'SNF:allow_create': True, u'SNF:disk_template': u'drbd', u'SNF:volume_type': 1, u'disk': 20,
     u'id': 1, u'links': [{
@@ -229,6 +231,187 @@ def test_destroy_cluster():
         ]
 
 
+def test_lambda_instance_destroy():
+    lambda_instance_id = uuid4()
+    master_id = "master_id"
+    slave_ids = ["slave_1_id", "slave_2_id"]
+    public_ip_id = "public_ip_id"
+    private_network_id = 123456789
+
+    master_server_details = "ACTIVE"
+    master_port = {
+        'id': "master_port_id",
+        'network_id': private_network_id,
+        'status': "master_port_status"
+    }
+
+    slave_servers_details = ["ACTIVE", "ACTIVE"]
+    slave_ports = [
+        {
+            'id': "slave_1_port_id",
+            'network_id': private_network_id,
+            'status': "slave_1_port_status"
+        },
+        {
+            'id': "slave_2_port_id",
+            'network_id': private_network_id,
+            'status': "slave_2_port_status"
+        }
+    ]
+
+    checks_list = [
+        {'master': True, 'slaves': True, 'public_ip': True, 'private_network': True},
+        {'master': False, 'slaves': True, 'public_ip': True, 'private_network': True},
+        {'master': True, 'slaves': False, 'public_ip': True, 'private_network': True},
+        {'master': True, 'slaves': True, 'public_ip': False, 'private_network': True},
+        {'master': True, 'slaves': True, 'public_ip': True, 'private_network': False},
+        {'master': False, 'slaves': False, 'public_ip': True, 'private_network': True},
+        {'master': False, 'slaves': True, 'public_ip': False, 'private_network': True},
+        {'master': False, 'slaves': True, 'public_ip': True, 'private_network': False},
+        {'master': True, 'slaves': False, 'public_ip': False, 'private_network': True},
+        {'master': True, 'slaves': False, 'public_ip': True, 'private_network': False},
+        {'master': True, 'slaves': True, 'public_ip': False, 'private_network': False},
+        {'master': False, 'slaves': False, 'public_ip': False, 'private_network': True},
+        {'master': False, 'slaves': False, 'public_ip': True, 'private_network': False},
+        {'master': True, 'slaves': False, 'public_ip': False, 'private_network': False},
+        {'master': False, 'slaves': False, 'public_ip': False, 'private_network': False}
+    ]
+
+    for checks in checks_list:
+        with patch('fokia.lambda_instance_manager.Provisioner') as provisioner,\
+                patch('fokia.lambda_instance_manager.__delete_private_key') as delete_private_key:
+
+            # Setup the mocks that will be used
+            provisioner_obj = provisioner.return_value
+            cyclades_compute_client = provisioner_obj.cyclades
+            cyclades_network_client = provisioner_obj.network_client
+
+            def get_server_details(server_id):
+                if server_id == master_id:
+                    return {'attachments': [master_port], 'status': master_server_details}
+                elif server_id in slave_ids:
+                    slave_index = slave_ids.index(server_id)
+                    return {'attachments': [slave_ports[slave_index]],
+                            'status': slave_servers_details[slave_index]}
+            cyclades_compute_client.get_server_details.side_effect = get_server_details
+
+            cyclades_network_client.get_floatingip_details.return_value = {
+                'port_id': master_port['id'],
+                'instance_id': None
+            }
+
+            def port_details(port_id):
+                for port in [master_port] + slave_ports:
+                    if port['id'] == port_id:
+                        return {'status': port['status']}
+            cyclades_network_client.get_port_details.side_effect = port_details
+
+            # Make a call to lambda_instance_destroy method
+            lambda_instance_destroy(lambda_instance_id, 'token',
+                                    master_id if checks['master'] else None,
+                                    slave_ids if checks['slaves'] else [],
+                                    public_ip_id if checks['public_ip'] else None,
+                                    private_network_id if checks['private_network'] else None)
+
+            # Assertions
+            if checks['master'] and checks['slaves']:
+                delete_private_key.assert_called_with(lambda_instance_id, master_id, slave_ids)
+            elif checks['master']:
+                delete_private_key.assert_called_with(lambda_instance_id, master_id, [])
+            elif checks['slaves']:
+                delete_private_key.assert_called_with(lambda_instance_id, None, slave_ids)
+            else:
+                delete_private_key.assert_called_with(lambda_instance_id, None, [])
+
+            if checks['master']:
+                assert cyclades_compute_client.wait_server_until.call_args_list.\
+                    count(call(master_id, target_status="DELETED", max_wait=300)) == 1
+
+                if checks['private_network']:
+                    assert cyclades_compute_client.get_server_details.\
+                        call_args_list.count(call(master_id)) == 2
+                else:
+                    assert cyclades_compute_client.get_server_details.\
+                        call_args_list.count(call(master_id)) == 1
+            else:
+                assert call(master_id, target_status="DELETED", max_wait=300) not in \
+                    cyclades_compute_client.wait_server_until.call_args_list
+
+                assert cyclades_compute_client.get_server_details.\
+                    call_args_list.count(call(master_id)) == 0
+
+            if checks['slaves']:
+                for slave_id in slave_ids:
+                    assert cyclades_compute_client.wait_server_until.call_args_list.\
+                        count(call(slave_id, target_status="DELETED", max_wait=300)) == 1
+
+                    if checks['private_network']:
+                        assert cyclades_compute_client.get_server_details.\
+                            call_args_list.count(call(slave_id)) == 2
+                    else:
+                        assert cyclades_compute_client.get_server_details.\
+                            call_args_list.count(call(slave_id)) == 1
+            else:
+                for slave_id in slave_ids:
+                    assert call(slave_id, target_status="DELETED", max_wait=300) not in \
+                        cyclades_compute_client.wait_server_until.call_args_list
+
+                    assert cyclades_compute_client.get_server_details.\
+                        call_args_list.count(call(slave_id)) == 0
+
+            if checks['public_ip']:
+                assert cyclades_network_client.get_floatingip_details.\
+                    call_args_list.count(call(public_ip_id)) == 2
+
+                if checks['master'] and checks['private_network']:
+                    assert cyclades_network_client.get_port_details.\
+                        call_args_list.count(call(master_port['id'])) == 2
+
+                    assert cyclades_network_client.delete_port.\
+                        call_args_list.count(call(master_port['id'])) == 2
+
+                    assert cyclades_network_client.wait_port_while.\
+                        call_args_list.count(call(master_port['id'], master_port['status'])) == 2
+                else:
+                    assert cyclades_network_client.get_port_details.\
+                        call_args_list.count(call(master_port['id'])) == 1
+
+                    assert cyclades_network_client.delete_port.\
+                        call_args_list.count(call(master_port['id'])) == 1
+
+                    assert cyclades_network_client.wait_port_while.\
+                        call_args_list.count(call(master_port['id'], master_port['status'])) == 1
+
+                assert cyclades_network_client.delete_floatingip.call_args_list.\
+                    count(call(public_ip_id)) == 1
+            else:
+                assert call(public_ip_id) not in \
+                    cyclades_network_client.get_floatingip_details.call_args_list
+
+                if checks['master'] and checks['private_network']:
+                    assert cyclades_network_client.get_port_details.\
+                        call_args_list.count(call(master_port['id'])) == 1
+
+                    assert cyclades_network_client.delete_port.\
+                        call_args_list.count(call(master_port['id'])) == 1
+
+                    assert cyclades_network_client.wait_port_while.\
+                        call_args_list.count(call(master_port['id'], master_port['status'])) == 1
+                else:
+                    assert cyclades_network_client.get_port_details.\
+                        call_args_list.count(call(master_port['id'])) == 0
+
+                    assert cyclades_network_client.delete_port.\
+                        call_args_list.count(call(master_port['id'])) == 0
+
+                    assert cyclades_network_client.wait_port_while.\
+                        call_args_list.count(call(master_port['id'], master_port['status'])) == 0
+
+                assert call(public_ip_id) not in \
+                    cyclades_network_client.delete_floatingip.call_args_list
+
+
 if __name__ == '__main__':
     test_create_cluster()
     test_destroy_cluster()
+    test_lambda_instance_destroy()
