@@ -812,36 +812,6 @@ class LambdaInstanceDestroy(APITestCase):
                          CustomAlreadyDoneError.messages['lambda_instance_already'].
                          format(state="destroyed"))
 
-    # Test for destroying a lambda instance when its status is CLUSTER_FAILED.
-    def test_cluster_failed_status(self):
-
-        # Change the status of the lambda instance to CLUSTER_FAILED.
-        self.lambda_instance.status = LambdaInstance.CLUSTER_FAILED
-        self.lambda_instance.save()
-
-        # Make a request to destroy the lambda instance.
-        response = self.client.delete("/api/lambda-instances/{id}/".
-                                      format(id=self.lambda_instance_uuid))
-
-        # Assert the response code.
-        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
-
-        # Assert the structure of the response.
-        self.assertIn('errors', response.data)
-
-        self.assertEqual(len(response.data['errors']), 1)
-
-        for error in response.data['errors']:
-            self.assertIn('status', error)
-            self.assertIn('detail', error)
-
-        # Assert the contents of the response.
-        self.assertEqual(response.data['errors'][0]['status'], status.HTTP_409_CONFLICT)
-        self.assertEqual(response.data['errors'][0]['detail'],
-                         CustomCantDoError.messages['cant_do'].
-                         format(action="destroy", object="a lambda instance",
-                                status="CLUSTER_FAILED"))
-
 
 class TestLambdaInstanceStart(APITestCase):
     """

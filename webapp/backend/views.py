@@ -985,23 +985,6 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                                              .messages['lambda_instance_already']
                                              .format(state="destroyed"))
 
-        if lambda_instance_data['status'] == LambdaInstance.CLUSTER_FAILED:
-            if 'out of limit' in lambda_instance_data['failure_message']:
-                events.set_lambda_instance_status.delay(lambda_instance_data['uuid'],
-                                                        LambdaInstance.DESTROYED)
-                status_code = status.HTTP_202_ACCEPTED
-                return Response({
-                    "status": {
-                        'code': status_code,
-                        'short_description':
-                            ResponseMessages.short_descriptions['lambda_instance_destroy']
-                    }}, status=status_code)
-            else:
-                raise CustomCantDoError(CustomCantDoError.messages['cant_do'].
-                                        format(action="destroy", object="a lambda instance",
-                                               status=LambdaInstance.status_choices[
-                                                   int(lambda_instance_data['status'])][1]))
-
         # Get the id of the master node and the ids of the slave nodes.
         master_id = None
         public_ip_id = None
@@ -1019,9 +1002,12 @@ class LambdaInstanceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         auth_token = request.META.get("HTTP_AUTHORIZATION").split()[-1]
         # auth_url = "https://accounts.okeanos.grnet.gr/identity/v2.0"
 
-        tasks.lambda_instance_destroy.delay(lambda_instance_data['uuid'], auth_token,
-                                            master_id, slave_ids, public_ip_id,
-                                            lambda_instance_data['private_network'][0]['id'])
+        private_network_id = None
+        if lambda_instance_data['private_network']:
+            private_network_id = lambda_instance_data['private_network'][0]['id']
+
+        tasks.lambda_instance_destroy.delay(lambda_instance_data['uuid'], auth_token, master_id,
+                                            slave_ids, public_ip_id, private_network_id)
 
         # Create event to update the database.
         events.set_lambda_instance_status.delay(lambda_instance_data['uuid'],
