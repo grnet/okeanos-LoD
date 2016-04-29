@@ -125,7 +125,9 @@ var UploadController = Ember.Controller.extend({
         error: function() {
           progress.className = "progress-bar progress-bar-danger";
           progress_text.innerHTML =  'Your request to upload the file has been rejected. Please try again later.';
-          progress.style.width = "0%";
+          submit_button.removeAttribute("disabled");
+          _this.set("submitDisabled", false);
+          _this.set("userHasEnteredData", false);
         }
       });
       }
