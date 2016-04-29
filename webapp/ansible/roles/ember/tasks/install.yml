@@ -1,5 +1,8 @@
 ---
 
+  - name: Include variables from other roles
+    include_vars: "roles/service-vm/vars/main.yml"
+
   - name: Fetch url for nodejs.
     shell: "curl --silent --location https://deb.nodesource.com/setup_0.12 | bash -"
     tags:
