@@ -1,4 +1,5 @@
 import Ember from "ember";
+import ENV from 'frontend/config/environment';
 
 var UploadController = Ember.Controller.extend({
   session: Ember.inject.service('session'),
@@ -114,12 +115,19 @@ var UploadController = Ember.Controller.extend({
               progress.innerHTML = 'Failure. Your request to upload the application has failed. Try another application.';
             }
             progress_text.innerHTML = '';
+          },
+          413: function () {
+            progress.clasName = "progress-bar progress-bar-danger";
+            progress_text.innerHTML = "The file you tried to upload exceeds the maximum allowed file size which is " + ENV.max_upload_file_Size + "KB";
+            progress.style.width = "0%";
           }
         },
         error: function() {
           progress.className = "progress-bar progress-bar-danger";
-          progress.innerHTML =  'Your request to upload the file has been rejected. Please try again later.';
-          progress_text.innerHTML =  '';
+          progress_text.innerHTML =  'Your request to upload the file has been rejected. Please try again later.';
+          submit_button.removeAttribute("disabled");
+          _this.set("submitDisabled", false);
+          _this.set("userHasEnteredData", false);
         }
       });
       }

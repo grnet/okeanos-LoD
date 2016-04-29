@@ -6,3 +6,4 @@ repository_download_path: /var/www
 repository_url: https://github.com/grnet/okeanos-LoD.git
 repository_branch: devel
 central_vm_host: "https://lambda.grnet.gr"
+max_upload_file_size: 268435456 # 256MB
