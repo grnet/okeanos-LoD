@@ -19,6 +19,9 @@
   - name: Change repository permissions.
     file: path={{ repository_download_path }} owner=celery group=celery recurse=yes
 
+  - name: Upgrade cffi package
+    command: pip install --upgrade cffi
+
   - name: Install Fokia requirements.
     pip: requirements={{ repository_download_path }}/okeanos-LoD/core/requirements.txt
 
